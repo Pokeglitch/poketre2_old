@@ -180,8 +180,8 @@ HoFMonInfoText: ; 70329 (1c:4329)
 	next "TYPE2/@"
 
 Func_7033e: ; 7033e (1c:433e)
-	ld de, RedPicFront ; $6ede
-	ld a, BANK(RedPicFront)
+	ld de, JamesPicFront ; $6ede
+	ld a, BANK(JamesPicFront)
 	call UncompressSpriteFromDE
 	ld hl, S_SPRITEBUFFER1
 	ld de, $a000
@@ -189,8 +189,8 @@ Func_7033e: ; 7033e (1c:433e)
 	call CopyData
 	ld de, vFrontPic
 	call InterlaceMergeSpriteBuffers
-	ld de, RedPicBack ; $7e0a
-	ld a, BANK(RedPicBack)
+	ld de, JamesPicBack ; $7e0a
+	ld a, BANK(JamesPicBack)
 	call UncompressSpriteFromDE
 	predef ScaleSpriteByTwo
 	ld de, vBackPic

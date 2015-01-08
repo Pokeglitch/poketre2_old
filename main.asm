@@ -4744,7 +4744,7 @@ INCLUDE "engine/battle/4.asm"
 INCLUDE "engine/menu/status_screen.asm"
 INCLUDE "engine/menu/party_menu.asm"
 
-RedPicFront:: INCBIN "pic/trainer/red.pic"
+JamesPicFront:: INCBIN "pic/trainer/james.pic"
 ShrinkPic1::  INCBIN "pic/trainer/shrink1.pic"
 ShrinkPic2::  INCBIN "pic/trainer/shrink2.pic"
 
@@ -5358,9 +5358,6 @@ PidgeotPicBack::       INCBIN "pic/monback/pidgeotb.pic"
 StarmiePicFront::      INCBIN "pic/bmon/starmie.pic"
 StarmiePicBack::       INCBIN "pic/monback/starmieb.pic"
 
-RedPicBack::           INCBIN "pic/trainer/redb.pic"
-OldManPic::            INCBIN "pic/trainer/oldman.pic"
-
 
 SECTION "Battle (bank C)", ROMX, BANK[$C]
 INCLUDE "engine/battle/c.asm"
@@ -5422,7 +5419,6 @@ WeepinbellPicFront::   INCBIN "pic/bmon/weepinbell.pic"
 WeepinbellPicBack::    INCBIN "pic/monback/weepinbellb.pic"
 VictreebelPicFront::   INCBIN "pic/bmon/victreebel.pic"
 VictreebelPicBack::    INCBIN "pic/monback/victreebelb.pic"
-
 
 SECTION "Battle (bank D)", ROMX, BANK[$D]
 
@@ -5796,49 +5792,49 @@ TrainerPics::
 YoungsterPic::     INCBIN "pic/trainer/youngster.pic"
 BugCatcherPic::    INCBIN "pic/trainer/bugcatcher.pic"
 LassPic::          INCBIN "pic/trainer/lass.pic"
-SailorPic::        INCBIN "pic/trainer/sailor.pic"
-JrTrainerMPic::    INCBIN "pic/trainer/jr.trainerm.pic"
-JrTrainerFPic::    INCBIN "pic/trainer/jr.trainerf.pic"
+BusinessladyPic::        INCBIN "pic/trainer/businesslady.pic"
+WitchPic::    INCBIN "pic/trainer/witch.pic"
+SwordMasterPic::    INCBIN "pic/trainer/sword_master.pic"
 PokemaniacPic::    INCBIN "pic/trainer/pokemaniac.pic"
-SuperNerdPic::     INCBIN "pic/trainer/supernerd.pic"
+MechanicPic::     INCBIN "pic/trainer/mechanic.pic"
 HikerPic::         INCBIN "pic/trainer/hiker.pic"
-BikerPic::         INCBIN "pic/trainer/biker.pic"
+KindlerPic::         INCBIN "pic/trainer/kindler.pic"
 BurglarPic::       INCBIN "pic/trainer/burglar.pic"
 EngineerPic::      INCBIN "pic/trainer/engineer.pic"
 FisherPic::        INCBIN "pic/trainer/fisher.pic"
 SwimmerPic::       INCBIN "pic/trainer/swimmer.pic"
-CueBallPic::       INCBIN "pic/trainer/cueball.pic"
+GardenerPic::       INCBIN "pic/trainer/gardener.pic"
 GamblerPic::       INCBIN "pic/trainer/gambler.pic"
 BeautyPic::        INCBIN "pic/trainer/beauty.pic"
-PsychicPic::       INCBIN "pic/trainer/psychic.pic"
+PoliceChiefPic::       INCBIN "pic/trainer/police_chief.pic"
 RockerPic::        INCBIN "pic/trainer/rocker.pic"
 JugglerPic::       INCBIN "pic/trainer/juggler.pic"
 TamerPic::         INCBIN "pic/trainer/tamer.pic"
 BirdKeeperPic::    INCBIN "pic/trainer/birdkeeper.pic"
 BlackbeltPic::     INCBIN "pic/trainer/blackbelt.pic"
-Rival1Pic::        INCBIN "pic/trainer/rival1.pic"
+Jessie1Pic::        INCBIN "pic/trainer/jessie1.pic"
 ProfOakPic::       INCBIN "pic/trainer/prof.oak.pic"
-ChiefPic::
+AshPic::       INCBIN "pic/trainer/ash.pic"
 ScientistPic::     INCBIN "pic/trainer/scientist.pic"
 GiovanniPic::      INCBIN "pic/trainer/giovanni.pic"
-RocketPic::        INCBIN "pic/trainer/rocket.pic"
+PolicePic::        INCBIN "pic/trainer/police.pic"
 CooltrainerMPic::  INCBIN "pic/trainer/cooltrainerm.pic"
 CooltrainerFPic::  INCBIN "pic/trainer/cooltrainerf.pic"
-BrunoPic::         INCBIN "pic/trainer/bruno.pic"
-BrockPic::         INCBIN "pic/trainer/brock.pic"
-MistyPic::         INCBIN "pic/trainer/misty.pic"
-LtSurgePic::       INCBIN "pic/trainer/lt.surge.pic"
-ErikaPic::         INCBIN "pic/trainer/erika.pic"
-KogaPic::          INCBIN "pic/trainer/koga.pic"
-BlainePic::        INCBIN "pic/trainer/blaine.pic"
-SabrinaPic::       INCBIN "pic/trainer/sabrina.pic"
+ElderKrakenPic::         INCBIN "pic/trainer/elder_kraken.pic"
+MayorRyderPic::         INCBIN "pic/trainer/mayor_ryder.pic"
+MayorCarolPic::         INCBIN "pic/trainer/mayor_carol.pic"
+CEOMaxwellPic::       INCBIN "pic/trainer/ceo_maxwell.pic"
+MayorHollyPic::         INCBIN "pic/trainer/mayor_holly.pic"
+MayorCliffPic::          INCBIN "pic/trainer/mayor_cliff.pic"
+MayorDantePic::        INCBIN "pic/trainer/mayor_dante.pic"
+MayorSavanaPic::       INCBIN "pic/trainer/mayor_savana.pic"
 GentlemanPic::     INCBIN "pic/trainer/gentleman.pic"
-Rival2Pic::        INCBIN "pic/trainer/rival2.pic"
-Rival3Pic::        INCBIN "pic/trainer/rival3.pic"
-LoreleiPic::       INCBIN "pic/trainer/lorelei.pic"
-ChannelerPic::     INCBIN "pic/trainer/channeler.pic"
-AgathaPic::        INCBIN "pic/trainer/agatha.pic"
-LancePic::         INCBIN "pic/trainer/lance.pic"
+Jessie2Pic::        INCBIN "pic/trainer/jessie2.pic"
+PokeglitchPic::        INCBIN "pic/trainer/pokeglitch.pic"
+KingApolloPic::       INCBIN "pic/trainer/king_apollo.pic"
+SorcererPic::     INCBIN "pic/trainer/sorcerer.pic"
+ElderSkylarPic::        INCBIN "pic/trainer/elder_skylar.pic"
+MayorCasparPic::         INCBIN "pic/trainer/mayor_caspar.pic"
 
 INCLUDE "data/mapHeaders/battlecenterm.asm"
 INCLUDE "scripts/battlecenterm.asm"
@@ -6639,12 +6635,6 @@ INCLUDE "engine/overworld/elevator.asm"
 
 INCLUDE "engine/items/tm_prices.asm"
 
-IF DEF(_OPTION_BEACH_HOUSE)
-SECTION "bank3C",ROMX[$4314],BANK[$3C]
-
-BeachHouse_GFX:
-	INCBIN "gfx/tilesets/beachhouse.2bpp"
-
-BeachHouse_Block:
-	INCBIN "gfx/blocksets/beachhouse.bst"
-ENDC
+SECTION "bank3F",ROMX,BANK[$3F]
+JamesPicBack::           INCBIN "pic/trainer/jamesb.pic"
+JessiePicBack::          INCBIN "pic/trainer/jessieb.pic"

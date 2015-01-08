@@ -20,8 +20,8 @@ LoadDefaultNamesPlayer: ; 695d (1:695d)
 	jr z, .asm_697a
 	call ClearScreen
 	call Delay3
-	ld de, RedPicFront ; $6ede
-	ld b, BANK(RedPicFront)
+	ld de, JamesPicFront ; $6ede
+	ld b, BANK(JamesPicFront)
 	call IntroPredef3B
 .asm_6999
 	ld hl, YourNameIsText
@@ -53,7 +53,7 @@ LoadDefaultNamesRival: ; 69a4 (1:69a4)
 	jr z, .asm_69c1
 	call ClearScreen
 	call Delay3
-	ld de, Rival1Pic ; $6049
+	ld de, Jessie1Pic ; $6049
 	ld b, $13
 	call IntroPredef3B
 .asm_69e1

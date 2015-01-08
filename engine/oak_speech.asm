@@ -75,8 +75,8 @@ OakSpeech: ; 6115 (1:6115)
 	call PrintText      ; Prints text box
 	call GBFadeOutToWhite
 	call ClearScreen
-	ld de,RedPicFront
-	ld bc,(Bank(RedPicFront) << 8) | $00
+	ld de,JamesPicFront
+	ld bc,(Bank(JamesPicFront) << 8) | $00
 	call IntroPredef3B      ; displays player pic?
 	call MovePicLeft
 	ld hl,IntroducePlayerText
@@ -84,8 +84,8 @@ OakSpeech: ; 6115 (1:6115)
 	call LoadDefaultNamesPlayer ; brings up NewName/Red/etc menu
 	call GBFadeOutToWhite
 	call ClearScreen
-	ld de,Rival1Pic
-	ld bc,(Bank(Rival1Pic) << 8) | $00
+	ld de,Jessie1Pic
+	ld bc,(Bank(Jessie1Pic) << 8) | $00
 	call IntroPredef3B ; displays rival pic
 	call FadeInIntroPic
 	ld hl,IntroduceRivalText
@@ -95,8 +95,8 @@ OakSpeech: ; 6115 (1:6115)
 Func_61bc: ; 61bc (1:61bc)
 	call GBFadeOutToWhite
 	call ClearScreen
-	ld de,RedPicFront
-	ld bc,(Bank(RedPicFront) << 8) | $00
+	ld de,JamesPicFront
+	ld bc,(Bank(JamesPicFront) << 8) | $00
 	call IntroPredef3B
 	call GBFadeInFromWhite
 	ld a,[wd72d]

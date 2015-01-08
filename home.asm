@@ -770,6 +770,8 @@ LoadMonFrontSprite:: ; 1665 (0:1665)
 	call UncompressMonSprite
 	ld hl, W_MONHSPRITEDIM
 	ld a, [hli]
+; to finish loading a 6x6 back sprite, jump to this section of the load front sprite routine (with a different de and dimension)
+FinishLoading6x6BackSprite:
 	ld c, a
 	pop de
 	; fall through
@@ -2923,7 +2925,7 @@ GetTrainerInformation:: ; 3566 (0:3566)
 	jp BankswitchBack
 .linkBattle
 	ld hl, wd033
-	ld de, RedPicFront
+	ld de, JamesPicFront
 	ld [hl], e
 	inc hl
 	ld [hl], d

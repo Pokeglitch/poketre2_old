@@ -443,25 +443,25 @@ TrainerPicAndMoneyPointers: ; 39914 (e:5914)
 	dw LassPic
 	db 0,$15,0
 
-	dw SailorPic
+	dw BusinessladyPic
 	db 0,$30,0
 
-	dw JrTrainerMPic
+	dw WitchPic
 	db 0,$20,0
 
-	dw JrTrainerFPic
+	dw SwordMasterPic
 	db 0,$20,0
 
 	dw PokemaniacPic
 	db 0,$50,0
 
-	dw SuperNerdPic
+	dw MechanicPic
 	db 0,$25,0
 
 	dw HikerPic
 	db 0,$35,0
 
-	dw BikerPic
+	dw KindlerPic
 	db 0,$20,0
 
 	dw BurglarPic
@@ -479,7 +479,7 @@ TrainerPicAndMoneyPointers: ; 39914 (e:5914)
 	dw SwimmerPic
 	db 0,$05,0
 
-	dw CueBallPic
+	dw GardenerPic
 	db 0,$25,0
 
 	dw GamblerPic
@@ -488,7 +488,7 @@ TrainerPicAndMoneyPointers: ; 39914 (e:5914)
 	dw BeautyPic
 	db 0,$70,0
 
-	dw PsychicPic
+	dw PoliceChiefPic
 	db 0,$10,0
 
 	dw RockerPic
@@ -506,13 +506,13 @@ TrainerPicAndMoneyPointers: ; 39914 (e:5914)
 	dw BlackbeltPic
 	db 0,$25,0
 
-	dw Rival1Pic
+	dw Jessie1Pic
 	db 0,$35,0
 
 	dw ProfOakPic
 	db 0,$99,0
 
-	dw ChiefPic
+	dw AshPic
 	db 0,$30,0
 
 	dw ScientistPic
@@ -521,7 +521,7 @@ TrainerPicAndMoneyPointers: ; 39914 (e:5914)
 	dw GiovanniPic
 	db 0,$99,0
 
-	dw RocketPic
+	dw PolicePic
 	db 0,$30,0
 
 	dw CooltrainerMPic
@@ -530,49 +530,49 @@ TrainerPicAndMoneyPointers: ; 39914 (e:5914)
 	dw CooltrainerFPic
 	db 0,$35,0
 
-	dw BrunoPic
+	dw ElderKrakenPic
 	db 0,$99,0
 
-	dw BrockPic
+	dw MayorRyderPic
 	db 0,$99,0
 
-	dw MistyPic
+	dw MayorCarolPic
 	db 0,$99,0
 
-	dw LtSurgePic
+	dw CEOMaxwellPic
 	db 0,$99,0
 
-	dw ErikaPic
+	dw MayorHollyPic
 	db 0,$99,0
 
-	dw KogaPic
+	dw MayorCliffPic
 	db 0,$99,0
 
-	dw BlainePic
+	dw MayorDantePic
 	db 0,$99,0
 
-	dw SabrinaPic
+	dw MayorSavanaPic
 	db 0,$99,0
 
 	dw GentlemanPic
 	db 0,$70,0
 
-	dw Rival2Pic
+	dw Jessie2Pic
 	db 0,$65,0
 
-	dw Rival3Pic
+	dw PokeglitchPic
 	db 0,$99,0
 
-	dw LoreleiPic
+	dw KingApolloPic
 	db 0,$99,0
 
-	dw ChannelerPic
+	dw SorcererPic
 	db 0,$30,0
 
-	dw AgathaPic
+	dw ElderSkylarPic
 	db 0,$99,0
 
-	dw LancePic
+	dw MayorCasparPic
 	db 0,$99,0
 
 INCLUDE "text/trainer_names.asm"

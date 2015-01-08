@@ -522,8 +522,8 @@ StartMenu_TrainerInfo: ; 13460 (4:7460)
 
 ; loads tile patterns and draws everything except for gym leader faces / badges
 DrawTrainerInfo: ; 1349a (4:749a)
-	ld de,RedPicFront
-	ld bc,(BANK(RedPicFront) << 8) | $01
+	ld de,JamesPicFront
+	ld bc,(BANK(JamesPicFront) << 8) | $01
 	predef Predef3B
 	call DisableLCD
 	hlCoord 0, 2

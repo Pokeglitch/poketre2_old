@@ -6311,19 +6311,26 @@ SwapPlayerAndEnemyLevels: ; 3ec81 (f:6c81)
 	pop bc
 	ret
 
+;to load a 6x6 player back pic
+Load6x6BackPic:
+	ld de,vBackPic
+	ld a,$66
+	push de
+	jp FinishLoading6x6BackSprite
+	
 ; loads either red back pic or old man back pic
 ; also writes OAM data and loads tile patterns for the Red or Old Man back sprite's head
 ; (for use when scrolling the player sprite and enemy's silhouettes on screen)
 LoadPlayerBackPic: ; 3ec92 (f:6c92)
-	ld a, [W_BATTLETYPE]
-	dec a ; is it the old man tutorial?
-	ld de, RedPicBack
-	jr nz, .next
-	ld de, OldManPic
+	ld a, [W_TOTEMS]
+	bit 0,a ; is the Role Reversal on?
+	ld de, JamesPicBack
+	jr z, .next
+	ld de, JessiePicBack
 .next
-	ld a, BANK(RedPicBack)
+	ld a, BANK(JamesPicBack)
 	call UncompressSpriteFromDE
-	predef ScaleSpriteByTwo
+	call Load6x6BackPic
 	ld hl, wOAMBuffer
 	xor a
 	ld [$FF8B], a ; initial tile number
@@ -6355,8 +6362,6 @@ LoadPlayerBackPic: ; 3ec92 (f:6c92)
 	ld e, a
 	dec b
 	jr nz, .loop
-	ld de, vBackPic
-	call InterlaceMergeSpriteBuffers
 	ld a, $a
 	ld [$0], a
 	xor a
@@ -6893,7 +6898,7 @@ _LoadTrainerPic: ; 3f04b (f:704b)
 	and a
 	ld a, Bank(TrainerPics) ; this is where all the trainer pics are (not counting Red's)
 	jr z, .loadSprite
-	ld a, Bank(RedPicFront)
+	ld a, Bank(JamesPicFront)
 .loadSprite
 	call UncompressSpriteFromDE
 	ld de, vFrontPic
@@ -7010,9 +7015,7 @@ LoadMonBackPic:
 	call ClearScreenArea
 	ld hl,  W_MONHBACKSPRITE - W_MONHEADER
 	call UncompressMonSprite
-	predef ScaleSpriteByTwo
-	ld de, vBackPic
-	call InterlaceMergeSpriteBuffers ; combine the two buffers to a single 2bpp sprite
+	call Load6x6BackPic
 	ld hl, vSprites
 	ld de, vBackPic
 	ld c, (2*SPRITEBUFFERSIZE)/16 ; count of 16-byte chunks to be copied
