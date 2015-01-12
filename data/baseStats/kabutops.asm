@@ -4,8 +4,8 @@ db 60 ; base hp
 db 115 ; base attack
 db 105 ; base defense
 db 80 ; base speed
-db 70 ; base special
-db ROCK ; species type 1
+db $41 ; base special
+db TALON ; species type 1
 db WATER ; species type 2
 db 45 ; catch rate
 db 201 ; base exp yield
@@ -18,12 +18,11 @@ db HARDEN
 db ABSORB
 db 0
 db 0 ; growth rate
-; learnset
-db %10110110
-db %01111111
-db %00001101
-db %11000000
-db %10000011
-db %00001000
-db %00010010
-db 0 ; padding
+db AB_SLICER	;ability 1
+db 00	;ability 2
+db $46	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(KabutopsPicFront) ; sprite bank

@@ -4,7 +4,7 @@ db 39 ; base hp
 db 52 ; base attack
 db 43 ; base defense
 db 65 ; base speed
-db 50 ; base special
+db $3C ; base special attack
 db FIRE ; species type 1
 db FIRE ; species type 2
 db 45 ; catch rate
@@ -18,12 +18,11 @@ db GROWL
 db 0
 db 0
 db 3 ; growth rate
-; learnset
-db %10110101
-db %00000011
-db %01001111
-db %11001000
-db %11100011
-db %00001000
-db %00100110
-db 0 ; padding
+db AB_FLAME_BODY	;ability 1
+db 00	;ability 2
+db $32	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(CharmanderPicFront) ; sprite bank

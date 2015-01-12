@@ -4,9 +4,9 @@ db 60 ; base hp
 db 40 ; base attack
 db 80 ; base defense
 db 40 ; base speed
-db 60 ; base special
-db GRASS ; species type 1
-db PSYCHIC ; species type 2
+db $3C ; base special
+db PLANT ; species type 1
+db MIND ; species type 2
 db 90 ; catch rate
 db 98 ; base exp yield
 INCBIN "pic/bmon/exeggcute.pic",0,1 ; 77, sprite dimensions
@@ -18,12 +18,11 @@ db HYPNOSIS
 db 0
 db 0
 db 5 ; growth rate
-; learnset
-db %00100000
-db %00000011
-db %00001000
-db %11110000
-db %00011011
-db %01101000
-db %00000010
-db 0 ; padding
+db AB_PHOTOSYNTHESIS	;ability 1
+db 00	;ability 2
+db $2D	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(ExeggcutePicFront) ; sprite bank

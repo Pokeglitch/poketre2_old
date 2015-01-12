@@ -4,7 +4,7 @@ db 61 ; base hp
 db 84 ; base attack
 db 65 ; base defense
 db 70 ; base speed
-db 70 ; base special
+db $46 ; base special
 db DRAGON ; species type 1
 db DRAGON ; species type 2
 db 45 ; catch rate
@@ -18,12 +18,11 @@ db LEER
 db THUNDER_WAVE
 db 0
 db 5 ; growth rate
-; learnset
-db %11100000
-db %00111111
-db %11001000
-db %11000001
-db %11100011
-db %00011000
-db %00010010
-db 0 ; padding
+db AB_STRONG_SCALE	;ability 1
+db AB_FLYING_DRAGON	;ability 2
+db $46	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(DragonairPicFront) ; sprite bank

@@ -4,7 +4,7 @@ db 30 ; base hp
 db 65 ; base attack
 db 100 ; base defense
 db 40 ; base speed
-db 45 ; base special
+db $2D ; base special
 db WATER ; species type 1
 db WATER ; species type 2
 db 190 ; catch rate
@@ -18,12 +18,11 @@ db WITHDRAW
 db 0
 db 0
 db 5 ; growth rate
-; learnset
-db %00100000
-db %00111111
-db %00001000
-db %11100000
-db %01001011
-db %01001000
-db %00010011
-db 0 ; padding
+db AB_TOUGH_SKIN	;ability 1
+db 00	;ability 2
+db $19	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(ShellderPicFront) ; sprite bank

@@ -4,9 +4,9 @@ db 35 ; base hp
 db 45 ; base attack
 db 160 ; base defense
 db 70 ; base speed
-db 30 ; base special
-db ROCK ; species type 1
-db GROUND ; species type 2
+db $1E ; base special
+db EARTH ; species type 1
+db EARTH ; species type 2
 db 45 ; catch rate
 db 108 ; base exp yield
 INCBIN "pic/bmon/onix.pic",0,1 ; 77, sprite dimensions
@@ -18,12 +18,11 @@ db SCREECH
 db 0
 db 0
 db 0 ; growth rate
-; learnset
-db %10100000
-db %00000011
-db %00001000
-db %11001110
-db %10001010
-db %11001000
-db %00100010
-db 0 ; padding
+db AB_TOUGH_SKIN	;ability 1
+db 00	;ability 2
+db $2D	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(OnixPicFront) ; sprite bank

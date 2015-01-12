@@ -4,9 +4,9 @@ db 106 ; base hp
 db 110 ; base attack
 db 90 ; base defense
 db 130 ; base speed
-db 154 ; base special
-db PSYCHIC ; species type 1
-db PSYCHIC ; species type 2
+db $9A ; base special
+db MIND ; species type 1
+db RADIO ; species type 2
 db 3 ; catch rate
 db 220 ; base exp yield
 INCBIN "pic/bmon/mewtwo.pic",0,1 ; 77, sprite dimensions
@@ -18,12 +18,11 @@ db DISABLE
 db SWIFT
 db PSYCHIC_M
 db 5 ; growth rate
-; learnset
-db %10110001
-db %11111111
-db %10101111
-db %11110001
-db %10101111
-db %00111000
-db %01100011
-db 0 ; padding
+db AB_TELEPATHIC	;ability 1
+db AB_SHARP_MIND	;ability 2
+db $5A	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(MewtwoPicFront) ; sprite bank

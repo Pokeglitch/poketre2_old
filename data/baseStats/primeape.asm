@@ -4,7 +4,7 @@ db 65 ; base hp
 db 105 ; base attack
 db 60 ; base defense
 db 95 ; base speed
-db 60 ; base special
+db $3C ; base special
 db FIGHTING ; species type 1
 db FIGHTING ; species type 2
 db 75 ; catch rate
@@ -23,12 +23,11 @@ IF DEF(_YELLOW)
 	db LOW_KICK
 ENDC
 db 0 ; growth rate
-; learnset
-db %10110001
-db %11000011
-db %10001111
-db %11001001
-db %11000110
-db %10001000
-db %00100010
-db 0 ; padding
+db AB_ILL_TEMPERED	;ability 1
+db 00	;ability 2
+db $46	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(PrimeapePicFront) ; sprite bank

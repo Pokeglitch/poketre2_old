@@ -4,7 +4,7 @@ db 60 ; base hp
 db 90 ; base attack
 db 55 ; base defense
 db 100 ; base speed
-db 90 ; base special
+db $5A ; base special
 db ELECTRIC ; species type 1
 db ELECTRIC ; species type 2
 db 75 ; catch rate
@@ -18,12 +18,11 @@ db GROWL
 db THUNDER_WAVE
 db 0
 db 0 ; growth rate
-; learnset
-db %10110001
-db %11000011
-db %10001101
-db %11000001
-db %11000011
-db %00011000
-db %01000010
-db 0 ; padding
+db AB_RECHARGE	;ability 1
+db 00	;ability 2
+db $50	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(RaichuPicFront) ; sprite bank

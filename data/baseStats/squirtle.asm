@@ -4,7 +4,7 @@ db 44 ; base hp
 db 48 ; base attack
 db 65 ; base defense
 db 43 ; base speed
-db 50 ; base special
+db $32 ; base special
 db WATER ; species type 1
 db WATER ; species type 2
 db 45 ; catch rate
@@ -18,12 +18,11 @@ db TAIL_WHIP
 db 0
 db 0
 db 3 ; growth rate
-; learnset
-db %10110001
-db %00111111
-db %00001111
-db %11001000
-db %10000011
-db %00001000
-db %00110010
-db 0 ; padding
+db AB_TOUGH_SKIN	;ability 1
+db 00	;ability 2
+db $40	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(SquirtlePicFront) ; sprite bank

@@ -4,9 +4,9 @@ db 90 ; base hp
 db 85 ; base attack
 db 100 ; base defense
 db 85 ; base speed
-db 125 ; base special
-db ICE ; species type 1
-db FLYING ; species type 2
+db $5F ; base special
+db AERO ; species type 1
+db ICE ; species type 2
 db 3 ; catch rate
 db 215 ; base exp yield
 INCBIN "pic/bmon/articuno.pic",0,1 ; 77, sprite dimensions
@@ -18,12 +18,11 @@ db ICE_BEAM
 db 0
 db 0
 db 5 ; growth rate
-; learnset
-db %00101010
-db %01111111
-db %00001000
-db %11000000
-db %01000011
-db %00001100
-db %00001010
-db 0 ; padding
+db AB_HAIL_STORM	;ability 1
+db AB_COLD_BLOODED	;ability 2
+db $7D	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(ArticunoPicFront) ; sprite bank

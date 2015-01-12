@@ -4,9 +4,9 @@ db 25 ; base hp
 db 35 ; base attack
 db 70 ; base defense
 db 45 ; base speed
-db 95 ; base special
-db ELECTRIC ; species type 1
-db ELECTRIC ; species type 2
+db $5F ; base special
+db METAL ; species type 1
+db RADIO ; species type 2
 db 190 ; catch rate
 db 89 ; base exp yield
 INCBIN "pic/bmon/magnemite.pic",0,1 ; 55, sprite dimensions
@@ -18,12 +18,11 @@ db 0
 db 0
 db 0
 db 0 ; growth rate
-; learnset
-db %00100000
-db %00000011
-db %10001000
-db %11100001
-db %01000011
-db %00011000
-db %01000010
-db 0 ; padding
+db AB_RECHARGE	;ability 1
+db 00	;ability 2
+db $37	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(MagnemitePicFront) ; sprite bank

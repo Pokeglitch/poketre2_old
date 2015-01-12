@@ -4,7 +4,7 @@ db 65 ; base hp
 db 80 ; base attack
 db 40 ; base defense
 db 75 ; base speed
-db 45 ; base special
+db $2D ; base special attack
 db BUG ; species type 1
 db POISON ; species type 2
 db 45 ; catch rate
@@ -18,12 +18,11 @@ db 0
 db 0
 db 0
 db 0 ; growth rate
-; learnset
-db %00100100
-db %01000011
-db %00011000
-db %11000000
-db %11000011
-db %00001000
-db %00000110
-db 0 ; padding
+db AB_HEADPIECE	;ability 1
+db 00	;ability 2
+db $50 ;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(BeedrillPicFront) ; sprite bank

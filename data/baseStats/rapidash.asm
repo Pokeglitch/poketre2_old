@@ -4,9 +4,9 @@ db 65 ; base hp
 db 100 ; base attack
 db 70 ; base defense
 db 105 ; base speed
-db 80 ; base special
+db $50 ; base special
 db FIRE ; species type 1
-db FIRE ; species type 2
+db HOOF ; species type 2
 db 60 ; catch rate
 db 192 ; base exp yield
 INCBIN "pic/bmon/rapidash.pic",0,1 ; 77, sprite dimensions
@@ -18,12 +18,11 @@ db TAIL_WHIP
 db STOMP
 db GROWL
 db 0 ; growth rate
-; learnset
-db %11100000
-db %01000011
-db %00001000
-db %11000000
-db %11100011
-db %00001000
-db %00000010
-db 0 ; padding
+db AB_FLAME_BODY	;ability 1
+db 00	;ability 2
+db $50	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(RapidashPicFront) ; sprite bank

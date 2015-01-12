@@ -4,9 +4,9 @@ db 95 ; base hp
 db 95 ; base attack
 db 85 ; base defense
 db 55 ; base speed
-db 125 ; base special
-db GRASS ; species type 1
-db PSYCHIC ; species type 2
+db $7D ; base special
+db PLANT ; species type 1
+db MIND ; species type 2
 db 45 ; catch rate
 db 212 ; base exp yield
 INCBIN "pic/bmon/exeggutor.pic",0,1 ; 77, sprite dimensions
@@ -18,12 +18,11 @@ db HYPNOSIS
 db 0
 db 0
 db 5 ; growth rate
-; learnset
-db %00100000
-db %01000011
-db %00111000
-db %11110000
-db %00011011
-db %01101000
-db %00100010
-db 0 ; padding
+db AB_PHOTOSYNTHESIS	;ability 1
+db 00	;ability 2
+db $41	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(ExeggutorPicFront) ; sprite bank

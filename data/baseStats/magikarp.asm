@@ -4,7 +4,7 @@ db 20 ; base hp
 db 10 ; base attack
 db 55 ; base defense
 db 80 ; base speed
-db 20 ; base special
+db $0F ; base special
 db WATER ; species type 1
 db WATER ; species type 2
 db 255 ; catch rate
@@ -18,12 +18,11 @@ db 0
 db 0
 db 0
 db 5 ; growth rate
-; learnset
-db %00000000
-db %00000000
-db %00000000
-db %00000000
-db %00000000
-db %00000000
-db %00000000
-db 0 ; padding
+db AB_SWIMMER	;ability 1
+db 00	;ability 2
+db $14	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(MagikarpPicFront) ; sprite bank

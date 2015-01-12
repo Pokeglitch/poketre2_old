@@ -4,7 +4,7 @@ db 40 ; base hp
 db 80 ; base attack
 db 35 ; base defense
 db 70 ; base speed
-db 35 ; base special
+db $23 ; base special
 db FIGHTING ; species type 1
 db FIGHTING ; species type 2
 db 190 ; catch rate
@@ -18,12 +18,11 @@ db LEER
 db 0
 db 0
 db 0 ; growth rate
-; learnset
-db %10110001
-db %10000011
-db %10001111
-db %11001001
-db %11000110
-db %10001000
-db %00100010
-db 0 ; padding
+db AB_ILL_TEMPERED	;ability 1
+db 00	;ability 2
+db $2D	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(MankeyPicFront) ; sprite bank

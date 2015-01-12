@@ -1137,6 +1137,7 @@ W_MONHBASEDEFENSE:: ; d0bb
 W_MONHBASESPEED:: ; d0bc
 	ds 1
 W_MONHBASESPECIAL:: ; d0bd
+W_MONHBASESPECIALA:: ; d0bd
 	ds 1
 
 W_MONHTYPES:: ; d0be
@@ -1163,10 +1164,27 @@ W_MONHGROWTHRATE:: ; d0cb
 	ds 1
 
 W_MONHLEARNSET:: ; d0cc
-; bit field
-	flag_array 50 + 5
+W_MONHABILITY1:: ; d0cc
 	ds 1
+	
+W_MONHABILITY2:: ;d0cd
+	ds 1
+	
+W_MONHBASESPECIALD :: ;d0ce
+	ds 1
+	
+W_MONHBASEPRICE :: ;d0cf
+	ds 1
+	
+W_MONHEVOSHEDITEM :: ;d0d0
+	ds 1
+	
+W_MONHEXTRABYTES :: ;d0d1
+	ds 2
 
+W_MONHSPRITEBANK::	;d0d3
+	ds 1
+	
 wd0d4:: ds 3
 
 W_MONHPADDING:: ; d0d7

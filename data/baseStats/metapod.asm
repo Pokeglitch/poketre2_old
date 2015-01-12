@@ -4,7 +4,7 @@ db 50 ; base hp
 db 20 ; base attack
 db 55 ; base defense
 db 30 ; base speed
-db 25 ; base special
+db $19 ; base special
 db BUG ; species type 1
 db BUG ; species type 2
 db 120 ; catch rate
@@ -18,12 +18,11 @@ db 0
 db 0
 db 0
 db 0 ; growth rate
-; learnset
-db %00000000
-db %00000000
-db %00000000
-db %00000000
-db %00000000
-db %00000000
-db %00000000
-db 0 ; padding
+db AB_STENCH	;ability 1
+db 00	;ability 2
+db $19 ;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(MetapodPicFront) ; sprite bank

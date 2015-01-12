@@ -4,8 +4,8 @@ db 30 ; base hp
 db 80 ; base attack
 db 90 ; base defense
 db 55 ; base speed
-db 45 ; base special
-db ROCK ; species type 1
+db $37 ; base special
+db WATER ; species type 1
 db WATER ; species type 2
 db 45 ; catch rate
 db 119 ; base exp yield
@@ -18,12 +18,11 @@ db HARDEN
 db 0
 db 0
 db 0 ; growth rate
-; learnset
-db %10100000
-db %00111111
-db %00001000
-db %11000000
-db %00000011
-db %00001000
-db %00010010
-db 0 ; padding
+db AB_TOUGH_SKIN	;ability 1
+db 00	;ability 2
+db $2D	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(KabutoPicFront) ; sprite bank

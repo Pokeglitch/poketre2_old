@@ -4,9 +4,9 @@ db 90 ; base hp
 db 55 ; base attack
 db 75 ; base defense
 db 30 ; base speed
-db 60 ; base special
-db NORMAL ; species type 1
-db NORMAL ; species type 2
+db $3C ; base special
+db SOUND ; species type 1
+db GOO ; species type 2
 db 45 ; catch rate
 db 127 ; base exp yield
 INCBIN "pic/bmon/lickitung.pic",0,1 ; 77, sprite dimensions
@@ -18,12 +18,11 @@ db SUPERSONIC
 db 0
 db 0
 db 0 ; growth rate
-; learnset
-db %10110101
-db %01111111
-db %10001111
-db %11000111
-db %10100010
-db %00001000
-db %00110110
-db 0 ; padding
+db AB_FLUFFY	;ability 1
+db 00	;ability 2
+db $4B	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(LickitungPicFront) ; sprite bank

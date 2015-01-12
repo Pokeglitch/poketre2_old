@@ -4,9 +4,9 @@ db 55 ; base hp
 db 50 ; base attack
 db 45 ; base defense
 db 120 ; base speed
-db 135 ; base special
-db PSYCHIC ; species type 1
-db PSYCHIC ; species type 2
+db $87 ; base special attack
+db MIND ; species type 1
+db MAGIC ; species type 2
 db 50 ; catch rate
 db 186 ; base exp yield
 INCBIN "pic/bmon/alakazam.pic",0,1 ; 77, sprite dimensions
@@ -23,12 +23,11 @@ ELSE
 ENDC
 db 0
 db 3 ; growth rate
-; learnset
-db %10110001
-db %01000011
-db %00001111
-db %11111000
-db %10000111
-db %00111000
-db %01000011
-db 0 ; padding
+db AB_INSOMNIA	;ability 1
+db 00	;ability 2
+db $55	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(AlakazamPicFront) ; sprite bank

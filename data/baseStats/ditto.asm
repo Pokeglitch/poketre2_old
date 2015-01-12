@@ -4,9 +4,9 @@ db 48 ; base hp
 db 48 ; base attack
 db 48 ; base defense
 db 48 ; base speed
-db 48 ; base special
-db NORMAL ; species type 1
-db NORMAL ; species type 2
+db $30 ; base special attack
+db GOO ; species type 1
+db GOO ; species type 2
 db 35 ; catch rate
 db 61 ; base exp yield
 INCBIN "pic/bmon/ditto.pic",0,1 ; 55, sprite dimensions
@@ -18,12 +18,11 @@ db 0
 db 0
 db 0
 db 0 ; growth rate
-; learnset
-db %00000000
-db %00000000
-db %00000000
-db %00000000
-db %00000000
-db %00000000
-db %00000000
-db 0 ; padding
+db AB_REGENERATIVE	;ability 1
+db 00	;ability 2
+db $30	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(DittoPicFront) ; sprite bank

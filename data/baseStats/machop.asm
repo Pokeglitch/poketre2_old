@@ -4,7 +4,7 @@ db 70 ; base hp
 db 80 ; base attack
 db 50 ; base defense
 db 35 ; base speed
-db 35 ; base special
+db $23 ; base special
 db FIGHTING ; species type 1
 db FIGHTING ; species type 2
 db 180 ; catch rate
@@ -18,12 +18,11 @@ db 0
 db 0
 db 0
 db 3 ; growth rate
-; learnset
-db %10110001
-db %00000011
-db %00001111
-db %11001110
-db %10100110
-db %10001000
-db %00100010
-db 0 ; padding
+db AB_ILL_TEMPERED	;ability 1
+db 00	;ability 2
+db $23	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(MachopPicFront) ; sprite bank

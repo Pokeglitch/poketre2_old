@@ -4,7 +4,7 @@ db 70 ; base hp
 db 65 ; base attack
 db 60 ; base defense
 db 90 ; base speed
-db 90 ; base special
+db $5A ; base special
 db BUG ; species type 1
 db POISON ; species type 2
 db 75 ; catch rate
@@ -23,12 +23,11 @@ ELSE
 	db LEECH_LIFE
 ENDC
 db 0 ; growth rate
-; learnset
-db %00101010
-db %01000011
-db %00111000
-db %11110000
-db %01000011
-db %00101000
-db %00000010
-db 0 ; padding
+db AB_NOCTURNAL	;ability 1
+db 00	;ability 2
+db $4B	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(VenomothPicFront) ; sprite bank

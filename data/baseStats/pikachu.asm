@@ -4,7 +4,7 @@ db 35 ; base hp
 db 55 ; base attack
 db 30 ; base defense
 db 90 ; base speed
-db 50 ; base special
+db $32 ; base special
 db ELECTRIC ; species type 1
 db ELECTRIC ; species type 2
 db 190 ; catch rate
@@ -18,12 +18,11 @@ db GROWL
 db 0
 db 0
 db 0 ; growth rate
-; learnset
-db %10110001
-db %10000011
-db %10001101
-db %11000001
-db %11000011
-db %00011000
-db %01000010
-db 0 ; padding
+db AB_RECHARGE	;ability 1
+db 00	;ability 2
+db $28	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(PikachuPicFront) ; sprite bank

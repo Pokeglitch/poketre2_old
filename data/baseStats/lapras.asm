@@ -4,7 +4,7 @@ db 130 ; base hp
 db 85 ; base attack
 db 80 ; base defense
 db 60 ; base speed
-db 95 ; base special
+db $55 ; base special
 db WATER ; species type 1
 db ICE ; species type 2
 db 45 ; catch rate
@@ -18,12 +18,11 @@ db GROWL
 db 0
 db 0
 db 5 ; growth rate
-; learnset
-db %11100000
-db %01111111
-db %11101000
-db %11010001
-db %10000011
-db %00101000
-db %00110010
-db 0 ; padding
+db AB_COLD_BLOODED	;ability 1
+db 00	;ability 2
+db $5F	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(LaprasPicFront) ; sprite bank

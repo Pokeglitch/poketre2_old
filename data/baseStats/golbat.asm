@@ -4,9 +4,9 @@ db 75 ; base hp
 db 80 ; base attack
 db 70 ; base defense
 db 90 ; base speed
-db 75 ; base special
-db POISON ; species type 1
-db FLYING ; species type 2
+db $41 ; base special
+db SOUND ; species type 1
+db AERO ; species type 2
 db 90 ; catch rate
 db 171 ; base exp yield
 INCBIN "pic/bmon/golbat.pic",0,1 ; 77, sprite dimensions
@@ -18,12 +18,11 @@ db SCREECH
 db BITE
 db 0
 db 0 ; growth rate
-; learnset
-db %00101010
-db %01000011
-db %00011000
-db %11000000
-db %01000010
-db %00001000
-db %00000010
-db 0 ; padding
+db AB_NOCTURNAL	;ability 1
+db 00	;ability 2
+db $4B	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(GolbatPicFront) ; sprite bank

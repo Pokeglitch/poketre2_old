@@ -4,9 +4,9 @@ db 105 ; base hp
 db 95 ; base attack
 db 80 ; base defense
 db 90 ; base speed
-db 40 ; base special
-db NORMAL ; species type 1
-db NORMAL ; species type 2
+db $28 ; base special
+db EARTH ; species type 1
+db EARTH ; species type 2
 db 45 ; catch rate
 db 175 ; base exp yield
 INCBIN "pic/bmon/kangaskhan.pic",0,1 ; 77, sprite dimensions
@@ -18,12 +18,11 @@ db RAGE
 db 0
 db 0
 db 0 ; growth rate
-; learnset
-db %10110001
-db %01111111
-db %10001111
-db %11000111
-db %10100010
-db %10001000
-db %00110010
-db 0 ; padding
+db AB_SLEEPWALK	;ability 1
+db 00	;ability 2
+db $50	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(KangaskhanPicFront) ; sprite bank

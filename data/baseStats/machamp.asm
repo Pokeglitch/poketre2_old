@@ -4,7 +4,7 @@ db 90 ; base hp
 db 130 ; base attack
 db 80 ; base defense
 db 55 ; base speed
-db 65 ; base special
+db $41 ; base special
 db FIGHTING ; species type 1
 db FIGHTING ; species type 2
 db 45 ; catch rate
@@ -18,12 +18,11 @@ db LOW_KICK
 db LEER
 db 0
 db 3 ; growth rate
-; learnset
-db %10110001
-db %01000011
-db %00001111
-db %11001110
-db %10100110
-db %10001000
-db %00100010
-db 0 ; padding
+db AB_ILL_TEMPERED	;ability 1
+db 00	;ability 2
+db $55	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(MachampPicFront) ; sprite bank

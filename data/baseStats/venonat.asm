@@ -4,7 +4,7 @@ db 60 ; base hp
 db 55 ; base attack
 db 50 ; base defense
 db 45 ; base speed
-db 40 ; base special
+db $28 ; base special
 db BUG ; species type 1
 db POISON ; species type 2
 db 190 ; catch rate
@@ -18,20 +18,11 @@ db DISABLE
 db 0
 db 0
 db 0 ; growth rate
-; learnset
-db %00100000
-db %00000011
-db %00111000
-IF DEF(_YELLOW)
-	db %11110000
-	db %01000011
-	db %00101000
-	db %00100010
-ELSE
-	db %11010000
-	db %00000011
-	db %00101000
-	db %00000010
-ENDC
-
-db 0 ; padding
+db AB_NOCTURNAL	;ability 1
+db 00	;ability 2
+db $37	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(VenonatPicFront) ; sprite bank

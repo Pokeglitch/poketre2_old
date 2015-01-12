@@ -4,9 +4,9 @@ db 35 ; base hp
 db 70 ; base attack
 db 55 ; base defense
 db 25 ; base speed
-db 55 ; base special
+db $2D ; base special
 db BUG ; species type 1
-db GRASS ; species type 2
+db PLANT ; species type 2
 db 190 ; catch rate
 db 70 ; base exp yield
 INCBIN "pic/bmon/paras.pic",0,1 ; 55, sprite dimensions
@@ -18,12 +18,11 @@ db 0
 db 0
 db 0
 db 0 ; growth rate
-; learnset
-db %10100100
-db %00000011
-db %00111000
-db %11001000
-db %10000011
-db %00001000
-db %00000110
-db 0 ; padding
+db AB_POISON_SKIN	;ability 1
+db 00	;ability 2
+db $37	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(ParasPicFront) ; sprite bank

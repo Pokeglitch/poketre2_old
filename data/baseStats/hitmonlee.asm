@@ -4,7 +4,7 @@ db 50 ; base hp
 db 120 ; base attack
 db 53 ; base defense
 db 87 ; base speed
-db 35 ; base special
+db $23 ; base special
 db FIGHTING ; species type 1
 db FIGHTING ; species type 2
 db 45 ; catch rate
@@ -18,12 +18,11 @@ db MEDITATE
 db 0
 db 0
 db 0 ; growth rate
-; learnset
-db %10110001
-db %00000011
-db %00001111
-db %11000000
-db %11000110
-db %00001000
-db %00100010
-db 0 ; padding
+db AB_ILL_TEMPERED	;ability 1
+db 00	;ability 2
+db $6E	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(HitmonleePicFront) ; sprite bank

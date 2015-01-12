@@ -4,9 +4,9 @@ db 80 ; base hp
 db 80 ; base attack
 db 50 ; base defense
 db 25 ; base speed
-db 40 ; base special
-db POISON ; species type 1
-db POISON ; species type 2
+db $28 ; base special
+db RADIO ; species type 1
+db GOO ; species type 2
 db 190 ; catch rate
 db 90 ; base exp yield
 INCBIN "pic/bmon/grimer.pic",0,1 ; 55, sprite dimensions
@@ -18,12 +18,11 @@ db DISABLE
 db 0
 db 0
 db 0 ; growth rate
-; learnset
-db %10100000
-db %00000000
-db %10011000
-db %11000001
-db %00101010
-db %01001000
-db %00000010
-db 0 ; padding
+db AB_STENCH	;ability 1
+db 00	;ability 2
+db $32	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(GrimerPicFront) ; sprite bank

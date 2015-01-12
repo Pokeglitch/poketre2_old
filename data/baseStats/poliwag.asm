@@ -4,7 +4,7 @@ db 40 ; base hp
 db 50 ; base attack
 db 40 ; base defense
 db 90 ; base speed
-db 40 ; base special
+db $28 ; base special
 db WATER ; species type 1
 db WATER ; species type 2
 db 255 ; catch rate
@@ -18,12 +18,11 @@ db 0
 db 0
 db 0
 db 3 ; growth rate
-; learnset
-db %10100000
-db %00111111
-db %00001000
-db %11010000
-db %10000010
-db %00101000
-db %00010010
-db 0 ; padding
+db AB_SWIMMER	;ability 1
+db 00	;ability 2
+db $28	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(PoliwagPicFront) ; sprite bank

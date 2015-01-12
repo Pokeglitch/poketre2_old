@@ -4,7 +4,7 @@ db 79 ; base hp
 db 83 ; base attack
 db 100 ; base defense
 db 78 ; base speed
-db 85 ; base special
+db $55 ; base special attack
 db WATER ; species type 1
 db WATER ; species type 2
 db 45 ; catch rate
@@ -18,12 +18,11 @@ db TAIL_WHIP
 db BUBBLE
 db WATER_GUN
 db 3 ; growth rate
-; learnset
-db %10110001
-db %01111111
-db %00001111
-db %11001110
-db %10000011
-db %00001000
-db %00110010
-db 0 ; padding
+db AB_POROUS	;ability 1
+db AB_TOUGH_SKIN	;ability 2
+db $69	;special defense
+db 00	;base selling price
+db 00	;evolution shed item
+db 00	;extra byte 1
+db 00	;extra byte 2
+db BANK(BlastoisePicFront) ; sprite bank
