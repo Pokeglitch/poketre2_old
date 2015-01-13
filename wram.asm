@@ -1292,11 +1292,13 @@ wPartyMonNicks:: ds 11 * PARTY_LENGTH ; d2b5
 
 
 wPokedexOwned:: ; d2f7
-	flag_array NUM_POKEMON
+	flag_array 151
+	;flag_array NUM_POKEMON
 wPokedexOwnedEnd::
 
 wPokedexSeen:: ; d30a
-	flag_array NUM_POKEMON
+	flag_array 151
+	;flag_array NUM_POKEMON
 wPokedexSeenEnd::
 
 

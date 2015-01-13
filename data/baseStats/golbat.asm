@@ -18,7 +18,7 @@ db SCREECH
 db BITE
 db 0
 db 0 ; growth rate
-db AB_NOCTURNAL	;ability 1
+db AB_VENOMOUS	;ability 1
 db 00	;ability 2
 db $4B	;special defense
 db 00	;base selling price

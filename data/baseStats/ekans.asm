@@ -4,7 +4,7 @@ db 35 ; base hp
 db 60 ; base attack
 db 44 ; base defense
 db 55 ; base speed
-db $30 ; base special
+db 40 ; base special attack
 db POISON ; species type 1
 db FANG ; species type 2
 db 255 ; catch rate
@@ -20,7 +20,7 @@ db 0
 db 0 ; growth rate
 db AB_VENOMOUS	;ability 1
 db 00	;ability 2
-db $3E	;special defense
+db 54	;special defense
 db 00	;base selling price
 db 00	;evolution shed item
 db 00	;extra byte 1
