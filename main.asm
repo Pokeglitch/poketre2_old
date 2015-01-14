@@ -5683,7 +5683,12 @@ SafariZoneSecretHouseBlocks: INCBIN "maps/safarizonesecrethouse.blk"
 
 SECTION "bank13",ROMX,BANK[$13]
 
+JamesPicBack::           INCBIN "pic/trainer/jamesb.pic"
+JessiePicBack::          INCBIN "pic/trainer/jessieb.pic"
+
 TrainerPics::
+JamesPicFront:: 	INCBIN "pic/trainer/james.pic"
+Jessie1Pic::        INCBIN "pic/trainer/jessie1.pic"
 YoungsterPic::     INCBIN "pic/trainer/youngster.pic"
 BugCatcherPic::    INCBIN "pic/trainer/bugcatcher.pic"
 LassPic::          INCBIN "pic/trainer/lass.pic"
@@ -6529,6 +6534,8 @@ INCLUDE "engine/overworld/elevator.asm"
 
 INCLUDE "engine/items/tm_prices.asm"
 
+SECTION "bank39",ROMX,BANK[$39]
+;LearnSets: INCLUDE "data/poke_learnsets.asm"
 
 SECTION "bank3A",ROMX,BANK[$3A]
 BaseStats: INCLUDE "data/base_stats.asm"
@@ -6716,11 +6723,6 @@ DragonitePicFront::   INCBIN "pic/bmon/dragonite.pic"
 DragonitePicBack::    INCBIN "pic/monback/dragoniteb.pic"
 
 SECTION "bank3F",ROMX,BANK[$3F]
-JamesPicBack::           INCBIN "pic/trainer/jamesb.pic"
-JamesPicFront:: 	INCBIN "pic/trainer/james.pic"
-JessiePicBack::          INCBIN "pic/trainer/jessieb.pic"
-Jessie1Pic::        INCBIN "pic/trainer/jessie1.pic"
-
 VenonatPicFront::     INCBIN "pic/bmon/venonat.pic"
 VenonatPicBack::      INCBIN "pic/monback/venonatb.pic"
 FarfetchdPicFront::   INCBIN "pic/bmon/farfetchd.pic"

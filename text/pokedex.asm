@@ -1507,4 +1507,120 @@ _VictreebelDexEntry::
 	next "has ever returned"
 	next "from there"
 	dex
-
+	
+_PichuDexEntry::
+	text "It is unskilled at"
+	next "storing electric"
+	next "power. Any kind of"
+	page "shock causes it to"
+	next "discharge energy"
+	next "spontaneously"
+	dex
+	
+_CleffaDexEntry::
+	text "If the impact site"
+	next "of a meteorite is"
+	next "found, this"
+	page "#MON is certain"
+	next "to be within the"
+	next "immediate area"
+	dex
+	
+_IgglybuffDexEntry::
+	text "Instead of walking"
+	next "with its short"
+	next "legs, it moves"
+	page "around by bouncing"
+	next "on its soft,"
+	next "tender body"
+	dex
+	
+_CrobatDexEntry::
+	text "As a result of its"
+	next "pursuit of faster,"
+	next "yet more silent"
+	page "flight, a new set"
+	next "of wings grew on"
+	next "its hind legs"
+	dex
+	
+_BellossomDexEntry::
+	text "When these dance"
+	next "together, their"
+	next "petals rub against"
+	page "each other,"
+	next "making pretty,"
+	next "relaxing sounds"
+	dex
+	
+_PolitoedDexEntry::
+	text "When it expands"
+	next "its throat to"
+	next "croak out a tune,"
+	page "nearby POLIWAG and"
+	next "POLIWHIRL gather"
+	next "immediately"
+	dex
+	
+_SlowkingDexEntry::
+	text "Every time it ya-"
+	next "wns, SHELLDER"
+	next "injects more poi-"
+	page "son into it. The"
+	next "poison makes it"
+	next "more intelligent"
+	dex
+	
+_SteelixDexEntry::
+	text "The many small"
+	next "metal particles"
+	next "that cover this"
+	page "#MON's body"
+	next "reflect bright"
+	next "light well"
+	dex
+	
+_TyrogueDexEntry::
+	text "To brush up on its"
+	next "fighting skills,"
+	next "it will challenge"
+	page "anyone. It has a"
+	next "very strong com-"
+	next "petitive spirit"
+	dex
+	
+_HitmontopDexEntry::
+	text "After doing a"
+	next "handstand to"
+	next "throw off the"
+	page "opponent's timing,"
+	next "it presents its"
+	next "fancy kick moves"
+	dex
+	
+_BlisseyDexEntry::
+	text "Biting into one"
+	next "of the delicious"
+	next "eggs that BLISSEY"
+	page "provides will make"
+	next "everyone around"
+	next "smile with joy"
+	dex
+	
+_KingdraDexEntry::
+	text "It stores energy"
+	next "by sleeping at"
+	next "underwater depths"
+	page "at which no other"
+	next "life forms can"
+	next "survive"
+	dex
+	
+_ScizorDexEntry::
+	text "This #MON's"
+	next "pincers, which"
+	next "contain steel, can"
+	page "crush any hard"
+	next "object it gets a"
+	next "hold of into bits"
+	dex

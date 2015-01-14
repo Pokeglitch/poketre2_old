@@ -1290,18 +1290,9 @@ wPartyMon6:: party_struct wPartyMon6 ; d247
 wPartyMonOT::    ds 11 * PARTY_LENGTH ; d273
 wPartyMonNicks:: ds 11 * PARTY_LENGTH ; d2b5
 
-
-wPokedexOwned:: ; d2f7
-	flag_array 151
-	;flag_array NUM_POKEMON
-wPokedexOwnedEnd::
-
-wPokedexSeen:: ; d30a
-	flag_array 151
-	;flag_array NUM_POKEMON
-wPokedexSeenEnd::
-
-
+wExtraBytes:: ;d2f7
+	ds 38
+	
 wNumBagItems:: ; d31d
 	ds 1
 wBagItems:: ; d31e
@@ -2093,7 +2084,6 @@ wSafariZoneGameOver:: ; da46
 W_NUMSAFARIBALLS:: ; da47
 	ds 1
 
-
 W_DAYCARE_IN_USE:: ; da48
 ; 0 if no pokemon is in the daycare
 ; 1 if pokemon is in the daycare
@@ -2116,6 +2106,18 @@ wBoxMonOT::    ds 11 * MONS_PER_BOX ; dd2a
 wBoxMonNicks:: ds 11 * MONS_PER_BOX ; de06
 wBoxMonNicksEnd:: ; dee2
 
+wPokedexOwned:: ; de72
+	flag_array NUM_POKEMON
+wPokedexOwnedEnd:: ;de8d
+
+wPokedexSeen:: ; de8d
+	flag_array NUM_POKEMON
+wPokedexSeenEnd::
+
+;contains the active totems
+;Bit 0 = Role Reversal
+wTotems:: ;dea8
+	ds 1
 
 SECTION "Stack", WRAMX[$dfff], BANK[1]
 wStack:: ; dfff

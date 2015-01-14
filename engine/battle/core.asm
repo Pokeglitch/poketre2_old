@@ -6322,7 +6322,7 @@ Load6x6BackPic:
 ; also writes OAM data and loads tile patterns for the Red or Old Man back sprite's head
 ; (for use when scrolling the player sprite and enemy's silhouettes on screen)
 LoadPlayerBackPic: ; 3ec92 (f:6c92)
-	ld a, [W_TOTEMS]
+	ld a, [wTotems]
 	bit 0,a ; is the Role Reversal on?
 	ld de, JamesPicBack
 	jr z, .next

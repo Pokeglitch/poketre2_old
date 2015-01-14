@@ -54,7 +54,7 @@ LoadDefaultNamesRival: ; 69a4 (1:69a4)
 	call ClearScreen
 	call Delay3
 	ld de, Jessie1Pic ; $6049
-	ld b, $13
+	ld b, Bank(Jessie1Pic)
 	call IntroPredef3B
 .asm_69e1
 	ld hl, HisNameIsText

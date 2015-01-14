@@ -3378,6 +3378,7 @@ _UsedCutText:: ; a8315 (2a:4315)
 	line "away with CUT!"
 	prompt
 
+INCLUDE "text/pokedex2.asm"
 
 SECTION "Pokedex Text", ROMX, BANK[POKEDEX_TEXT]
 

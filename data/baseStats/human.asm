@@ -5,8 +5,8 @@ db 50 ; base attack
 db 50 ; base defense
 db 50 ; base speed
 db 50 ; base special attack
-db WATER ; species type 1
-db DRAGON ; species type 2
+db MIND ; species type 1
+db MIND ; species type 2
 db 03 ; catch rate
 db 50 ; base exp yield
 INCBIN "pic/trainer/james.pic",0,1 ; 55, sprite dimensions

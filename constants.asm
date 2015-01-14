@@ -31,5 +31,4 @@ INCLUDE "constants/music_constants.asm"
 INCLUDE "constants/tilesets.asm"
 INCLUDE "constants/starter_mons.asm"
 
-INCLUDE "constants/poketre_constants.asm"
 INCLUDE "constants/ability_constants.asm"

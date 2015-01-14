@@ -58,7 +58,7 @@ LoadSAVCheckSum: ; 73623 (1c:7623)
 	ld bc, $b
 	call CopyData
 	ld hl, $a5a3
-	ld de, wPokedexOwned
+	ld de, $d2f7
 	ld bc, $789
 	call CopyData
 	ld hl, W_CURMAPTILESET
@@ -71,7 +71,7 @@ LoadSAVCheckSum: ; 73623 (1c:7623)
 	ld [hTilesetType], a
 	ld hl, $b0c0
 	ld de, W_NUMINBOX
-	ld bc, wBoxMonNicksEnd - W_NUMINBOX
+	ld bc, $dee2 - W_NUMINBOX
 	call CopyData
 	and a
 	jp SAVGoodChecksum
@@ -91,7 +91,7 @@ LoadSAVCheckSum1: ; 73690 (1c:7690)
 	jr nz, SAVBadCheckSum
 	ld hl, $b0c0
 	ld de, W_NUMINBOX
-	ld bc, wBoxMonNicksEnd - W_NUMINBOX
+	ld bc, $dee2 - W_NUMINBOX
 	call CopyData
 	and a
 	jp SAVGoodChecksum
@@ -114,8 +114,8 @@ LoadSAVCheckSum2: ; 736bd (1c:76bd)
 	ld bc, $194
 	call CopyData
 	ld hl, $a5a3
-	ld de, wPokedexOwned ; wPokedexOwned
-	ld bc, wPokedexSeenEnd - wPokedexOwned
+	ld de, $d2f7 ; $d2f7
+	ld bc, $d31d - $d2f7
 	call CopyData
 	and a
 	jp SAVGoodChecksum
@@ -202,9 +202,9 @@ SaveSAVtoSRAM0: ; 7378c (1c:778c)
 	ld de, $a598
 	ld bc, $b
 	call CopyData
-	ld hl, wPokedexOwned
+	ld hl, $d2f7
 	ld de, $a5a3
-	ld bc, W_NUMINBOX - wPokedexOwned
+	ld bc, W_NUMINBOX - $d2f7
 	call CopyData
 	ld hl, wSpriteStateData1
 	ld de, $ad2c
@@ -212,7 +212,7 @@ SaveSAVtoSRAM0: ; 7378c (1c:778c)
 	call CopyData
 	ld hl, W_NUMINBOX
 	ld de, $b0c0
-	ld bc, wBoxMonNicksEnd - W_NUMINBOX
+	ld bc, $dee2 - W_NUMINBOX
 	call CopyData
 	ld a, [hTilesetType]
 	ld [$b522], a
@@ -234,7 +234,7 @@ SaveSAVtoSRAM1: ; 737e2 (1c:77e2)
 	ld [MBC1SRamBank], a
 	ld hl, W_NUMINBOX
 	ld de, $b0c0
-	ld bc, wBoxMonNicksEnd - W_NUMINBOX
+	ld bc, $dee2 - W_NUMINBOX
 	call CopyData
 	ld hl, $a598
 	ld bc, $f8b
@@ -253,11 +253,11 @@ SaveSAVtoSRAM2: ; 7380f (1c:780f)
 	ld [MBC1SRamBank], a
 	ld hl, wPartyCount
 	ld de, $af2c
-	ld bc, wPokedexOwned - wPartyCount
+	ld bc, $d2f7 - wPartyCount
 	call CopyData
-	ld hl, wPokedexOwned ; pokédex only
+	ld hl, $d2f7 ; pokédex only
 	ld de, $a5a3
-	ld bc, wPokedexSeenEnd - wPokedexOwned
+	ld bc, $d31d - $d2f7
 	call CopyData
 	ld hl, $a598
 	ld bc, $f8b
