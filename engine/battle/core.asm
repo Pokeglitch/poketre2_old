@@ -578,7 +578,7 @@ HandlePoisonBurnLeechSeed: ; 3c3bd (f:43bd)
 	xor a
 	ld [wcc5b], a
 	ld a,BURN_PSN_ANIM
-	call PlayMoveAnimation   ; play burn/poison animation
+	call PlayNonMoveAnimation   ; play burn/poison animation
 	pop hl
 	call HandlePoisonBurnLeechSeed_DecreaseOwnHP
 .notBurnedOrPoisoned
@@ -1823,7 +1823,7 @@ SendOutMon: ; 3cc91 (f:4c91)
 	ld a, $1
 	ld [H_WHOSETURN], a
 	ld a, POOF_ANIM
-	call PlayMoveAnimation
+	call PlayNonMoveAnimation
 	hlCoord 4, 11
 	predef Func_3f073
 	ld a, [wcf91]
@@ -3222,7 +3222,7 @@ asm_3d74b
 	xor a
 	ld [wcc5b],a
 	ld a,STATUS_AFFECTED_ANIM
-	call PlayMoveAnimation
+	call PlayNonMoveAnimation
 asm_3d766
 	ld a,[W_PLAYERMOVEEFFECT]
 	cp a,MIRROR_MOVE_EFFECT
@@ -3365,7 +3365,7 @@ CheckPlayerStatusConditions: ; 3d854 (f:5854)
 	xor a
 	ld [wcc5b],a
 	ld a,SLP_ANIM - 1
-	call PlayMoveAnimation
+	call PlayNonMoveAnimation
 	ld hl,FastAsleepText
 	call PrintText
 	jr .sleepDone
@@ -3449,7 +3449,7 @@ CheckPlayerStatusConditions: ; 3d854 (f:5854)
 	xor a
 	ld [wcc5b],a
 	ld a,CONF_ANIM - 1
-	call PlayMoveAnimation
+	call PlayNonMoveAnimation
 	call BattleRandom
 	cp a,$80
 	jr c,.TriedToUseDisabledMoveCheck
@@ -3497,7 +3497,7 @@ CheckPlayerStatusConditions: ; 3d854 (f:5854)
 	xor a
 	ld [wcc5b],a
 	ld a,STATUS_AFFECTED_ANIM
-	call PlayMoveAnimation
+	call PlayNonMoveAnimation
 .NotFlyOrChargeEffect
 	ld hl,Func_3d80a
 	jp .CannotUseMove
@@ -5716,7 +5716,7 @@ Func_3e7d1: ; 3e7d1 (f:67d1)
 	xor a
 	ld [wcc5b], a
 	ld a,STATUS_AFFECTED_ANIM
-	call PlayMoveAnimation
+	call PlayNonMoveAnimation
 asm_3e7ef: ; 3e7ef (f:67ef)
 	ld a, [W_ENEMYMOVEEFFECT]
 	cp MIRROR_MOVE_EFFECT
@@ -5808,7 +5808,7 @@ CheckEnemyStatusConditions: ; 3e88f (f:688f)
 	xor a
 	ld [wcc5b], a
 	ld a,SLP_ANIM
-	call PlayMoveAnimation
+	call PlayNonMoveAnimation
 	jr .next1
 .wokeUp
 	ld hl, WokeUpText
@@ -5884,7 +5884,7 @@ CheckEnemyStatusConditions: ; 3e88f (f:688f)
 	xor a
 	ld [wcc5b], a
 	ld a,CONF_ANIM
-	call PlayMoveAnimation
+	call PlayNonMoveAnimation
 	call BattleRandom
 	cp $80
 	jr c, .checkIfTriedToUseDisabledMove
@@ -5967,7 +5967,7 @@ CheckEnemyStatusConditions: ; 3e88f (f:688f)
 	xor a
 	ld [wcc5b], a
 	ld a, STATUS_AFFECTED_ANIM
-	call PlayMoveAnimation
+	call PlayNonMoveAnimation
 .notFlyOrChargeEffect
 	ld hl, Func_3e88c
 	jp .cannotUseMove
@@ -6744,6 +6744,11 @@ PlayMoveAnimation: ; 3ef07 (f:6f07)
 	ld [W_ANIMATIONID],a
 	call Delay3
 	predef_jump MoveAnimation
+	
+PlayNonMoveAnimation:
+	ld [W_ANIMATIONID],a
+	call Delay3
+	predef_jump NonMoveAnimation
 
 InitBattle: ; 3ef12 (f:6f12)
 	ld a, [W_CUROPPONENT]
@@ -7133,6 +7138,48 @@ MoveEffectPointerTable: ; 3f150 (f:7150)
 	 dw LeechSeedEffect           ; LEECH_SEED_EFFECT
 	 dw SplashEffect              ; SPLASH_EFFECT
 	 dw DisableEffect             ; DISABLE_EFFECT
+	 dw ChangeWeatherEffect       ; CREATE_WEATHER_EFFECT
+	 dw ChangeTimeEffect          ; NIGHT_EFFECT
+	 dw EarthquakeEffect          ; EARTHQUAKE_EFFECT
+	 dw TrapAndSlowEffect         ; TRAP_AND_SLOW_EFFECT
+	 dw ChangeWeatherEffect       ; FORCE_NEW_WEATHER_EFFECT
+	 dw ChangeLandscapeEffect     ; CHANGE_LANDSCAPE_EFFECT
+	 dw ChangeLandscapeEffect     ; FORCE_CHANGE_LANDSCAPE_EFFECT
+	 dw $0000                     ; unused effect
+	 dw ChangeEnvironmentEffect   ; FORCE_CHANGE_ENVIRONMENT_EFFECT
+	 dw $0000                     ; unused effect
+	 dw FearEffect                ; INDUCE_FEAR_EFFECT
+	 dw FearEffect                ; FORCE_INDUCE_FEAR_EFFECT
+	 dw TwiceWithFlinchEffect     ; TWICE_WITH_FLINCH_EFFECT
+	 dw NightAndHealEffect        ; NIGHT_AND_HEAL_EFFECT
+	 dw ChangeEnvironmentEffect   ; ENVIRONMENT_AND_ATTACK_EFFECT
+	 dw RadioactiveEffect         ; RADIOACTIVATE_EFFECT
+	 dw $0000                     ; unused effect
+	 dw InvisibilityEffect        ; INVISIBILITY_EFFECT
+	 dw FlinchAndBoneEffect       ; FLINCH_AND_BONE_EFFECT
+	 dw DecayEffect               ; DECAY_EFFECT
+	 dw ChangeTimeEffect          ; DAY_EFFECT
+	 dw FlytrapEffect             ; FLYTRAP_EFFECT
+	 dw OcclumencyEffect          ; OCCLUMENCY_EFFECT
+	 dw StatModifierUpEffect      ; INC_SPEC_ATTACK_EFFECT
+	 dw StatModifierUpEffect      ; INC_SPEC_DEFENSE_EFFECT
+	 dw WallEffect                ; WALL_EFFECT
+	 dw HeatTreatEffect           ; HEAT_TREAT_EFFECT
+	 dw $0000                     ; unused effect
+	 dw CurseEffect               ; CURSE_EFFECT
+	 dw CurseEffect               ; FORCE_CURSE_AND_ATTACK_EFFECT
+	 dw FairyDustEffect           ; FAIRY_DUST_EFFECT
+	 dw AdaptabilityEffect        ; ADAPTABILITY_EFFECT
+	 dw StickyBombEffect          ; STICKY_BOMB_EFFECT
+	 dw ChangeLandscapeEffect     ; CHANGE_LANDSCAPE_ATTACK_EFFECT
+	 dw CloneEffect               ; CLONE_EFFECT
+	 dw MoltEffect                ; MOLT_EFFECT
+	 dw TripleAttackEffect        ; TRIPLE_PECK_EFFECT
+	 dw TornadoEffect             ; TORNADO_EFFECT
+	 dw MultiAftershocksEffect    ; MULTI_ATTACKS_AFTERSHOCKS_EFFECTS
+     dw ChangeWeatherEffect       ; CHANGE_WEATHER_AND_ATTACK_EFFECTS
+	 dw StatModifierDownEffect    ; DEC_SPEC_ATTACK_EFFECT
+	 dw StatModifierDownEffect    ; DEC_SPEC_DEFENSE_EFFECT
 
 SleepEffect: ; 3f1fc (f:71fc)
 	ld de, wEnemyMonStatus
@@ -8007,7 +8054,7 @@ SwitchAndTeleportEffect: ; 3f739 (f:7739)
 	jp Func_3fb4e
 .asm_3f7e4
 	push af
-	call Func_3fbb9
+	call PlayMoveAnimation3
 	ld c, $14
 	call DelayFrames
 	pop af
@@ -8123,7 +8170,7 @@ ChargeEffect: ; 3f88c (f:788c)
 	cp FLY_EFFECT
 	jr nz, .asm_3f8ad
 	set 6, [hl] ; mon is now invulnerable to typical attacks (fly/dig)
-	ld b, TELEPORT
+	ld b, TELEPORT_NONMOVE
 .asm_3f8ad
 	ld a, [de]
 	cp DIG
@@ -8405,6 +8452,32 @@ SplashEffect: ; 3fa84 (f:7a84)
 	call Func_3fba8
 	jp PrintNoEffectText
 
+ChangeWeatherEffect:
+ChangeTimeEffect:
+EarthquakeEffect:
+TrapAndSlowEffect:
+ChangeLandscapeEffect:
+FearEffect:
+TwiceWithFlinchEffect:
+NightAndHealEffect:
+ChangeEnvironmentEffect:
+RadioactiveEffect:
+InvisibilityEffect:
+FlinchAndBoneEffect:
+DecayEffect:
+FlytrapEffect:
+OcclumencyEffect:
+WallEffect:
+HeatTreatEffect:
+CurseEffect:
+FairyDustEffect:
+AdaptabilityEffect:
+StickyBombEffect:
+CloneEffect:
+MoltEffect:
+TripleAttackEffect:
+TornadoEffect:
+MultiAftershocksEffect:
 DisableEffect: ; 3fa8a (f:7a8a)
 	call MoveHitTest
 	ld a, [W_MOVEMISSED]
@@ -8585,6 +8658,15 @@ Func_3fb89: ; 3fb89 (f:7b89)
 .asm_3fb94
 	and a
 	ret z
+	ld [W_ANIMATIONID], a
+	ld a, [H_WHOSETURN]
+	and a
+	ld a, $6
+	jr z, .asm_3fba2
+	ld a, $3
+.asm_3fba2
+	ld [wcc5b], a
+	jr PlayMoveAnimationSkip
 
 Func_3fb96: ; 3fb96 (f:7b96)
 	ld [W_ANIMATIONID], a
@@ -8608,11 +8690,24 @@ Func_3fba8: ; 3fba8 (f:7ba8)
 .asm_3fbb7
 	and a
 	ret z
+	jr PlayMoveAnimation3
 
 Func_3fbb9: ; 3fbb9 (f:7bb9)
 	ld [W_ANIMATIONID], a
 
 Func_3fbbc: ; 3fbbc (f:7bbc)
+	push hl
+	push de
+	push bc
+	predef NonMoveAnimation
+	pop bc
+	pop de
+	pop hl
+	ret
+	
+PlayMoveAnimation3:
+	ld [W_ANIMATIONID], a
+PlayMoveAnimationSkip:
 	push hl
 	push de
 	push bc

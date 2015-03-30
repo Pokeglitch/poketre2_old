@@ -326,7 +326,7 @@ ItemUseBall: ; d687 (3:5687)
 	push af
 	ld a,[wcf91]
 	push af
-	predef MoveAnimation
+	predef NonMoveAnimation
 	pop af
 	ld [wcf91],a
 	pop af
@@ -1343,7 +1343,7 @@ BaitRockCommon: ; df7f (3:5f7f)
 	ld a,$ff
 .noCarry
 	ld [hl],a
-	predef MoveAnimation ; do animation
+	predef NonMoveAnimation ; do animation
 	ld c,70
 	jp DelayFrames
 
@@ -2214,7 +2214,7 @@ ThrowBallAtTrainerMon: ; e58b (3:658b)
 	call Delay3
 	ld a,TOSS_ANIM
 	ld [W_ANIMATIONID],a
-	predef MoveAnimation ; do animation
+	predef NonMoveAnimation ; do animation
 	ld hl,ThrowBallAtTrainerMonText1
 	call PrintText
 	ld hl,ThrowBallAtTrainerMonText2

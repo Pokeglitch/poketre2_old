@@ -14,7 +14,6 @@ PICS_5 EQU $D
 
 INCLUDE "home.asm"
 
-
 SECTION "bank1",ROMX,BANK[$1]
 
 INCLUDE "data/facing.asm"
@@ -6512,7 +6511,6 @@ INCLUDE "engine/menu/league_pc.asm"
 
 INCLUDE "engine/overworld/hidden_items.asm"
 
-
 SECTION "bank1E",ROMX,BANK[$1E]
 
 INCLUDE "engine/battle/animations.asm"
@@ -6528,14 +6526,14 @@ RedFishingRodTiles:   INCBIN "gfx/red_fishingrod_tiles.2bpp"
 
 INCLUDE "data/animations.asm"
 
-INCLUDE "engine/evolution.asm"
-
 INCLUDE "engine/overworld/elevator.asm"
 
 INCLUDE "engine/items/tm_prices.asm"
 
 SECTION "bank39",ROMX,BANK[$39]
-;LearnSets: INCLUDE "data/poke_learnsets.asm"
+
+INCLUDE "engine/evolution.asm"
+LearnSets: INCLUDE "data/poke_learnsets.asm"
 
 SECTION "bank3A",ROMX,BANK[$3A]
 BaseStats: INCLUDE "data/base_stats.asm"

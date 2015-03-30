@@ -1,7 +1,54 @@
+MoveSpecialEffects:
+	db MEGA_PUNCH, 1
+	db GUILLOTINE, 1
+	db MEGA_KICK, 1 
+	db HEADBUTT, 1
+	db TAIL_WHIP, 2
+	db GROWL, 3
+	db DISABLE, 1
+	db BLIZZARD, 4
+	db BUBBLEBEAM, 1
+	db HYPER_BEAM, 5
+	db THUNDERBOLT, 6
+	db REFLECT, 1
+	db SELFDESTRUCT, 7
+	db SPORE, 1
+	db EXPLOSION, 7
+	db ROCK_SLIDE, 8
+	db $FF ; terminator
+	
+NonMoveSpecialEffects:
+	db ANIM_AA, 9
+	db ANIM_AB, 10
+	db ANIM_AC, 11
+	db TOSS_ANIM, 12
+	db SHAKE_ANIM, 13
+	db POOF_ANIM, 14
+	db GREATTOSS_ANIM, 12
+	db ULTRATOSS_ANIM, 12
+	db $FF ; terminator
+
+SpecialEffectsPointers:
+	dw AnimationFlashScreen
+	dw Func_790d0
+	dw DoGrowlSpecialEffects
+	dw DoBlizzardSpecialEffects
+	dw FlashScreenEveryFourFrameBlocks
+	dw FlashScreenEveryEightFrameBlocks
+	dw DoExplodeSpecialEffects
+	dw DoRockSlideSpecialEffects
+	dw Func_79041
+	dw Func_7904c
+	dw Func_7907c
+	dw DoBallTossSpecialEffects
+	dw DoBallShakeSpecialEffects
+	dw DoPoofSpecialEffects
+	
+
 AttackAnimationPointers: ; 7a07d (1e:607d)
 	dw PoundAnim
 	dw KarateChopAnim
-	dw DoubleSlapAnim
+	dw DoubleSlapAnim ; StarburstAnim
 	dw CometPunchAnim
 	dw MegaPunchAnim
 	dw PayDayAnim
@@ -10,10 +57,10 @@ AttackAnimationPointers: ; 7a07d (1e:607d)
 	dw ThunderPunchAnim
 	dw ScratchAnim
 	dw VicegripAnim
-	dw GuillotineAnim
+	dw GuillotineAnim ; DisembowelAnim
 	dw RazorWindAnim
-	dw SwordsDanceAnim
-	dw CutAnim
+	dw SwordsDanceAnim ; CosmicRayAnim
+	dw CutAnim ; StabAnim
 	dw GustAnim
 	dw WingAttackAnim
 	dw WhirlwindAnim
@@ -25,7 +72,7 @@ AttackAnimationPointers: ; 7a07d (1e:607d)
 	dw DoubleKickAnim
 	dw MegaKickAnim
 	dw JumpKickAnim
-	dw RollingKickAnim
+	dw RollingKickAnim ; VirtualRealityAnim
 	dw SandAttackAnim
 	dw HeatButtAnim
 	dw HornAttackAnim
@@ -33,13 +80,13 @@ AttackAnimationPointers: ; 7a07d (1e:607d)
 	dw HornDrillAnim
 	dw TackleAnim
 	dw BodySlamAnim
-	dw WrapAnim
+	dw WrapAnim ; EclipseAnim
 	dw TakeDownAnim
 	dw ThrashAnim
-	dw DoubleEdgeAnim
-	dw TailWhipAnim
+	dw DoubleEdgeAnim ; OsteoblastAnim
+	dw TailWhipAnim ; SplinterAnim
 	dw PoisonStingAnim
-	dw TwineedleAnim
+	dw TwineedleAnim ; DreadnoughtAnim
 	dw PinMissileAnim
 	dw LeerAnim
 	dw BiteAnim
@@ -52,10 +99,10 @@ AttackAnimationPointers: ; 7a07d (1e:607d)
 	dw AcidAnim
 	dw EmberAnim
 	dw FlamethrowerAnim
-	dw MistAnim
-	dw WaterGunAnim
-	dw HydroPumpAnim
-	dw SurfAnim
+	dw MistAnim ; CloneAnim
+	dw WaterGunAnim ; SnowballAnim
+	dw HydroPumpAnim ; HydroCannonAnim
+	dw SurfAnim ; LavaAnim
 	dw IceBeamAnim
 	dw BlizzardAnim
 	dw PsyBeamAnim
@@ -67,18 +114,18 @@ AttackAnimationPointers: ; 7a07d (1e:607d)
 	dw SubmissionAnim
 	dw LowKickAnim
 	dw CounterAnim
-	dw SeismicTossAnim
-	dw StrengthAnim
-	dw AbsorbAnim
-	dw MegaDrainAnim
+	dw SeismicTossAnim ; GenesisAnim
+	dw StrengthAnim ; TelekinesisAnim
+	dw AbsorbAnim ; BloodsuckAnim
+	dw MegaDrainAnim ; CyberBeamAnim
 	dw LeechSeedAnim
-	dw GrowthAnim
+	dw GrowthAnim ; CalcifyAnim
 	dw RazorLeafAnim
 	dw SolarBeamAnim
 	dw PoisonPowderAnim
 	dw StunSporeAnim
 	dw SleepPowderAnim
-	dw PedalDanceAnim
+	dw PedalDanceAnim ; BugBiteAnim
 	dw StringShotAnim
 	dw DragonRageAnim
 	dw FireSpinAnim
@@ -95,29 +142,29 @@ AttackAnimationPointers: ; 7a07d (1e:607d)
 	dw PsychicAnim
 	dw HypnosisAnim
 	dw MeditateAnim
-	dw AgilityAnim
+	dw AgilityAnim ; TornadoAnim
 	dw QuickAttackAnim
 	dw RageAnim
 	dw TeleportAnim
 	dw NightShadeAnim
-	dw MimicAnim
+	dw MimicAnim ; TelepathicAnim
 	dw ScreechAnim
-	dw DoubleTeamAnim
+	dw DoubleTeamAnim ; TriplePeckAnim
 	dw RecoverAnim
 	dw HardenAnim
-	dw MinimizeAnim
-	dw SmokeScreenAnim
+	dw MinimizeAnim ; AcidSilkAnim
+	dw SmokeScreenAnim ; MoltAnim
 	dw ConfuseRayAnim
-	dw WithdrawAnim
+	dw WithdrawAnim ; AsteroidPeltAnim
 	dw DefenseCurlAnim
-	dw BarrierAnim
+	dw BarrierAnim ; BioshockAnim
 	dw LightScreenAnim
-	dw HazeAnim
-	dw ReflectAnim
+	dw HazeAnim ; SupernovaAnim
+	dw ReflectAnim ; VoodooAnim
 	dw FocusEnergyAnim
 	dw BideAnim
-	dw MetronomeAnim
-	dw MirrorMoveAnim
+	dw MetronomeAnim ; MagicDiceAnim
+	dw MirrorMoveAnim ; EchoAnim
 	dw SelfdestructAnim
 	dw EggBombAnim
 	dw LickAnim
@@ -127,31 +174,31 @@ AttackAnimationPointers: ; 7a07d (1e:607d)
 	dw FireBlastAnim
 	dw WaterfallAnim
 	dw ClampAnim
-	dw SwiftAnim
+	dw SwiftAnim ; BrutalGalaxyAnim
 	dw SkullBashAnim
 	dw SpikeCannonAnim
 	dw ConstrictAnim
-	dw AmnesiaAnim
-	dw KinesisAnim
+	dw AmnesiaAnim ; GaleForceAnim
+	dw KinesisAnim ; WaterspoutAnim
 	dw SoftboiledAnim
 	dw HiJumpKickAnim
 	dw GlareAnim
 	dw DreamEaterAnim
-	dw PoisonGasAnim
-	dw BarrageAnim
+	dw PoisonGasAnim ; ToxicGasAnim
+	dw BarrageAnim ; SonarAnim
 	dw LeechLifeAnim
-	dw LovelyKissAnim
+	dw LovelyKissAnim ; StingAnim
 	dw SkyAttackAnim
 	dw TransformAnim
-	dw BubbleAnim
-	dw DizzyPunchAnim
+	dw BubbleAnim ; RaptorStrikeAnim
+	dw DizzyPunchAnim ; CyberAttackAnim
 	dw SporeAnim
-	dw FlashAnim
+	dw FlashAnim ; ChargeAnim
 	dw PsywaveAnim
 	dw SplashAnim
 	dw AcidArmorAnim
-	dw CrabHammerAnim
-	dw ExplosionAnim
+	dw CrabHammerAnim ; DrenchAnim
+	dw ExplosionAnim ; WightWalkerAnim
 	dw FurySwipesAnim
 	dw BonemerangAnim
 	dw RestAnim
@@ -159,11 +206,102 @@ AttackAnimationPointers: ; 7a07d (1e:607d)
 	dw HyperFangAnim
 	dw SharpenAnim
 	dw ConversionAnim
-	dw TriAttackAnim
+	dw TriAttackAnim ; HastenAnim
 	dw SuperFangAnim
 	dw SlashAnim
 	dw SubstituteAnim
 	dw StruggleAnim
+	dw CompressAnim
+	dw FirewallAnim
+	dw ComputerVirusAnim
+	dw DragonBreathAnim
+	dw DragonDanceAnim
+	dw DracarysAnim
+	dw SerpentScornAnim
+	dw DragonspeedAnim
+	dw SandstormAnim
+	dw LandslideAnim
+	dw QuicksandAnim
+	dw ShockAnim
+	dw SuperConductorAnim
+	dw AmpStampAnim
+	dw ThunderstormAnim
+	dw ChompAnim
+	dw BoneCrusherAnim
+	dw SabertoothAnim
+	dw FeralAnim
+	dw MonkeyFistAnim
+	dw HaymakerAnim
+	dw RoundhouseAnim
+	dw ChokeholdAnim
+	dw FirestormAnim
+	dw InfernoAnim
+	dw EruptionAnim
+	dw NightTerrorAnim
+	dw DissipateAnim
+	dw HauntAnim
+	dw SpookAnim
+	dw StickyBombAnim
+	dw GooTossAnim
+	dw SlimeAnim
+	dw RearKickAnim
+	dw GoreAnim
+	dw BulldozeAnim
+	dw RefractionAnim
+	dw LuminanceAnim
+	dw BellowAnim
+	dw HailStormAnim
+	dw AvalancheAnim
+	dw ArcticFreezeAnim
+	dw IceballAnim
+	dw IcicleSpearAnim
+	dw GlacialFallAnim
+	dw AdaptabilityAnim
+	dw AvadaKedavraAnim
+	dw HocusPocusAnim
+	dw SpellCastAnim
+	dw BlackMagicAnim
+	dw IncenseAnim
+	dw FairyDustAnim
+	dw IronCurtainAnim
+	dw HeatTreatAnim
+	dw HeavyMetalAnim
+	dw AnnodizeAnim
+	dw SteelBurstAnim
+	dw ShrapnelAnim
+	dw IronTailAnim
+	dw InnerPeaceAnim
+	dw OcclumencyAnim
+	dw FlytrapAnim
+	dw TailSlapAnim
+	dw SpearheadAnim
+	dw SunlightAnim
+	dw PollenBlastAnim
+	dw PoisonIvyAnim
+	dw TimberAnim
+	dw ThornMaceAnim
+	dw InjectionAnim
+	dw VenomShotAnim
+	dw AtomicBoomAnim
+	dw GammaRayBurstAnim
+	dw RadiateAnim
+	dw PulsarAnim
+	dw DecayAnim
+	dw TsunamiAnim
+	dw HalfLifeAnim
+	dw ShadowSurgeAnim
+	dw ShadowFigureAnim
+	dw AmplifierAnim
+	dw SonicWaveAnim
+	dw LandmineAnim
+	dw HowlAnim
+	dw PiercingScreamAnim
+	dw RazorClawAnim
+	dw CrossSlashAnim
+	dw ShredAnim
+	dw WhirlpoolAnim
+
+NonMoveAnimationPointers:
 	dw ShowPicAnim
 	dw EnemyFlashAnim
 	dw PlayerFlashAnim
@@ -202,6 +340,7 @@ AttackAnimationPointers: ; 7a07d (1e:607d)
 	dw ThrowRockAnim
 	dw ThrowBaitAnim
 	dw ZigZagScreenAnim
+	dw TeleportAnim
 
 ; each animation is a list of subanimations and special effects
 ; if first byte < $56
@@ -1258,6 +1397,98 @@ ThrowRockAnim: ; 7a765 (1e:6765)
 
 ThrowBaitAnim: ; 7a769 (1e:6769)
 	db $03,$8B,$54
+	db $FF
+	
+CompressAnim:
+FirewallAnim:
+ComputerVirusAnim:
+DragonBreathAnim:
+DragonDanceAnim:
+DracarysAnim:
+SerpentScornAnim:
+DragonspeedAnim:
+SandstormAnim:
+LandslideAnim:
+QuicksandAnim:
+ShockAnim:
+SuperConductorAnim:
+AmpStampAnim:
+ThunderstormAnim:
+ChompAnim:
+BoneCrusherAnim:
+SabertoothAnim:
+FeralAnim:
+MonkeyFistAnim:
+HaymakerAnim:
+RoundhouseAnim:
+ChokeholdAnim:
+FirestormAnim:
+InfernoAnim:
+EruptionAnim:
+NightTerrorAnim:
+DissipateAnim:
+HauntAnim:
+SpookAnim:
+StickyBombAnim:
+GooTossAnim:
+SlimeAnim:
+RearKickAnim:
+GoreAnim:
+BulldozeAnim:
+RefractionAnim:
+LuminanceAnim:
+BellowAnim:
+HailStormAnim:
+AvalancheAnim:
+ArcticFreezeAnim:
+IceballAnim:
+IcicleSpearAnim:
+GlacialFallAnim:
+AdaptabilityAnim:
+AvadaKedavraAnim:
+HocusPocusAnim:
+SpellCastAnim:
+BlackMagicAnim:
+IncenseAnim:
+FairyDustAnim:
+IronCurtainAnim:
+HeatTreatAnim:
+HeavyMetalAnim:
+AnnodizeAnim:
+SteelBurstAnim:
+ShrapnelAnim:
+IronTailAnim:
+InnerPeaceAnim:
+OcclumencyAnim:
+FlytrapAnim:
+TailSlapAnim:
+SpearheadAnim:
+SunlightAnim:
+PollenBlastAnim:
+PoisonIvyAnim:
+TimberAnim:
+ThornMaceAnim:
+InjectionAnim:
+VenomShotAnim:
+AtomicBoomAnim:
+GammaRayBurstAnim:
+RadiateAnim:
+PulsarAnim:
+DecayAnim:
+TsunamiAnim:
+HalfLifeAnim:
+ShadowSurgeAnim:
+ShadowFigureAnim:
+AmplifierAnim:
+SonicWaveAnim:
+LandmineAnim:
+HowlAnim:
+PiercingScreamAnim:
+RazorClawAnim:
+CrossSlashAnim:
+ShredAnim:
+WhirlpoolAnim:
+	db SE_FLASH_MON_PIC, $FF
 	db $FF
 
 SubanimationPointers: ; 7a76d (1e:676d)

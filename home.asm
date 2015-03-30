@@ -3200,10 +3200,14 @@ GetName:: ; 376b (0:376b)
 	ld [wd11e],a
 
 	; TM names are separate from item names.
-	; BUG: This applies to all names instead of just items.
+	ld a,[W_LISTTYPE]
+	cp a,ITEM_NAME
+	jr nz,.skipHMCheck
+	
 	cp HM_01
 	jp nc, GetMachineName
-
+	
+.skipHMCheck
 	ld a,[H_LOADEDROMBANK]
 	push af
 	push hl

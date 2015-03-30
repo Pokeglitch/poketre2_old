@@ -2114,9 +2114,13 @@ wPokedexSeen:: ; de8d
 	flag_array NUM_POKEMON
 wPokedexSeenEnd::
 
+;container the subanimation special effect if:
+wSubAnimSpecEffect:: ;dea8
+	ds 1
+	
 ;contains the active totems
 ;Bit 0 = Role Reversal
-wTotems:: ;dea8
+wTotems:: ;dea9
 	ds 1
 
 SECTION "Stack", WRAMX[$dfff], BANK[1]

@@ -161,7 +161,40 @@ DrawFrameBlock: ; 78000 (1e:4000)
 .done
 	ret
 
+;to save the subanimation special effect (if it exists)
+SaveSubAnimSpecEffect:
+	push bc
+	ld a,[W_ANIMATIONID]
+	ld b,a
+.loop
+	ld a,[hli]
+	cp a,$FF
+	jr z,.fail	;fail if we reached the end
+	cp b
+	jr z,.success
+	inc hl
+	jr .loop
+.success
+	ld a,[hl]
+	jr .done
+.fail
+	xor a
+.done
+	ld [wSubAnimSpecEffect],a
+	pop bc
+	ret
+	
+PlayNonMoveAnimation2:
+	ld hl,NonMoveSpecialEffects
+	call SaveSubAnimSpecEffect
+	ld de,NonMoveAnimationPointers  ; $607d ; animation command stream pointers
+	jr PlayAnimationSkipPointer ; run the normal routine
+	
 PlayAnimation: ; 780f1 (1e:40f1)
+	ld hl,MoveSpecialEffects
+	call SaveSubAnimSpecEffect
+	ld de,AttackAnimationPointers  ; $607d ; animation command stream pointers
+PlayAnimationSkipPointer:
 	xor a
 	ld [$FF8B],a
 	ld [W_SUBANIMTRANSFORM],a
@@ -170,7 +203,6 @@ PlayAnimation: ; 780f1 (1e:40f1)
 	ld l,a
 	ld h,0
 	add hl,hl
-	ld de,AttackAnimationPointers  ; $607d ; animation command stream pointers
 	add hl,de
 	ld a,[hli]
 	ld h,[hl]
@@ -377,7 +409,7 @@ IF DEF(_YELLOW)
 	INCBIN "gfx/yellow/slotmachine2.2bpp"
 ENDC
 
-MoveAnimation: ; 78d5e (1e:4d5e)
+NonMoveAnimation:
 	push hl
 	push de
 	push bc
@@ -390,11 +422,47 @@ MoveAnimation: ; 78d5e (1e:4d5e)
 
 	; if throwing a Poké Ball, skip the regular animation code
 	cp a,TOSS_ANIM
-	jr nz,.MoveAnimation
+	jr nz,.NonMoveAnimation
 	ld de,.AnimationFinished
 	push de
 	jp TossBallAnimation
 
+.NonMoveAnimation
+	; check if battle animations are disabled in the options
+	ld a,[W_OPTIONS]
+	bit 7,a
+	jr nz,.AnimationsDisabled
+	call PlayNonMoveAnimation2
+	jr .next4
+.AnimationsDisabled
+	ld c,30
+	call DelayFrames
+.next4
+	call Func_78dbd ; reload pic and flash the pic in and out (to show damage)
+.AnimationFinished
+	call WaitForSoundToFinish
+	xor a
+	ld [W_SUBANIMSUBENTRYADDR],a
+	ld [wd09b],a
+	ld [W_SUBANIMTRANSFORM],a
+	dec a
+	ld [wAnimSoundID],a
+	pop af
+	pop bc
+	pop de
+	pop hl
+	ret
+
+MoveAnimation: ; 78d5e (1e:4d5e)
+	push hl
+	push de
+	push bc
+	push af
+	call WaitForSoundToFinish
+	call Func_78e23
+	ld a,[W_ANIMATIONID]
+	and a
+	jr z,.AnimationFinished
 .MoveAnimation
 	; check if battle animations are disabled in the options
 	ld a,[W_OPTIONS]
@@ -632,12 +700,15 @@ DoSpecialEffectByAnimationId: ; 78ed7 (1e:4ed7)
 	push hl
 	push de
 	push bc
-	ld a,[W_ANIMATIONID]
-	ld hl,AnimationIdSpecialEffects
-	ld de,3
-	call IsInArray
-	jr nc,.done
-	inc hl
+	ld a,[wSubAnimSpecEffect]
+	and a
+	jr z,.done	;if it was zero, then exit
+	dec a
+	ld hl,SpecialEffectsPointers
+	ld d,00
+	ld e,a
+	add hl,de
+	add hl,de
 	ld a,[hli]
 	ld h,[hl]
 	ld l,a
@@ -648,83 +719,7 @@ DoSpecialEffectByAnimationId: ; 78ed7 (1e:4ed7)
 	pop bc
 	pop de
 	pop hl
-	ret
-
-; Format: Animation ID (1 byte), Address (2 bytes)
-AnimationIdSpecialEffects: ; 78ef5 (1e:4ef5)
-	db MEGA_PUNCH
-	dw AnimationFlashScreen
-
-	db GUILLOTINE
-	dw AnimationFlashScreen
-
-	db MEGA_KICK
-	dw AnimationFlashScreen
-
-	db HEADBUTT
-	dw AnimationFlashScreen
-
-	db TAIL_WHIP
-	dw Func_790d0
-
-	db GROWL
-	dw DoGrowlSpecialEffects
-
-	db DISABLE
-	dw AnimationFlashScreen
-
-	db BLIZZARD
-	dw DoBlizzardSpecialEffects
-
-	db BUBBLEBEAM
-	dw AnimationFlashScreen
-
-	db HYPER_BEAM
-	dw FlashScreenEveryFourFrameBlocks
-
-	db THUNDERBOLT
-	dw FlashScreenEveryEightFrameBlocks
-
-	db REFLECT
-	dw AnimationFlashScreen
-
-	db SELFDESTRUCT
-	dw DoExplodeSpecialEffects
-
-	db SPORE
-	dw AnimationFlashScreen
-
-	db EXPLOSION
-	dw DoExplodeSpecialEffects
-
-	db ROCK_SLIDE
-	dw DoRockSlideSpecialEffects
-
-	db ANIM_AA
-	dw Func_79041
-
-	db ANIM_AB
-	dw Func_7904c
-
-	db ANIM_AC
-	dw Func_7907c
-
-	db TOSS_ANIM
-	dw DoBallTossSpecialEffects
-
-	db SHAKE_ANIM
-	dw DoBallShakeSpecialEffects
-
-	db POOF_ANIM
-	dw DoPoofSpecialEffects
-
-	db GREATTOSS_ANIM
-	dw DoBallTossSpecialEffects
-
-	db ULTRATOSS_ANIM
-	dw DoBallTossSpecialEffects
-
-	db $FF ; terminator
+	ret	
 
 DoBallTossSpecialEffects: ; 78f3e (1e:4f3e)
 	ld a,[wcf91]
@@ -2848,7 +2843,7 @@ TossBallAnimation: ; 79e16 (1e:5e16)
 	ld [W_ANIMATIONID],a
 	push bc
 	push hl
-	call PlayAnimation
+	call PlayNonMoveAnimation2
 	pop hl
 	ld a,[hli]
 	pop bc
@@ -2863,12 +2858,12 @@ TossBallAnimation: ; 79e16 (1e:5e16)
 .BlockBall ; 5E55
 	ld a,TOSS_ANIM
 	ld [W_ANIMATIONID],a
-	call PlayAnimation
+	call PlayNonMoveAnimation2
 	ld a,(SFX_08_43 - SFX_Headers_08) / 3
 	call PlaySound ; play sound effect
 	ld a,BLOCKBALL_ANIM
 	ld [W_ANIMATIONID],a
-	jp PlayAnimation
+	jp PlayNonMoveAnimation2
 
 Func_79e6a: ; 79e6a (1e:5e6a)
 	call WaitForSoundToFinish

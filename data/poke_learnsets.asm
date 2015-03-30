@@ -1,4 +1,4 @@
 ;Learnsets in Pokedex order
 PokemonLearnsets::
 	;Meowth:
-	setBits 1
+	;setBits 1
