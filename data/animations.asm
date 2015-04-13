@@ -18,9 +18,9 @@ MoveSpecialEffects:
 	db $FF ; terminator
 	
 NonMoveSpecialEffects:
-	db ANIM_AA, 9
-	db ANIM_AB, 10
-	db ANIM_AC, 11
+	db TRADE_BALL_DROP_ANIM, 9
+	db TRADE_BALL_SHAKE_ANIM, 10
+	db TRADE_BALL_TILT_ANIM, 11
 	db TOSS_ANIM, 12
 	db SHAKE_ANIM, 13
 	db POOF_ANIM, 14

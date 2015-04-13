@@ -10,25 +10,25 @@ TrainerPicAndMoneyPointers: ; 39914 (e:5914)
 	dw LassPic
 	money 1500
 
-	dw SailorPic
+	dw BusinessladyPic
 	money 3000
 
-	dw JrTrainerMPic
+	dw WitchPic
 	money 2000
 
-	dw JrTrainerFPic
+	dw SwordMasterPic
 	money 2000
 
 	dw PokemaniacPic
 	money 5000
 
-	dw SuperNerdPic
+	dw MechanicPic
 	money 2500
 
 	dw HikerPic
 	money 3500
 
-	dw BikerPic
+	dw KindlerPic
 	money 2000
 
 	dw BurglarPic
@@ -46,7 +46,7 @@ TrainerPicAndMoneyPointers: ; 39914 (e:5914)
 	dw SwimmerPic
 	money 500
 
-	dw CueBallPic
+	dw GardenerPic
 	money 2500
 
 	dw GamblerPic
@@ -55,7 +55,7 @@ TrainerPicAndMoneyPointers: ; 39914 (e:5914)
 	dw BeautyPic
 	money 7000
 
-	dw PsychicPic
+	dw PoliceChiefPic
 	money 1000
 
 	dw RockerPic
@@ -73,13 +73,13 @@ TrainerPicAndMoneyPointers: ; 39914 (e:5914)
 	dw BlackbeltPic
 	money 2500
 
-	dw Rival1Pic
+	dw Jessie1Pic
 	money 3500
 
 	dw ProfOakPic
 	money 9900
 
-	dw ChiefPic
+	dw AshPic
 	money 3000
 
 	dw ScientistPic
@@ -88,7 +88,7 @@ TrainerPicAndMoneyPointers: ; 39914 (e:5914)
 	dw GiovanniPic
 	money 9900
 
-	dw RocketPic
+	dw PolicePic
 	money 3000
 
 	dw CooltrainerMPic
@@ -97,47 +97,47 @@ TrainerPicAndMoneyPointers: ; 39914 (e:5914)
 	dw CooltrainerFPic
 	money 3500
 
-	dw BrunoPic
+	dw ElderKrakenPic
 	money 9900
 
-	dw BrockPic
+	dw MayorRyderPic
 	money 9900
 
-	dw MistyPic
+	dw MayorCarolPic
 	money 9900
 
-	dw LtSurgePic
+	dw CEOMaxwellPic
 	money 9900
 
-	dw ErikaPic
+	dw MayorHollyPic
 	money 9900
 
-	dw KogaPic
+	dw MayorCliffPic
 	money 9900
 
-	dw BlainePic
+	dw MayorDantePic
 	money 9900
 
-	dw SabrinaPic
+	dw MayorSavanaPic
 	money 9900
 
 	dw GentlemanPic
 	money 7000
 
-	dw Rival2Pic
+	dw Jessie2Pic
 	money 6500
 
-	dw Rival3Pic
+	dw PokeglitchPic
 	money 9900
 
-	dw LoreleiPic
+	dw KingApolloPic
 	money 9900
 
-	dw ChannelerPic
+	dw SorcererPic
 	money 3000
 
-	dw AgathaPic
+	dw ElderSkylarPic
 	money 9900
 
-	dw LancePic
+	dw MayorCasparPic
 	money 9900

@@ -3200,7 +3200,7 @@ GetName:: ; 376b (0:376b)
 	ld [wd11e],a
 
 	; TM names are separate from item names.
-	ld a,[W_LISTTYPE]
+	ld a,[wNameListType]
 	cp a,ITEM_NAME
 	jr nz,.skipHMCheck
 	

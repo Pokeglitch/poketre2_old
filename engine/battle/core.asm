@@ -5783,13 +5783,8 @@ EnemyCheckIfFlyOrChargeEffect: ; 3e7d1 (f:67d1)
 	xor a
 	ld [wAnimationType], a
 	ld a,STATUS_AFFECTED_ANIM
-<<<<<<< HEAD
 	call PlayNonMoveAnimation
-asm_3e7ef: ; 3e7ef (f:67ef)
-=======
-	call PlayMoveAnimation
 EnemyCheckIfMirrorMoveEffect: ; 3e7ef (f:67ef)
->>>>>>> 941d2b9eb8a59b42ea71a08b34b25c06477cf36d
 	ld a, [W_ENEMYMOVEEFFECT]
 	cp MIRROR_MOVE_EFFECT
 	jr nz, .notMirrorMoveEffect
@@ -5880,13 +5875,8 @@ CheckEnemyStatusConditions: ; 3e88f (f:688f)
 	xor a
 	ld [wAnimationType], a
 	ld a,SLP_ANIM
-<<<<<<< HEAD
 	call PlayNonMoveAnimation
-	jr .next1
-=======
-	call PlayMoveAnimation
 	jr .sleepDone
->>>>>>> 941d2b9eb8a59b42ea71a08b34b25c06477cf36d
 .wokeUp
 	ld hl, WokeUpText
 	call PrintText
@@ -8154,11 +8144,7 @@ SwitchAndTeleportEffect: ; 3f739 (f:7739)
 	jp ConditionalPrintButItFailed
 .asm_3f7e4
 	push af
-<<<<<<< HEAD
 	call PlayMoveAnimation3
-=======
-	call PlayBattleAnimation
->>>>>>> 941d2b9eb8a59b42ea71a08b34b25c06477cf36d
 	ld c, $14
 	call DelayFrames
 	pop af
@@ -8273,17 +8259,10 @@ ChargeEffect: ; 3f88c (f:788c)
 	ld a, [de]
 	dec de ; de contains enemy or player MOVENUM
 	cp FLY_EFFECT
-<<<<<<< HEAD
-	jr nz, .asm_3f8ad
-	set 6, [hl] ; mon is now invulnerable to typical attacks (fly/dig)
-	ld b, TELEPORT_NONMOVE
-.asm_3f8ad
-=======
 	jr nz, .notFly
 	set Invulnerable, [hl] ; mon is now invulnerable to typical attacks (fly/dig)
-	ld b, TELEPORT ; load Teleport's animation
+	ld b, TELEPORT_NONMOVE ; load Teleport's animation
 .notFly
->>>>>>> 941d2b9eb8a59b42ea71a08b34b25c06477cf36d
 	ld a, [de]
 	cp DIG
 	jr nz, .notDigOrFly
