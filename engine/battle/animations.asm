@@ -438,7 +438,7 @@ NonMoveAnimation:
 	ld c,30
 	call DelayFrames
 .next4
-	call Func_78dbd ; reload pic and flash the pic in and out (to show damage)
+	call PlayApplyingAttackAnimation ; reload pic and flash the pic in and out (to show damage)
 .AnimationFinished
 	call WaitForSoundToFinish
 	xor a
