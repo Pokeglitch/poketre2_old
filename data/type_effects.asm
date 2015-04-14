@@ -30,7 +30,7 @@ TypeEffects: ; 3e474 (f:6474)
 	dw HoloTypeEffects
 
 AeroTypeEffects:
-	db BUG,PLANT,HOOF,SOUND,COSMIC,$FF	;2
+	db BUG,PLANT,HOOF,SOUND,COSMIC,FIRE,$FF	;2
 	db ELECTRIC,EARTH,FANG,METAL,$FF	;0.5
 	db $FF								;0
 
@@ -55,7 +55,7 @@ CyberTypeEffects:
 	db $FF						;0
 
 DragonTypeEffects:
-	db AERO,DRAGON,BONE,$FF		;2
+	db AERO,DRAGON,BONE,FIRE,$FF		;2
 	db MAGIC,RADIO,METAL,$FF	;0.5
 	db $FF						;0
 
