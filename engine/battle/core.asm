@@ -5275,14 +5275,10 @@ AdjustDamageForMoveType: ; 3e3a5 (f:63a5)
 	and a
 	jr z,.next
 ; values for enemy turn
-	ld hl,wEnemyMonType
-	ld a,[hli]
-	ld b,a    ; b = type 1 of attacker
-	ld c,[hl] ; c = type 2 of attacker
-	ld hl,wBattleMonType
-	ld a,[hli]
-	ld d,a    ; d = type 1 of defender
-	ld e,[hl] ; e = type 2 of defender
+	push bc
+	push de
+	pop bc
+	pop de	; swap bc and de
 	ld a,[W_ENEMYMOVETYPE]
 	ld [wd11e],a
 .next
@@ -5290,10 +5286,199 @@ AdjustDamageForMoveType: ; 3e3a5 (f:63a5)
 	cp b ; does the move type match type 1 of the attacker?
 	jr z,.sameTypeAttackBonus
 	cp c ; does the move type match type 2 of the attacker?
-	jr z,.sameTypeAttackBonus
-	jr .skipSameTypeAttackBonus
+	jr nz,.skipSameTypeAttackBonus
 .sameTypeAttackBonus
 ; if the move type matches one of the attacker's types
+	call MultiplyDamageBy15
+	ld hl,wDamageMultipliers
+	set 7,[hl]
+.skipSameTypeAttackBonus
+	ld a,[wd11e]
+	ld hl,TypeEffects
+	add a
+	push bc
+	ld b,0
+	ld c,a
+	add hl,bc	;hl = pointer to row for the attack type
+	pop bc
+	ld a,[hli]
+	ld h,[hl]
+	ld l,a		;hl = pointer to type chart for attack type
+	call LookFor0xDamage	;check for 0x damage
+	ld a,d
+	cp e		;does the defender have two matching types?
+	jr nz,.notMatchingTypes	;skip down if not
+	ld e,$FF	;otherwise, load $FF into e
+	
+.notMatchingTypes
+	ld bc,$0014	;look for 2x damage
+	call CheckTypeTableForDamage
+	ld bc,$0105	;look for 0.5 damage
+	call CheckTypeTableForDamage
+	
+	ld hl,wDamageMultipliers
+	ld a,[hl]
+	ld [wExactDamageMultipler],a		;store the exact damage modifier value
+	push af
+	and a,$80	;only get bit 7
+	ld b,a		;backup bit 7
+	pop af
+	res 7,a		;remove bit 7
+	
+	cp a,$15	;is it less than $15?
+	jr nc,.greaterThan15
+	
+	cp a,$0a	;is it $0a?
+	jr z,.finish		;then finish
+	
+	ld a,5		;load "not very effective" multiplier
+	jr .finish
+	
+.greaterThan15
+	cp a,$23	;is it 23? (doubled, but then halved)
+	jr nz,.superEffective
+	ld a,$0a	;otherwise, set it to the default multipler
+	jr .finish
+	
+.superEffective
+	ld a,$14	;load the super effective multiplier
+	
+.finish
+	add b		;reload the bit 7
+	ld [hl],a	;save
+	;do remaining checks
+	call HoloOrShadowCheck
+	call Landscape0xDamageCheck
+	call Landscape15xDamageCheck
+	call WeatherDamageCheck
+	call EnvironmentDamageCheck
+	call RemainingDamageChecks
+	ret
+	
+;to check the type chart table to try to find 0x damage
+LookFor0xDamage:
+	push hl
+	ld a,2
+	;to skip through the first two sets of data in the type chart (they are for 2x and 0.5x)
+.loop1
+	push af
+.loop2
+	ld a,[hli]
+	cp a,$FF	;reached the end of this line?
+	jr nz,.loop2
+	pop af
+	dec a
+	jr nz,.loop1
+;parse the 0x row loop
+.loop3
+	ld a,[hli]	;get the value in the 0x row
+	cp a,$FF	;the end?
+	jr z,.finish	;finish if so
+	cp a,d	;match type 1?
+	jr z,.setToZero	;set to zero if so
+	cp a,e	;match type 2?
+	jr nz,.loop3	;loop if not
+;to set the damage to zero
+.setToZero
+	xor a
+	ld hl,W_DAMAGE
+	ld [hli],a
+	ld [hl],a	;zero the damage
+	inc a
+	ld [W_MOVEMISSED],a	;make the move miss
+	
+	ld hl,wDamageMultipliers
+	ld a,[hl]
+	and a,$80
+	ld [hl],a	;only save bit 7 of the damage multiplier
+	
+	pop hl
+	pop af	;remove the return
+	ret
+.finish
+	pop hl
+	ret
+
+;to check the type chart table to find 2x damage or 0.5x damage
+;b = index of row we are looking at (0 = 2x, 1 = 0.5x)
+;c = damage multiplier for that row
+CheckTypeTableForDamage:
+	push hl
+	ld a,b
+;loop to go to the correct row
+.loop1
+	and a
+	jr z,.readRowLoop	;exit loop when a=0 (which was b at start)
+	push af
+.loop2
+	ld a,[hli]
+	cp a,$FF	;reached the end of the row?
+	jr nz,.loop2	;loop if not
+	pop af
+	dec a
+	jr .loop1	;go to next row
+
+;to read the row
+.readRowLoop
+	ld a,[hli]
+	cp a,$FF
+	jr z,.finish	;return when we reached the end
+	cp a,d	;match type 1?
+	call z,MultiplyDamageByAmount	;then multiply
+	cp a,e	;match type 2?
+	call z,MultiplyDamageByAmount	;then multiply
+	jr .readRowLoop
+
+.finish
+	pop hl
+	ret
+
+;to multiply the damage by the amount given in c	
+MultiplyDamageByAmount:
+	push hl
+	push bc
+	push de
+	ld a,c	;load multiplier into a
+	ld [H_MULTIPLIER],a
+	;set up the multiplicand values
+	xor a
+	ld [H_MULTIPLICAND],a
+	ld hl,W_DAMAGE
+	ld a,[hli]
+	ld [H_MULTIPLICAND + 1],a
+	ld a,[hld]
+	ld [H_MULTIPLICAND + 2],a
+	call Multiply
+	
+	ld a,10		;load the divisor
+	ld [H_DIVISOR],a
+	ld b,$04
+	call Divide
+	ld a,[H_QUOTIENT + 2]
+	ld [hli],a
+	ld a,[H_QUOTIENT + 3]
+	ld [hl],a
+	
+	ld hl,wDamageMultipliers
+	ld a,[hl]
+	add a,c		;add multiplier
+	ld [hl],a
+	
+	pop de
+	pop bc
+	pop hl
+	ret
+
+HoloOrShadowCheck:
+Landscape0xDamageCheck:
+Landscape15xDamageCheck:
+WeatherDamageCheck:
+EnvironmentDamageCheck:
+RemainingDamageChecks:
+	ret
+
+;to multiply the damage by 1.5
+MultiplyDamageBy15:
 	ld hl,W_DAMAGE + 1
 	ld a,[hld]
 	ld h,[hl]
@@ -5308,70 +5493,8 @@ AdjustDamageForMoveType: ; 3e3a5 (f:63a5)
 	ld [W_DAMAGE],a
 	ld a,l
 	ld [W_DAMAGE + 1],a
-	ld hl,wDamageMultipliers
-	set 7,[hl]
-.skipSameTypeAttackBonus
-	ld a,[wd11e]
-	ld b,a ; b = move type
-	ld hl,TypeEffects
-.loop
-	ld a,[hli] ; a = "attacking type" of the current type pair
-	cp a,$ff
-	jr z,.done
-	cp b ; does move type match "attacking type"?
-	jr nz,.nextTypePair
-	ld a,[hl] ; a = "defending type" of the current type pair
-	cp d ; does type 1 of defender match "defending type"?
-	jr z,.matchingPairFound
-	cp e ; does type 2 of defender match "defending type"?
-	jr z,.matchingPairFound
-	jr .nextTypePair
-.matchingPairFound
-; if the move type matches the "attacking type" and one of the defender's types matches the "defending type"
-	push hl
-	push bc
-	inc hl
-	ld a,[wDamageMultipliers]
-	and a,$80
-	ld b,a
-	ld a,[hl] ; a = damage multiplier
-	ld [H_MULTIPLIER],a
-	add b
-	ld [wDamageMultipliers],a
-	xor a
-	ld [H_MULTIPLICAND],a
-	ld hl,W_DAMAGE
-	ld a,[hli]
-	ld [H_MULTIPLICAND + 1],a
-	ld a,[hld]
-	ld [H_MULTIPLICAND + 2],a
-	call Multiply
-	ld a,10
-	ld [H_DIVISOR],a
-	ld b,$04
-	call Divide
-	ld a,[H_QUOTIENT + 2]
-	ld [hli],a
-	ld b,a
-	ld a,[H_QUOTIENT + 3]
-	ld [hl],a
-	or b ; is damage 0?
-	jr nz,.skipTypeImmunity
-.typeImmunity
-; if damage is 0, make the move miss
-; this only occurs if a move that would do 2 or 3 damage is 0.25x effective against the target
-	inc a
-	ld [W_MOVEMISSED],a
-.skipTypeImmunity
-	pop bc
-	pop hl
-.nextTypePair
-	inc hl
-	inc hl
-	jp .loop
-.done
 	ret
-
+	
 ; function to tell how effective the type of an enemy attack is on the player's current pokemon
 ; this doesn't take into account the effects that dual types can have
 ; (e.g. 4x weakness / resistance, weaknesses and resistances canceling)

@@ -2312,6 +2312,11 @@ wSubAnimSpecEffect:: ;dea8
 ;Bit 0 = Role Reversal
 wTotems:: ;dea9
 	ds 1
+	
+;contains the exact damage multiplier, for the battle text
+wExactDamageMultipler::
+	ds 1
+
 
 SECTION "Stack", WRAMX[$dfff], BANK[1]
 wStack:: ; dfff

@@ -1,89 +1,165 @@
+;new type chart
+;this table contains the pointers to the type dataset
 TypeEffects: ; 3e474 (f:6474)
-; format: attacking type, defending type, damage multiplier
-; the multiplier is a (decimal) fixed-point number:
-;     20 is ×2.0
-;     05 is ×0.5
-;     00 is ×0
-	db WATER,FIRE,20
-	db FIRE,GRASS,20
-	db FIRE,ICE,20
-	db GRASS,WATER,20
-	db ELECTRIC,WATER,20
-	db WATER,ROCK,20
-	db GROUND,FLYING,00
-	db WATER,WATER,05
-	db FIRE,FIRE,05
-	db ELECTRIC,ELECTRIC,05
-	db ICE,ICE,05
-	db GRASS,GRASS,05
-	db PSYCHIC,PSYCHIC,05
-	db FIRE,WATER,05
-	db GRASS,FIRE,05
-	db WATER,GRASS,05
-	db ELECTRIC,GRASS,05
-	db NORMAL,ROCK,05
-	db NORMAL,GHOST,00
-	db GHOST,GHOST,20
-	db FIRE,BUG,20
-	db FIRE,ROCK,05
-	db WATER,GROUND,20
-	db ELECTRIC,GROUND,00
-	db ELECTRIC,FLYING,20
-	db GRASS,GROUND,20
-	db GRASS,BUG,05
-	db GRASS,POISON,05
-	db GRASS,ROCK,20
-	db GRASS,FLYING,05
-	db ICE,WATER,05
-	db ICE,GRASS,20
-	db ICE,GROUND,20
-	db ICE,FLYING,20
-	db FIGHTING,NORMAL,20
-	db FIGHTING,POISON,05
-	db FIGHTING,FLYING,05
-	db FIGHTING,PSYCHIC,05
-	db FIGHTING,BUG,05
-	db FIGHTING,ROCK,20
-	db FIGHTING,ICE,20
-	db FIGHTING,GHOST,00
-	db POISON,GRASS,20
-	db POISON,POISON,05
-	db POISON,GROUND,05
-	db POISON,BUG,20
-	db POISON,ROCK,05
-	db POISON,GHOST,05
-	db GROUND,FIRE,20
-	db GROUND,ELECTRIC,20
-	db GROUND,GRASS,05
-	db GROUND,BUG,05
-	db GROUND,ROCK,20
-	db GROUND,POISON,20
-	db FLYING,ELECTRIC,05
-	db FLYING,FIGHTING,20
-	db FLYING,BUG,20
-	db FLYING,GRASS,20
-	db FLYING,ROCK,05
-	db PSYCHIC,FIGHTING,20
-	db PSYCHIC,POISON,20
-	db BUG,FIRE,05
-	db BUG,GRASS,20
-	db BUG,FIGHTING,05
-	db BUG,FLYING,05
-	db BUG,PSYCHIC,20
-	db BUG,GHOST,05
-	db BUG,POISON,20
-	db ROCK,FIRE,20
-	db ROCK,FIGHTING,05
-	db ROCK,GROUND,05
-	db ROCK,FLYING,20
-	db ROCK,BUG,20
-	db ROCK,ICE,20
-	db GHOST,NORMAL,00
-	db GHOST,PSYCHIC,00
-	db FIRE,DRAGON,05
-	db WATER,DRAGON,05
-	db ELECTRIC,DRAGON,05
-	db GRASS,DRAGON,05
-	db ICE,DRAGON,20
-	db DRAGON,DRAGON,20
-	db $FF
+	dw AeroTypeEffects
+	dw BoneTypeEffects
+	dw BugTypeEffects
+	dw CosmicTypeEffects
+	dw CyberTypeEffects
+	dw DragonTypeEffects
+	dw EarthTypeEffects
+	dw ElectricTypeEffects
+	dw FangTypeEffects
+	dw FightingTypeEffects
+	dw FireTypeEffects
+	dw GhostTypeEffects
+	dw GooTypeEffects
+	dw HoofTypeEffects
+	dw IceTypeEffects
+	dw MagicTypeEffects
+	dw MetalTypeEffects
+	dw MindTypeEffects
+	dw PhysicalTypeEffects
+	dw PlantTypeEffects
+	dw PoisonTypeEffects
+	dw RadioTypeEffects
+	dw SoundTypeEffects
+	dw TalonTypeEffects
+	dw WaterTypeEffects
+	dw ShadowTypeEffects
+	dw HoloTypeEffects
+
+AeroTypeEffects:
+	db BUG,PLANT,HOOF,SOUND,COSMIC,$FF	;2
+	db ELECTRIC,EARTH,FANG,METAL,$FF	;0.5
+	db $FF								;0
+
+BoneTypeEffects:
+	db BUG,FANG,TALON,$FF				;2
+	db FIGHTING,RADIO,METAL,GOO,$FF		;0.5
+	db GHOST,$FF						;0
+
+BugTypeEffects:
+	db POISON,PLANT,MIND,GOO,SOUND,$FF			;2
+	db FIGHTING,AERO,GHOST,FIRE,FANG,RADIO,$FF	;0.5
+	db $FF										;0
+
+CosmicTypeEffects:
+	db AERO,EARTH,PLANT,RADIO,METAL,$FF	;2
+	db ELECTRIC,ICE,MAGIC,$FF			;0.5
+	db $FF								;0
+
+CyberTypeEffects:
+	db ELECTRIC,CYBER,$FF		;2
+	db BONE,$FF					;0.5
+	db $FF						;0
+
+DragonTypeEffects:
+	db AERO,DRAGON,BONE,$FF		;2
+	db MAGIC,RADIO,METAL,$FF	;0.5
+	db $FF						;0
+
+EarthTypeEffects:
+	db ELECTRIC,POISON,EARTH,FIRE,ICE,BONE,CYBER,$FF	;2
+	db FIGHTING,BUG,PLANT,HOOF,COSMIC,$FF				;0.5
+	db AERO,$FF											;0
+
+ElectricTypeEffects:
+	db AERO,WATER,MAGIC,RADIO,METAL,CYBER,$FF	;2
+	db ELECTRIC,PLANT,DRAGON,BONE,GOO,$FF		;0.5
+	db EARTH,$FF								;0
+
+FangTypeEffects:
+	db FIGHTING,ICE,GOO,COSMIC,$FF				;2
+	db ELECTRIC,POISON,FIRE,BUG,BONE,METAL,$FF	;0.5
+	db GHOST,CYBER,$FF							;0
+
+FightingTypeEffects:
+	db EARTH,WATER,ICE,BONE,$FF				;2
+	db AERO,BUG,MIND,TALON,METAL,GOO,$FF	;0.5
+	db GHOST,CYBER,$FF						;0
+
+FireTypeEffects:
+	db BUG,PLANT,ICE,RADIO,METAL,GOO,$FF	;2
+	db EARTH,FIRE,WATER,DRAGON,COSMIC,$FF	;0.5
+	db $FF									;0
+
+GhostTypeEffects:
+	db GHOST,MIND,$FF	;2
+	db MAGIC,METAL,$FF	;0.5
+	db $FF				;0
+
+GooTypeEffects:
+	db ELECTRIC,TALON,MAGIC,HOOF,SOUND,$FF	;2
+	db POISON,WATER,BONE,GOO,$FF			;0.5
+	db $FF									;0
+
+HoofTypeEffects:
+	db EARTH,BUG,FIRE,PLANT,BONE,$FF	;2
+	db AERO,WATER,METAL,$FF				;0.5
+	db GHOST,CYBER,$FF					;0
+
+IceTypeEffects:
+	db AERO,EARTH,DRAGON,COSMIC,$FF	;2
+	db FIRE,WATER,ICE,$FF			;0.5
+	db $FF							;0
+
+MagicTypeEffects:
+	db FIGHTING,GHOST,DRAGON,METAL,$FF		;2
+	db AERO,MIND,ICE,HOOF,COSMIC,CYBER,$FF	;0.5
+	db $FF									;0
+
+MetalTypeEffects:
+	db FIGHTING,EARTH,ICE,FANG,BONE,CYBER,$FF	;2
+	db ELECTRIC,FIRE,WATER,TALON,SOUND,$FF		;0.5
+	db $FF										;0
+
+MindTypeEffects:
+	db FIGHTING,POISON,FANG,TALON,MAGIC,$FF	;2
+	db MIND,RADIO,METAL,SOUND,CYBER,$FF		;0.5
+	db $FF									;0
+
+PhysicalTypeEffects:
+	db FIGHTING,BONE,SOUND,$FF		;2
+	db EARTH,MIND,TALON,METAL,$FF	;0.5
+	db GHOST,CYBER,$FF				;0
+
+PlantTypeEffects:
+	db ELECTRIC,POISON,EARTH,WATER,COSMIC,$FF	;2
+	db AERO,BUG,FIRE,PLANT,DRAGON,HOOF,$FF		;0.5
+	db $FF										;0
+
+PoisonTypeEffects:
+	db BUG,PLANT,HOOF,METAL,$FF	;2
+	db POISON,GHOST,EARTH,$FF	;0.5
+	db CYBER,$FF				;0
+
+RadioTypeEffects:
+	db ELECTRIC,MAGIC,BONE,METAL,COSMIC,$FF	;2
+	db EARTH,RADIO,SOUND,$FF				;0.5
+	db $FF									;0
+
+SoundTypeEffects:
+	db AERO,GHOST,WATER,MIND,DRAGON,RADIO,METAL,$FF	;2
+	db FIGHTING,EARTH,BUG,PLANT,ICE,GOO,COSMIC,$FF	;0.5
+	db $FF											;0
+
+TalonTypeEffects:
+	db FIGHTING,EARTH,BUG,PLANT,$FF			;2
+	db ELECTRIC,FIRE,ICE,BONE,METAL,GOO,$FF	;0.5
+	db GHOST,CYBER,$FF						;0
+
+WaterTypeEffects:
+	db EARTH,FIRE,FANG,RADIO,METAL,GOO,CYBER,$FF	;2
+	db WATER,PLANT,DRAGON,MAGIC,SOUND,$FF			;0.5
+	db $FF											;0
+
+ShadowTypeEffects:
+	db FIGHTING,AERO,ELECTRIC,POISON,GHOST,EARTH,BUG,FIRE,WATER,PLANT,MIND,ICE,FANG,TALON,DRAGON,MAGIC,RADIO,BONE,HOOF,METAL,GOO,SOUND,COSMIC,CYBER,$FF	;2
+	db SHADOW,$FF	;0.5
+	db $FF			;0
+
+HoloTypeEffects:
+	db SHADOW,$FF	;2
+	db $FF	;0.5
+	db $FF	;0
