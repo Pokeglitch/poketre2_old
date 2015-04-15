@@ -2313,6 +2313,29 @@ wSubAnimSpecEffect:: ;dea8
 wTotems:: ;dea9
 	ds 1
 	
+;the number of new battle bytes (for erasing)
+
+NUM_OF_NEW_BATTLE_BYTES EQU 5
+;the start of the new battle bytes
+wNewBattleBytes::
+
+;the battle background id
+wBattleBackground::
+	ds 1
+	
+;the battle landscape id and weather
+wBattleWeather::
+wBattleLandscape::
+	ds 1
+	
+;the battle environment
+wBattleEnvironment::
+	ds 1
+	
+;the battle text bits (for attack damage)
+wBattleDamageText::
+	ds 1
+	
 ;contains the exact damage multiplier, for the battle text
 wExactDamageMultipler::
 	ds 1
