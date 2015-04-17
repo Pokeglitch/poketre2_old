@@ -6568,6 +6568,8 @@ LearnSets: INCLUDE "data/poke_learnsets.asm"
 
 SECTION "bank3A",ROMX,BANK[$3A]
 BaseStats: INCLUDE "data/base_stats.asm"
+INCLUDE "data/additional_pokemon_data_table.asm"
+
 
 SECTION "bank3B",ROMX,BANK[$3B]
 MagnezonePicFront::      INCBIN "pic/bmon/magnezone.pic"

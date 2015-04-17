@@ -2315,7 +2315,7 @@ wTotems:: ;dea9
 	
 ;the number of new battle bytes (for erasing)
 
-NUM_OF_NEW_BATTLE_BYTES EQU 5
+NUM_OF_NEW_BATTLE_BYTES EQU 27
 ;the start of the new battle bytes
 wNewBattleBytes::
 
@@ -2333,12 +2333,79 @@ wBattleEnvironment::
 	ds 1
 	
 ;the battle text bits (for attack damage)
+;	Bit 0 : Landscape
+;	Bit 1 : Weather
+;	Bit 2 : Environment
+;	Bit 3 : Time of Day
+;	Bit 4 : Ability of Attacking PK
+;	Bit 5 : Ability of Defending PK
 wBattleDamageText::
+	ds 1
+	
+;the battle text bits (when damage is 0)
+;	Bit 0 : Landscape causes attack to be 0
+;	Bit 1 : Cursed causes attack to be 0
+;	Bit 2 : Enemy Ability caused attack to be 0
+wBattleNoDamageText::
 	ds 1
 	
 ;contains the exact damage multiplier, for the battle text
 wExactDamageMultipler::
 	ds 1
+	
+;bytes that are used before the battle starts
+;	Bit 0 :	Virtual reality
+;	bit 1 : Rain storm
+;	bit 2 : Snow storm
+;	Bit 3 :	We've aready performed the special pk check this battle
+;	bit 4 : Holographic pokemon
+;	bit 5 : Shadow pokemon
+;	bit 6 : Horde battle
+;	bit 7 : Mr Mime battle
+wPreBattleBits::
+	ds 1
+
+;	Bit 0 : In gamble battle?
+;	Bit 1 : In last stand mode?
+;	Bit 2 : Fully shadow battle?
+;	Bit 3 : First pokemon in the horde battle?
+wAdditionalBattleTypeBits::
+	ds 1
+	
+;contains additional information about the pokemon in battle:
+wBattleMonSecondaryStatus::
+wBattleMonTraits::
+	ds 1
+wBattleMonAbility::
+wBattleMonAbility1::
+	ds 1
+wBattleMonAbility2::
+	ds 1
+wBattleMonMorale::
+	ds 1
+wBattleMonSpecialDefense::
+	ds 2
+wBattleMonBaseSpecialDefense::
+	ds 2
+wBattleMonDelayedDamage::
+	ds 2
+	
+
+wEnemyMonSecondaryStatus::
+wEnemyMonTraits::
+	ds 1
+wEnemyMonAbility::
+wEnemyMonAbility1::
+	ds 1
+wEnemyMonAbility2::
+	ds 1
+wEnemyMonSpecialDefense::
+	ds 2
+wEnemyMonBaseSpecialDefense::
+	ds 2
+wEnemyMonDelayedDamage::
+	ds 2
+
 
 
 SECTION "Stack", WRAMX[$dfff], BANK[1]

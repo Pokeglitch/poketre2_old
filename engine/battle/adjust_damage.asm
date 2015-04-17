@@ -56,6 +56,15 @@ AdjustDamageForMoveType: ; 3e3a5 (f:63a5)
 	ld bc,$0105	;look for 0.5 damage
 	call CheckTypeTableForDamage
 	
+	;do remaining checks
+	call HoloOrShadowCheck
+	call Landscape0xDamageCheck
+	call Landscape15xDamageCheck
+	call WeatherDamageCheck
+	call EnvironmentDamageCheck
+	call RemainingDamageChecks
+	
+	;update the damage multipliers
 	ld hl,wDamageMultipliers
 	ld a,[hl]
 	ld [wExactDamageMultipler],a		;store the exact damage modifier value
@@ -86,13 +95,6 @@ AdjustDamageForMoveType: ; 3e3a5 (f:63a5)
 .finish
 	add b		;reload the bit 7
 	ld [hl],a	;save
-	;do remaining checks
-	call HoloOrShadowCheck
-	call Landscape0xDamageCheck
-	call Landscape15xDamageCheck
-	call WeatherDamageCheck
-	call EnvironmentDamageCheck
-	call RemainingDamageChecks
 	ret
 	
 ;to check the type chart table to try to find 0x damage
@@ -215,6 +217,33 @@ MultiplyDamageByAmount:
 
 ;to boost the damage if the pokemon is holographic/shadow and the type matches
 HoloOrShadowCheck:
+	ld a,[wBattleMonTraits]	;load the player traits
+	ld b,a					;store into b
+	ld a,[H_WHOSETURN]		;load whose turn
+	and a
+	jr nz,.enemyTurn		;skip down if enemy
+	ld a,[wEnemyMonTraits]	;load enemy mon traits
+	ld b,a					;store into b
+.enemyTurn
+	ld a,[wd11e]			;load the attack type into A
+	cp a,SHADOW				;shadow type?
+	jr nz,.notShadow		;skip if not
+	
+	ld a,b
+	and SHADOW_TRAIT	;is the other pokemon also a shadow?
+	ld c,5	;load "half the damage"
+	call nz,MultiplyDamageByAmount	;half the damage if so
+	jr .finish
+	
+.notShadow
+	cp a,HOLO				;is the attack holo type?
+	jr nz,.finish			;skip down if not
+	ld a,b
+	and SHADOW_TRAIT			;is the pokemon shadow
+	ld c,20
+	call nz,MultiplyDamageByAmount	;DOUBLE the damage if so
+	
+.finish
 	ret
 	
 ;to check the landscape to see if it matches the type, and multiply by 1.5 if so
@@ -259,7 +288,7 @@ Landscape0xDamageCheck:
 WeatherDamageCheck:
 	call IsLandscapeOutdoor		;are we in an outdoor landscape?
 	ret nc						;return if not
-	ld a,[wBattleLandscape]		;load the landscape
+	ld a,[wBattleWeather]		;load the landscape
 	swap a
 	and a,$0F					;only keep the weather value
 	rrc a
@@ -329,8 +358,126 @@ EnvironmentDamageCheck:
 	jr nz,.loop	;check the next bit
 	ret
 
+;to check for other ways the damage might be modified
 RemainingDamageChecks:
+	ld a,[wBattleLandscape]		;check the battle landscape
+	cp VIRTUAL_REALITY_SCAPE		;is it virtual reality?
+	jr nz,.skipVirtualReality		;skip down if not
+	call GetCurrentAttack		;load the current attack into a
+	call IsPhysicalAttack		;is it a physical attack
+	jr nc,.skipVirtualReality	;if down if not
+	ld hl,wBattleDamageText
+	set 0,[hl]				;set the "modified by environment" text bit
+	call SetDamageToZero		;set the damage to zero
+	pop af					;remove the return
 	ret
+	
+.skipVirtualReality
+	ld hl,wBattleMonAbility1		;load the first player ability
+	ld a,[hli]
+	ld c,a
+	ld b,[hl]			;bc contains the player pokemon abilities
+	ld hl,wEnemyMonAbility1		;load the first enemy ability
+	ld a,[hli]
+	ld e,a
+	ld d,[hl]		;de contains the enemy pokemon abilities
+	ld a,[H_WHOSETURN]
+	and a
+	jr z,.checkFirstAbility
+	push bc
+	push de
+	pop bc
+	pop de		;swap bc and de
+.checkFirstAbility	;bc = attacker, de = defender
+	;check the first attacker ability
+	ld a,b
+	ld hl,AttackerAbilityModifyDamagePointers
+	call CheckAbilityTable
+	
+	;to check the second attacker ability
+	ld a,c
+	ld hl,AttackerAbilityModifyDamagePointers
+	call CheckAbilityTable
+	
+	;to check the first defense ability
+	ld a,d
+	ld hl,DefenderAbilityModifyDamagePointers
+	call CheckAbilityTable
+	
+	;to check the second defender ability
+	ld a,e
+	ld hl,DefenderAbilityModifyDamagePointers
+	call CheckAbilityTable	
+	ret
+
+;to check the ability table in hl for the ability in a
+CheckAbilityTable:
+	push bc
+	push de
+	ld de,3	;size of row
+	call IsInArray
+	pop de
+	pop bc
+	call c,RunAbilityRoutine	;run the routine if so
+	ret
+	
+;to run the ability routine found in the table
+RunAbilityRoutine:
+	inc hl
+	ld a,[hli]
+	ld h,[hl]
+	ld l,a
+	jp hl
+	
+;Abilities that modify damage for the attacking pokemon
+AttackerAbilityModifyDamagePointers:
+	db AB_HEADPIECE
+	dw HeadpieceModifyDamage
+	db AB_FLYING_DRAGON
+	dw FlyingDragonModifyDamage
+	db AB_RAWHIDE
+	dw RawhideModifyDamage
+	db $FF
+	
+;Abilities that modify damage for the defending pokemon
+DefenderAbilityModifyDamagePointers:
+	db AB_POROUS
+	dw PorousModifyDamage
+	db AB_RECHARGE
+	dw RechargeModifyDamage
+	db AB_STENCH
+	dw StenchModifyDamage
+	db AB_INVISIBLE_WALL
+	dw InvisibleWallModifyDamage
+	db AB_FLUFFY
+	dw FluffyModifyDamage
+	db $FF
+
+;The routine to run if the attacking pokemon had the headpiece ability
+HeadpieceModifyDamage:
+
+;The routine to run if the attacking pokemon had the flying dragon ability
+FlyingDragonModifyDamage:
+
+;The routine to run if the attacking pokemon had the rawhide ability
+RawhideModifyDamage:
+
+;The routine to run if the defending pokemon had the porous ability
+PorousModifyDamage:
+
+;The routine to run if the defending pokemon had the recharge ability
+RechargeModifyDamage:
+
+;The routine to run if the defending pokemon had the stench ability
+StenchModifyDamage:
+
+;The routine to run if the defending pokemon had the invisible wall ability
+InvisibleWallModifyDamage:
+
+;The routine to run if the defending pokemon had the fluffy ability
+FluffyModifyDamage:
+	ret
+
 	
 ;to multiply the damage by 1.5
 MultiplyDamageBy15:

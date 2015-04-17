@@ -18,6 +18,21 @@ IsLandscapeOutdoor:
 	ld de,1
 	jp IsInArray				;try to find it in the array
 
+;to get the current attack into a
+GetCurrentAttack:
+	ld a,[W_ENEMYMOVENUM]	;load the enemy move into a
+	push af
+	ld a,[H_WHOSETURN]
+	and a
+	jr nz,.finish		;finish if enemy turn
+	pop af
+	ld a,[W_PLAYERMOVENUM]
+	push af
+.finish
+	pop af
+	ret
+	
+	
 ;to see if the attack in a is a head attack
 IsHeadAttack:
 	ld hl,HeadBasedMovesTables
