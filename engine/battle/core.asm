@@ -3902,6 +3902,9 @@ PrintMoveFailureText: ; 3dbe2 (f:5be2)
 	jr z, .playersTurn
 	ld de, W_ENEMYMOVEEFFECT
 .playersTurn
+	ld a,[wBattleNoDamageText]
+	and a
+	jr nz,.additionalNoDamageText
 	ld hl, DoesntAffectMonText
 	ld a, [wDamageMultipliers]
 	and $7f
@@ -3914,6 +3917,7 @@ PrintMoveFailureText: ; 3dbe2 (f:5be2)
 .gotTextToPrint
 	push de
 	call PrintText
+.afterTextPrinted
 	xor a
 	ld [wCriticalHitOrOHKO], a
 	pop de
@@ -3951,6 +3955,10 @@ PrintMoveFailureText: ; 3dbe2 (f:5be2)
 	jp ApplyDamageToPlayerPokemon
 .enemyTurn
 	jp ApplyDamageToEnemyPokemon
+.additionalNoDamageText
+	push de
+	callab DisplayAdditionalNoDamageText
+	jr .afterTextPrinted
 
 AttackMissedText: ; 3dc42 (f:5c42)
 	TX_FAR _AttackMissedText
@@ -4643,15 +4651,15 @@ JumpToOHKOMoveEffect: ; 3e016 (f:6016)
 	ld a, [W_MOVEMISSED]
 	dec a
 	ret
-
-
-UnusedHighCriticalMoves: ; 3e01e (f:601e)
+	
+	
+; high critical hit moves
+HighCriticalMoves: ; 3e08e (f:608e)
 	db KARATE_CHOP
 	db RAZOR_LEAF
-	db CRABHAMMER
+	db DRAGON_BREATH
 	db SLASH
 	db $FF
-; 3e023
 
 ; determines if attack is a critical hit
 ; azure heights claims "the fastest pokémon (who are,not coincidentally,
@@ -4864,6 +4872,9 @@ ApplyDamageToEnemyPokemon: ; 3e142 (f:6142)
 	ld a,[W_ENEMYBATTSTATUS2]
 	bit HasSubstituteUp,a ; does the enemy have a substitute?
 	jp nz,AttackSubstitute
+	ld a,[wAdditionalBattleBits1]
+	bit 0,a		;are we adding damage to the pokemon instead?
+	jp nz,AddDamageToEnemyPokemon
 ; subtract the damage from the pokemon's current HP
 ; also, save the current HP at wHPBarOldHP
 	ld a,[hld]
@@ -4983,6 +4994,9 @@ ApplyDamageToPlayerPokemon: ; 3e200 (f:6200)
 	ld a,[W_PLAYERBATTSTATUS2]
 	bit HasSubstituteUp,a ; does the player have a substitute?
 	jp nz,AttackSubstitute
+	ld a,[wAdditionalBattleBits1]
+	bit 0,a		;are we adding damage to the pokemon instead?
+	jp nz,AddDamageToPlayerPokemon
 ; subtract the damage from the pokemon's current HP
 ; also, save the current HP at wHPBarOldHP and the new HP at wHPBarNewHP
 	ld a,[hld]
@@ -5248,10 +5262,6 @@ IncrementMovePP: ; 3e373 (f:6373)
 	call AddNTimes
 	inc [hl] ; increment PP in the party memory location
 	ret
-
-INCLUDE "engine/battle/adjust_damage.asm"
-INCLUDE "engine/battle/initialize_new_battle_params.asm"
-INCLUDE "data/new_battle_tables.asm"
 	
 ; function to tell how effective the type of an enemy attack is on the player's current pokemon
 ; this doesn't take into account the effects that dual types can have
@@ -5260,38 +5270,8 @@ INCLUDE "data/new_battle_tables.asm"
 ; ($05 is not very effective, $10 is neutral, $14 is super effective)
 ; as far is can tell, this is only used once in some AI code to help decide which move to use
 AIGetTypeEffectiveness: ; 3e449 (f:6449)
-	ld a,[W_ENEMYMOVETYPE]
-	ld d,a                 ; d = type of enemy move
-	ld hl,wBattleMonType
-	ld b,[hl]              ; b = type 1 of player's pokemon
-	inc hl
-	ld c,[hl]              ; c = type 2 of player's pokemon
-	ld a,$10
-	ld [wd11e],a           ; initialize [wd11e] to neutral effectiveness
-	ld hl,TypeEffects
-.loop
-	ld a,[hli]
-	cp a,$ff
-	ret z
-	cp d                   ; match the type of the move
-	jr nz,.nextTypePair1
-	ld a,[hli]
-	cp b                   ; match with type 1 of pokemon
-	jr z,.done
-	cp c                   ; or match with type 2 of pokemon
-	jr z,.done
-	jr .nextTypePair2
-.nextTypePair1
-	inc hl
-.nextTypePair2
-	inc hl
-	jr .loop
-.done
-	ld a,[hl]
-	ld [wd11e],a           ; store damage multiplier
+	callab _AIGetTypeEffectiveness
 	ret
-
-INCLUDE "data/type_effects.asm"
 
 ; some tests that need to pass for a move to hit
 MoveHitTest: ; 3e56b (f:656b)
@@ -6618,8 +6598,10 @@ BattleRandom:
 
 	ld a, [wLinkState]
 	cp LINK_STATE_BATTLING
-	jp nz, Random
-
+	jp z,.linkBattle	;link battle if so
+	call Random
+	jr .finish
+.linkBattle
 	push hl
 	push bc
 	ld a, [wLinkBattleRandomNumberListIndex]
@@ -6662,6 +6644,8 @@ BattleRandom:
 	pop af
 	pop bc
 	pop hl
+.finish
+	ld [wBattleRandom],a	;store a (in case we ran this from a different bank
 	ret
 
 
@@ -8699,3 +8683,84 @@ PlayMoveAnimationSkip:
 	pop de
 	pop hl
 	ret
+
+;to adjust the damage for the move type (which was moved to a different bank)
+AdjustDamageForMoveType:
+	callab _AdjustDamageForMoveType
+	ret
+	
+;to add the damage to the player pokemon instead of subtracting:
+AddDamageToPlayerPokemon:
+	ld hl,wBattleMonHP			;pointer to Player Pokemon cur HP
+	ld de,wBattleMonMaxHP		;pointer to Player Pokemon max HP
+	call AddDamageCommon		;add damage
+	hlCoord 10, 9
+	ld a,1	;print hp bar numbers
+	jp AddDamageCommonFinish
+	
+;to add the damage to the enemy pokemon instead of subtracting:
+AddDamageToEnemyPokemon:
+	ld hl,wEnemyMonHP			;pointer to Enemy Pokemon cur HP
+	ld de,wEnemyMonMaxHP		;pointer to Enemy Pokemon max HP
+	call AddDamageCommon		;add damage
+	hlCoord 2, 2
+	ld a,0	;dont print hp bar numbers
+	jp AddDamageCommonFinish
+	
+AddDamageCommon:
+	push hl		;store the pointer to the max hp
+	;store the old hp to the wHPBarOldHP and into hl
+	ld a,[hli]
+	ld [wHPBarOldHP + 1],a
+	ld b,a
+	ld a,[hl]
+	ld [wHPBarOldHP],a
+	ld l,a
+	ld h,b
+	
+	;add the damage to the pokemon
+	ld a,[W_DAMAGE]
+	ld b,a
+	ld a,[W_DAMAGE + 1]
+	ld c,a			;bc = damage
+	add hl,bc		;hl = new HP
+	
+	;store the max hp into de
+	ld a,[de]
+	inc de
+	ld b,a
+	ld [wHPBarMaxHP+1],a
+	ld a,[de]
+	ld e,a
+	ld [wHPBarMaxHP],a
+	ld d,b
+	
+	;compare hl to de
+	ld a,d
+	cp h
+	jr c,.setHPToMax	;if the new hp high byte exceed the max, then set hp to max
+	ld a,e
+	cp l
+	jr nc,.storeNewHP		;if the new hp low byte does not exceed the max, then store the new hp
+	
+	;set the hp to the max hp
+.setHPToMax
+	push de
+	pop hl	;hl = max hp
+	
+;store the new hp (in hl) to the ram
+.storeNewHP
+	pop bc	; bc = pointer to current hp
+	ld a,h
+	ld [bc],a
+	ld [wHPBarNewHP+1],a
+	inc bc
+	ld a,l
+	ld [bc],a
+	ld [wHPBarNewHP],a
+	ret
+	
+AddDamageCommonFinish:
+	ld [wHPBarType],a
+	predef UpdateHPBar2 ; animate the HP bar shortening
+	jp DrawHUDsAndHPBars

@@ -82,7 +82,7 @@ MainMenu: ; 5af2 (1:5af2)
 	jr z,.next4 ; if press_A on Continue
 	cp a,1
 	jp z,Func_5d52 ; if press_A on NewGame
-	call DisplayOptionMenu ; if press_a on Options
+	call DisplayOptionsFromMainMenu ; if press_a on Options
 	ld a,1
 	ld [wd08a],a
 	jp .next0
@@ -122,10 +122,11 @@ MainMenu: ; 5af2 (1:5af2)
 	call SpecialWarpIn
 	jp SpecialEnterMap
 Func_5bff: ; 5bff (1:5bff)
-	ld a,1
-	ld [wd358],a
 	ld a,3
 	ld [W_OPTIONS],a
+SetDefaultSkipOptions:
+	ld a,1
+	ld [wd358],a
 	ret
 
 LinkMenu: ; 5c0a (1:5c0a)
@@ -422,30 +423,22 @@ SaveScreenInfoText: ; 5e6a (1:5e6a)
 	next "#DEX    "
 	next "TIME@"
 
+DisplayOptionsFromMainMenu:
+	call ClearScreen
+	ld c,20
+	call DelayFrames
 DisplayOptionMenu: ; 5e8a (1:5e8a)
-	hlCoord 0, 0
-	ld b,3
-	ld c,18
-	call TextBoxBorder
-	hlCoord 0, 5
-	ld b,3
-	ld c,18
-	call TextBoxBorder
-	hlCoord 0, 10
-	ld b,3
-	ld c,18
-	call TextBoxBorder
 	hlCoord 1, 1
 	ld de,TextSpeedOptionText
 	call PlaceString
-	hlCoord 1, 6
+	hlCoord 1, 5
 	ld de,BattleAnimationOptionText
 	call PlaceString
-	hlCoord 1, 11
+	hlCoord 1, 9
 	ld de,BattleStyleOptionText
 	call PlaceString
-	hlCoord 2, 16
-	ld de,OptionMenuCancelText
+	hlCoord 1, 13
+	ld de,BattleTextOptionText
 	call PlaceString
 	xor a
 	ld [wCurrentMenuItem],a
@@ -456,29 +449,22 @@ DisplayOptionMenu: ; 5e8a (1:5e8a)
 	ld a,3 ; text speed cursor Y coordinate
 	ld [wTopMenuItemY],a
 	call SetCursorPositionsFromOptions
-	ld a,[wWhichTrade] ; text speed cursor X coordinate
 	ld [wTopMenuItemX],a
 	ld a,$01
 	ld [H_AUTOBGTRANSFERENABLED],a ; enable auto background transfer
 	call Delay3
 .loop
 	call PlaceMenuCursor
-	call SetOptionsFromCursorPositions
 .getJoypadStateLoop
 	call JoypadLowSensitivity
 	ld a,[hJoy5]
 	ld b,a
-	and a,%11111011 ; any key besides select pressed?
+	and a,%11111010 ; any key besides select or a pressed?
 	jr z,.getJoypadStateLoop
 	bit 1,b ; B button pressed?
 	jr nz,.exitMenu
 	bit 3,b ; Start button pressed?
-	jr nz,.exitMenu
-	bit 0,b ; A button pressed?
 	jr z,.checkDirectionKeys
-	ld a,[wTopMenuItemY]
-	cp a,16 ; is the cursor on Cancel?
-	jr nz,.loop
 .exitMenu
 	ld a,(SFX_02_40 - SFX_Headers_02) / 3
 	call PlaySound ; play sound
@@ -486,183 +472,177 @@ DisplayOptionMenu: ; 5e8a (1:5e8a)
 .eraseOldMenuCursor
 	ld [wTopMenuItemX],a
 	call EraseMenuCursor
+	ld a,d
+	ld [W_OPTIONS],a	;store d into w_options
 	jp .loop
 .checkDirectionKeys
+	ld a,[W_OPTIONS]
+	ld d,a		;d stores w_options
 	ld a,[wTopMenuItemY]
 	bit 7,b ; Down pressed?
 	jr nz,.downPressed
 	bit 6,b ; Up pressed?
 	jr nz,.upPressed
-	cp a,8 ; cursor in Battle Animation section?
+	cp a,7 ; cursor in Battle Animation section?
 	jr z,.cursorInBattleAnimation
-	cp a,13 ; cursor in Battle Style section?
+	cp a,11 ; cursor in Battle Style section?
 	jr z,.cursorInBattleStyle
-	cp a,16 ; cursor on Cancel?
-	jr z,.loop
+	cp a,15 ; cursor on Battle Text?
+	jr z,.cursorInBattleText
 .cursorInTextSpeed
 	bit 5,b ; Left pressed?
 	jp nz,.pressedLeftInTextSpeed
 	jp .pressedRightInTextSpeed
 .downPressed
-	cp a,16
-	ld b,-13
-	ld hl,wWhichTrade
+	cp a,15
+	ld b,-12	;jump to the top if we are are the bottom
 	jr z,.updateMenuVariables
-	ld b,5
-	cp a,3
-	inc hl
-	jr z,.updateMenuVariables
-	cp a,8
-	inc hl
-	jr z,.updateMenuVariables
-	ld b,3
-	inc hl
+	ld b,4		;otherwise, move 4 lines
 	jr .updateMenuVariables
 .upPressed
-	cp a,8
-	ld b,-5
-	ld hl,wWhichTrade
+	cp a,3
+	ld b,12	;jump to the bottom if we are at the top
 	jr z,.updateMenuVariables
-	cp a,13
-	inc hl
-	jr z,.updateMenuVariables
-	cp a,16
-	ld b,-3
-	inc hl
-	jr z,.updateMenuVariables
-	ld b,13
-	inc hl
+	ld b,-4	;otherwise move 4 lines
+	;fall through
 .updateMenuVariables
 	add b
 	ld [wTopMenuItemY],a
-	ld a,[hl]
+	call GetOptionsXCoord
 	ld [wTopMenuItemX],a
 	call PlaceUnfilledArrowMenuCursor
 	jp .loop
 .cursorInBattleAnimation
-	ld a,[wTrainerEngageDistance] ; battle animation cursor X coordinate
-	xor a,$0b ; toggle between 1 and 10
-	ld [wTrainerEngageDistance],a
+	ld a,d	;load the options byte into a
+	xor a,$80	;toggle the bit
+	ld d,a
+	call BattleAnimationXCoord
 	jp .eraseOldMenuCursor
 .cursorInBattleStyle
-	ld a,[wTrainerFacingDirection] ; battle style cursor X coordinate
-	xor a,$0b ; toggle between 1 and 10
-	ld [wTrainerFacingDirection],a
+	ld a,d	;load the options byte into a
+	xor a,$40	;toggle the bit
+	ld d,a
+	call BattleStyleXCoord
 	jp .eraseOldMenuCursor
-.pressedLeftInTextSpeed
-	ld a,[wWhichTrade] ; text speed cursor X coordinate
-	cp a,1
-	jr z,.updateTextSpeedXCoord
-	cp a,7
-	jr nz,.fromSlowToMedium
-	sub a,6
-	jr .updateTextSpeedXCoord
-.fromSlowToMedium
-	sub a,7
-	jr .updateTextSpeedXCoord
+.cursorInBattleText
+	ld a,d	;load the options byte into a
+	xor a,$20	;toggle the bit
+	ld d,a
+	call BattleTextXCoord
+	jp .eraseOldMenuCursor
 .pressedRightInTextSpeed
-	ld a,[wWhichTrade] ; text speed cursor X coordinate
-	cp a,14
-	jr z,.updateTextSpeedXCoord
-	cp a,7
-	jr nz,.fromFastToMedium
-	add a,7
+	ld a,d ; load options into a
+	bit 1,a	; is it medium?
+	jr nz,.updateMediumToSlow	;update medium
+	bit 2,a	;is it slow?
+	jr nz,.updateSlowToFast
+	;otherwise, update from fast to medium
+	set 1,a
 	jr .updateTextSpeedXCoord
-.fromFastToMedium
-	add a,6
+.updateMediumToSlow
+	res 1,a
+	set 2,a
+	jr .updateTextSpeedXCoord
+.updateSlowToFast
+	res 2,a
+	jr .updateTextSpeedXCoord
+.pressedLeftInTextSpeed
+	ld a,d ; load options into a
+	bit 1,a	; is it medium?
+	jr nz,.updateMediumToFast	;update medium
+	bit 2,a	;is it slow?
+	jr nz,.updateSlowToMedium
+	;otherwise, update from fast to slow
+	set 2,a
+	jr .updateTextSpeedXCoord
+.updateMediumToFast
+	res 1,a
+	jr .updateTextSpeedXCoord
+.updateSlowToMedium
+	res 2,a
+	set 1,a
+	;fall through
 .updateTextSpeedXCoord
-	ld [wWhichTrade],a ; text speed cursor X coordinate
+	ld d,a	;store back into d
+	call BattleSpeedXCoord
 	jp .eraseOldMenuCursor
 
+;to get the option x coord based upon which row
+GetOptionsXCoord:
+	cp a,7 ; cursor in Battle Animation section?
+	jr z,BattleAnimationXCoord
+	cp a,11 ; cursor in Battle Style section?
+	jr z,BattleStyleXCoord
+	cp a,15 ; cursor on Battle Text?
+	jr z,BattleTextXCoord
+	;fall through
+BattleSpeedXCoord:
+	ld a,7	;medium position
+	bit 1,d	; is it medium?
+	ret nz
+	ld a,14	;slow position
+	bit 2,d	;is it slow?
+	ret nz
+	ld a,1	;load fast position
+	ret
+	
+BattleAnimationXCoord:
+	bit 7,d
+	jr OptionCoordCommon
+
+BattleStyleXCoord:
+	bit 6,d
+	jr OptionCoordCommon
+	
+BattleTextXCoord:
+	bit 5,d
+	;fall through
+
+OptionCoordCommon
+	ld a,1	;coord = 1
+	ret z
+	ld a,10
+	ret
+	
 TextSpeedOptionText: ; 5fc0 (1:5fc0)
-	db   "TEXT SPEED"
-	next " FAST  MEDIUM SLOW@"
+	db   "Text Speed:"
+	next " Fast  Medium Slow@"
 
 BattleAnimationOptionText: ; 5fde (1:5fde)
-	db   "BATTLE ANIMATION"
-	next " ON       OFF@"
+	db   "Battle Animation:"
+	next " On       Off@"
 
 BattleStyleOptionText: ; 5ffd (1:5ffd)
-	db   "BATTLE STYLE"
-	next " SHIFT    SET@"
-
-OptionMenuCancelText: ; 6018 (1:6018)
-	db "CANCEL@"
-
-; sets the options variable according to the current placement of the menu cursors in the options menu
-SetOptionsFromCursorPositions: ; 601f (1:601f)
-	ld hl,TextSpeedOptionData
-	ld a,[wWhichTrade] ; text speed cursor X coordinate
-	ld c,a
-.loop
-	ld a,[hli]
-	cp c
-	jr z,.textSpeedMatchFound
-	inc hl
-	jr .loop
-.textSpeedMatchFound
-	ld a,[hl]
-	ld d,a
-	ld a,[wTrainerEngageDistance] ; battle animation cursor X coordinate
-	dec a
-	jr z,.battleAnimationOn
-.battleAnimationOff
-	set 7,d
-	jr .checkBattleStyle
-.battleAnimationOn
-	res 7,d
-.checkBattleStyle
-	ld a,[wTrainerFacingDirection] ; battle style cursor X coordinate
-	dec a
-	jr z,.battleStyleShift
-.battleStyleSet
-	set 6,d
-	jr .storeOptions
-.battleStyleShift
-	res 6,d
-.storeOptions
-	ld a,d
-	ld [W_OPTIONS],a
-	ret
+	db   "Battle Style:"
+	next " Shift    Set@"
+	
+BattleTextOptionText: ; 5ffd (1:5ffd)
+	db   "Battle Text:"
+	next " Extended Reduced@"
 
 ; reads the options variable and places menu cursors in the correct positions within the options menu
 SetCursorPositionsFromOptions: ; 604c (1:604c)
-	ld hl,TextSpeedOptionData + 1
 	ld a,[W_OPTIONS]
-	ld c,a
-	and a,$3f
-	push bc
-	ld de,2
-	call IsInArray
-	pop bc
-	dec hl
-	ld a,[hl]
-	ld [wWhichTrade],a ; text speed cursor X coordinate
+	ld d,a
+	call BattleSpeedXCoord
+	push af
 	hlCoord 0, 3
 	call .placeUnfilledRightArrow
-	sla c
-	ld a,1 ; On
-	jr nc,.storeBattleAnimationCursorX
-	ld a,10 ; Off
-.storeBattleAnimationCursorX
-	ld [wTrainerEngageDistance],a ; battle animation cursor X coordinate
-	hlCoord 0, 8
+	call BattleAnimationXCoord
+	hlCoord 0, 7
 	call .placeUnfilledRightArrow
-	sla c
-	ld a,1
-	jr nc,.storeBattleStyleCursorX
-	ld a,10
-.storeBattleStyleCursorX
-	ld [wTrainerFacingDirection],a ; battle style cursor X coordinate
-	hlCoord 0, 13
+	call BattleStyleXCoord
+	hlCoord 0, 11
 	call .placeUnfilledRightArrow
-; cursor in front of Cancel
-	hlCoord 0, 16
-	ld a,1
+	call BattleTextXCoord
+	hlCoord 0, 15
+	call .placeUnfilledRightArrow
+	pop af	;load the speed coord
+	ret
 .placeUnfilledRightArrow
-	ld e,a
-	ld d,0
-	add hl,de
+	ld c,a
+	ld b,0
+	add hl,bc
 	ld [hl],$ec ; unfilled right arrow menu cursor
 	ret
 

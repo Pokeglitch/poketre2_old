@@ -6561,8 +6561,20 @@ INCLUDE "engine/overworld/elevator.asm"
 
 INCLUDE "engine/items/tm_prices.asm"
 
-SECTION "bank39",ROMX,BANK[$39]
+;bank for the new text 
+SECTION "bank37",ROMX,BANK[$37]
+INCLUDE "text/additional_battle_text.asm"
 
+
+;bank for the new battle functions
+SECTION "bank38",ROMX,BANK[$38]
+INCLUDE "engine/battle/ai_damage.asm"
+INCLUDE "engine/battle/adjust_damage.asm"
+INCLUDE "engine/battle/initialize_new_battle_params.asm"
+INCLUDE "data/new_battle_tables.asm"
+INCLUDE "data/type_effects.asm"
+
+SECTION "bank39",ROMX,BANK[$39]
 INCLUDE "engine/evolution.asm"
 LearnSets: INCLUDE "data/poke_learnsets.asm"
 

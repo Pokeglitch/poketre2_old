@@ -7,6 +7,10 @@ GetMapLandscape:
 	ld a,0
 	ret
 	
+FarBattleRandom:
+	callab BattleRandom
+	ld a,[wBattleRandom]
+	ret
 	
 ;to see if the map is an outdoor map
 IsLandscapeOutdoor:
@@ -42,5 +46,11 @@ IsHeadAttack:
 ;to see if the attack in a is a physical attack
 IsPhysicalAttack:
 	ld hl,PhysicalMovesTable
+	ld de,1
+	jp IsInArray
+	
+;to see if the given attack is a piercing attack
+IsPiercingAttack:
+	ld hl,PiercingMovesTables
 	ld de,1
 	jp IsInArray

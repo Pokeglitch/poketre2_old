@@ -1,5 +1,5 @@
 ; function to adjust the base damage of an attack to account for type effectiveness
-AdjustDamageForMoveType: ; 3e3a5 (f:63a5)
+_AdjustDamageForMoveType: ; 3e3a5 (f:63a5)
 ; values for player turn
 	ld hl,wBattleMonType
 	ld a,[hli]
@@ -95,6 +95,9 @@ AdjustDamageForMoveType: ; 3e3a5 (f:63a5)
 .finish
 	add b		;reload the bit 7
 	ld [hl],a	;save
+	call EnsureDamageIsNotZero	;if the damage is zero, make it 1
+	ld a,[wd11e]	;load type into a
+	ld [wWhichTypeUsed],a	;store into "which type used"
 	ret
 	
 ;to check the type chart table to try to find 0x damage
@@ -278,7 +281,7 @@ Landscape0xDamageCheck:
 	ld a,[wd11e]			;get the move type
 	cp b					;do they match?
 	ret nz					;return if not
-	ld hl,wBattleDamageText
+	ld hl,wBattleNoDamageText
 	set 0,[hl]				;set the "modified by environment" text bit
 	call SetDamageToZero		;set the damage to zero
 	pop af					;remove the return
@@ -288,7 +291,7 @@ Landscape0xDamageCheck:
 WeatherDamageCheck:
 	call IsLandscapeOutdoor		;are we in an outdoor landscape?
 	ret nc						;return if not
-	ld a,[wBattleWeather]		;load the landscape
+	ld a,[wBattleWeather]		;load the weather
 	swap a
 	and a,$0F					;only keep the weather value
 	rrc a
@@ -361,12 +364,13 @@ EnvironmentDamageCheck:
 ;to check for other ways the damage might be modified
 RemainingDamageChecks:
 	ld a,[wBattleLandscape]		;check the battle landscape
+	and a,$0F		;only keep the landscape
 	cp VIRTUAL_REALITY_SCAPE		;is it virtual reality?
 	jr nz,.skipVirtualReality		;skip down if not
 	call GetCurrentAttack		;load the current attack into a
 	call IsPhysicalAttack		;is it a physical attack
-	jr nc,.skipVirtualReality	;if down if not
-	ld hl,wBattleDamageText
+	jr nc,.skipVirtualReality	;skip down if not
+	ld hl,wBattleNoDamageText
 	set 0,[hl]				;set the "modified by environment" text bit
 	call SetDamageToZero		;set the damage to zero
 	pop af					;remove the return
@@ -375,12 +379,12 @@ RemainingDamageChecks:
 .skipVirtualReality
 	ld hl,wBattleMonAbility1		;load the first player ability
 	ld a,[hli]
-	ld c,a
-	ld b,[hl]			;bc contains the player pokemon abilities
+	ld b,a
+	ld c,[hl]			;bc contains the player pokemon abilities
 	ld hl,wEnemyMonAbility1		;load the first enemy ability
 	ld a,[hli]
-	ld e,a
-	ld d,[hl]		;de contains the enemy pokemon abilities
+	ld d,a
+	ld e,[hl]		;de contains the enemy pokemon abilities
 	ld a,[H_WHOSETURN]
 	and a
 	jr z,.checkFirstAbility
@@ -390,24 +394,44 @@ RemainingDamageChecks:
 	pop de		;swap bc and de
 .checkFirstAbility	;bc = attacker, de = defender
 	;check the first attacker ability
+	xor a	;load ability 1 into a
+	ld [wWhichAbilityUsed],a	;store into which ability used
 	ld a,b
 	ld hl,AttackerAbilityModifyDamagePointers
 	call CheckAbilityTable
 	
 	;to check the second attacker ability
+	ld a,1	;load ability 2 into a
+	ld [wWhichAbilityUsed],a	;store into which ability used
 	ld a,c
 	ld hl,AttackerAbilityModifyDamagePointers
 	call CheckAbilityTable
 	
+	;if the defender has a substitute up, then don't check the defenders abilities
+	ld hl,W_ENEMYBATTSTATUS2	;load enemy status
+	ld a,[H_WHOSETURN]
+	and a
+	jr z,.playersTurn
+	ld hl,W_PLAYERBATTSTATUS2	;load players status
+.playersTurn
+	ld a,[hl]
+	bit HasSubstituteUp,a ; does the player have a substitute?
+	jr nz,.skipDefenderAbilities	;skip if so	
+
 	;to check the first defense ability
+	xor a	;load ability 1 into a
+	ld [wWhichAbilityUsed],a	;store into which ability used
 	ld a,d
 	ld hl,DefenderAbilityModifyDamagePointers
 	call CheckAbilityTable
 	
 	;to check the second defender ability
+	ld a,1	;load ability 2 into a
+	ld [wWhichAbilityUsed],a	;store into which ability used
 	ld a,e
 	ld hl,DefenderAbilityModifyDamagePointers
 	call CheckAbilityTable	
+.skipDefenderAbilities
 	ret
 
 ;to check the ability table in hl for the ability in a
@@ -416,13 +440,13 @@ CheckAbilityTable:
 	push de
 	ld de,3	;size of row
 	call IsInArray
+	call c,.runAbilityRoutine	;run the routine if so
 	pop de
 	pop bc
-	call c,RunAbilityRoutine	;run the routine if so
 	ret
 	
 ;to run the ability routine found in the table
-RunAbilityRoutine:
+.runAbilityRoutine:
 	inc hl
 	ld a,[hli]
 	ld h,[hl]
@@ -453,30 +477,7 @@ DefenderAbilityModifyDamagePointers:
 	dw FluffyModifyDamage
 	db $FF
 
-;The routine to run if the attacking pokemon had the headpiece ability
-HeadpieceModifyDamage:
-
-;The routine to run if the attacking pokemon had the flying dragon ability
-FlyingDragonModifyDamage:
-
-;The routine to run if the attacking pokemon had the rawhide ability
-RawhideModifyDamage:
-
-;The routine to run if the defending pokemon had the porous ability
-PorousModifyDamage:
-
-;The routine to run if the defending pokemon had the recharge ability
-RechargeModifyDamage:
-
-;The routine to run if the defending pokemon had the stench ability
-StenchModifyDamage:
-
-;The routine to run if the defending pokemon had the invisible wall ability
-InvisibleWallModifyDamage:
-
-;The routine to run if the defending pokemon had the fluffy ability
-FluffyModifyDamage:
-	ret
+INCLUDE "engine/battle/ability_routines.asm"
 
 	
 ;to multiply the damage by 1.5
@@ -495,4 +496,17 @@ MultiplyDamageBy15:
 	ld [W_DAMAGE],a
 	ld a,l
 	ld [W_DAMAGE + 1],a
+	ret
+	
+;to set the damage to 1 if it is zero
+EnsureDamageIsNotZero:
+	ld hl,W_DAMAGE
+	ld a,[hli]
+	and a
+	ret nz		;return if first byte isnt 0
+	ld a,[hl]
+	and a
+	ret nz		;return if second byte isnt 0
+	ld a,1		;load 1 into a
+	ld [hl],a	;store into the low damage byte
 	ret

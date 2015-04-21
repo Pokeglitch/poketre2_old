@@ -1552,16 +1552,6 @@ _ComeBackText:: ; 89d15 (22:5d15)
 	line "Come back!"
 	done
 
-_SuperEffectiveText:: ; 89d22 (22:5d22)
-	text "It's super"
-	line "effective!"
-	prompt
-
-_NotVeryEffectiveText:: ; 89d38 (22:5d38)
-	text "It's not very"
-	line "effective..."
-	prompt
-
 _SafariZoneEatingText:: ; 89d53 (22:5d53)
 	text "Wild @"
 	TX_RAM wEnemyMonNick

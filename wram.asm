@@ -1487,6 +1487,10 @@ W_OPTIONS:: ; d355
 ; bit 6 = battle style
 ; 0: Shift
 ; 1: Set
+; bit 5 = battle text
+; 0 : Extended
+; 1 : Reduced
+; bit 4 = Hard Mode
 ; bits 0-3 = text speed (number of frames to delay after printing a letter)
 ; 1: Fast
 ; 3: Medium
@@ -2319,6 +2323,10 @@ NUM_OF_NEW_BATTLE_BYTES EQU 27
 ;the start of the new battle bytes
 wNewBattleBytes::
 
+;stores the value of the BattleRandom routine
+wBattleRandom::
+	ds 1
+	
 ;the battle background id
 wBattleBackground::
 	ds 1
@@ -2337,16 +2345,30 @@ wBattleEnvironment::
 ;	Bit 1 : Weather
 ;	Bit 2 : Environment
 ;	Bit 3 : Time of Day
-;	Bit 4 : Ability of Attacking PK
-;	Bit 5 : Ability of Defending PK
+;	Bit 4 : Ability 1 of Attacking PK
+;	Bit 5 : Ability 2 of Attacking PK
+;	Bit 6 : Ability 1 of Defending PK
+;	Bit 7 : Ability 2 of Defending PK
 wBattleDamageText::
 	ds 1
 	
-;the battle text bits (when damage is 0)
-;	Bit 0 : Landscape causes attack to be 0
-;	Bit 1 : Cursed causes attack to be 0
-;	Bit 2 : Enemy Ability caused attack to be 0
+;the battle text bits (for attack dealing 0 damage)
+;	Bit 0 : Landscape
+;	Bit 1 : Ability 1 of Defending PK
+;	Bit 2 : Ability 2 of Defending PK
 wBattleNoDamageText::
+	ds 1
+
+	
+;additional battle bits
+;	Bit 0 : Add Damage instead of subtracting
+wAdditionalBattleBits1::
+	ds 1
+	
+;stores which type was used (for displaying correct environment text)
+wWhichTypeUsed::	
+;stores which ability was used in battle (for setting correct text bit)
+wWhichAbilityUsed::
 	ds 1
 	
 ;contains the exact damage multiplier, for the battle text

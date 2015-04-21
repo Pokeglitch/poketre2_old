@@ -190,10 +190,6 @@ PhysicalMovesTable:
 	db SHRED
 	db $FF
 	
-; high critical hit moves
-HighCriticalMoves: ; 3e08e (f:608e)
-	db KARATE_CHOP
-	db RAZOR_LEAF
-	db DRAGON_BREATH
-	db SLASH
+; piercing attacks
+PiercingMovesTables:
 	db $FF

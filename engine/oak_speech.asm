@@ -21,7 +21,7 @@ SetDefaultNames: ; 60ca (1:60ca)
 	ld [wd358], a
 	ld a, [wd08a]
 	and a
-	call z, Func_5bff
+	call z, SetDefaultSkipOptions	;set default value, but not the options
 	ld hl, NintenText
 	ld de, wPlayerName ; wd158
 	ld bc, $b
