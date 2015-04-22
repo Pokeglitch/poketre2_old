@@ -31,11 +31,29 @@ FileDataDestroyedText: ; 7361e (1c:761e)
 	TX_FAR _FileDataDestroyedText
 	db "@"
 
+;to get the PC bank based on Game Mode
+GetPCBank:
+	ld a, 2		;Hard Mode PC Bank
+	call IsHardMode
+	ret nz	;return if hard mode
+	ld a, 3		;Normal Mode PC Bank
+	ret
+	
+;to get the save bank based on Game Mode
+GetSaveBank:
+	xor a		;Hard Mode Save Bank (0)
+	call IsHardMode
+	ret nz	;return if hard mode
+	ld a, 1		;Normal Mode Save Bank
+	ret
+	
+	
 LoadSAVCheckSum: ; 73623 (1c:7623)
 	ld a, SRAM_ENABLE
 	ld [MBC1SRamEnable], a
 	ld a, $1
 	ld [MBC1SRamBankingMode], a
+	call GetSaveBank	;get the appropriate bank
 	ld [MBC1SRamBank], a
 	ld hl, $a598 ; hero name located in SRAM
 	ld bc, $f8b ; but here checks the full SAV
@@ -81,6 +99,7 @@ LoadSAVCheckSum1: ; 73690 (1c:7690)
 	ld [MBC1SRamEnable], a
 	ld a, $1
 	ld [MBC1SRamBankingMode], a
+	call GetSaveBank	;get the appropriate bank
 	ld [MBC1SRamBank], a
 	ld hl, $a598 ; hero name located in SRAM
 	ld bc, $f8b  ; but here checks the full SAV
@@ -101,6 +120,7 @@ LoadSAVCheckSum2: ; 736bd (1c:76bd)
 	ld [MBC1SRamEnable], a
 	ld a, $1
 	ld [MBC1SRamBankingMode], a
+	call GetSaveBank	;get the appropriate bank
 	ld [MBC1SRamBank], a
 	ld hl, $a598 ; hero name located in SRAM
 	ld bc, $f8b  ; but here checks the full SAV
@@ -197,6 +217,7 @@ SaveSAVtoSRAM0: ; 7378c (1c:778c)
 	ld [MBC1SRamEnable], a
 	ld a, $1
 	ld [MBC1SRamBankingMode], a
+	call GetSaveBank	;get the appropriate bank
 	ld [MBC1SRamBank], a
 	ld hl, wPlayerName
 	ld de, $a598
@@ -231,6 +252,7 @@ SaveSAVtoSRAM1: ; 737e2 (1c:77e2)
 	ld [MBC1SRamEnable], a
 	ld a, $1
 	ld [MBC1SRamBankingMode], a
+	call GetSaveBank	;get the appropriate bank
 	ld [MBC1SRamBank], a
 	ld hl, W_NUMINBOX
 	ld de, $b0c0
@@ -250,6 +272,7 @@ SaveSAVtoSRAM2: ; 7380f (1c:780f)
 	ld [MBC1SRamEnable], a
 	ld a, $1
 	ld [MBC1SRamBankingMode], a
+	call GetSaveBank	;get the appropriate bank
 	ld [MBC1SRamBank], a
 	ld hl, wPartyCount
 	ld de, $af2c
@@ -290,6 +313,7 @@ SAVCheckSum: ; 73856 (1c:7856)
 	cpl
 	ret
 
+;save the ChecksSum for each PC box in the current bank
 Func_73863: ; 73863 (1c:7863)
 	ld hl, $a000
 	ld de, $ba4d
@@ -307,16 +331,12 @@ Func_73863: ; 73863 (1c:7863)
 	jr nz, .asm_7386b
 	ret
 
+;get the pointer to the start of the box data
+;get the bank in b
 Func_7387b: ; 7387b (1c:787b)
 	ld hl, PointerTable_73895 ; $7895
 	ld a, [wd5a0]
 	and $7f
-	cp $6
-	ld b, $2
-	jr c, .asm_7388c
-	inc b
-	sub $6
-.asm_7388c
 	ld e, a
 	ld d, $0
 	add hl, de
@@ -324,8 +344,9 @@ Func_7387b: ; 7387b (1c:787b)
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	ret
-
+	jp GetPCBank
+	
+;starting locations for each PC box
 PointerTable_73895: ; 73895 (1c:7895)
 	dw $A000
 	dw $A462
@@ -343,7 +364,7 @@ ChangeBox:: ; 738a1 (1c:78a1)
 	ret nz ; return if No was chosen
 	ld hl, wd5a0
 	bit 7, [hl]
-	call z, Func_73a29
+	call z, Func_73a29	;new game? (maybe)
 	call Func_7393f
 	call UpdateSprites
 	ld hl, hFlags_0xFFF6
@@ -384,6 +405,7 @@ WhenYouChangeBoxText: ; 73909 (1c:7909)
 	TX_FAR _WhenYouChangeBoxText
 	db "@"
 
+;copy the current box to the given location in the given bank (in b)
 Func_7390e: ; 7390e (1c:790e)
 	push hl
 	ld a, SRAM_ENABLE
@@ -414,7 +436,7 @@ Func_7393f: ; 7393f (1c:793f)
 	ld [H_AUTOBGTRANSFERENABLED], a ; $ffba
 	ld a, $3
 	ld [wMenuWatchedKeys], a ; wMenuWatchedKeys
-	ld a, $b
+	ld a, 5		;number of boxes (starting at 0)
 	ld [wMaxMenuItem], a ; wMaxMenuItem
 	ld a, $1
 	ld [wTopMenuItemY], a ; wTopMenuItemY
@@ -463,14 +485,20 @@ Func_7393f: ; 7393f (1c:793f)
 	hlCoord 18, 1
 	ld de, wWhichTrade ; wWhichTrade
 	ld bc, $14
-	ld a, $c
+	ld a, 6	;only care about 6 boxes
 .asm_739c2
 	push af
-	ld a, [de]
-	and a
-	jr z, .asm_739c9
-	ld [hl], $78
-.asm_739c9
+	
+	push hl
+	push de
+	push bc
+	;print the digit from de to hl
+	ld bc,$0102	;1 byte, 2 digits
+	call PrintNumber
+	pop bc
+	pop de
+	pop hl
+	
 	add hl, bc
 	inc de
 	pop af
@@ -490,26 +518,18 @@ BoxNames: ; 739d9 (1c:79d9)
 	next "BOX 3"
 	next "BOX 4"
 	next "BOX 5"
-	next "BOX 6"
-	next "BOX 7"
-	next "BOX 8"
-	next "BOX 9"
-	next "BOX10"
-	next "BOX11"
-	next "BOX12@"
+	next "BOX 6@"
 
 BoxNoText: ; 73a21 (1c:7a21)
 	db "BOX No.@"
 
+;to zero the number of pokemon in each box for the given mode
 Func_73a29: ; 73a29 (1c:7a29)
 	ld a, SRAM_ENABLE
 	ld [MBC1SRamEnable], a
 	ld a, $1
 	ld [MBC1SRamBankingMode], a
-	ld a, $2
-	ld [MBC1SRamBank], a
-	call Func_73a4b
-	ld a, $3
+	call GetPCBank
 	ld [MBC1SRamBank], a
 	call Func_73a4b
 	xor a
@@ -517,6 +537,7 @@ Func_73a29: ; 73a29 (1c:7a29)
 	ld [MBC1SRamEnable], a
 	ret
 
+;to zero the number of pokemon in each PC box in the given bank
 Func_73a4b: ; 73a4b (1c:7a4b)
 	ld hl, $a000
 	call Func_73a7f
@@ -537,6 +558,7 @@ Func_73a4b: ; 73a4b (1c:7a4b)
 	call Func_73863
 	ret
 
+;set the number of Pokemon in the box to 0
 Func_73a7f: ; 73a7f (1c:7a7f)
 	xor a
 	ld [hli], a
@@ -544,6 +566,7 @@ Func_73a7f: ; 73a7f (1c:7a7f)
 	ld [hl], a
 	ret
 
+;count the number of pokemon in each box
 Func_73a84: ; 73a84 (1c:7a84)
 	ld hl, wWhichTrade ; wWhichTrade
 	push hl
@@ -551,10 +574,7 @@ Func_73a84: ; 73a84 (1c:7a84)
 	ld [MBC1SRamEnable], a
 	ld a, $1
 	ld [MBC1SRamBankingMode], a
-	ld a, $2
-	ld [MBC1SRamBank], a
-	call Func_73ab8
-	ld a, $3
+	call GetPCBank
 	ld [MBC1SRamBank], a
 	call Func_73ab8
 	xor a
@@ -570,6 +590,7 @@ Func_73a84: ; 73a84 (1c:7a84)
 	ld [hl], a
 	ret
 
+;get the number of pokemon in each box in the current bank
 Func_73ab8: ; 73ab8 (1c:7ab8)
 	ld a, [$a000]
 	ld [hli], a
@@ -593,6 +614,7 @@ SAVCheckRandomID: ;$7ad1
 	ld [$0000],a
 	ld a,$01
 	ld [MBC1SRamBankingMode],a
+	call GetSaveBank	;get the appropriate bank
 	ld [MBC1SRamBank],a
 	ld a,[$a598]
 	and a
@@ -620,63 +642,21 @@ SAVCheckRandomID: ;$7ad1
 	ret
 
 SaveHallOfFameTeams: ; 73b0d (1c:7b0d)
-	ld a, [wd5a2]
-	dec a
-	cp NUM_HOF_TEAMS
-	jr nc, .asm_73b28
-	ld hl, sHallOfFame
-	ld bc, HOF_TEAM
-	call AddNTimes
-	ld e, l
-	ld d, h
-	ld hl, wcc5b
-	ld bc, HOF_TEAM
-	jr HallOfFame_Copy
-
-.asm_73b28
-	ld hl, sHallOfFame + HOF_TEAM
-	ld de, sHallOfFame
-	ld bc, HOF_TEAM * (NUM_HOF_TEAMS - 1)
-	call HallOfFame_Copy
-	ld hl, wcc5b
-	ld de, sHallOfFame + HOF_TEAM * (NUM_HOF_TEAMS - 1)
-	ld bc, HOF_TEAM
-	jr HallOfFame_Copy
 
 LoadHallOfFameTeams: ; 73b3f (1c:7b3f)
-	ld hl, sHallOfFame
-	ld bc, HOF_TEAM
-	ld a, [wWhichTrade] ; wWhichTrade
-	call AddNTimes
-	ld de, wcc5b
-	ld bc, HOF_TEAM
-	; fallthrough
 
 HallOfFame_Copy: ; 73b51 (1c:7b51)
-	ld a, SRAM_ENABLE
-	ld [MBC1SRamEnable], a
-	ld a, $1
-	ld [MBC1SRamBankingMode], a
-	xor a
-	ld [MBC1SRamBank], a
-	call CopyData
-	xor a
-	ld [MBC1SRamBankingMode], a
-	ld [MBC1SRamEnable], a
 	ret
 
+;clear the save data for the appropriate banks
 ClearSAV: ; 73b6a (1c:7b6a)
 	ld a, SRAM_ENABLE
 	ld [MBC1SRamEnable], a
 	ld a, $1
 	ld [MBC1SRamBankingMode], a
-	xor a
+	call GetSaveBank
 	call PadSRAM_FF
-	ld a, $1
-	call PadSRAM_FF
-	ld a, $2
-	call PadSRAM_FF
-	ld a, $3
+	call GetPCBank
 	call PadSRAM_FF
 	xor a
 	ld [MBC1SRamBankingMode], a

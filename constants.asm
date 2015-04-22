@@ -34,3 +34,4 @@ INCLUDE "constants/starter_mons.asm"
 
 INCLUDE "constants/ability_constants.asm"
 INCLUDE "constants/new_battle_constants.asm"
+INCLUDE "constants/new_flag_constants.asm"
