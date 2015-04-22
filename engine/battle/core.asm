@@ -564,13 +564,17 @@ MainInBattleLoop: ; 3c233 (f:4233)
 HandlePoisonBurnLeechSeed: ; 3c3bd (f:43bd)
 	ld hl, wBattleMonHP
 	ld de, wBattleMonStatus
+	ld bc, wPlayerMonStatMods
 	ld a, [H_WHOSETURN]
 	and a
 	jr z, .playersTurn
 	ld hl, wEnemyMonHP
 	ld de, wEnemyMonStatus
+	ld bc, wEnemyMonStatMods
 .playersTurn
 	ld a, [de]
+	bit 7,a		;radioactive?
+	jr nz,.radioactive
 	and (1 << BRN) | (1 << PSN)
 	jr z, .notBurnedOrPoisoned
 	push hl
@@ -624,9 +628,31 @@ HandlePoisonBurnLeechSeed: ; 3c3bd (f:43bd)
 	call DelayFrames
 	xor a
 	ret
+.radioactive
+	call BattleRandom
+	cp a,$7F		;50% chance of effect
+	jr c,.notBurnedOrPoisoned	;if its greater, then check leech seed
+	push bc
+	push de
+	push hl
+	ld hl,HurtByRadioText
+	call PrintText
+	xor a
+	ld [wAnimationType], a
+	ld a,BURN_PSN_ANIM
+	call PlayNonMoveAnimation   ; play burn/poison animation
+	pop hl
+	pop de
+	pop bc
+	call HandleRadio_DecreaseOwnStats
+	jr .notBurnedOrPoisoned	;check leech seed
 
 HurtByPoisonText: ; 3c42e (f:442e)
 	TX_FAR _HurtByPoisonText
+	db "@"
+	
+HurtByRadioText:
+	TX_FAR _HurtByRadioText
 	db "@"
 
 HurtByBurnText: ; 3c433 (f:4433)
@@ -636,6 +662,105 @@ HurtByBurnText: ; 3c433 (f:4433)
 HurtByLeechSeedText: ; 3c438 (f:4438)
 	TX_FAR _HurtByLeechSeedText
 	db "@"
+	
+;to randomly decrease a pokemons stats (due to radio)
+; bc points to the first stat mod
+HandleRadio_DecreaseOwnStats:
+	push de
+	push hl
+	push bc
+.tryAgain
+	call BattleRandom
+	ld h,0
+	ld l,7
+.loop
+	sub a,36	;subtract a by 36
+	jr c,.applyEffect	;if we've gone below 0, then apply the affect
+	dec l
+	jr z,.tryAgain	;if we've done this seven times, then try again
+	jr .loop	;otherwise, loop
+.applyEffect
+	dec l	;set l to index starting from 0
+	pop bc	;get the pointer to the stats
+	push bc
+	push hl
+	add hl,bc		;hl now points to the respective stat
+	push hl
+	pop bc			;bc now points to respective stat
+	ld a,[bc]
+	dec a		;was it already the lowest possible?
+	pop hl
+	jr z,.tryAgain	;try again if so
+	ld [bc],a	;store new stat into the ram
+	push hl ;save the stat index
+	
+	ld a,[wd11e]
+	push af	;back up d11e
+	ld a, [H_WHOSETURN]
+	ld [wd11e],a	;load whose turn into d11e
+	call CalculateModifiedStats	;update the stats
+	pop af
+	ld [wd11e],a	;restore d11e
+	
+	pop hl	;load the stat index
+	call PrintRadioStatText
+	pop bc
+	pop hl
+	pop de
+	ret
+	
+;to print the textbox for which stat was affected by Radio
+PrintRadioStatText:
+	ld a,l
+	ld hl,RadioStatTextTable	;pointer to table
+	add a
+	ld c,a
+	ld b,0
+	add hl,bc
+	ld a,[hli]
+	ld h,[hl]
+	ld l,a		;hl contains text pointer
+	call PrintText
+	ret
+
+RadioStatTextTable:
+	dw RadioAttackText
+	dw RadioDefenseText
+	dw RadioSpeedText
+	dw RadioSpAttackText
+	dw RadioAccuracyText
+	dw RadioEvasionText
+	dw RadioSpDefenseText
+	
+
+RadioAttackText:
+	TX_FAR _RadioAttackText
+	db "@"
+
+RadioDefenseText:
+	TX_FAR _RadioDefenseText
+	db "@"
+
+RadioSpeedText:
+	TX_FAR _RadioSpeedText
+	db "@"
+
+RadioSpAttackText:
+	TX_FAR _RadioSpAttackText
+	db "@"
+
+RadioAccuracyText:
+	TX_FAR _RadioAccuracyText
+	db "@"
+
+RadioEvasionText:
+	TX_FAR _RadioEvasionText
+	db "@"
+
+RadioSpDefenseText:
+	TX_FAR _RadioSpDefenseText
+	db "@"
+
 
 ; decreases the mon's current HP by 1/16 of the Max HP (multiplied by number of toxic ticks if active)
 ; note that the toxic ticks are considered even if the damage is not poison (hence the Leech Seed glitch)
@@ -5263,16 +5388,6 @@ IncrementMovePP: ; 3e373 (f:6373)
 	inc [hl] ; increment PP in the party memory location
 	ret
 	
-; function to tell how effective the type of an enemy attack is on the player's current pokemon
-; this doesn't take into account the effects that dual types can have
-; (e.g. 4x weakness / resistance, weaknesses and resistances canceling)
-; the result is stored in [wd11e]
-; ($05 is not very effective, $10 is neutral, $14 is super effective)
-; as far is can tell, this is only used once in some AI code to help decide which move to use
-AIGetTypeEffectiveness: ; 3e449 (f:6449)
-	callab _AIGetTypeEffectiveness
-	ret
-
 ; some tests that need to pass for a move to hit
 MoveHitTest: ; 3e56b (f:656b)
 ; player's turn
@@ -8120,20 +8235,51 @@ ChargeEffect: ; 3f88c (f:788c)
 	ld de, W_ENEMYMOVEEFFECT
 	ld b, ANIM_AF
 .chargeEffect
-	set ChargingUp, [hl]
 	ld a, [de]
 	dec de ; de contains enemy or player MOVENUM
 	cp FLY_EFFECT
 	jr nz, .notFly
+	ld a,[wBattleLandscape]
+	and a,$0F	;only keep
+	cp a,UNDERGROUND_SCAPE	;underground?
+	jr nz,.notUnderground
+	;decrement PP
+	ld hl,DecrementPP
+	ld b,BANK(DecrementPP)
+	call Bankswitch	;de already contains the pointer to the move being used
+	
+	call PrintMonName1Text	;print pk used fly
+	ld c,$38
+	call DelayFrames
+	ld hl,AeroNotUndergroundText
+	jr .printText
+
+.notUnderground
 	set Invulnerable, [hl] ; mon is now invulnerable to typical attacks (fly/dig)
 	ld b, TELEPORT_NONMOVE ; load Teleport's animation
 .notFly
 	ld a, [de]
 	cp DIG
 	jr nz, .notDigOrFly
+
+	ld a,[wBattleLandscape]
+	and a,$0F	;only keep
+	cp a,SKY_SCAPE	;sky?
+	jr nz,.notSky
+	;decrement PP
+	ld hl,DecrementPP
+	ld b,BANK(DecrementPP)
+	call Bankswitch	;de already contains the pointer to the move being used
+	call PrintMonName1Text	;print "pk used dig"
+	ld c,$38
+	call DelayFrames
+	ld hl,EarthNotInSkyText	
+	jr .printText
+.notSky
 	set Invulnerable, [hl] ; mon is now invulnerable to typical attacks (fly/dig)
 	ld b, ANIM_C0
 .notDigOrFly
+	set ChargingUp, [hl]
 	xor a
 	ld [wAnimationType], a
 	ld a, b
@@ -8141,8 +8287,18 @@ ChargeEffect: ; 3f88c (f:788c)
 	ld a, [de]
 	ld [wWhichTrade], a
 	ld hl, ChargeMoveEffectText
+.printText
 	jp PrintText
 
+
+EarthNotInSkyText:
+	TX_FAR _SkyNoDamageText
+	db "@"
+
+AeroNotUndergroundText:
+	TX_FAR _UndegroundNoDamageText
+	db "@"
+	
 ChargeMoveEffectText: ; 3f8c8 (f:78c8)
 	TX_FAR _ChargeMoveEffectText
 	db $08 ; asm

@@ -19,7 +19,7 @@ PushStartText: ; 1e960 (7:6960)
 DisplayOakLabRightPoster: ; 1e965 (7:6965)
 	call EnableAutoTextBoxDrawing
 	ld hl, wPokedexOwned
-	ld b, wPokedexOwnedEnd - wPokedexOwned
+	ld b, 23
 	call CountSetBits
 	ld a, [wd11e]
 	cp $2

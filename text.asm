@@ -1094,6 +1094,12 @@ _HurtByPoisonText:: ; 89689 (22:5689)
 	text $5a, "'s"
 	line "hurt by poison!"
 	prompt
+	
+_HurtByRadioText:: ; 89689 (22:5689)
+	text $5a, "'s"
+	line "affected by the"
+	cont "radiation!"
+	prompt
 
 _HurtByBurnText:: ; 8969d (22:569d)
 	text $5a, "'s"

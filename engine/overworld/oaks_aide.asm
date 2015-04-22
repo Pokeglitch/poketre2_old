@@ -6,7 +6,7 @@ OaksAideScript ; 0x59035
 	and a
 	jr nz, .asm_59086 ; 0x59042 $42
 	ld hl, wPokedexOwned
-	ld b, wPokedexOwnedEnd - wPokedexOwned
+	ld b, 23
 	call CountSetBits
 	ld a, [wd11e]
 	ld [$ffdd], a

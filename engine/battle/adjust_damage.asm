@@ -103,6 +103,8 @@ _AdjustDamageForMoveType: ; 3e3a5 (f:63a5)
 ;to check the type chart table to try to find 0x damage
 LookFor0xDamage:
 	push hl
+	push bc
+	push de
 	ld a,2
 	;to skip through the first two sets of data in the type chart (they are for 2x and 0.5x)
 .loop1
@@ -126,10 +128,29 @@ LookFor0xDamage:
 ;to set the damage to zero
 .setToZero
 	call SetDamageToZero
+	pop de
+	pop bc
 	pop hl
 	pop af	;remove the return
 	ret
 .finish
+	push de	;save types
+	;check if the attack is a physical attack
+	call GetCurrentAttack
+	call IsPhysicalAttack
+	pop de
+	jr nc,.return		;return if not
+	ld a,d	;check first type
+	push de
+	call IsNonPhysicalType	;is it nonphysical?
+	pop de
+	jr c,.setToZero	;set to zero if so
+	ld a,e	;check second type
+	call IsNonPhysicalType
+	jr c,.setToZero	;set to zero if so
+.return
+	pop de
+	pop bc
 	pop hl
 	ret
 	
@@ -228,6 +249,7 @@ HoloOrShadowCheck:
 	ld a,[wEnemyMonTraits]	;load enemy mon traits
 	ld b,a					;store into b
 .enemyTurn
+	push bc
 	ld a,[wd11e]			;load the attack type into A
 	cp a,SHADOW				;shadow type?
 	jr nz,.notShadow		;skip if not
@@ -247,6 +269,16 @@ HoloOrShadowCheck:
 	call nz,MultiplyDamageByAmount	;DOUBLE the damage if so
 	
 .finish
+	pop bc
+	ld a,b
+	and SHADOW_TRAIT	;is the other pokemon shadow?
+	jr z,.return	;return if not
+	call GetCurrentAttack
+	call IsPhysicalAttack	;is it a physical attack?
+	jr nc,.return	;return if not
+	call SetDamageToZero
+	pop af	;remove the return
+.return
 	ret
 	
 ;to check the landscape to see if it matches the type, and multiply by 1.5 if so
@@ -366,7 +398,7 @@ RemainingDamageChecks:
 	ld a,[wBattleLandscape]		;check the battle landscape
 	and a,$0F		;only keep the landscape
 	cp VIRTUAL_REALITY_SCAPE		;is it virtual reality?
-	jr nz,.skipVirtualReality		;skip down if not
+	jr nz,.skipVirtualReality			;skip down if not
 	call GetCurrentAttack		;load the current attack into a
 	call IsPhysicalAttack		;is it a physical attack
 	jr nc,.skipVirtualReality	;skip down if not

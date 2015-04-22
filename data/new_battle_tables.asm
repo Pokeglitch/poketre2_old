@@ -190,6 +190,36 @@ PhysicalMovesTable:
 	db SHRED
 	db $FF
 	
+; piercing types
+PiercingTypesTable:
+	db TALON
+	db FANG
+	db $FF
+	
 ; piercing attacks
-PiercingMovesTables:
+PiercingMovesTable:
+	db HORN_DRILL
+	db SPLINTER
+	db POISON_STING
+	db PIN_MISSILE
+	db PECK
+	db DRILL_PECK
+	db BLOODSUCK
+	db BUG_BITE
+	db TRIPLE_PECK
+	db SPIKE_CANNON
+	db STING
+	db GORE
+	db ICICLE_SPEAR
+	db SHRAPNEL
+	db SPEARHEAD
+	db INJECTION
+	db VENOM_SHOT
+	db THORN_MACE
+	db $FF
+	
+; non physical types
+NonPhysicalTypeTable:
+	db CYBER
+	db GHOST
 	db $FF

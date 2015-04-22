@@ -1,11 +1,11 @@
 DisplayDexRating: ; 44169 (11:4169)
 	ld hl, wPokedexSeen
-	ld b, wPokedexSeenEnd - wPokedexSeen
+	ld b, 23	;only count the bits for the original pokemons
 	call CountSetBits
 	ld a, [wd11e] ; result of CountSetBits (seen count)
 	ld [$FFDB], a
 	ld hl, wPokedexOwned
-	ld b, wPokedexOwnedEnd - wPokedexOwned
+	ld b, 23
 	call CountSetBits
 	ld a, [wd11e] ; result of CountSetBits (own count)
 	ld [$FFDC], a
@@ -63,33 +63,33 @@ DexRatingsTable: ; 441d1 (11:41d1)
 	dw PokedexRatingText_44201
 	db 20
 	dw PokedexRatingText_44206
-	db 30
+	db 32
 	dw PokedexRatingText_4420b
-	db 40
+	db 44
 	dw PokedexRatingText_44210
-	db 50
+	db 56
 	dw PokedexRatingText_44215
-	db 60
+	db 68
 	dw PokedexRatingText_4421a
-	db 70
-	dw PokedexRatingText_4421f
 	db 80
+	dw PokedexRatingText_4421f
+	db 92
 	dw PokedexRatingText_44224
-	db 90
-	dw PokedexRatingText_44229
 	db 100
+	dw PokedexRatingText_44229
+	db 112
 	dw PokedexRatingText_4422e
-	db 110
+	db 124
 	dw PokedexRatingText_44233
-	db 120
+	db 136
 	dw PokedexRatingText_44238
-	db 130
+	db 148
 	dw PokedexRatingText_4423d
-	db 140
+	db 160
 	dw PokedexRatingText_44242
-	db 150
+	db 173
 	dw PokedexRatingText_44247
-	db 152
+	db 185
 	dw PokedexRatingText_4424c
 
 PokedexRatingText_44201: ; 44201 (11:4201)

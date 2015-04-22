@@ -1464,6 +1464,8 @@ wPartyMon6:: party_struct wPartyMon6 ; d247
 wPartyMonOT::    ds 11 * PARTY_LENGTH ; d273
 wPartyMonNicks:: ds 11 * PARTY_LENGTH ; d2b5
 
+wPartyMonNicksEnd:: ;end of party mon nicks list
+
 wExtraBytes:: ;d2f7
 	ds 38
 	
@@ -2298,7 +2300,7 @@ wBoxMon2:: ds box_struct_length * (MONS_PER_BOX + -1) ; dab7
 
 wBoxMonOT::    ds 11 * MONS_PER_BOX ; dd2a
 wBoxMonNicks:: ds 11 * MONS_PER_BOX ; de06
-wBoxMonNicksEnd:: ; dee2
+wBoxMonNicksEnd:: ; dee2 -> de72
 
 wPokedexOwned:: ; de72
 	flag_array NUM_POKEMON

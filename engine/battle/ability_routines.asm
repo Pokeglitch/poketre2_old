@@ -141,7 +141,7 @@ FluffyModifyDamage:
 	call IsPiercingAttack		;is it a piercing attack
 	ret c		;return if it is a piercing attack
 	call GetCurrentAttack		;get the attack being used
-	call IsPhysicalAttack		;is it a piercing attack
+	call IsPhysicalAttack		;is it a physical attack
 	ret nc		;return if not physical attack
 	call MultiplyDamageBy075		;otherwise, multiply damage by 0.75
 	jp SetDefendingAbilityTextBit	;set the bit for the defender ability

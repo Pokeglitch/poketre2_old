@@ -400,7 +400,7 @@ Func_5e2f: ; 5e2f (1:5e2f)
 Func_5e42: ; 5e42 (1:5e42)
 	push hl
 	ld hl, wPokedexOwned ; wPokedexOwned
-	ld b, wPokedexOwnedEnd - wPokedexOwned
+	ld b, 23
 	call CountSetBits
 	pop hl
 	ld de, wd11e

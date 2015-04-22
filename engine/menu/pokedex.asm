@@ -167,14 +167,14 @@ HandlePokedexListMenu: ; 40111 (10:4111)
 	hlCoord 14, 9
 	call DrawPokedexVerticalLine
 	ld hl,wPokedexSeen
-	ld b,wPokedexSeenEnd - wPokedexSeen
+	ld b,23
 	call CountSetBits
 	ld de,wd11e
 	hlCoord 16, 3
 	ld bc,$0103
 	call PrintNumber ; print number of seen pokemon
 	ld hl,wPokedexOwned
-	ld b,wPokedexOwnedEnd - wPokedexOwned
+	ld b,23
 	call CountSetBits
 	ld de,wd11e
 	hlCoord 16, 6

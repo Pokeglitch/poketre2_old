@@ -1993,7 +1993,7 @@ _RemovePokemon: ; 7b68 (1:7b68)
 	ld e, l
 	ld bc, $b
 	add hl, bc
-	ld bc, wPokedexOwned ; wPokedexOwned
+	ld bc, wPartyMonNicksEnd ; wPokedexOwned
 	ld a, [wcf95]
 	and a
 	jr z, .asm_7c15

@@ -392,7 +392,7 @@ Func_7390e: ; 7390e (1c:790e)
 	ld [MBC1SRamBankingMode], a
 	ld a, b
 	ld [MBC1SRamBank], a
-	ld bc, $462
+	ld bc, wBoxMonNicksEnd - W_NUMINBOX	;size of data to copy
 	call CopyData
 	pop hl
 	xor a

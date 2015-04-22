@@ -404,3 +404,42 @@ _VRNoDamageText:
 	line "don't work in a"
 	cont "virtual reality!"
 	prompt
+	
+	
+
+_RadioAttackText:
+	text $5a, "'s"
+	line "attack fell!"
+	prompt
+	
+_RadioDefenseText:
+	text $5a, "'s"
+	line "defense fell!"
+	prompt
+	
+_RadioSpeedText:
+	text $5a, "'s"
+	line "speed fell!"
+	prompt
+	
+_RadioSpAttackText:
+	text $5a, "'s"
+	line "special attack"
+	cont "fell!"
+	prompt
+	
+_RadioAccuracyText:
+	text $5a, "'s"
+	line "accuracy fell!"
+	prompt
+	
+_RadioEvasionText:
+	text $5a, "'s"
+	line "evade fell!"
+	prompt
+	
+_RadioSpDefenseText:
+	text $5a, "'s"
+	line "special defense"
+	cont "fell!"
+	prompt

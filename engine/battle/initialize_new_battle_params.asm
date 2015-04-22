@@ -49,8 +49,19 @@ IsPhysicalAttack:
 	ld de,1
 	jp IsInArray
 	
-;to see if the given attack is a piercing attack
-IsPiercingAttack:
-	ld hl,PiercingMovesTables
+;to see if the given type (in a) is non physical
+IsNonPhysicalType:
+	ld hl,NonPhysicalTypeTable
 	ld de,1
 	jp IsInArray
+	
+;to see if the given attack is a piercing attack
+IsPiercingAttack:
+	ld hl,PiercingMovesTable
+	ld de,1
+	call IsInArray
+	ret c	;return if the move is a piercing attack
+	ld a,[wd11e]	;get move type
+	ld hl,PiercingTypesTable
+	ld de,1
+	jp IsInArray	;check if the type is in the piercing types table

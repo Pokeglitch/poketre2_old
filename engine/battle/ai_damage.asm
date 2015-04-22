@@ -4,7 +4,7 @@
 ; the result is stored in [wd11e]
 ; ($05 is not very effective, $10 is neutral, $14 is super effective)
 ; as far is can tell, this is only used once in some AI code to help decide which move to use
-_AIGetTypeEffectiveness: ; 3e449 (f:6449)
+AIGetTypeEffectiveness: ; 3e449 (f:6449)
 	ld a,[W_ENEMYMOVETYPE]
 	ld d,a                 ; d = type of enemy move
 	ld hl,wBattleMonType
