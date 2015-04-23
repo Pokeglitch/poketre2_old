@@ -3934,7 +3934,7 @@ Func_f51e: ; f51e (3:751e)
 	jr z, .asm_f5b4
 	cp $2
 	jr z, .asm_f5b4
-	ld bc, wBoxMon2 - wBoxMon1
+	ld bc, wBoxMon1Level - wBoxMon1	;to set the pokemon's boxlevel
 	add hl, bc
 	ld a, [hl]
 	inc de
@@ -4003,30 +4003,7 @@ Func_f51e: ; f51e (3:751e)
 	ld bc, $b
 	call CopyData
 	pop hl
-	ld a, [wcf95]
-	cp $1
-	jr z, .asm_f664
-	cp $3
-	jr z, .asm_f664
-	push hl
-	srl a
-	add $2
-	ld [wcc49], a
-	call LoadMonData
-	callba CalcLevelFromExperience
-	ld a, d
-	ld [W_CURENEMYLVL], a ; W_CURENEMYLVL
-	pop hl
-	ld bc, wBoxMon2 - wBoxMon1
-	add hl, bc
-	ld [hli], a
-	ld d, h
-	ld e, l
-	ld bc, $ffee
-	add hl, bc
-	ld b, $1
-	call CalcStats
-.asm_f664
+	;no need to recalculate stats (unless daycare mon get a level...)
 	and a
 	ret
 

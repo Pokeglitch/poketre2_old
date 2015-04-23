@@ -2677,7 +2677,7 @@ SendNewMonToBox: ; e7a4 (3:67a4)
 	pop hl
 	ld d, h
 	ld e, l
-	ld bc, $ffdf
+	ld bc, $ffd4	;move up to the pokemon before in the list
 	add hl, bc
 	pop bc
 	dec b
@@ -2731,6 +2731,14 @@ SendNewMonToBox: ; e7a4 (3:67a4)
 	ld [de], a
 	dec b
 	jr nz, .asm_e8b1
+	ld hl, wEnemyMonLevel
+	ld b, $b
+.copy_stats
+	ld a, [hli]
+	inc de
+	ld [de], a
+	dec b
+	jr nz, .copy_stats
 	ret
 
 ; checks if the tile in front of the player is a shore or water tile

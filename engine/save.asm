@@ -56,17 +56,17 @@ LoadSAVCheckSum: ; 73623 (1c:7623)
 	call GetSaveBank	;get the appropriate bank
 	ld [MBC1SRamBank], a
 	ld hl, $a598 ; hero name located in SRAM
-	ld bc, $f8b ; but here checks the full SAV
+	ld bc, $f8b	+ wEndOfData - wBoxMonNicksEnd ; but here checks the full SAV
 	call SAVCheckSum
 	ld c, a
-	ld a, [$b523] ; SAV's checksum
+	ld a, [$bfff] ; SAV's checksum
 	cp c
 	jp z, .Func_73652
 	ld hl, $a598
-	ld bc, $f8b
+	ld bc, $f8b	+ wEndOfData - wBoxMonNicksEnd
 	call SAVCheckSum
 	ld c, a
-	ld a, [$b523] ; SAV's checksum
+	ld a, [$bfff] ; SAV's checksum
 	cp c
 	jp nz, SAVBadCheckSum
 
@@ -85,11 +85,11 @@ LoadSAVCheckSum: ; 73623 (1c:7623)
 	ld de, wSpriteStateData1
 	ld bc, $200
 	call CopyData
-	ld a, [$b522]
+	ld a, [$bffe]
 	ld [hTilesetType], a
 	ld hl, $b0c0
 	ld de, W_NUMINBOX
-	ld bc, $dee2 - W_NUMINBOX
+	ld bc, wEndOfData - W_NUMINBOX
 	call CopyData
 	and a
 	jp SAVGoodChecksum
@@ -102,15 +102,15 @@ LoadSAVCheckSum1: ; 73690 (1c:7690)
 	call GetSaveBank	;get the appropriate bank
 	ld [MBC1SRamBank], a
 	ld hl, $a598 ; hero name located in SRAM
-	ld bc, $f8b  ; but here checks the full SAV
+	ld bc, $f8b	+ wEndOfData - wBoxMonNicksEnd  ; but here checks the full SAV
 	call SAVCheckSum
 	ld c, a
-	ld a, [$b523] ; SAV's checksum
+	ld a, [$bfff] ; SAV's checksum
 	cp c
 	jr nz, SAVBadCheckSum
 	ld hl, $b0c0
 	ld de, W_NUMINBOX
-	ld bc, $dee2 - W_NUMINBOX
+	ld bc, wEndOfData - W_NUMINBOX
 	call CopyData
 	and a
 	jp SAVGoodChecksum
@@ -123,10 +123,10 @@ LoadSAVCheckSum2: ; 736bd (1c:76bd)
 	call GetSaveBank	;get the appropriate bank
 	ld [MBC1SRamBank], a
 	ld hl, $a598 ; hero name located in SRAM
-	ld bc, $f8b  ; but here checks the full SAV
+	ld bc, $f8b	+ wEndOfData - wBoxMonNicksEnd  ; but here checks the full SAV
 	call SAVCheckSum
 	ld c, a
-	ld a, [$b523] ; SAV's checksum
+	ld a, [$bfff] ; SAV's checksum
 	cp c
 	jp nz, SAVBadCheckSum
 	ld hl, $af2c
@@ -233,14 +233,14 @@ SaveSAVtoSRAM0: ; 7378c (1c:778c)
 	call CopyData
 	ld hl, W_NUMINBOX
 	ld de, $b0c0
-	ld bc, $dee2 - W_NUMINBOX
+	ld bc, wEndOfData - W_NUMINBOX
 	call CopyData
 	ld a, [hTilesetType]
-	ld [$b522], a
+	ld [$bffe], a
 	ld hl, $a598
-	ld bc, $f8b
+	ld bc, $f8b	+ wEndOfData - wBoxMonNicksEnd ;original length + additional data
 	call SAVCheckSum
-	ld [$b523], a
+	ld [$bfff], a
 	xor a
 	ld [MBC1SRamBankingMode], a
 	ld [MBC1SRamEnable], a
@@ -256,12 +256,12 @@ SaveSAVtoSRAM1: ; 737e2 (1c:77e2)
 	ld [MBC1SRamBank], a
 	ld hl, W_NUMINBOX
 	ld de, $b0c0
-	ld bc, $dee2 - W_NUMINBOX
+	ld bc, wEndOfData - W_NUMINBOX
 	call CopyData
 	ld hl, $a598
-	ld bc, $f8b
+	ld bc, $f8b	+ wEndOfData - wBoxMonNicksEnd
 	call SAVCheckSum
-	ld [$b523], a
+	ld [$bfff], a
 	xor a
 	ld [MBC1SRamBankingMode], a
 	ld [MBC1SRamEnable], a
@@ -283,9 +283,9 @@ SaveSAVtoSRAM2: ; 7380f (1c:780f)
 	ld bc, $d31d - $d2f7
 	call CopyData
 	ld hl, $a598
-	ld bc, $f8b
+	ld bc, $f8b	+ wEndOfData - wBoxMonNicksEnd
 	call SAVCheckSum
-	ld [$b523], a
+	ld [$bfff], a
 	xor a
 	ld [MBC1SRamBankingMode], a
 	ld [MBC1SRamEnable], a
@@ -344,7 +344,9 @@ Func_7387b: ; 7387b (1c:787b)
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	jp GetPCBank
+	call GetPCBank
+	ld b,a
+	ret
 	
 ;starting locations for each PC box
 PointerTable_73895: ; 73895 (1c:7895)
@@ -620,10 +622,10 @@ SAVCheckRandomID: ;$7ad1
 	and a
 	jr z,.next
 	ld hl,$a598
-	ld bc,$0f8b
+	ld bc,$f8b	+ wEndOfData - wBoxMonNicksEnd
 	call SAVCheckSum
 	ld c,a
-	ld a,[$b523]
+	ld a,[$bfff]
 	cp c
 	jr nz,.next
 	ld hl,$a605

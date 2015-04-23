@@ -5,7 +5,7 @@ flag_array: MACRO
 	ds ((\1) + 7) / 8
 ENDM
 
-box_struct_length EQU 25 + NUM_MOVES * 2
+box_struct_length EQU 25 + NUM_MOVES * 2 + 11
 box_struct: MACRO
 \1Species::    db
 \1HP::         dw
@@ -2290,17 +2290,17 @@ W_DAYCAREMONOT::   ds 11 ; da54
 
 wDayCareMon:: box_struct wDayCareMon ; da5f
 
-
+wDayCareMonEnd::
 W_NUMINBOX::  ds 1 ; da80
 wBoxSpecies:: ds MONS_PER_BOX + 1
 
 wBoxMons::
-wBoxMon1:: box_struct wBoxMon1 ; da96
+wBoxMon1:: party_struct wBoxMon1 ; da96
 wBoxMon2:: ds box_struct_length * (MONS_PER_BOX + -1) ; dab7
 
 wBoxMonOT::    ds 11 * MONS_PER_BOX ; dd2a
 wBoxMonNicks:: ds 11 * MONS_PER_BOX ; de06
-wBoxMonNicksEnd:: ; dee2 -> de72
+wBoxMonNicksEnd:: ; dee2
 
 wPokedexOwned:: ; de72
 	flag_array NUM_POKEMON
@@ -2430,6 +2430,9 @@ wEnemyMonBaseSpecialDefense::
 wEnemyMonDelayedDamage::
 	ds 2
 
+	
+wEndOfData::
+	ds 1
 
 
 SECTION "Stack", WRAMX[$dfff], BANK[1]

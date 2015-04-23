@@ -5,11 +5,6 @@ MainMenu: ; 5af2 (1:5af2)
 	ld [wd08a],a
 	inc a
 	ld [wd088],a
-	call Func_609e
-	jr nc,.next0
-
-	; Predef 52 loads the save from SRAM to RAM
-	predef LoadSAV
 
 .next0
 	ld c,20
@@ -30,9 +25,6 @@ MainMenu: ; 5af2 (1:5af2)
 	call LoadFontTilePatterns
 	ld hl,wd730
 	set 6,[hl]
-	ld a,[wd088]
-	cp a,1
-	jr z,.next1
 	hlCoord 0, 0
 	ld b,6
 	ld c,13
@@ -40,16 +32,6 @@ MainMenu: ; 5af2 (1:5af2)
 	hlCoord 2, 2
 	ld de,ContinueText
 	call PlaceString
-	jr .next2
-.next1
-	hlCoord 0, 0
-	ld b,4
-	ld c,13
-	call TextBoxBorder
-	hlCoord 2, 2
-	ld de,NewGameText
-	call PlaceString
-.next2
 	ld hl,wd730
 	res 6,[hl]
 	call UpdateSprites ; OAM?
@@ -63,7 +45,7 @@ MainMenu: ; 5af2 (1:5af2)
 	ld [wTopMenuItemY],a
 	ld a,$B
 	ld [wMenuWatchedKeys],a
-	ld a,[wd088]
+	ld a,2
 	ld [wMaxMenuItem],a
 	call HandleMenuInput
 	bit 1,a
@@ -71,22 +53,30 @@ MainMenu: ; 5af2 (1:5af2)
 	ld c,20
 	call DelayFrames
 	ld a,[wCurrentMenuItem]
-	ld b,a
-	ld a,[wd088]
-	cp a,2
-	jp z,.next3
-	inc b ; adjust MenuArrow_Counter
-.next3
-	ld a,b
 	and a
-	jr z,.next4 ; if press_A on Continue
+	jr z,.hard_mode ; if press_A on Hard Mode
 	cp a,1
-	jp z,Func_5d52 ; if press_A on NewGame
+	jp z,.next4 ; if press_A on Normal Mode
 	call DisplayOptionsFromMainMenu ; if press_a on Options
 	ld a,1
 	ld [wd08a],a
 	jp .next0
+.hard_mode
+	;turn off hard mode flag
+	ld hl,W_OPTIONS
+	set 4,[hl]
+	jr .tryLoad
 .next4
+	;turn off hard mode flag
+	ld hl,W_OPTIONS
+	res 4,[hl]
+.tryLoad
+	predef LoadSAV	;try to load the data
+	
+	ld a,[wd088]	;did it load data?
+	cp a,$1	;1 means it did not load data
+	jp z,NewGame	;then run new game
+	
 	call ContinueGame
 	ld hl,wd126
 	set 5,[hl]
@@ -100,7 +90,7 @@ MainMenu: ; 5af2 (1:5af2)
 	bit 0,a
 	jr nz,.next5
 	bit 1,a
-	jp nz,.next0
+	jp nz,NewGame	;instead of going back, run a new game
 	jr .next6
 .next5
 	call GBPalWhiteOutWithDelay3
@@ -301,7 +291,8 @@ LinkCanceledText: ; 5d4d (1:5d4d)
 	TX_FAR _LinkCanceledText
 	db "@"
 
-Func_5d52: ; 5d52 (1:5d52)
+;to start a new game:
+NewGame: ; 5d52 (1:5d52)
 	ld hl, wd732
 	res 1, [hl]
 	call OakSpeech
@@ -326,10 +317,10 @@ SpecialEnterMap: ; 5d5f (1:5d5f)
 	jp EnterMap
 
 ContinueText: ; 5d7e (1:5d7e)
-	db "CONTINUE", $4e
+	db "HARD GAME", $4e
 
 NewGameText: ; 5d87 (1:5d87)
-	db "NEW GAME", $4e
+	db "NORMAL GAME", $4e
 	db "OPTION@"
 
 TradeCenterText: ; 5d97 (1:5d97)
@@ -337,7 +328,7 @@ TradeCenterText: ; 5d97 (1:5d97)
 	db "COLOSSEUM",    $4e
 	db "CANCEL@"
 
-ContinueGame: ; 5db5 (1:5db5)
+ContinueGame: ; 5db5 (1:5db5)	
 	xor a
 	ld [H_AUTOBGTRANSFERENABLED], a ; $ffba
 	hlCoord 4, 7
@@ -656,29 +647,3 @@ TextSpeedOptionData: ; 6096 (1:6096)
 	db  1,1 ; Fast
 	db 7 ; default X coordinate (Medium)
 	db $ff ; terminator
-
-Func_609e: ; 609e (1:609e)
-	ld a, $a
-	ld [$0], a
-	ld a, $1
-	ld [$6000], a
-	ld [$4000], a
-	ld b, $b
-	ld hl, $a598
-.asm_60b0
-	ld a, [hli]
-	cp $50
-	jr z, .asm_60c1
-	dec b
-	jr nz, .asm_60b0
-	xor a
-	ld [$0], a
-	ld [$6000], a
-	and a
-	ret
-.asm_60c1
-	xor a
-	ld [$0], a
-	ld [$6000], a
-	scf
-	ret
