@@ -18,7 +18,7 @@ db DISABLE
 db SWIFT
 db PSYCHIC_M
 db 5 ; growth rate
-db AB_TELEPATHIC	;ability 1
+db AB_IONIZING	;ability 1
 db AB_SHARP_MIND	;ability 2
 db $5A	;special defense
 db 00	;base selling price

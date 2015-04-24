@@ -19,7 +19,7 @@ db THUNDER_WAVE
 db 0
 db 5 ; growth rate
 db AB_STRONG_SCALE	;ability 1
-db AB_FLYING_DRAGON	;ability 2
+db AB_SWIMMER	;ability 2
 db $46	;special defense
 db 00	;base selling price
 db 00	;evolution shed item

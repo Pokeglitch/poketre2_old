@@ -2531,28 +2531,98 @@ ApplyOutOfBattlePoisonDamage: ; c69c (3:469c)
 	ld de, wPartySpecies
 .applyDamageLoop
 	ld a, [hl]
-	and (1 << PSN)
-	jr z, .nextMon2 ; not poisoned
+	and (1 << BRN) | (1 << PSN) | (1 << RAD)
+	jp z, .nextMon2 ; not burned or poisoned or rad
 	dec hl
 	dec hl
+	and (1 << RAD)	;radioactive?
+	jr z,.applyDamage	;apply damage affect if not
+	push de
+	push hl
+.tryAgain
+	call Random
+	cp a,$FF
+	jr z,.tryAgain	;if it was $ff, then get another
+	ld l,4
+.loop
+	sub a,51	;subtract a by 51
+	jr c,.applyEffect	;if we've gone below 0, then apply the affect
+	dec l
+	jr .loop	;otherwise, loop
+.applyEffect
+	ld a,l	;store the stat index into a
+	pop hl
+	push hl	;get the pointer to the hp low
+	cp a,4
+	jr nz,.findStat	;if it wasn't stat 4 (sp.def), then use normal routine
+	ld bc,wPartyMon1SpDefense - wPartyMon1HP ;to point to the special defense low byte
+	jr .decStat
+	
+.findStat
+	ld bc,wPartyMon1Attack - wPartyMon1HP ;to pointer to attack low byte
+	add hl,bc	;hl now points to player mon 1 attack low
+	push hl
+	pop bc	;bc now points to player mon 1 attack low
+	add a	;double the stat index
+	ld h,0
+	ld l,a	;this is the offset to find the corresponding stat
+	
+.decStat
+	add hl,bc		;hl now points to the respective stat low byte
+	ld a,[hld]
+	ld c,a
+	ld b,[hl]	;bc contains the stat
+	dec bc		;decrease the stat
+	
+	ld a,c
+	or b
+	jr z,.radioDecreaseHP	;if it was zero, then decrease the hp
+	
+	ld a,b
+	ld [hli],a
+	ld a,c
+	ld [hl],a	;store the stat
+	
+	pop hl
+	pop de
+	
+	jr .nextMon
+.radioDecreaseHP
+	pop hl
+	pop de
+.applyDamage
 	ld a, [hld]
 	ld b, a
 	ld a, [hli]
 	or b
-	jr z, .nextMon ; already fainted
+	jp z, .nextMon ; already fainted
 ; subtract 1 from HP
-	ld a, [hl]
-	dec a
-	ld [hld], a
-	inc a
-	jr nz, .noBorrow
-; borrow 1 from upper byte of HP
-	dec [hl]
-	inc hl
-	jr .nextMon
-.noBorrow
-	ld a, [hli]
-	or [hl]
+	ld a, [hld]
+	ld c,a
+	ld a,[hl]
+	ld b,a		;bc = hp
+	dec bc
+	push hl
+	push bc
+	ld a, [wWhichPokemon]
+	ld hl,wPartyMon1SecondaryStatus
+	ld b,11	;size of party
+	call SkipFixedLengthTextEntries	;go to the appropriate pokemon
+	bit 0,[hl]	;toxic or wounded?
+	pop bc
+	pop hl
+	jr z,.notToxic	;skip if not
+	ld a,c
+	or b
+	jr z,.notToxic	;pokemon is fainted, so don't decrease again
+	dec bc	;subtract again
+.notToxic
+	ld a,b
+	ld [hli],a	;store high byte
+	ld a,c
+	ld [hl],a	;store low byte
+	ld a,c
+	or b
 	jr nz, .nextMon ; didn't faint from damage
 ; the mon fainted from the damage
 	push hl
@@ -2587,7 +2657,7 @@ ApplyOutOfBattlePoisonDamage: ; c69c (3:469c)
 	ld hl, wWhichPokemon
 	inc [hl]
 	pop hl
-	jr .applyDamageLoop
+	jp .applyDamageLoop
 .applyDamageLoopDone
 	ld hl, wPartyMon1Status
 	ld a, [wPartyCount]
@@ -2595,7 +2665,7 @@ ApplyOutOfBattlePoisonDamage: ; c69c (3:469c)
 	ld e, 0
 .countPoisonedLoop
 	ld a, [hl]
-	and (1 << PSN)
+	and (1 << BRN) | (1 << PSN) | (1 << RAD)
 	or e
 	ld e, a
 	ld bc, wPartyMon2 - wPartyMon1
@@ -6557,7 +6627,6 @@ LearnSets: INCLUDE "data/poke_learnsets.asm"
 
 SECTION "bank3A",ROMX,BANK[$3A]
 BaseStats: INCLUDE "data/base_stats.asm"
-INCLUDE "data/additional_pokemon_data_table.asm"
 
 
 SECTION "bank3B",ROMX,BANK[$3B]

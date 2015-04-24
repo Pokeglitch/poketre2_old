@@ -18,7 +18,7 @@ db 0
 db 0
 db 0
 db 5 ; growth rate
-db AB_TELEPATHIC	;ability 1
+db AB_IONIZING	;ability 1
 db AB_SHARP_MIND	;ability 2
 db $70	;special defense
 db 00	;base selling price

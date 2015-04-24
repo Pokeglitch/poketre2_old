@@ -301,18 +301,25 @@ Landscape15xDamageCheck:
 	
 ;to check the landscape to see if it matches type. if so, zero the damage
 Landscape0xDamageCheck:
+	ld a,[wd11e]			;get the move type
+	ld b,a	;store into b
 	ld a,[wBattleLandscape]	;load the landscape
 	and a,$0F				;only keep the landscape value
+	ld c,a	;store into c
 	ld hl,LandscapeType0Table	;pointer to the landscape vs type for 0 table
-	ld de,2					;each row is 2 lines long
-	call IsInArray
-	ret nc					;return if no match
-	inc hl					;otherwise, get next value
-	ld a,[hl]
-	ld b,a
-	ld a,[wd11e]			;get the move type
-	cp b					;do they match?
-	ret nz					;return if not
+	
+.loop
+	ld a,[hli]	;get the first byte in the row
+	cp a,$FF
+	ret z		;return if we've reached the end
+	cp c		;does the landscape match?
+	inc hl
+	jr nz,.loop			;loop if no match
+	dec hl
+	ld a,[hli]	;get next value
+	cp b					;does it match the type
+	jr nz,.loop					;loop
+
 	ld hl,wBattleNoDamageText
 	set 0,[hl]				;set the "modified by environment" text bit
 	call SetDamageToZero		;set the damage to zero

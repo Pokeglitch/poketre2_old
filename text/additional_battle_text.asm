@@ -405,8 +405,11 @@ _VRNoDamageText:
 	cont "virtual reality!"
 	prompt
 	
+_MoonNoDamageText:
+	text "There is no air on"
+	line "the moon!"
+	prompt
 	
-
 _RadioAttackText:
 	text $5a, "'s"
 	line "attack fell!"
@@ -442,4 +445,22 @@ _RadioSpDefenseText:
 	text $5a, "'s"
 	line "special defense"
 	cont "fell!"
+	prompt
+	
+_BadlyHurtByPoisonText:: ; 89689 (22:5689)
+	text $5a, "'s"
+	line "badly hurt by the"
+	cont "poison!"
+	prompt
+	
+_HurtByWoundText:: ; 89689 (22:5689)
+	text $5a, "'s"
+	line "injured from the"
+	cont "wound!"
+	prompt
+		
+_HurtByRadioText:: ; 89689 (22:5689)
+	text $5a, "'s"
+	line "weakened by the"
+	cont "radiation!"
 	prompt

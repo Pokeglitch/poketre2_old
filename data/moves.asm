@@ -52,7 +52,7 @@ endm
 	move POISON_STING,  POISON_SIDE_EFFECT1,          15,  POISON,    100,  35
 	move DREADNOUGHT,   FORCE_INDUCE_FEAR_EFFECT,    110,  GHOST,      85,   5
 	move PIN_MISSILE,   TWO_TO_FIVE_ATTACKS_EFFECT,   14,  BUG,        85,  20
-	move LEER,          DEFENSE_DOWN1_EFFECT,          0,  PHYSICAL,  100,  30
+	move LEER,          DEFENSE_DOWN1_EFFECT,          0,  MIND,  100,  30
 	move BITE,          FLINCH_SIDE_EFFECT1,          60,  NORMAL,    100,  25
 	move GROWL,         ATTACK_DOWN1_EFFECT,           0,  SOUND,     100,  40
 	move ROAR,          FORCE_INDUCE_FEAR_EFFECT,      0,  SOUND,      85,  20
@@ -146,7 +146,7 @@ endm
 	move WATERSPOUT,    CREATE_WEATHER_EFFECT,        50,  WATER,     100,  15
 	move SOFTBOILED,    HEAL_EFFECT,                   0,  PHYSICAL,  100,  10
 	move HI_JUMP_KICK,  JUMP_KICK_EFFECT,             85,  FIGHTING,   90,  20
-	move GLARE,         PARALYZE_EFFECT,               0,  PHYSICAL,   75,  30
+	move GLARE,         PARALYZE_EFFECT,               0,  MIND,   75,  30
 	move DREAM_EATER,   DREAM_EATER_EFFECT,          100,  MIND,      100,  15
 	move TOXIC_GAS,     FORCE_CHANGE_ENVIRONMENT_EFFECT, 0, POISON,    55,  20
 	move SONAR,         ACCURACY_UP2_EFFECT,           0,  SOUND,     100,  10

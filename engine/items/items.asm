@@ -2078,7 +2078,7 @@ ItemUseTMHM: ; e479 (3:6479)
 	sub a,TM_01
 	push af
 	jr nc,.skipAdding
-	add a,55 ; if item is an HM, add 55
+	add a,TM_75 - HM_01 + 1 ; if item is an HM, add total size of TM list
 .skipAdding
 	inc a
 	ld [wd11e],a

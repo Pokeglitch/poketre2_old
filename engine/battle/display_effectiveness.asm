@@ -44,6 +44,8 @@ LandscapeNoDamageTextTable:
 	dw UndegroundNoDamageText
 	db VIRTUAL_REALITY_SCAPE
 	dw VRNoDamageText
+	db MOON_SCAPE
+	dw MoonNoDamageText
 	db $FF
 
 DisplayAbility1NoDamageText:
@@ -653,4 +655,8 @@ UndegroundNoDamageText:
 
 VRNoDamageText:
 	TX_FAR _VRNoDamageText
+	db "@"
+	
+MoonNoDamageText:
+	TX_FAR _MoonNoDamageText
 	db "@"

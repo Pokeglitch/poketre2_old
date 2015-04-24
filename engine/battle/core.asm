@@ -562,28 +562,43 @@ MainInBattleLoop: ; 3c233 (f:4233)
 	jp MainInBattleLoop
 
 HandlePoisonBurnLeechSeed: ; 3c3bd (f:43bd)
+	ld de,W_PLAYERBATTSTATUS3
+	push de		;store the battle status 3 (for toxic bit)
 	ld hl, wBattleMonHP
 	ld de, wBattleMonStatus
 	ld bc, wPlayerMonStatMods
 	ld a, [H_WHOSETURN]
 	and a
 	jr z, .playersTurn
+	pop de
+	ld de,W_ENEMYBATTSTATUS3	;replace the battle status 3
+	push de
 	ld hl, wEnemyMonHP
 	ld de, wEnemyMonStatus
 	ld bc, wEnemyMonStatMods
 .playersTurn
 	ld a, [de]
+	pop de	;recover the battle status 3 byte
 	bit 7,a		;radioactive?
 	jr nz,.radioactive
 	and (1 << BRN) | (1 << PSN)
 	jr z, .notBurnedOrPoisoned
 	push hl
 	ld hl, HurtByPoisonText
-	ld a, [de]
 	and 1 << BRN
-	jr z, .poisoned
+	jr z, .toxicCheck	;check if toxic (since its poison)
 	ld hl, HurtByBurnText
-.poisoned
+	ld a,[de]
+	bit 0,a	;wound?
+	jr z,.printText	;print text if not
+	ld hl,HurtByWoundText
+	jr .printText
+.toxicCheck
+	ld a,[de]
+	bit 0,a	;toxic?
+	jr z,.printText	;print text if not
+	ld hl,BadlyHurtByPoisonText
+.printText
 	call PrintText
 	xor a
 	ld [wAnimationType], a
@@ -651,6 +666,12 @@ HurtByPoisonText: ; 3c42e (f:442e)
 	TX_FAR _HurtByPoisonText
 	db "@"
 	
+BadlyHurtByPoisonText: ; 3c42e (f:442e)
+	TX_FAR _BadlyHurtByPoisonText
+	db "@"
+HurtByWoundText: ; 3c42e (f:442e)
+	TX_FAR _HurtByWoundText
+	db "@"
 HurtByRadioText:
 	TX_FAR _HurtByRadioText
 	db "@"

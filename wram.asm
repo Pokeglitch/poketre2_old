@@ -14,14 +14,17 @@ box_struct: MACRO
 \1Type::
 \1Type1::      db
 \1Type2::      db
+\1HPSpDefDV::
 \1CatchRate::  db
 \1Moves::      ds NUM_MOVES
+\1SpDefense::
 \1OTID::       dw
 \1Exp::        ds 3
 \1HPExp::      dw
 \1AttackExp::  dw
 \1DefenseExp:: dw
 \1SpeedExp::   dw
+\1SpAttack::
 \1SpecialExp:: dw
 \1DVs::        ds 2
 \1PP::         ds NUM_MOVES
@@ -1461,7 +1464,29 @@ wPartyMon4:: party_struct wPartyMon4 ; d1ef
 wPartyMon5:: party_struct wPartyMon5 ; d21b
 wPartyMon6:: party_struct wPartyMon6 ; d247
 
-wPartyMonOT::    ds 11 * PARTY_LENGTH ; d273
+wPartyMonOT::
+wPartyMon1OT::
+wPartyMon1SpDefenseEV::
+	ds 2
+wPartyMon1Abilities::
+wPartyMon1Ability1::
+	ds 1
+wPartyMon1Ability2::
+	ds 1
+wPartyMon1DelayedDamage::
+	ds 2
+wPartyMon1DelayedDamageCounter::
+	ds 1
+wPartyMon1SecondaryStatus::
+	ds 1
+wPartyMon1Traits::
+	ds 1
+wPartyMon1Morale::
+	ds 1
+wPartyMon1LastOTByte:
+	ds 1
+
+wPartyMon2OT:: ds 11 * 5
 wPartyMonNicks:: ds 11 * PARTY_LENGTH ; d2b5
 
 wPartyMonNicksEnd:: ;end of party mon nicks list
@@ -2300,7 +2325,7 @@ wBoxMon2:: ds box_struct_length * (MONS_PER_BOX + -1) ; dab7
 
 wBoxMonOT::    ds 11 * MONS_PER_BOX ; dd2a
 wBoxMonNicks:: ds 11 * MONS_PER_BOX ; de06
-wBoxMonNicksEnd:: ; dee2
+wBoxMonNicksEnd::
 
 wPokedexOwned:: ; de72
 	flag_array NUM_POKEMON
@@ -2309,21 +2334,24 @@ wPokedexOwnedEnd:: ;de8d
 wPokedexSeen:: ; de8d
 	flag_array NUM_POKEMON
 wPokedexSeenEnd::
-
-;container the subanimation special effect if:
-wSubAnimSpecEffect:: ;dea8
-	ds 1
 	
 ;contains the active totems
 ;Bit 0 = Role Reversal
 wTotems:: ;dea9
 	ds 1
 	
+;End of Data that we care about saving
+wEndOfData::
+
 ;the number of new battle bytes (for erasing)
 
 NUM_OF_NEW_BATTLE_BYTES EQU 27
 ;the start of the new battle bytes
 wNewBattleBytes::
+
+;container the subanimation special effect if:
+wSubAnimSpecEffect:: ;dea8
+	ds 1
 
 ;stores the value of the BattleRandom routine
 wBattleRandom::
@@ -2396,8 +2424,10 @@ wPreBattleBits::
 wAdditionalBattleTypeBits::
 	ds 1
 	
+
 ;contains additional information about the pokemon in battle:
 wBattleMonSecondaryStatus::
+	ds 1
 wBattleMonTraits::
 	ds 1
 wBattleMonAbility::
@@ -2409,13 +2439,18 @@ wBattleMonMorale::
 	ds 1
 wBattleMonSpecialDefense::
 	ds 2
-wBattleMonBaseSpecialDefense::
+wBattleMonUnmodifiedSpecialDefense::
 	ds 2
 wBattleMonDelayedDamage::
 	ds 2
+wBattleMonCursedCounter::
+	ds 1
+wBattleMonDelayedDamageCounter::
+	ds 1
 	
 
 wEnemyMonSecondaryStatus::
+	ds 1
 wEnemyMonTraits::
 	ds 1
 wEnemyMonAbility::
@@ -2423,15 +2458,222 @@ wEnemyMonAbility1::
 	ds 1
 wEnemyMonAbility2::
 	ds 1
+wEnemyMonMorale::
+	ds 1
 wEnemyMonSpecialDefense::
 	ds 2
-wEnemyMonBaseSpecialDefense::
+wEnemyMonUnmodifiedSpecialDefense::
 	ds 2
 wEnemyMonDelayedDamage::
 	ds 2
+wEnemyMonCursedCounter::
+	ds 1
+wEnemyMonDelayedDamageCounter::
+	ds 1
+	
+
+;to save the confused counter and cursed counter for each pokemon (gets erased after battle)
+wPlayerPartyMon1ConfusedCounter:
+wPlayerPartyMon1CursedCounter:
+	ds 1
+wPlayerPartyMon2ConfusedCounter:
+wPlayerPartyMon2CursedCounter:
+	ds 1
+wPlayerPartyMon3ConfusedCounter:
+wPlayerPartyMon3CursedCounter:
+	ds 1
+wPlayerPartyMon4ConfusedCounter:
+wPlayerPartyMon4CursedCounter:
+	ds 1
+wPlayerPartyMon5ConfusedCounter:
+wPlayerPartyMon5CursedCounter:
+	ds 1
+wPlayerPartyMon6ConfusedCounter:
+wPlayerPartyMon6CursedCounter:
+	ds 1
+	
+	
+wEnemyPartyMon1ConfusedCounter:
+wEnemyPartyMon1CursedCounter:
+	ds 1
+wEnemyPartyMon2ConfusedCounter:
+wEnemyPartyMon2CursedCounter:
+	ds 1
+wEnemyPartyMon3ConfusedCounter:
+wEnemyPartyMon3CursedCounter:
+	ds 1
+wEnemyPartyMon4ConfusedCounter:
+wEnemyPartyMon4CursedCounter:
+	ds 1
+wEnemyPartyMon5ConfusedCounter:
+wEnemyPartyMon5CursedCounter:
+	ds 1
+wEnemyPartyMon6ConfusedCounter:
+wEnemyPartyMon6CursedCounter:
+	ds 1
+	
+;to save the pokemons disabled move
+wPlayerPartyMon1DisabledMove:
+	ds 1
+wPlayerPartyMon2DisabledMove:
+	ds 1
+wPlayerPartyMon3DisabledMove:
+	ds 1
+wPlayerPartyMon4DisabledMove:
+	ds 1
+wPlayerPartyMon5DisabledMove:
+	ds 1
+wPlayerPartyMon6DisabledMove:
+	ds 1
+	
+wEnemyPartyMon1DisabledMove:
+	ds 1
+wEnemyPartyMon2DisabledMove:
+	ds 1
+wEnemyPartyMon3DisabledMove:
+	ds 1
+wEnemyPartyMon4DisabledMove:
+	ds 1
+wEnemyPartyMon5DisabledMove:
+	ds 1
+wEnemyPartyMon6DisabledMove:
+	ds 1
+	
+;to save the stat modifiers for each pokemon in the battle
+wPlayerPartyMon1AttackMod::
+wPlayerPartyMon2AttackMod::
+	ds 1
+wPlayerPartyMon1DefenseMod::
+wPlayerPartyMon2DefenseMod::
+	ds 1
+wPlayerPartyMon1SpeedMod::
+wPlayerPartyMon2SpeedMod::
+	ds 1
+wPlayerPartyMon1SpAttackMod::
+wPlayerPartyMon2SpAttackMod::
+	ds 1
+wPlayerPartyMon1AccuracyMod::
+wPlayerPartyMon2AccuracyMod::
+	ds 1
+wPlayerPartyMon1EvasionMod::
+wPlayerPartyMon2EvasionMod::
+	ds 1
+wPlayerPartyMon1SpDefenseMod::
+wPlayerPartyMon2SpDefenseMod::
+	ds 1
+	
+	
+wPlayerPartyMon3AttackMod::
+wPlayerPartyMon4AttackMod::
+	ds 1
+wPlayerPartyMon3DefenseMod::
+wPlayerPartyMon4DefenseMod::
+	ds 1
+wPlayerPartyMon3SpeedMod::
+wPlayerPartyMon4SpeedMod::
+	ds 1
+wPlayerPartyMon3SpAttackMod::
+wPlayerPartyMon4SpAttackMod::
+	ds 1
+wPlayerPartyMon3AccuracyMod::
+wPlayerPartyMon4AccuracyMod::
+	ds 1
+wPlayerPartyMon3EvasionMod::
+wPlayerPartyMon4EvasionMod::
+	ds 1
+wPlayerPartyMon3SpDefenseMod::
+wPlayerPartyMon4SpDefenseMod::
+	ds 1
+	
+wPlayerPartyMon5AttackMod::
+wPlayerPartyMon6AttackMod::
+	ds 1
+wPlayerPartyMon5DefenseMod::
+wPlayerPartyMon6DefenseMod::
+	ds 1
+wPlayerPartyMon5SpeedMod::
+wPlayerPartyMon6SpeedMod::
+	ds 1
+wPlayerPartyMon5SpAttackMod::
+wPlayerPartyMon6SpAttackMod::
+	ds 1
+wPlayerPartyMon5AccuracyMod::
+wPlayerPartyMon6AccuracyMod::
+	ds 1
+wPlayerPartyMon5EvasionMod::
+wPlayerPartyMon6EvasionMod::
+	ds 1
+wPlayerPartyMon5SpDefenseMod::
+wPlayerPartyMon6SpDefenseMod::
+	ds 1
+	
 
 	
-wEndOfData::
+wEnemyPartyMon1AttackMod::
+wEnemyPartyMon2AttackMod::
+	ds 1
+wEnemyPartyMon1DefenseMod::
+wEnemyPartyMon2DefenseMod::
+	ds 1
+wEnemyPartyMon1SpeedMod::
+wEnemyPartyMon2SpeedMod::
+	ds 1
+wEnemyPartyMon1SpAttackMod::
+wEnemyPartyMon2SpAttackMod::
+	ds 1
+wEnemyPartyMon1AccuracyMod::
+wEnemyPartyMon2AccuracyMod::
+	ds 1
+wEnemyPartyMon1EvasionMod::
+wEnemyPartyMon2EvasionMod::
+	ds 1
+wEnemyPartyMon1SpDefenseMod::
+wEnemyPartyMon2SpDefenseMod::
+	ds 1
+	
+	
+wEnemyPartyMon3AttackMod::
+wEnemyPartyMon4AttackMod::
+	ds 1
+wEnemyPartyMon3DefenseMod::
+wEnemyPartyMon4DefenseMod::
+	ds 1
+wEnemyPartyMon3SpeedMod::
+wEnemyPartyMon4SpeedMod::
+	ds 1
+wEnemyPartyMon3SpAttackMod::
+wEnemyPartyMon4SpAttackMod::
+	ds 1
+wEnemyPartyMon3AccuracyMod::
+wEnemyPartyMon4AccuracyMod::
+	ds 1
+wEnemyPartyMon3EvasionMod::
+wEnemyPartyMon4EvasionMod::
+	ds 1
+wEnemyPartyMon3SpDefenseMod::
+wEnemyPartyMon4SpDefenseMod::
+	ds 1
+	
+wEnemyPartyMon5AttackMod::
+wEnemyPartyMon6AttackMod::
+	ds 1
+wEnemyPartyMon5DefenseMod::
+wEnemyPartyMon6DefenseMod::
+	ds 1
+wEnemyPartyMon5SpeedMod::
+wEnemyPartyMon6SpeedMod::
+	ds 1
+wEnemyPartyMon5SpAttackMod::
+wEnemyPartyMon6SpAttackMod::
+	ds 1
+wEnemyPartyMon5AccuracyMod::
+wEnemyPartyMon6AccuracyMod::
+	ds 1
+wEnemyPartyMon5EvasionMod::
+wEnemyPartyMon6EvasionMod::
+	ds 1
+wEnemyPartyMon5SpDefenseMod::
+wEnemyPartyMon6SpDefenseMod::
 	ds 1
 
 

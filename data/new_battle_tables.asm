@@ -22,6 +22,8 @@ LandscapeType15Table:
 LandscapeType0Table:
 	db SKY_SCAPE,EARTH
 	db UNDERGROUND_SCAPE,AERO
+	db MOON_SCAPE,AERO
+	db MOON_SCAPE,SOUND
 	db $FF
 	
 ;table listing the environments that are outdoors
