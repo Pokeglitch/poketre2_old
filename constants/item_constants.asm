@@ -124,7 +124,7 @@ TM_32         EQU $CA
 TM_33         EQU $CB
 TM_34         EQU $CC
 TM_35         EQU $CD
-TM_36         EQU $EC
+TM_36         EQU $CE
 TM_37         EQU $CF
 TM_38         EQU $D0
 TM_39         EQU $D1

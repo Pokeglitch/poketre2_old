@@ -711,7 +711,7 @@ HandleRadio_DecreaseOwnStats:
 	ld a,[bc]
 	dec a		;was it already the lowest possible?
 	pop hl
-	jr z,.tryAgain	;try again if so
+	jr z,.damageHP	;damage the hp if so
 	ld [bc],a	;store new stat into the ram
 	push hl ;save the stat index
 	
@@ -725,6 +725,16 @@ HandleRadio_DecreaseOwnStats:
 	
 	pop hl	;load the stat index
 	call PrintRadioStatText
+	jr .finish
+.damageHP
+	ld hl,wBattleMonHP
+	ld a,[H_WHOSETURN]
+	and a
+	jr z,.damageHPskip	;if its the players turn, then don't load the enemy hp
+	ld hl,wEnemyMonHP
+.damageHPskip
+	call HandlePoisonBurnLeechSeed_DecreaseOwnHP
+.finish
 	pop bc
 	pop hl
 	pop de
@@ -3522,6 +3532,25 @@ IsGhostBattle: ; 3d83a (f:583a)
 ; checks for various status conditions affecting the player mon
 ; stores whether the mon cannot use a move this turn in Z flag
 CheckPlayerStatusConditions: ; 3d854 (f:5854)
+	ld hl,W_ENEMYBATTSTATUS3
+	bit 7,[hl]	;invisible?
+	jr z,.skipInvisible
+	ld a,[wEnemyMonInvisibilityCounter]	;decrease counter
+	dec a
+	ld [wEnemyMonInvisibilityCounter],a	;store new counter
+	jr nz,.isInvisible	;continue if its not as zero
+	res 7,[hl]		;otherwise, turn off invisibility
+	ld hl,InvisibleNoMoreText
+	jr .printInvisibleText
+.isInvisible
+	ld hl,IsInvisibleText
+	;fall through
+	
+.printInvisibleText
+	call PrintText
+	;fall through
+	
+.skipInvisible
 	ld hl,wBattleMonStatus
 	ld a,[hl]
 	and a,SLP ; sleep mask
@@ -3570,12 +3599,62 @@ CheckPlayerStatusConditions: ; 3d854 (f:5854)
 .FlinchedCheck
 	ld hl,W_PLAYERBATTSTATUS1
 	bit Flinched,[hl]
-	jp z,.HyperBeamCheck
+	jp z,.FearCheck
 	res Flinched,[hl] ; reset player's flinch status
 	ld hl,FlinchedText
 	call PrintText
 	ld hl,ExecutePlayerMoveDone ; player can't move this turn
 	jp .returnToHL
+
+.FearCheck
+	ld hl,W_PLAYERBATTSTATUS3
+	bit 4,[hl]	;fear?
+	jr z,.cursedCheck
+	
+	ld a,[wBattleMonCursedFearCounter]	;load the fear counter
+	dec a
+	ld [wBattleMonCursedFearCounter],a	;save
+	and a,$0F
+	jr nz,.hasFear	;pokemon is still scared
+	
+	res 4,[hl] ; if fear counter hit 0, reset fear status
+	ld hl,RegainedCourageText
+	call PrintText
+	jr .cursedCheck
+.hasFear
+	call BattleRandom
+	cp a,$c0	;75% fear
+	jr c,.tooScaredToMove	;if so, pokemon is too scared to move
+	cp a,$e7	;15% pokemon leaving battle
+	jr nc,.cursedCheck	;if greater than e7, then continue to next check
+	
+	;put function here to switch player pokemon from battle (if possible)
+	
+.tooScaredToMove
+	ld hl,TooScaredToMoveText
+	call PrintText
+	ld hl,ExecutePlayerMoveDone ; player can't move this turn
+	jp .returnToHL
+	
+.cursedCheck
+	ld hl,W_PLAYERBATTSTATUS3
+	bit 6,[hl]	;cursed?
+	jr z,.HyperBeamCheck
+	ld a,[wBattleMonCursedFearCounter]
+	sub a,$10
+	ld [wBattleMonCursedFearCounter],a
+	and a,$F0
+	jr nz,.printIsCursedText
+	res 6,[hl]	;unset bit
+	ld hl,CursedNoMoreText
+	jr .printCursedText
+.printIsCursedText
+	ld hl,IsCursedText
+	;fall through
+	
+.printCursedText
+	call PrintText
+	;fall through
 
 .HyperBeamCheck
 	ld hl,W_PLAYERBATTSTATUS2
@@ -3800,6 +3879,34 @@ FullyParalyzedText: ; 3da4c (f:5a4c)
 
 FlinchedText: ; 3da51 (f:5a51)
 	TX_FAR _FlinchedText
+	db "@"
+	
+TooScaredToMoveText:
+	TX_FAR _TooScaredToMoveText
+	db "@"
+	
+RegainedCourageText:
+	TX_FAR _RegainedCourageText
+	db "@"
+	
+InvisibleNoMoreText:
+	TX_FAR _InvisibleNoMoreText
+	db "@"
+	
+IsInvisibleText:
+	TX_FAR _IsInvisibleText
+	db "@"
+	
+CursedNoMoreText:
+	TX_FAR _CursedNoMoreText
+	db "@"
+	
+IsCursedText:
+	TX_FAR _IsCursedText
+	db "@"
+	
+LimitedByCursedText:
+	TX_FAR _LimitedByCursedText
 	db "@"
 
 MustRechargeText: ; 3da56 (f:5a56)
@@ -5009,6 +5116,42 @@ ApplyAttackToEnemyPokemon: ; 3e0df (f:60df)
 	ld [hl],a
 
 ApplyDamageToEnemyPokemon: ; 3e142 (f:6142)
+	ld a,[W_PLAYERBATTSTATUS3]
+	bit 6,a		;cursed?
+	jr z,.enemyNotCursed	;skip down if not
+	ld hl,wPreviousAttackDamage
+	ld de,W_DAMAGE
+	ld a,[de]
+	cp a,[hl]	;compare current damage high to previous damage high
+	inc hl
+	inc de
+	jr c,.enemyNotCursed	;if the previous damage was higher, then skip down
+	jr nz,.enemyHigherCursed 	;if they are not equal, then we know the current damage is higher
+	ld a,[de]
+	ld b,a
+	ld a,[hl]
+	cp a,b	;compare previous damage low to current damage low
+	jr nc,.enemyNotCursed	;if the current damage is less than or equal to previous damage, skip down
+.enemyHigherCursed
+	call BattleRandom
+	cp a,$40	;25% chance of no effect
+	jr c,.enemyNotCursed	;if random was less than $40, then no effect
+	ld a,[hld]
+	ld b,a	;store into b
+	ld [de],a
+	dec de
+	ld a,[hl]
+	ld [de],a		;set the current damage to the previous damage
+	or b		;both zero?
+	jr nz,.cursedNotZero
+	ld a,1
+	inc de
+	ld [de],a		;otherwise, set to 1
+.cursedNotZero
+	ld hl,LimitedByCursedText
+	call PrintText
+	
+.enemyNotCursed
 	ld hl,W_DAMAGE
 	ld a,[hli]
 	ld b,a
@@ -5062,6 +5205,11 @@ ApplyDamageToEnemyPokemon: ; 3e142 (f:6142)
 	ld [wHPBarType],a
 	predef UpdateHPBar2 ; animate the HP bar shortening
 ApplyAttackToEnemyPokemonDone: ; 3e19d (f:619d)
+	ld hl,W_DAMAGE
+	ld a,[hli]
+	ld [wPreviousAttackDamage],a
+	ld a,[hl]
+	ld [wPreviousAttackDamage +1],a
 	jp DrawHUDsAndHPBars
 
 ApplyAttackToPlayerPokemon: ; 3e1a0 (f:61a0)
@@ -5131,6 +5279,42 @@ ApplyAttackToPlayerPokemon: ; 3e1a0 (f:61a0)
 	ld [hl],a
 
 ApplyDamageToPlayerPokemon: ; 3e200 (f:6200)
+	ld a,[W_ENEMYBATTSTATUS3]
+	bit 6,a		;cursed?
+	jr z,.notCursed
+	ld hl,wPreviousAttackDamage
+	ld de,W_DAMAGE
+	ld a,[de]
+	cp a,[hl]	;compare current damage high to previous damage high
+	inc hl
+	inc de
+	jr c,.notCursed	;if the previous damage was higher, then skip down
+	jr nz,.higherCursed	;if they are not equal, then we know the current one is higher
+	ld a,[de]
+	ld b,a
+	ld a,[hl]
+	cp a,b	;compare previous damage low to current damage low
+	jr nc,.notCursed	;if the current damage is less than or equal to previous damage, skip down
+.higherCursed
+	call BattleRandom
+	cp a,$40	;25% chance of no effect
+	jr c,.notCursed	;if random was less than $40, then no effect
+	ld a,[hld]
+	ld b,a	;store into b
+	ld [de],a
+	dec de
+	ld a,[hl]
+	ld [de],a		;set the current damage to the previous damage
+	or b		;both zero?
+	jr nz,.enemyCursedNotZero
+	ld a,1
+	inc de
+	ld [de],a	;otherwise, set to 1
+.enemyCursedNotZero
+	ld hl,LimitedByCursedText
+	call PrintText
+	
+.notCursed
 	ld hl,W_DAMAGE
 	ld a,[hli]
 	ld b,a
@@ -5183,6 +5367,11 @@ ApplyDamageToPlayerPokemon: ; 3e200 (f:6200)
 	ld [wHPBarType],a
 	predef UpdateHPBar2 ; animate the HP bar shortening
 ApplyAttackToPlayerPokemonDone
+	ld hl,W_DAMAGE
+	ld a,[hli]
+	ld [wPreviousAttackDamage],a
+	ld a,[hl]
+	ld [wPreviousAttackDamage +1],a
 	jp DrawHUDsAndHPBars
 
 AttackSubstitute: ; 3e25e (f:625e)
@@ -5534,10 +5723,17 @@ CalcHitChance: ; 3e624 (f:6624)
 	ld hl,W_PLAYERMOVEACCURACY
 	ld a,[H_WHOSETURN]
 	and a
+	push af	;store the flags
 	ld a,[wPlayerMonAccuracyMod]
 	ld b,a
 	ld a,[wEnemyMonEvasionMod]
 	ld c,a
+	ld a,[W_ENEMYBATTSTATUS3]
+	bit 7,a		;invisible?
+	jr z,.skipInvisible
+	ld c,13	;maximum value for evasion if invisible
+.skipInvisible
+	pop af	;recover the flags
 	jr z,.next
 ; values for enemy turn
 	ld hl,W_ENEMYMOVEACCURACY
@@ -5545,6 +5741,10 @@ CalcHitChance: ; 3e624 (f:6624)
 	ld b,a
 	ld a,[wPlayerMonEvasionMod]
 	ld c,a
+	ld a,[W_PLAYERBATTSTATUS3]
+	bit 7,a		;invisible?
+	jr z,.next
+	ld c,13	;maximum value for evasion if invisible
 .next
 	ld a,$0e
 	sub c
@@ -5859,6 +6059,25 @@ ExecuteEnemyMoveDone: ; 3e88c (f:688c)
 ; checks for various status conditions affecting the enemy mon
 ; stores whether the mon cannot use a move this turn in Z flag
 CheckEnemyStatusConditions: ; 3e88f (f:688f)
+	ld hl,W_PLAYERBATTSTATUS3
+	bit 7,[hl]	;invisible?
+	jr z,.enemySkipInvisible
+	ld a,[wBattleMonInvisibilityCounter]	;decrease counter
+	dec a
+	ld [wBattleMonInvisibilityCounter],a	;store new counter
+	jr nz,.enemyIsInvisibleText	;continue if its not at zero
+	res 7,[hl]		;otherwise, turn off invisibility
+	ld hl,InvisibleNoMoreText
+	jr .enemyPrintInvisibleText
+	
+.enemyIsInvisibleText
+	ld hl,IsInvisibleText
+	
+.enemyPrintInvisibleText
+	call PrintText
+	;fall through
+	
+.enemySkipInvisible
 	ld hl, wEnemyMonStatus
 	ld a, [hl]
 	and SLP ; sleep mask
@@ -5902,12 +6121,66 @@ CheckEnemyStatusConditions: ; 3e88f (f:688f)
 .checkIfFlinched
 	ld hl, W_ENEMYBATTSTATUS1
 	bit Flinched, [hl] ; check if enemy mon flinched
-	jp z, .checkIfMustRecharge
+	jr z, .enemyFearCheck
 	res Flinched, [hl]
 	ld hl, FlinchedText
 	call PrintText
 	ld hl, ExecuteEnemyMoveDone ; enemy can't move this turn
 	jp .enemyReturnToHL
+
+.enemyFearCheck
+	ld hl,W_ENEMYBATTSTATUS3
+	bit 4,[hl]	;fear?
+	jr z,.enemyCursedCheck
+	
+	ld a,[wEnemyMonCursedFearCounter]	;load the fear counter
+	dec a
+	ld [wEnemyMonCursedFearCounter],a	;save
+	and a,$0F
+	jr nz,.enemyHasFear	;pokemon is still scared
+	
+	res 4,[hl] ; if fear counter hit 0, reset fear status
+	ld hl,RegainedCourageText
+	call PrintText
+	jr .enemyCursedCheck
+.enemyHasFear
+	call BattleRandom
+	cp a,$c0	;75% fear
+	jr c,.enemyTooScaredToMove	;if so, pokemon is too scared to move
+	cp a,$e7	;15% pokemon leaving battle
+	jr nc,.enemyCursedCheck	;if greater than e7, then continue to next check
+	
+	;put function here to switch enemy pokemon from battle (if possible) or to have wild pokemon run away
+	
+.enemyTooScaredToMove
+	ld hl,TooScaredToMoveText
+	call PrintText
+	ld hl,ExecuteEnemyMoveDone ; player can't move this turn
+	jp .enemyReturnToHL
+	
+
+	
+.enemyCursedCheck
+	ld hl,W_ENEMYBATTSTATUS3
+	bit 6,[hl]	;cursed?
+	jr z,.checkIfMustRecharge
+	ld a,[wEnemyMonCursedFearCounter]
+	sub a,$10
+	ld [wEnemyMonCursedFearCounter],a
+	and a,$F0
+	jr nz,.printIsCursedText
+	res 6,[hl]	;unset bit
+	ld hl,CursedNoMoreText
+	jr .printCursedText
+.printIsCursedText
+	ld hl,IsCursedText
+	;fall through
+	
+.printCursedText
+	call PrintText
+	;fall through
+
+	
 .checkIfMustRecharge
 	ld hl, W_ENEMYBATTSTATUS2
 	bit NeedsToRecharge, [hl] ; check if enemy mon has to recharge after using a move

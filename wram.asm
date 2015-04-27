@@ -1468,6 +1468,8 @@ wPartyMonOT::
 wPartyMon1OT::
 wPartyMon1SpDefenseEV::
 	ds 2
+wPartyMon1SecondaryStatus::
+	ds 1
 wPartyMon1Abilities::
 wPartyMon1Ability1::
 	ds 1
@@ -1476,8 +1478,6 @@ wPartyMon1Ability2::
 wPartyMon1DelayedDamage::
 	ds 2
 wPartyMon1DelayedDamageCounter::
-	ds 1
-wPartyMon1SecondaryStatus::
 	ds 1
 wPartyMon1Traits::
 	ds 1
@@ -1491,8 +1491,13 @@ wPartyMonNicks:: ds 11 * PARTY_LENGTH ; d2b5
 
 wPartyMonNicksEnd:: ;end of party mon nicks list
 
+wActivePotion::
+	ds 1
+wBottledPotion::
+	ds 1
+
 wExtraBytes:: ;d2f7
-	ds 38
+	ds 36
 	
 wNumBagItems:: ; d31d
 	ds 1
@@ -2272,7 +2277,29 @@ wEnemyMon4:: party_struct wEnemyMon4
 wEnemyMon5:: party_struct wEnemyMon5
 wEnemyMon6:: party_struct wEnemyMon6
 
-wEnemyMonOT::    ds 11 * PARTY_LENGTH ; d9ac
+wEnemyMonOT::
+wEnemyMon1OT::
+wEnemyMon1SpDefenseEV::
+	ds 2
+wEnemyMon1SecondaryStatus::
+	ds 1
+wEnemyMon1Abilities::
+wEnemyMon1Ability1::
+	ds 1
+wEnemyMon1Ability2::
+	ds 1
+wEnemyMon1DelayedDamage::
+	ds 2
+wEnemyMon1DelayedDamageCounter::
+	ds 1
+wEnemyMon1Traits::
+	ds 1
+wEnemyMon1Morale::
+	ds 1
+wEnemyMon1LastOTByte:
+	ds 1
+
+wEnemyMon2OT:: ds 11 * 5
 wEnemyMonNicks:: ds 11 * PARTY_LENGTH ; d9ee
 
 
@@ -2426,90 +2453,80 @@ wAdditionalBattleTypeBits::
 	
 
 ;contains additional information about the pokemon in battle:
-wBattleMonSecondaryStatus::
-	ds 1
-wBattleMonTraits::
-	ds 1
 wBattleMonAbility::
 wBattleMonAbility1::
 	ds 1
 wBattleMonAbility2::
 	ds 1
+wBattleMonDelayedDamage::
+	ds 2
+wBattleMonDelayedDamageCounter::
+	ds 1
+wBattleMonTraits::
+	ds 1
 wBattleMonMorale::
 	ds 1
+
 wBattleMonSpecialDefense::
 	ds 2
 wBattleMonUnmodifiedSpecialDefense::
 	ds 2
-wBattleMonDelayedDamage::
-	ds 2
-wBattleMonCursedCounter::
+wBattleMonCursedFearCounter::
 	ds 1
-wBattleMonDelayedDamageCounter::
+wBattleMonInvisibilityCounter::
 	ds 1
 	
 
-wEnemyMonSecondaryStatus::
-	ds 1
-wEnemyMonTraits::
-	ds 1
 wEnemyMonAbility::
 wEnemyMonAbility1::
 	ds 1
 wEnemyMonAbility2::
 	ds 1
+wEnemyMonDelayedDamage::
+	ds 2
+wEnemyMonDelayedDamageCounter::
+	ds 1
+wEnemyMonTraits::
+	ds 1
 wEnemyMonMorale::
 	ds 1
+
 wEnemyMonSpecialDefense::
 	ds 2
 wEnemyMonUnmodifiedSpecialDefense::
 	ds 2
-wEnemyMonDelayedDamage::
-	ds 2
-wEnemyMonCursedCounter::
+wEnemyMonCursedFearCounter::
 	ds 1
-wEnemyMonDelayedDamageCounter::
+wEnemyMonInvisibilityCounter::
 	ds 1
 	
 
 ;to save the confused counter and cursed counter for each pokemon (gets erased after battle)
-wPlayerPartyMon1ConfusedCounter:
-wPlayerPartyMon1CursedCounter:
+wPlayerPartyMon1CursedFearCounter:
 	ds 1
-wPlayerPartyMon2ConfusedCounter:
-wPlayerPartyMon2CursedCounter:
+wPlayerPartyMon2CursedFearCounter:
 	ds 1
-wPlayerPartyMon3ConfusedCounter:
-wPlayerPartyMon3CursedCounter:
+wPlayerPartyMon3CursedFearCounter:
 	ds 1
-wPlayerPartyMon4ConfusedCounter:
-wPlayerPartyMon4CursedCounter:
+wPlayerPartyMon4CursedFearCounter:
 	ds 1
-wPlayerPartyMon5ConfusedCounter:
-wPlayerPartyMon5CursedCounter:
+wPlayerPartyMon5CursedFearCounter:
 	ds 1
-wPlayerPartyMon6ConfusedCounter:
-wPlayerPartyMon6CursedCounter:
+wPlayerPartyMon6CursedFearCounter:
 	ds 1
 	
 	
-wEnemyPartyMon1ConfusedCounter:
-wEnemyPartyMon1CursedCounter:
+wEnemyPartyMon1CursedFearCounter:
 	ds 1
-wEnemyPartyMon2ConfusedCounter:
-wEnemyPartyMon2CursedCounter:
+wEnemyPartyMon2CursedFearCounter:
 	ds 1
-wEnemyPartyMon3ConfusedCounter:
-wEnemyPartyMon3CursedCounter:
+wEnemyPartyMon3CursedFearCounter:
 	ds 1
-wEnemyPartyMon4ConfusedCounter:
-wEnemyPartyMon4CursedCounter:
+wEnemyPartyMon4CursedFearCounter:
 	ds 1
-wEnemyPartyMon5ConfusedCounter:
-wEnemyPartyMon5CursedCounter:
+wEnemyPartyMon5CursedFearCounter:
 	ds 1
-wEnemyPartyMon6ConfusedCounter:
-wEnemyPartyMon6CursedCounter:
+wEnemyPartyMon6CursedFearCounter:
 	ds 1
 	
 ;to save the pokemons disabled move
@@ -2537,6 +2554,60 @@ wEnemyPartyMon4DisabledMove:
 wEnemyPartyMon5DisabledMove:
 	ds 1
 wEnemyPartyMon6DisabledMove:
+	ds 1
+	
+;to save the pokemons toxic counter
+wPlayerPartyMon1ToxicCounter:
+	ds 1
+wPlayerPartyMon2ToxicCounter:
+	ds 1
+wPlayerPartyMon3ToxicCounter:
+	ds 1
+wPlayerPartyMon4ToxicCounter:
+	ds 1
+wPlayerPartyMon5ToxicCounter:
+	ds 1
+wPlayerPartyMon6ToxicCounter:
+	ds 1
+	
+wEnemyPartyMon1ToxicCounter:
+	ds 1
+wEnemyPartyMon2ToxicCounter:
+	ds 1
+wEnemyPartyMon3ToxicCounter:
+	ds 1
+wEnemyPartyMon4ToxicCounter:
+	ds 1
+wEnemyPartyMon5ToxicCounter:
+	ds 1
+wEnemyPartyMon6ToxicCounter:
+	ds 1
+	
+;to save the pokemons confused counter
+wPlayerPartyMon1ConfusedCounter:
+	ds 1
+wPlayerPartyMon2ConfusedCounter:
+	ds 1
+wPlayerPartyMon3ConfusedCounter:
+	ds 1
+wPlayerPartyMon4ConfusedCounter:
+	ds 1
+wPlayerPartyMon5ConfusedCounter:
+	ds 1
+wPlayerPartyMon6ConfusedCounter:
+	ds 1
+	
+wEnemyPartyMon1ConfusedCounter:
+	ds 1
+wEnemyPartyMon2ConfusedCounter:
+	ds 1
+wEnemyPartyMon3ConfusedCounter:
+	ds 1
+wEnemyPartyMon4ConfusedCounter:
+	ds 1
+wEnemyPartyMon5ConfusedCounter:
+	ds 1
+wEnemyPartyMon6ConfusedCounter:
 	ds 1
 	
 ;to save the stat modifiers for each pokemon in the battle
@@ -2674,6 +2745,22 @@ wEnemyPartyMon6EvasionMod::
 	ds 1
 wEnemyPartyMon5SpDefenseMod::
 wEnemyPartyMon6SpDefenseMod::
+	ds 1
+	
+wEnemyActivePotion::
+	ds 1
+		
+wTempLandscapeTimeCounter::
+	ds 1
+
+wPreviousAttackDamage::
+	ds 2
+	
+
+		
+		
+		
+wEndOfNewBattleBytes::
 	ds 1
 
 

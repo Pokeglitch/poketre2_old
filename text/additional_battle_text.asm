@@ -464,3 +464,42 @@ _HurtByRadioText:: ; 89689 (22:5689)
 	line "weakened by the"
 	cont "radiation!"
 	prompt
+	
+_RegainedCourageText:
+	text $5a
+	line "regained its"
+	cont "courage!"
+	prompt
+
+_TooScaredToMoveText:
+	text $5a, "'s"
+	line "too scared to"
+	cont "move!"
+	prompt
+	
+_InvisibleNoMoreText:
+	text $59
+	line "is invisible no"
+	cont "more!"
+	prompt
+	
+_IsInvisibleText:
+	text $59
+	line "is invisible!"
+	prompt
+	
+_CursedNoMoreText:
+	text $5a, "'s"
+	line "curse was lifted!"
+	prompt
+	
+_IsCursedText:
+	text $5a
+	line "is cursed!"
+	prompt
+	
+_LimitedByCursedText:
+	text "The damage is"
+	line "limited by the"
+	cont "curse!"
+	prompt
