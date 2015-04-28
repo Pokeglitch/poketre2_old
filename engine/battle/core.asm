@@ -2038,7 +2038,9 @@ ReadPlayerMonCurHPAndStatus: ; 3cd43 (f:4d43)
 	ld e, l
 	ld hl, wBattleMonHP
 	ld bc, $4               ; 2 bytes HP, 1 byte unknown (unused?), 1 byte status
-	jp CopyData
+	call CopyData
+	callab StoreExtraPlayerMonBytesFromBattle
+	ret
 
 DrawHUDsAndHPBars: ; 3cd5a (f:4d5a)
 	call DrawPlayerHUDAndHPBar
@@ -3532,14 +3534,13 @@ IsGhostBattle: ; 3d83a (f:583a)
 ; checks for various status conditions affecting the player mon
 ; stores whether the mon cannot use a move this turn in Z flag
 CheckPlayerStatusConditions: ; 3d854 (f:5854)
-	ld hl,W_ENEMYBATTSTATUS3
-	bit 7,[hl]	;invisible?
+	ld hl,wEnemyMonInvisibilityCounter
+	ld a,[hl]
+	and a	;invisible?
 	jr z,.skipInvisible
-	ld a,[wEnemyMonInvisibilityCounter]	;decrease counter
 	dec a
-	ld [wEnemyMonInvisibilityCounter],a	;store new counter
-	jr nz,.isInvisible	;continue if its not as zero
-	res 7,[hl]		;otherwise, turn off invisibility
+	ld [hl],a	;store new counter
+	jr nz,.isInvisible	;continue if its not at zero
 	ld hl,InvisibleNoMoreText
 	jr .printInvisibleText
 .isInvisible
@@ -5728,8 +5729,8 @@ CalcHitChance: ; 3e624 (f:6624)
 	ld b,a
 	ld a,[wEnemyMonEvasionMod]
 	ld c,a
-	ld a,[W_ENEMYBATTSTATUS3]
-	bit 7,a		;invisible?
+	ld a,[wEnemyMonInvisibilityCounter]
+	and a		;invisible?
 	jr z,.skipInvisible
 	ld c,13	;maximum value for evasion if invisible
 .skipInvisible
@@ -5741,8 +5742,8 @@ CalcHitChance: ; 3e624 (f:6624)
 	ld b,a
 	ld a,[wPlayerMonEvasionMod]
 	ld c,a
-	ld a,[W_PLAYERBATTSTATUS3]
-	bit 7,a		;invisible?
+	ld a,[wBattleMonInvisibilityCounter]
+	and a		;invisible?
 	jr z,.next
 	ld c,13	;maximum value for evasion if invisible
 .next
@@ -6059,14 +6060,13 @@ ExecuteEnemyMoveDone: ; 3e88c (f:688c)
 ; checks for various status conditions affecting the enemy mon
 ; stores whether the mon cannot use a move this turn in Z flag
 CheckEnemyStatusConditions: ; 3e88f (f:688f)
-	ld hl,W_PLAYERBATTSTATUS3
-	bit 7,[hl]	;invisible?
+	ld hl,wBattleMonInvisibilityCounter
+	ld a,[hl]	;invisible?
+	and a
 	jr z,.enemySkipInvisible
-	ld a,[wBattleMonInvisibilityCounter]	;decrease counter
-	dec a
-	ld [wBattleMonInvisibilityCounter],a	;store new counter
+	dec a	;decrease counter
+	ld [hl],a	;store new counter
 	jr nz,.enemyIsInvisibleText	;continue if its not at zero
-	res 7,[hl]		;otherwise, turn off invisibility
 	ld hl,InvisibleNoMoreText
 	jr .enemyPrintInvisibleText
 	

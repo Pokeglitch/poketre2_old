@@ -63,7 +63,7 @@ LoadSAVCheckSum: ; 73623 (1c:7623)
 	cp c
 	jp z, .Func_73652
 	ld hl, $a598
-	ld bc, $f8b	+ wEndOfData - wBoxMonNicksEnd
+	ld bc, $f8b	+ wEndOfData - wBoxMonNicksEnd	;size of data to save
 	call SAVCheckSum
 	ld c, a
 	ld a, [$bfff] ; SAV's checksum
@@ -316,12 +316,12 @@ SAVCheckSum: ; 73856 (1c:7856)
 ;save the ChecksSum for each PC box in the current bank
 Func_73863: ; 73863 (1c:7863)
 	ld hl, $a000
-	ld de, $ba4d
-	ld b, $6
+	ld de, $bf80	;was $ba4d
+	ld b, 8
 .asm_7386b
 	push bc
 	push de
-	ld bc, $462
+	ld bc, $3EF		;new size of box
 	call SAVCheckSum
 	pop de
 	ld [de], a
@@ -351,11 +351,13 @@ Func_7387b: ; 7387b (1c:787b)
 ;starting locations for each PC box
 PointerTable_73895: ; 73895 (1c:7895)
 	dw $A000
-	dw $A462
-	dw $A8C4
-	dw $AD26
-	dw $B188
-	dw $B5EA
+	dw $A3EF
+	dw $A7DE
+	dw $ABCD
+	dw $AFBC
+	dw $B3AB
+	dw $B79A
+	dw $BB89
 
 ChangeBox:: ; 738a1 (1c:78a1)
 	ld hl, WhenYouChangeBoxText
@@ -424,9 +426,9 @@ Func_7390e: ; 7390e (1c:790e)
 	dec a
 	ld [hl], a
 	ld hl, $a000
-	ld bc, $1a4c
+	ld bc, $1f78	;was $1a4c
 	call SAVCheckSum
-	ld [$ba4c], a
+	ld [$ba7f], a	;was $ba4c
 	call Func_73863
 	xor a
 	ld [MBC1SRamBankingMode], a
@@ -438,7 +440,7 @@ Func_7393f: ; 7393f (1c:793f)
 	ld [H_AUTOBGTRANSFERENABLED], a ; $ffba
 	ld a, $3
 	ld [wMenuWatchedKeys], a ; wMenuWatchedKeys
-	ld a, 5		;number of boxes (starting at 0)
+	ld a, 7		;number of boxes (starting at 0)
 	ld [wMaxMenuItem], a ; wMaxMenuItem
 	ld a, $1
 	ld [wTopMenuItemY], a ; wTopMenuItemY
@@ -487,7 +489,7 @@ Func_7393f: ; 7393f (1c:793f)
 	hlCoord 18, 1
 	ld de, wWhichTrade ; wWhichTrade
 	ld bc, $14
-	ld a, 6	;only care about 6 boxes
+	ld a, 8	;only care about 8 boxes
 .asm_739c2
 	push af
 	
@@ -520,7 +522,9 @@ BoxNames: ; 739d9 (1c:79d9)
 	next "BOX 3"
 	next "BOX 4"
 	next "BOX 5"
-	next "BOX 6@"
+	next "BOX 6"
+	next "BOX 7"
+	next "BOX 8@"
 
 BoxNoText: ; 73a21 (1c:7a21)
 	db "BOX No.@"
@@ -543,20 +547,24 @@ Func_73a29: ; 73a29 (1c:7a29)
 Func_73a4b: ; 73a4b (1c:7a4b)
 	ld hl, $a000
 	call Func_73a7f
-	ld hl, $a462
+	ld hl, $a3ef
 	call Func_73a7f
-	ld hl, $a8c4
+	ld hl, $a7de
 	call Func_73a7f
-	ld hl, $ad26
+	ld hl, $abcd
 	call Func_73a7f
-	ld hl, $b188
+	ld hl, $afbc
 	call Func_73a7f
-	ld hl, $b5ea
+	ld hl, $b3ab
+	call Func_73a7f
+	ld hl, $b79a
+	call Func_73a7f
+	ld hl, $bb89
 	call Func_73a7f
 	ld hl, $a000
-	ld bc, $1a4c
+	ld bc, $1f78	; was $1a4c
 	call SAVCheckSum
-	ld [$ba4c], a
+	ld [$ba7f], a	; was $ba4c
 	call Func_73863
 	ret
 
@@ -596,15 +604,19 @@ Func_73a84: ; 73a84 (1c:7a84)
 Func_73ab8: ; 73ab8 (1c:7ab8)
 	ld a, [$a000]
 	ld [hli], a
-	ld a, [$a462]
+	ld a, [$a3ef]
 	ld [hli], a
-	ld a, [$a8c4]
+	ld a, [$a7de]
 	ld [hli], a
-	ld a, [$ad26]
+	ld a, [$abcd]
 	ld [hli], a
-	ld a, [$b188]
+	ld a, [$afbc]
 	ld [hli], a
-	ld a, [$b5ea]
+	ld a, [$b3ab]
+	ld [hli], a
+	ld a, [$b79a]
+	ld [hli], a
+	ld a, [$bb89]
 	ld [hli], a
 	ret
 

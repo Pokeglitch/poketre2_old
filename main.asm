@@ -6620,6 +6620,7 @@ INCLUDE "engine/battle/adjust_damage.asm"
 INCLUDE "engine/battle/initialize_new_battle_params.asm"
 INCLUDE "data/new_battle_tables.asm"
 INCLUDE "data/type_effects.asm"
+INCLUDE "engine/battle/store_reload_temp_battle_bytes.asm"
 
 SECTION "bank39",ROMX,BANK[$39]
 INCLUDE "engine/evolution.asm"

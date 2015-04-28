@@ -2502,112 +2502,112 @@ wEnemyMonInvisibilityCounter::
 	
 
 ;to save the confused counter and cursed counter for each pokemon (gets erased after battle)
-wPlayerPartyMon1CursedFearCounter:
+wPlayerPartyMon1CursedFearCounter::
 	ds 1
-wPlayerPartyMon2CursedFearCounter:
+wPlayerPartyMon2CursedFearCounter::
 	ds 1
-wPlayerPartyMon3CursedFearCounter:
+wPlayerPartyMon3CursedFearCounter::
 	ds 1
-wPlayerPartyMon4CursedFearCounter:
+wPlayerPartyMon4CursedFearCounter::
 	ds 1
-wPlayerPartyMon5CursedFearCounter:
+wPlayerPartyMon5CursedFearCounter::
 	ds 1
-wPlayerPartyMon6CursedFearCounter:
+wPlayerPartyMon6CursedFearCounter::
 	ds 1
 	
 	
-wEnemyPartyMon1CursedFearCounter:
+wEnemyPartyMon1CursedFearCounter::
 	ds 1
-wEnemyPartyMon2CursedFearCounter:
+wEnemyPartyMon2CursedFearCounter::
 	ds 1
-wEnemyPartyMon3CursedFearCounter:
+wEnemyPartyMon3CursedFearCounter::
 	ds 1
-wEnemyPartyMon4CursedFearCounter:
+wEnemyPartyMon4CursedFearCounter::
 	ds 1
-wEnemyPartyMon5CursedFearCounter:
+wEnemyPartyMon5CursedFearCounter::
 	ds 1
-wEnemyPartyMon6CursedFearCounter:
+wEnemyPartyMon6CursedFearCounter::
 	ds 1
 	
 ;to save the pokemons disabled move
-wPlayerPartyMon1DisabledMove:
+wPlayerPartyMon1DisabledMove::
 	ds 1
-wPlayerPartyMon2DisabledMove:
+wPlayerPartyMon2DisabledMove::
 	ds 1
-wPlayerPartyMon3DisabledMove:
+wPlayerPartyMon3DisabledMove::
 	ds 1
-wPlayerPartyMon4DisabledMove:
+wPlayerPartyMon4DisabledMove::
 	ds 1
-wPlayerPartyMon5DisabledMove:
+wPlayerPartyMon5DisabledMove::
 	ds 1
-wPlayerPartyMon6DisabledMove:
+wPlayerPartyMon6DisabledMove::
 	ds 1
 	
-wEnemyPartyMon1DisabledMove:
+wEnemyPartyMon1DisabledMove::
 	ds 1
-wEnemyPartyMon2DisabledMove:
+wEnemyPartyMon2DisabledMove::
 	ds 1
-wEnemyPartyMon3DisabledMove:
+wEnemyPartyMon3DisabledMove::
 	ds 1
-wEnemyPartyMon4DisabledMove:
+wEnemyPartyMon4DisabledMove::
 	ds 1
-wEnemyPartyMon5DisabledMove:
+wEnemyPartyMon5DisabledMove::
 	ds 1
-wEnemyPartyMon6DisabledMove:
+wEnemyPartyMon6DisabledMove::
 	ds 1
 	
 ;to save the pokemons toxic counter
-wPlayerPartyMon1ToxicCounter:
+wPlayerPartyMon1ToxicCounter::
 	ds 1
-wPlayerPartyMon2ToxicCounter:
+wPlayerPartyMon2ToxicCounter::
 	ds 1
-wPlayerPartyMon3ToxicCounter:
+wPlayerPartyMon3ToxicCounter::
 	ds 1
-wPlayerPartyMon4ToxicCounter:
+wPlayerPartyMon4ToxicCounter::
 	ds 1
-wPlayerPartyMon5ToxicCounter:
+wPlayerPartyMon5ToxicCounter::
 	ds 1
-wPlayerPartyMon6ToxicCounter:
+wPlayerPartyMon6ToxicCounter::
 	ds 1
 	
-wEnemyPartyMon1ToxicCounter:
+wEnemyPartyMon1ToxicCounter::
 	ds 1
-wEnemyPartyMon2ToxicCounter:
+wEnemyPartyMon2ToxicCounter::
 	ds 1
-wEnemyPartyMon3ToxicCounter:
+wEnemyPartyMon3ToxicCounter::
 	ds 1
-wEnemyPartyMon4ToxicCounter:
+wEnemyPartyMon4ToxicCounter::
 	ds 1
-wEnemyPartyMon5ToxicCounter:
+wEnemyPartyMon5ToxicCounter::
 	ds 1
-wEnemyPartyMon6ToxicCounter:
+wEnemyPartyMon6ToxicCounter::
 	ds 1
 	
 ;to save the pokemons confused counter
-wPlayerPartyMon1ConfusedCounter:
+wPlayerPartyMon1ConfusedCounter::
 	ds 1
-wPlayerPartyMon2ConfusedCounter:
+wPlayerPartyMon2ConfusedCounter::
 	ds 1
-wPlayerPartyMon3ConfusedCounter:
+wPlayerPartyMon3ConfusedCounter::
 	ds 1
-wPlayerPartyMon4ConfusedCounter:
+wPlayerPartyMon4ConfusedCounter::
 	ds 1
-wPlayerPartyMon5ConfusedCounter:
+wPlayerPartyMon5ConfusedCounter::
 	ds 1
-wPlayerPartyMon6ConfusedCounter:
+wPlayerPartyMon6ConfusedCounter::
 	ds 1
 	
-wEnemyPartyMon1ConfusedCounter:
+wEnemyPartyMon1ConfusedCounter::
 	ds 1
-wEnemyPartyMon2ConfusedCounter:
+wEnemyPartyMon2ConfusedCounter::
 	ds 1
-wEnemyPartyMon3ConfusedCounter:
+wEnemyPartyMon3ConfusedCounter::
 	ds 1
-wEnemyPartyMon4ConfusedCounter:
+wEnemyPartyMon4ConfusedCounter::
 	ds 1
-wEnemyPartyMon5ConfusedCounter:
+wEnemyPartyMon5ConfusedCounter::
 	ds 1
-wEnemyPartyMon6ConfusedCounter:
+wEnemyPartyMon6ConfusedCounter::
 	ds 1
 	
 ;to save the stat modifiers for each pokemon in the battle

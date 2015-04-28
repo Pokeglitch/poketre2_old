@@ -7,6 +7,12 @@ IsHardMode:
 	bit 4,[hl]
 	pop hl
 	ret
+	
+;to see if the current battle is wild or trainer/horder
+IsHordeOrTrainerBattle:
+	ld a,[W_ISINBATTLE]
+	dec a
+	ret		;will set 0 if wild battle
 
 ; Hardware interrupts
 SECTION "vblank", ROM0 [$40]
