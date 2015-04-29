@@ -1495,9 +1495,11 @@ wActivePotion::
 	ds 1
 wBottledPotion::
 	ds 1
+wPotionCounter::
+	ds 1
 
 wExtraBytes:: ;d2f7
-	ds 36
+	ds 35
 	
 wNumBagItems:: ; d31d
 	ds 1
@@ -2469,11 +2471,13 @@ wBattleMonMorale::
 
 wBattleMonSpecialDefense::
 	ds 2
-wBattleMonUnmodifiedSpecialDefense::
+wPlayerMonUnmodifiedSpecialDefense::
 	ds 2
 wBattleMonCursedFearCounter::
 	ds 1
 wBattleMonInvisibilityCounter::
+	ds 1
+wBattleMonFirewall::
 	ds 1
 	
 
@@ -2498,6 +2502,10 @@ wEnemyMonUnmodifiedSpecialDefense::
 wEnemyMonCursedFearCounter::
 	ds 1
 wEnemyMonInvisibilityCounter::
+	ds 1
+wEnemyMonFirewall::
+	ds 1
+wEnemyMonBaseSpDef::
 	ds 1
 	
 
@@ -2749,15 +2757,15 @@ wEnemyPartyMon6SpDefenseMod::
 	
 wEnemyActivePotion::
 	ds 1
+	
+wEnemyPotionCounter::
+	ds 1
 		
 wTempLandscapeTimeCounter::
 	ds 1
 
 wPreviousAttackDamage::
 	ds 2
-	
-
-		
 		
 		
 wEndOfNewBattleBytes::

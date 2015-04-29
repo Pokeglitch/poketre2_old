@@ -691,6 +691,7 @@ SwitchEnemyMon: ; 3a74b (e:674b)
 	ld hl,wEnemyMonHP
 	ld bc,4
 	call CopyData
+	callab StoreExtraEnemyMonBytesFromBattle
 
 	ld hl, AIBattleWithdrawText
 	call PrintText

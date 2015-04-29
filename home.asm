@@ -9,10 +9,16 @@ IsHardMode:
 	ret
 	
 ;to see if the current battle is wild or trainer/horder
-IsHordeOrTrainerBattle:
+GetHordeIsInBattle:
+	push hl
 	ld a,[W_ISINBATTLE]
-	dec a
-	ret		;will set 0 if wild battle
+	ld hl,wPreBattleBits
+	bit 7,[hl]
+	jr z,.finish	;if not horde, then don't adjust
+	ld a,2		;otherwise, set to 'trainer battle'
+.finish
+	pop hl
+	ret
 
 ; Hardware interrupts
 SECTION "vblank", ROM0 [$40]

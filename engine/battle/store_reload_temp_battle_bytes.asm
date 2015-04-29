@@ -1,19 +1,3 @@
-;make sure 'wWhichPokemon' holds the correct pokemon index for both player and enemy
-
-;dont forget to load the disabled attack index
-
-;Loading this data occurs at:
-;LoadBattleMonFromParty and LoadEnemyMonFromParty 
-;For enemy, make sure to the "ApplyPotionStatBoost"
-
-;For Wild pokemon, just initialize the stat modifiers and make sure special defense gets loaded (LoadEnemyMonData)
-;--everything else will already be initialized to 0
-
-;In 'SendOutMon' and 'EnemySendOutFirstMon', remove where it clears disabled bytes, and temporary status bits
-;check to see where confusion and toxic counters get cleared
-;also reload the disabled move ID to wPlayerDisabledMoveNumber and wEnemyDisabledMoveNumber (do this by reading the move list and finding the ID of the respective move index. set to 0 if not disabled)
-;-What happens if a pokemon learns a move and erases a disabled move? it should reset the disabled byte for both battle mon and stored bytes
-
 ;to load the additional player pokemon bytes into battle
 LoadExtraPlayerMonBytesIntoBattle:
 	ld a,[H_WHOSETURN]
@@ -40,8 +24,14 @@ LoadExtraEnemyMonBytesIntoBattle:
 	
 ;to load addition mon bytes from the pokemon into battle:
 LoadAdditionalMonBytes:
+	ld a, [H_WHOSETURN]
+	and a
+	jr z, .skipBaseSpDef	;don't load base special defense data if its the players pokemon
+	ld a,[W_MONHBASESPECIALD]	;load the pokemons base special defense into a
+	ld [wEnemyMonBaseSpDef],a		;store into base special defense byte
+.skipBaseSpDef
 	ld hl,wPartyMon1SpDefense	;special defense pointer
-	ld de,wBattleMonUnmodifiedSpecialDefense	;where to save to
+	ld de,wPlayerMonUnmodifiedSpecialDefense	;where to save to
 	ld a, [H_WHOSETURN]
 	and a
 	jr z, .saveSpDef	;don't load enemy data if its the players turn
@@ -77,9 +67,9 @@ LoadAdditionalMonBytes:
 	ld bc,W_ENEMYBATTSTATUS1	;temporary battle bits
 .saveAdditionalBytes
 	push bc
-	push hl
 	ld a,[wWhichPokemon]	;get the index of the pokemon we are copying from
 	call SkipFixedLengthTextEntries	;go to the data of the corresponding pokemon
+	push hl
 	ld bc,7		;size of data we copy over
 	call CopyData	;copy the data from hl to de
 	
@@ -139,12 +129,20 @@ LoadStoredBattleBytes:
 .loadDisabledPointers
 	push de
 	push hl
+	ld hl,wBattleMonMoves	;player mon move list
+	push hl
 	ld hl,wPlayerPartyMon1DisabledMove	;start of stored disabled byte
 	ld de,W_PLAYERDISABLEDMOVE	;where to save to
+	ld bc,wPlayerDisabledMoveNumber	;attack ID
 	jr z, .loadCursedFear	;don't load enemy data if its the players turn
+	pop hl
+	ld hl,wEnemyMonMoves	;enemy mon  move list
+	push hl
 	ld hl,wEnemyPartyMon1DisabledMove	;start of stored disabled byte
 	ld de,W_ENEMYDISABLEDMOVE	;where to save to
+	ld bc,wEnemyDisabledMoveNumber	;attack ID
 .loadCursedFear
+	push bc
 	push de
 	push hl
 	ld hl,wPlayerPartyMon1CursedFearCounter	;start of stored cursed/fear counter
@@ -174,9 +172,19 @@ LoadStoredBattleBytes:
 	call .goToPokemonIndex	;go to corresponding pokemon in list
 	ld a,[hl]
 	ld [de],a	;restore the disabled byte
-	
-	;load the disabled attack index:
-	
+	pop bc	;pointer for disabled move index
+	pop hl	;pointer to pokemon move list
+	and a	;is the disabled by 0?
+	jr z,.dontLoadDisabledMoveIndex ;then set the index to 0
+	and a,$F0
+	swap a		;a = the move index in the pokemon move list
+	dec a		;starts at 1
+	ld d,0
+	ld e,a
+	add hl,de	;hl = pointer to correct move
+	ld a,[hl]	;load the move ID	
+.dontLoadDisabledMoveIndex
+	ld [bc],a
 	pop hl
 	pop de
 	call .goToPokemonIndex	;go to corresponding pokemon in list
@@ -226,24 +234,6 @@ LoadStoredBattleBytes:
 	add hl,bc	;hl points to the corresponding pokemon
 	ret
 	
-	
-;storing data to the pokemon occurs at:
-;FaintEnemyPokemon and SwitchEnemyMon and ReadPlayerMonCurHPAndStatus
-;just set to zero for FaintEnemyPokemon and if HP is zero for player pokemon
-;just make sure this occurs before 'LoadExtraMonBytesIntoBattle' gets run
-
-;to check to see if the pokemon is fainted
-IsPokemonFainted:
-	ld hl,wBattleMonHP	;player hp pointer
-	ld a, [H_WHOSETURN]
-	and a
-	jr z, .saveAdditionalBytes	;don't load enemy data if its the players turn
-	ld hl,wEnemyMonHP	;enemy hp pointer
-.saveAdditionalBytes
-	ld a,[hli]
-	or [hl]	;check if there are any bits on in either HP bytes
-	ret
-
 ;to save the additional player pokemon bytes from battle
 StoreExtraPlayerMonBytesFromBattle:
 	ld a,[wWhichPokemon]
@@ -271,8 +261,6 @@ StoreExtraPlayerMonBytesFromBattle:
 	
 ;to save the additional enemy pokemon bytes from battle
 StoreExtraEnemyMonBytesFromBattle:
-	call IsHordeOrTrainerBattle
-	ret z	;return if wild battle
 	ld a,[wWhichPokemon]
 	push af	;backup which pokemon
 	ld a,[wEnemyMonPartyPos]
@@ -298,10 +286,95 @@ StoreExtraEnemyMonBytesFromBattle:
 	
 ;to clear the additional mon bytes for the current pokemon
 ClearAdditionalMonBytes:
+	ld hl,wPartyMon1SecondaryStatus	;secondary status pointer
+	ld a, [H_WHOSETURN]
+	and a
+	jr z, .saveAdditionalBytes	;don't load enemy data if its the players turn
+	ld hl,wEnemyMon1SecondaryStatus	;secondary status pointer
+.saveAdditionalBytes
+	ld a,[wWhichPokemon]	;get the index of the pokemon we are copying from
+	call SkipFixedLengthTextEntries	;go to the data of the corresponding pokemon
+	ld [hl],0	;set to 0
 	ret
 
 ;to clear the stored battles bytes for the current pokemon
 ClearBattleBytes:
+	;load the stat modifiers
+	ld hl,wPlayerPartyMon1AttackMod	;start of stored attack mods
+	ld a, [H_WHOSETURN]
+	and a
+	jr z, .loadToxicPointers	;don't load enemy data if its the players turn
+	ld hl,wEnemyPartyMon1AttackMod	;start of stored attack mods
+.loadToxicPointers
+	push hl
+	ld hl,wPlayerPartyMon1ToxicCounter	;start of stored toxic counter
+	jr z, .loadDisabledPointers	;don't load enemy data if its the players turn
+	ld hl,wEnemyPartyMon1ToxicCounter	;start of stored toxic counter
+.loadDisabledPointers
+	push hl
+	ld hl,wPlayerPartyMon1DisabledMove	;start of stored disabled byte
+	jr z, .loadCursedFear	;don't load enemy data if its the players turn
+	ld hl,wEnemyPartyMon1DisabledMove	;start of stored disabled byte
+.loadCursedFear
+	push hl
+	ld hl,wPlayerPartyMon1CursedFearCounter	;start of stored cursed/fear counter
+	jr z, .loadConfused	;don't load enemy data if its the players turn
+	ld hl,wEnemyPartyMon1CursedFearCounter	;start of stored cursed/fear counter
+.loadConfused
+	push hl
+	ld hl,wPlayerPartyMon1ConfusedCounter	;start of stored confused counter
+	jr z, .beginLoading	;don't load enemy data if its the players turn
+	ld hl,wEnemyPartyMon1ConfusedCounter	;start of stored confused counter
+.beginLoading
+	call .goToPokemonIndex	;go to corresponding pokemon in list
+	ld [hl],0	;reset the confused byte
+	pop hl
+	call .goToPokemonIndex	;go to corresponding pokemon in list
+	ld [hl],0	;reset the cursed/fear byte
+	pop hl
+	call .goToPokemonIndex	;go to corresponding pokemon in list
+	ld [hl],0	;reset the disabled byte
+	pop hl
+	call .goToPokemonIndex	;go to corresponding pokemon in list
+	ld [hl],0	;reset the toxic byte
+	pop hl
+	ld a,[wWhichPokemon]
+	push af
+	rr a	;divide by two, since they are grouped together by 2
+	ld bc,wEnemyPartyMon3AttackMod - wEnemyPartyMon1AttackMod		;distance between each set of data
+.findStoredStatsLoop
+	and a
+	jr z,.loadStats
+	add hl,bc
+	dec a
+	jr .findStoredStatsLoop
+.loadStats
+	pop af	;restore wWhichPokemon
+	bit 0,a	;is it odd numbers? (if so, we will swap the bits)
+	push af	;store the flag
+	ld b,7	;number of stats to save
+.loadStatsLoop
+	pop af	;restore the 'is odd?' flag
+	push af	;save again
+	ld a,[hl]	;load stored stat
+	jr z,.dontSwap	;don't swap if its an even number pokemon index
+	and a,$0F	;only keep the low nibble of the stored byte
+	jr .finishedSwapping
+.dontSwap
+	and a,$F0	;only keep the high nibble of the stored bytes
+.finishedSwapping
+	ld [hli],a	;store to the 'saved data' bytes
+	dec b
+	jr nz,.loadStatsLoop	;if haven't done this for all 7 stats, then loop
+	;finish
+	pop af
+	ret
+;to just go to the pokemon index in the list
+.goToPokemonIndex
+	ld a,[wWhichPokemon]	;which pokemon to load
+	ld c,a
+	ld b,00
+	add hl,bc	;hl points to the corresponding pokemon
 	ret
 	
 ;to save addition mon bytes from the battle to the pokemon
@@ -450,4 +523,17 @@ StoreBattleBytes:
 	ld c,a
 	ld b,00
 	add hl,bc	;hl points to the corresponding pokemon
+	ret
+	
+
+;to check to see if the pokemon is fainted
+IsPokemonFainted:
+	ld hl,wBattleMonHP	;player hp pointer
+	ld a, [H_WHOSETURN]
+	and a
+	jr z, .saveAdditionalBytes	;don't load enemy data if its the players turn
+	ld hl,wEnemyMonHP	;enemy hp pointer
+.saveAdditionalBytes
+	ld a,[hli]
+	or [hl]	;check if there are any bits on in either HP bytes
 	ret

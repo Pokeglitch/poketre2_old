@@ -715,13 +715,7 @@ HandleRadio_DecreaseOwnStats:
 	ld [bc],a	;store new stat into the ram
 	push hl ;save the stat index
 	
-	ld a,[wd11e]
-	push af	;back up d11e
-	ld a, [H_WHOSETURN]
-	ld [wd11e],a	;load whose turn into d11e
-	call CalculateModifiedStats	;update the stats
-	pop af
-	ld [wd11e],a	;restore d11e
+	call CalcModStatsSavewD11E
 	
 	pop hl	;load the stat index
 	call PrintRadioStatText
@@ -981,7 +975,7 @@ HandleEnemyMonFainted: ; 3c525 (f:4525)
 
 FaintEnemyPokemon ; 0x3c567
 	call ReadPlayerMonCurHPAndStatus
-	ld a, [W_ISINBATTLE]
+	call GetHordeIsInBattle
 	dec a
 	jr z, .wild
 	ld a, [wEnemyMonPartyPos]
@@ -991,6 +985,7 @@ FaintEnemyPokemon ; 0x3c567
 	xor a
 	ld [hli], a
 	ld [hl], a
+	callab StoreExtraEnemyMonBytesFromBattle
 .wild
 	ld hl, W_PLAYERBATTSTATUS1
 	res AttackingMultipleTimes, [hl]
@@ -1527,11 +1522,6 @@ EnemySendOutFirstMon: ; 3c92a (f:492a)
 	ld hl,wEnemyStatsToDouble ; clear enemy statuses
 	ld [hli],a
 	ld [hli],a
-	ld [hli],a
-	ld [hli],a
-	ld [hl],a
-	ld [W_ENEMYDISABLEDMOVE],a
-	ld [wEnemyDisabledMoveNumber],a
 	ld [wccf3],a
 	ld hl,wPlayerUsedMove
 	ld [hli],a
@@ -1888,15 +1878,10 @@ LoadBattleMonFromParty: ; 3cba6 (f:4ba6)
 	ld de, wPlayerMonUnmodifiedLevel ; block of memory used for unmodified stats
 	ld bc, $b
 	call CopyData
+	callab LoadExtraPlayerMonBytesIntoBattle
 	call ApplyBurnAndParalysisPenaltiesToPlayer
-	call ApplyBadgeStatBoosts
-	ld a, $7 ; default stat modifier
-	ld b, $8
-	ld hl, wPlayerMonAttackMod
-.statModLoop
-	ld [hli], a
-	dec b
-	jr nz, .statModLoop
+	callab ApplyPlayerPotionStatBoost
+	call CalcModStatsSavewD11E
 	ret
 
 ; copies from enemy party data to current enemy mon data when sending out a new enemy mon
@@ -1932,7 +1917,10 @@ LoadEnemyMonFromParty: ; 3cc13 (f:4c13)
 	ld de, wEnemyMonUnmodifiedLevel ; block of memory used for unmodified stats
 	ld bc, $b
 	call CopyData
+	callab LoadExtraEnemyMonBytesIntoBattle
 	call ApplyBurnAndParalysisPenaltiesToEnemy
+	callab ApplyEnemyPotionStatBoost
+	call CalcModStatsSavewD11E
 	ld hl, W_MONHBASESTATS
 	ld de, wEnemyMonBaseStats
 	ld b, $5
@@ -1942,13 +1930,6 @@ LoadEnemyMonFromParty: ; 3cc13 (f:4c13)
 	inc de
 	dec b
 	jr nz, .copyBaseStatsLoop
-	ld a, $7 ; default stat modifier
-	ld b, $8
-	ld hl, wEnemyMonStatMods
-.statModLoop
-	ld [hli], a
-	dec b
-	jr nz, .statModLoop
 	ld a, [wWhichPokemon]
 	ld [wEnemyMonPartyPos], a
 	ret
@@ -1977,11 +1958,6 @@ SendOutMon: ; 3cc91 (f:4c91)
 	ld hl, wPlayerStatsToDouble
 	ld [hli], a
 	ld [hli], a
-	ld [hli], a
-	ld [hli], a
-	ld [hl], a
-	ld [W_PLAYERDISABLEDMOVE], a
-	ld [wPlayerDisabledMoveNumber], a
 	ld [wccf7], a
 	ld b, $1
 	call GoPAL_SET
@@ -5206,11 +5182,6 @@ ApplyDamageToEnemyPokemon: ; 3e142 (f:6142)
 	ld [wHPBarType],a
 	predef UpdateHPBar2 ; animate the HP bar shortening
 ApplyAttackToEnemyPokemonDone: ; 3e19d (f:619d)
-	ld hl,W_DAMAGE
-	ld a,[hli]
-	ld [wPreviousAttackDamage],a
-	ld a,[hl]
-	ld [wPreviousAttackDamage +1],a
 	jp DrawHUDsAndHPBars
 
 ApplyAttackToPlayerPokemon: ; 3e1a0 (f:61a0)
@@ -5368,11 +5339,6 @@ ApplyDamageToPlayerPokemon: ; 3e200 (f:6200)
 	ld [wHPBarType],a
 	predef UpdateHPBar2 ; animate the HP bar shortening
 ApplyAttackToPlayerPokemonDone
-	ld hl,W_DAMAGE
-	ld a,[hli]
-	ld [wPreviousAttackDamage],a
-	ld a,[hl]
-	ld [wPreviousAttackDamage +1],a
 	jp DrawHUDsAndHPBars
 
 AttackSubstitute: ; 3e25e (f:625e)
@@ -6594,6 +6560,15 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	ld de, wEnemyMonUnmodifiedLevel
 	ld bc, $b
 	call CopyData
+	call GetHordeIsInBattle
+	dec a	; is it a wild battle?
+	jr z,.finishWild	;finish wild if so
+	callab LoadExtraEnemyMonBytesIntoBattle
+	call ApplyBurnAndParalysisPenaltiesToEnemy
+	callab ApplyEnemyPotionStatBoost
+	call CalcModStatsSavewD11E
+	ret
+.finishWild
 	ld a, $7 ; default stat mod
 	ld b, $8 ; number of stat mods
 	ld hl, wEnemyMonStatMods
@@ -6744,14 +6719,23 @@ ApplyBurnAndParalysisPenalties: ; 3ed1f (f:6d1f)
 	jp HalveAttackDueToBurn
 
 QuarterSpeedDueToParalysis: ; 3ed27 (f:6d27)
+	ld de,wBattleMonStatus
+	ld hl,wPlayerMonUnmodifiedSpeed + 1
+	ld bc,W_PLAYERBATTSTATUS3
 	ld a, [H_WHOSETURN]
 	and a
-	jr z, .playerTurn
-.enemyTurn ; quarter the player's speed
-	ld a, [wBattleMonStatus]
+	jr nz, .checkStatus	;check status
+	ld de,wEnemyMonStatus
+	ld hl,wEnemyMonUnmodifiedSpeed + 1
+	ld bc,W_ENEMYBATTSTATUS3
+.checkStatus
+	ld a,[de]
 	and 1 << PAR
-	ret z ; return if player not paralysed
-	ld hl, wBattleMonSpeed + 1
+	jr nz,.quarterStat	;quarter stat if paralyzed
+	ld a,[bc]
+	bit 6,a
+	ret z		;return if not cursed
+.quarterStat
 	ld a, [hld]
 	ld b, a
 	ld a, [hl]
@@ -6761,40 +6745,24 @@ QuarterSpeedDueToParalysis: ; 3ed27 (f:6d27)
 	rr b
 	ld [hli], a
 	or b
-	jr nz, .storePlayerSpeed
-	ld b, 1 ; give the player a minimum of at least one speed point
-.storePlayerSpeed
-	ld [hl], b
-	ret
-.playerTurn ; quarter the enemy's speed
-	ld a, [wEnemyMonStatus]
-	and 1 << PAR
-	ret z ; return if enemy not paralysed
-	ld hl, wEnemyMonSpeed + 1
-	ld a, [hld]
-	ld b, a
-	ld a, [hl]
-	srl a
-	rr b
-	srl a
-	rr b
-	ld [hli], a
-	or b
-	jr nz, .storeEnemySpeed
-	ld b, 1 ; give the enemy a minimum of at least one speed point
-.storeEnemySpeed
+	jr nz, .storeSpeed
+	ld b, 1 ; give the stat a minimum of at least one speed point
+.storeSpeed
 	ld [hl], b
 	ret
 
 HalveAttackDueToBurn: ; 3ed64 (f:6d64)
+	ld de,wBattleMonStatus
+	ld hl, wPlayerMonUnmodifiedAttack + 1
 	ld a, [H_WHOSETURN]
 	and a
-	jr z, .playerTurn
-.enemyTurn ; halve the player's attack
-	ld a, [wBattleMonStatus]
+	jr nz, .checkStatus
+	ld de,wEnemyMonStatus
+	ld hl, wEnemyMonUnmodifiedAttack + 1
+.checkStatus
+	ld a, [de]
 	and 1 << BRN
-	ret z ; return if player not burnt
-	ld hl, wBattleMonAttack + 1
+	ret z ; return if pokemon not burnt
 	ld a, [hld]
 	ld b, a
 	ld a, [hl]
@@ -6802,27 +6770,20 @@ HalveAttackDueToBurn: ; 3ed64 (f:6d64)
 	rr b
 	ld [hli], a
 	or b
-	jr nz, .storePlayerAttack
+	jr nz, .storeAttack
 	ld b, 1 ; give the player a minimum of at least one attack point
-.storePlayerAttack
+.storeAttack
 	ld [hl], b
 	ret
-.playerTurn ; halve the enemy's attack
-	ld a, [wEnemyMonStatus]
-	and 1 << BRN
-	ret z ; return if enemy not burnt
-	ld hl, wEnemyMonAttack + 1
-	ld a, [hld]
-	ld b, a
-	ld a, [hl]
-	srl a
-	rr b
-	ld [hli], a
-	or b
-	jr nz, .storeEnemyAttack
-	ld b, 1 ; give the enemy a minimum of at least one attack point
-.storeEnemyAttack
-	ld [hl], b
+	
+CalcModStatsSavewD11E:
+	ld a,[wd11e]
+	push af	;back up d11e
+	ld a, [H_WHOSETURN]
+	ld [wd11e],a	;load whose turn into d11e
+	call CalculateModifiedStats	;update the stats
+	pop af
+	ld [wd11e],a	;restore d11e
 	ret
 
 CalculateModifiedStats: ; 3ed99 (f:6d99)
@@ -6912,59 +6873,6 @@ CalculateModifiedStat: ; 3eda5 (f:6da5)
 	inc [hl] ; if the stat is 0, bump it up to 1
 .done
 	pop bc
-	ret
-
-ApplyBadgeStatBoosts: ; 3ee19 (f:6e19)
-	ld a, [wLinkState]
-	cp LINK_STATE_BATTLING
-	ret z ; return if link battle
-	ld a, [W_OBTAINEDBADGES]
-	ld b, a
-	ld hl, wBattleMonAttack
-	ld c, $4
-; the boost is applied for badges whose bit position is even
-; the order of boosts matches the order they are laid out in RAM
-; Boulder (bit 0) - attack
-; Thunder (bit 2) - defense
-; Soul (bit 4) - speed
-; Volcano (bit 6) - special
-.loop
-	srl b
-	call c, .applyBoostToStat
-	inc hl
-	inc hl
-	srl b
-	dec c
-	jr nz, .loop
-	ret
-
-; multiply stat at hl by 1.125
-; cap stat at 999
-.applyBoostToStat
-	ld a, [hli]
-	ld d, a
-	ld e, [hl]
-	srl d
-	rr e
-	srl d
-	rr e
-	srl d
-	rr e
-	ld a, [hl]
-	add e
-	ld [hld], a
-	ld a, [hl]
-	adc d
-	ld [hli], a
-	ld a, [hld]
-	sub 999 % $100
-	ld a, [hl]
-	sbc 999 / $100
-	ret c
-	ld a, 999 / $100
-	ld [hli], a
-	ld a, 999 % $100
-	ld [hld], a
 	ret
 
 LoadHudAndHpBarAndStatusTilePatterns: ; 3ee58 (f:6e58)
@@ -7999,7 +7907,7 @@ UpdateStatDone: ; 3f4ca (f:74ca)
 .applyBadgeBoostsAndStatusPenalties
 	ld a, [H_WHOSETURN]
 	and a
-	call z, ApplyBadgeStatBoosts ; whenever the player uses a stat-up move, badge boosts get reapplied again to every stat,
+;	call z, ApplyBadgeStatBoosts ; whenever the player uses a stat-up move, badge boosts get reapplied again to every stat,
 	                             ; even to those not affected by the stat-up move (will be boosted further)
 	ld hl, MonsStatsRoseText
 	call PrintText
@@ -8189,7 +8097,7 @@ UpdateLoweredStatDone: ; 3f62c (f:762c)
 .ApplyBadgeBoostsAndStatusPenalties
 	ld a, [H_WHOSETURN]
 	and a
-	call nz, ApplyBadgeStatBoosts ; whenever the player uses a stat-down move, badge boosts get reapplied again to every stat,
+;	call nz, ApplyBadgeStatBoosts ; whenever the player uses a stat-down move, badge boosts get reapplied again to every stat,
 	                              ; even to those not affected by the stat-up move (will be boosted further)
 	ld hl, MonsStatsFellText
 	call PrintText

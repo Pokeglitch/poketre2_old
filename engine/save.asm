@@ -316,7 +316,7 @@ SAVCheckSum: ; 73856 (1c:7856)
 ;save the ChecksSum for each PC box in the current bank
 Func_73863: ; 73863 (1c:7863)
 	ld hl, $a000
-	ld de, $bf80	;was $ba4d
+	ld de, $bf79	;was $ba4d
 	ld b, 8
 .asm_7386b
 	push bc
@@ -428,7 +428,7 @@ Func_7390e: ; 7390e (1c:790e)
 	ld hl, $a000
 	ld bc, $1f78	;was $1a4c
 	call SAVCheckSum
-	ld [$ba7f], a	;was $ba4c
+	ld [$bf78], a	;was $ba4c
 	call Func_73863
 	xor a
 	ld [MBC1SRamBankingMode], a
@@ -564,7 +564,7 @@ Func_73a4b: ; 73a4b (1c:7a4b)
 	ld hl, $a000
 	ld bc, $1f78	; was $1a4c
 	call SAVCheckSum
-	ld [$ba7f], a	; was $ba4c
+	ld [$bf78], a	; was $ba4c
 	call Func_73863
 	ret
 

@@ -233,9 +233,9 @@ GainExperience: ; 5524f (15:524f)
 .recalcStatChanges
 	xor a
 	ld [wd11e], a
-	callab CalculateModifiedStats
 	callab ApplyBurnAndParalysisPenaltiesToPlayer
-	callab ApplyBadgeStatBoosts
+	callab ApplyPlayerPotionStatBoost
+	callab CalcModStatsSavewD11E
 	callab DrawPlayerHUDAndHPBar
 	callab PrintEmptyString
 	call SaveScreenTilesToBuffer1
