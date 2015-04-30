@@ -231,7 +231,7 @@ SAVGoodChecksum: ; 736f8 (1c:76f8)
 	ret
 	
 ;this is the save function that is run before switching to flashback mode.  It saves the players items and party to b498 in SRAM0:
-SaveBeforeFlashback:
+SaveForFlashback:
 	ld de, $ba50	;where to save the party and items to for hard mode
 	call IsHardMode
 	jr nz,.skipNormalMode	;dont load normal mode pointer if hard mode
@@ -239,7 +239,7 @@ SaveBeforeFlashback:
 .skipNormalMode
 	ld a,3		;save flashback in bank 3 (normal mode pc bank)
 	call SavePartyAndItems
-	jp SaveSAVtoSRAM      ;finish saving
+	ret
 
 ;this saves the party and items to the location in de
 SavePartyAndItems:
