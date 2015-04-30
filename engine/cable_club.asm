@@ -858,7 +858,7 @@ TradeCenter_Trade:
 	hlCoord 1, 14
 	ld de, TradeCompleted
 	call PlaceString
-	predef SaveSAVtoSRAM2
+	predef SaveSAVtoSRAM
 	ld c, 50
 	call DelayFrames
 	xor a

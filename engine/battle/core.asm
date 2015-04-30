@@ -2650,6 +2650,8 @@ AlreadyOutText: ; 3d1f5 (f:51f5)
 	db "@"
 
 BattleMenu_RunWasSelected: ; 3d1fa (f:51fa)
+	predef SaveInBattle
+	ret
 	call LoadScreenTilesFromBuffer1
 	ld a, $3
 	ld [wCurrentMenuItem], a

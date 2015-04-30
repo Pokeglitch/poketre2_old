@@ -1743,6 +1743,7 @@ wBoxItems:: ; d53b
 ; item, quantity
 	ds 50 * 2
 	ds 1 ; end
+wBoxItemsEnd::
 
 wd5a0:: ds 2
 wd5a2:: ds 1
@@ -2778,12 +2779,11 @@ wStack:: ; dfff
 
 
 SECTION "Sprite Buffers", SRAM, BANK[0]
-
-S_SPRITEBUFFER0:: ds SPRITEBUFFERSIZE ; a000
-S_SPRITEBUFFER1:: ds SPRITEBUFFERSIZE ; a188
-S_SPRITEBUFFER2:: ds SPRITEBUFFERSIZE ; a310
-
-	ds $100
-
-sHallOfFame:: ds HOF_TEAM * NUM_HOF_TEAMS ; a598
+	ds $1000
+	
+S_SPRITEBUFFER0:: ds SPRITEBUFFERSIZE ; b000
+S_SPRITEBUFFER1:: ds SPRITEBUFFERSIZE ; b188
+S_SPRITEBUFFER2:: ds SPRITEBUFFERSIZE ; b310
+	;ds $100
+sHallOfFame:: ds 1 ; b498
 

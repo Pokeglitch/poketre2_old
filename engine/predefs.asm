@@ -132,10 +132,10 @@ PredefPointers:: ; 4fe79 (13:7e79)
 	add_predef EmptyFunc3; return immediately
 	add_predef AskName
 	add_predef PewterGuys
-	add_predef SaveSAVtoSRAM2
+	add_predef SaveSAVtoSRAM
 	add_predef LoadSAVCheckSum2
 	add_predef LoadSAV
-	add_predef SaveSAVtoSRAM1
+	add_predef SaveInBattle
 	add_predef DoInGameTradeDialogue ; 54 initiate trade
 	add_predef HallOfFamePC
 	add_predef DisplayDexRating
