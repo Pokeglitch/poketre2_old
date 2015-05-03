@@ -5,7 +5,6 @@ flag_array: MACRO
 	ds ((\1) + 7) / 8
 ENDM
 
-box_struct_length EQU 25 + NUM_MOVES * 2 + 11
 box_struct: MACRO
 \1Species::    db
 \1HP::         dw
@@ -178,6 +177,7 @@ wSpriteStateData2:: ; c200
 
 SECTION "OAM Buffer", WRAM0[$c300]
 
+wSpriteStateDataEnd::
 wOAMBuffer:: ; c300
 ; buffer for OAM data. Copied to OAM by DMA
 	ds 4 * 40
@@ -1491,22 +1491,27 @@ wPartyMonNicks:: ds 11 * PARTY_LENGTH ; d2b5
 
 wPartyMonNicksEnd:: ;end of party mon nicks list
 
+wStoryLineData::	;d2f7
+wAdditionalInBattleData::
 wActivePotion::
 	ds 1
 wBottledPotion::
 	ds 1
 wPotionCounter::
 	ds 1
+	
+wAdditionalInBattleDataEnd::
 
-wExtraBytes:: ;d2f7
+wExtraBytes::
 	ds 35
 	
-wNumBagItems:: ; d31d
+wNumBoxItems:: ; d31d
 	ds 1
-wBagItems:: ; d31e
+wBoxItems:: ; d31e
 ; item, quantity
 	ds 20 * 2
 	ds 1 ; end
+wBoxItemsEnd::
 
 wPlayerMoney:: ; d347
 	ds 3 ; BCD
@@ -1737,13 +1742,13 @@ W_GRASSTILE:: ; d535
 
 	ds 4
 
-wNumBoxItems:: ; d53a
+wNumBagItems:: ; d53a
 	ds 1
-wBoxItems:: ; d53b
+wBagItems:: ; d53b
 ; item, quantity
 	ds 50 * 2
 	ds 1 ; end
-wBoxItemsEnd::
+wBagItemsEnd::
 
 wd5a0:: ds 2
 wd5a2:: ds 1
@@ -2346,6 +2351,9 @@ W_DAYCAREMONOT::   ds 11 ; da54
 wDayCareMon:: box_struct wDayCareMon ; da5f
 
 wDayCareMonEnd::
+wStorylineDataEnd::
+
+wPCBoxData::
 W_NUMINBOX::  ds 1 ; da80
 wBoxSpecies:: ds MONS_PER_BOX + 1
 
@@ -2353,10 +2361,33 @@ wBoxMons::
 wBoxMon1:: party_struct wBoxMon1 ; da96
 wBoxMon2:: ds box_struct_length * (MONS_PER_BOX + -1) ; dab7
 
-wBoxMonOT::    ds 11 * MONS_PER_BOX ; dd2a
+wBoxMonOT::
+wBoxMon1OT::
+wBoxMon1SpDefenseEV::
+	ds 2
+wBoxMon1SecondaryStatus::
+	ds 1
+wBoxMon1Abilities::
+wBoxMon1Ability1::
+	ds 1
+wBoxMon1Ability2::
+	ds 1
+wBoxMon1DelayedDamage::
+	ds 2
+wBoxMon1DelayedDamageCounter::
+	ds 1
+wBoxMon1Traits::
+	ds 1
+wBoxMon1Morale::
+	ds 1
+wBoxMon1LastOTByte::
+	ds 1
+
+wBoxMon2OT::    ds 11 * 9 ; dd2a
 wBoxMonNicks:: ds 11 * MONS_PER_BOX ; de06
 wBoxMonNicksEnd::
 
+wAdditionalData::
 wPokedexOwned:: ; de72
 	flag_array NUM_POKEMON
 wPokedexOwnedEnd:: ;de8d
@@ -2371,11 +2402,8 @@ wTotems:: ;dea9
 	ds 1
 	
 ;End of Data that we care about saving
-wEndOfData::
+wEndOfAdditionalData::
 
-;the number of new battle bytes (for erasing)
-
-NUM_OF_NEW_BATTLE_BYTES EQU 27
 ;the start of the new battle bytes
 wNewBattleBytes::
 
@@ -2779,11 +2807,76 @@ wStack:: ; dfff
 
 
 SECTION "Sprite Buffers", SRAM, BANK[0]
-	ds $1000
-	
+sNormalModeGameSave::
+	ds SIZE_OF_GAMESAVE
+
+;SPRITE BUFFERS	
 S_SPRITEBUFFER0:: ds SPRITEBUFFERSIZE ; b000
 S_SPRITEBUFFER1:: ds SPRITEBUFFERSIZE ; b188
 S_SPRITEBUFFER2:: ds SPRITEBUFFERSIZE ; b310
-	;ds $100
+
 sHallOfFame:: ds 1 ; b498
 
+SECTION "Hard Mode Gamesave", SRAM, BANK[1]
+sHardModeGameSave::
+	ds SIZE_OF_GAMESAVE
+	
+sHardModeBackupGameSave::
+	ds SIZE_OF_GAMESAVE
+	
+	
+SECTION "Hard Mode PC Banks", SRAM, BANK[2]
+sHardModePCBanks::
+	ds NUM_OF_PC_BOXES * SIZE_OF_PC_BOX
+	
+sBattlePartyItemData::
+	ds (wPartyMonNicksEnd - wPartyCount) + (wBagItemsEnd - wNumBagItems) + (wAdditionalInBattleDataEnd - wAdditionalInBattleData)	;size of party data + size of item data + size of additional data that gets saved
+
+sBattlePartyItemDataChecksum1::
+	ds 1
+sBattlePartyItemDataChecksum2::
+	ds 1
+sBattlePartyItemDataChecksum3::
+	ds 1
+sBattlePartyItemDataTotalChecksum::
+	ds 1
+	
+sBackupBattlePartyItemData::
+	ds (wPartyMonNicksEnd - wPartyCount) + (wBagItemsEnd - wNumBagItems) + (wAdditionalInBattleDataEnd - wAdditionalInBattleData)	;size of party data + size of item data + size of additional data that gets saved
+sBackupBattlePartyItemDataChecksum1::
+	ds 1
+sBackupBattlePartyItemDataChecksum2::
+	ds 1
+sBackupBattlePartyItemDataChecksum3::
+	ds 1
+sBackupBattlePartyItemDataTotalChecksum::
+	ds 1
+	
+SECTION "Normal Mode PC Banks", SRAM, BANK[3]
+sNormalModePCBanks::
+	ds NUM_OF_PC_BOXES * SIZE_OF_PC_BOX
+	
+sNormalFlashbackBackupPartyItemData::
+	ds (wPartyMonNicksEnd - wPartyCount) + (wBagItemsEnd - wNumBagItems) + (wAdditionalInBattleDataEnd - wAdditionalInBattleData)	;size of party data + size of item data + size of additional data that gets saved
+
+sNormalFlashbackBackupPartyItemDataChecksum1::
+	ds 1
+sNormalFlashbackBackupPartyItemDataChecksum2::
+	ds 1
+sNormalFlashbackBackupPartyItemDataChecksum3::
+	ds 1
+sNormalFlashbackBackupPartyItemDataTotalChecksum::
+	ds 1
+	
+sHardFlashbackBackupPartyItemData::
+	ds (wPartyMonNicksEnd - wPartyCount) + (wBagItemsEnd - wNumBagItems) + (wAdditionalInBattleDataEnd - wAdditionalInBattleData)	;size of party data + size of item data + size of additional data that gets saved
+
+sHardFlashbackBackupPartyItemDataChecksum1::
+	ds 1
+sHardFlashbackBackupPartyItemDataChecksum2::
+	ds 1
+sHardFlashbackBackupPartyItemDataChecksum3::
+	ds 1
+sHardFlashbackBackupPartyItemDataTotalChecksum::
+	ds 1
+	

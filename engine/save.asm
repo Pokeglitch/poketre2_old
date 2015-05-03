@@ -2,35 +2,58 @@
 ;compare as we load each set of data
 ;then, include these bytes when calculating the final checksum
 
+
+;to get the PC bank based on Game Mode
+GetPCBank:
+	ld a, 2		;Hard Mode PC Bank
+	call IsHardMode
+	ret nz	;return if hard mode
+	ld a, 3		;Normal Mode PC Bank
+	ret
+	
+;to get the save bank based on Game Mode
+GetSaveBank:
+	xor a		;Normal Mode Save Bank (0)
+	call IsHardMode
+	ret z	;return if normal mode
+	ld a, 1		;Hard Mode Save Bank
+	ret
+
+
+
 LoadSAV: ; 735e8 (1c:75e8)
 ;(if carry -> write
 ;"the file data is destroyed")
 	call ClearScreen
 	call LoadFontTilePatterns
 	call LoadTextBoxTilePatterns
-	ld hl, $a000		;location in bank to read from
+	ld hl, sGameSaveStart		;location in bank to read from
 	call LoadSAVCheckSum
 	jr c, .badsum
 	
-	ld hl, $a000
-	ld de, $b000
+	;the game save data was loaded correctly:
+	call IsHardMode
+	jr z,.skipBackup	;don't update the backup if we are in normal mode
+	
+	ld hl, sGameSaveStart
+	ld de, sBackupGameSaveStart
 	call BackupData	;make sure the backup is up to date
 	and a
 	call nz,RestoreBattleData	;if the byte is not 0, then we should try to load the party data saved in battle
-	
+.skipBackup
 	ld a, $2 ; good checksum
 	jr .goodsum
 .badsum
 	call IsHardMode
 	jr z,.badBackupSum	;if normal mode, there is no backup
 	
-	ld hl,$b000		;location in bank to read from
+	ld hl, sBackupGameSaveStart		;location in bank to read from
 	call LoadSAVCheckSum
 	jr c, .badBackupSum
 	
 	;copy the backup data to the original data
-	ld hl, $b000
-	ld de, $a000
+	ld hl, sBackupGameSaveStart
+	ld de, sGameSaveStart
 	call BackupData	;restore the backup
 	and a
 	call nz,RestoreBattleData	;if the byte is not 0, then we should try to load the party data saved in battle
@@ -52,98 +75,79 @@ LoadSAV: ; 735e8 (1c:75e8)
 .goodsum
 	ld [wd088], a ; checksum flag
 	ret
+
 	
-;to load the battle party/item data
-RestoreBattleData:
-	ld hl,$ba50		;location of first set of party/item data
-	ld a,2		;save into the Hard Mode PC bank
-	call LoadPartyAndItems
-	ret z		;if the checksum matches, then return
-	;otherwise, load from the backup
-	ld hl, $bc4b	;backup location
-	ld a,2		;save into the Hard Mode PC bank
-	call LoadPartyAndItems
+;to compare the checksum data to see if they match:
+CompareChecksums:
+	;Check the Player Name checksum data
+	;hl is already at the start of the name data ($a000 or $b000)
+
+	push hl
+	ld de,sGameSaveChecksum1Offset	;offset for the first checksum
+	add hl,de
+	push hl
+	pop de	;de = first offset location
+	
+	pop hl
+	push hl
+	
+	ld bc, SIZE_OF_PLAYER_NAME_SAVE_DATA	 ; size of player name data
+	call CompareChecksum
+	jr nz,.finish		;return if they do not match
+	
+	inc de
+	ld bc, wStorylineDataEnd - wStoryLineData	 ; size of Storyline data
+	call CompareChecksum
+	jr nz,.finish		;return if they do not match
+	
+	
+	;Check the Sprite Data checksum data
+	inc de
+	ld bc, wSpriteStateDataEnd - wSpriteStateData1	 ; size of Sprite data
+	call CompareChecksum
+	jr nz,.finish		;return if they do not match
+	
+	;Check the Party Data checksum data
+	inc de
+	ld bc, wPartyMonNicksEnd - wPartyCount	 ; size of Party data
+	call CompareChecksum
+	jr nz,.finish		;return if they do not match
+	
+	
+	;check the PC Box checkum data
+	inc de
+	ld bc, wBoxMonNicksEnd - wPCBoxData	 ; size of PC Box data
+	call CompareChecksum
+	jr nz,.finish 	;return if they do not match
+	
+	
+	;check the additional data checkum data
+	inc de
+	ld bc, wEndOfAdditionalData - wAdditionalData	 ; size of additional data
+	call CompareChecksum
+	jr nz,.finish 	;return if they do not match
+	
+	;check the total data checkum data
+	inc de
+	pop hl
+	push hl		;hl = start of data
+	ld bc, SIZE_OF_GAMESAVE - 2	 ; size of total data (including all checksums except this)
+	call CompareChecksum
+.finish
+	pop hl
 	ret
 	
-;to Load the battle party/item data
-LoadPartyAndItems:
-	push hl
-	push af
-	ld a, SRAM_ENABLE
-	ld [MBC1SRamEnable], a
-	ld a, $1
-	ld [MBC1SRamBankingMode], a
-	pop af	
-	ld [MBC1SRamBank], a
-	
-	ld bc, wPartyMonNicksEnd - wPartyCount + wBoxItemsEnd - wNumBoxItems	;size of data to checksum
+;to compare the checksum in hl of size bc with byte stored in de
+CompareChecksum:
+	push de
 	call SAVCheckSum
-	
-	pop hl
-	push hl
-	ld bc, wPartyMonNicksEnd - wPartyCount + wBoxItemsEnd - wNumBoxItems	;size of data to checksum
-	add hl,bc	;get the saved checksum
-	ld c,[hl]		;store into c
-	
-	cp a,c
-	pop hl
-	ret nz	;return with no zero flag if doesnt match
-	
-	ld de, wPartyCount
-	ld bc, wPartyMonNicksEnd - wPartyCount	;total size of party
-	call CopyData
-	ld de, wNumBoxItems
-	ld bc, wBoxItemsEnd - wNumBoxItems	;total size to copy
-	call CopyData
-	xor a
-	ld [MBC1SRamBankingMode], a
-	ld [MBC1SRamEnable], a
-	ret	;return with zero flag
-
-;also returns the $affd or $bffd to see if we should load party mon data or not
-BackupData:
-	ld a, SRAM_ENABLE
-	ld [MBC1SRamEnable], a
-	ld a, $1
-	ld [MBC1SRamBankingMode], a
-	call GetSaveBank	;get the appropriate bank
-	ld [MBC1SRamBank], a
-	ld bc, $1000
-	call CopyData		;restore the backup
-	
-	dec hl
-	dec hl
-	dec hl	;hl points to the 'Load Battle Party Data?'
-	ld a,[hl]
-	push af
-	
-	xor a
-	ld [MBC1SRamBankingMode], a
-	ld [MBC1SRamEnable], a
-	
-	pop af
-	ret
-
-FileDataDestroyedText: ; 7361e (1c:761e)
-	TX_FAR _FileDataDestroyedText
-	db "@"
-
-;to get the PC bank based on Game Mode
-GetPCBank:
-	ld a, 2		;Hard Mode PC Bank
-	call IsHardMode
-	ret nz	;return if hard mode
-	ld a, 3		;Normal Mode PC Bank
+	pop de
+	ld c, a
+	ld a, [de] ; compare the stored byte to the calculated byte
+	cp c
 	ret
 	
-;to get the save bank based on Game Mode
-GetSaveBank:
-	xor a		;Normal Mode Save Bank (0)
-	call IsHardMode
-	ret z	;return if normal mode
-	ld a, 1		;Hard Mode Save Bank
-	ret
-	
+
 ;hl = where to look for the data ($a000 or $b000)
 LoadSAVCheckSum: ; 73623 (1c:7623)
 	ld a, SRAM_ENABLE
@@ -153,69 +157,39 @@ LoadSAVCheckSum: ; 73623 (1c:7623)
 	call GetSaveBank	;get the appropriate bank
 	ld [MBC1SRamBank], a
 	
-	push hl	;hl = $a000 or $b000, hero name located in SRAM
-	ld bc, $f8b	+ wEndOfData - wBoxMonNicksEnd ; but here checks the full SAV
-	call SAVCheckSum
-	ld c, a
-	
-	pop hl
-	push hl
-	ld de,$0fff
-	add hl,de
-	
-	ld a, [hl] ; SAV's checksum [$afff or $bfff]
-	cp c
-	pop hl
-	jp nz, SAVBadCheckSum	;if no match, then return  bad checksum
+	call CompareChecksums	;check to see if the checksum data matches
+	jp nz, SAVBadCheckSum	;if no match, then return bad checksum
 
 	push hl		;hl = $a000 or $b000
 	ld de, wPlayerName ; wd158
-	ld bc, $b
+	ld bc, SIZE_OF_PLAYER_NAME_SAVE_DATA
 	call CopyData
 	
-	pop hl
-	push hl
-	ld bc,$000b
-	add hl,bc	; hl = $a00b or $b00b
-	
-	ld de, $d2f7
-	ld bc, $789
+	ld de, wStoryLineData
+	ld bc, wStorylineDataEnd - wStoryLineData
 	call CopyData
-	ld hl, W_CURMAPTILESET
-	set 7, [hl]
-	pop hl
-	push hl
-	ld bc,$0794
-	add hl,bc	; hl = $a794 or $b794
 	
 	ld de, wSpriteStateData1
-	ld bc, $200
+	ld bc, wSpriteStateDataEnd - wSpriteStateData1
 	call CopyData
 	
-	pop hl
-	push hl
-	ld bc,$0ffe
-	add hl,bc	; hl = $affe or $bffe
+	ld de, wPartyCount
+	ld bc, wPartyMonNicksEnd - wPartyCount
+	call CopyData
 	
-	ld a, [hl]
-	ld [hTilesetType], a
+	ld de, wPCBoxData
+	ld bc, wBoxMonNicksEnd - wPCBoxData
+	call CopyData
 	
-	pop hl
-	push hl
-	ld bc,$0b28
-	add hl,bc	; hl = $ab28 or $bb28
-	ld de, W_NUMINBOX
-	ld bc, wEndOfData - W_NUMINBOX
+	ld de, wAdditionalData
+	ld bc, wEndOfAdditionalData - wAdditionalData
 	call CopyData
 
-	pop hl
-	push hl
-	ld bc,$0994
-	add hl,bc	; hl = $a994 or $b994
+	ld a,[hl]	;load the tileset type
+	ld [hTilesetType],a
 	
-	ld de, wPartyCount ; wPartyCount
-	ld bc, $194
-	call CopyData
+	ld hl, W_CURMAPTILESET
+	set 7, [hl]
 	
 	pop hl
 	and a
@@ -230,66 +204,128 @@ SAVGoodChecksum: ; 736f8 (1c:76f8)
 	ld [MBC1SRamEnable], a
 	ret
 	
-;this is the save function that is run before switching to flashback mode.  It saves the players items and party to b498 in SRAM0:
-SaveForFlashback:
-	ld de, $ba50	;where to save the party and items to for hard mode
-	call IsHardMode
-	jr nz,.skipNormalMode	;dont load normal mode pointer if hard mode
-	ld de, $bc4b	;where to save the party and items to for normal mode
-.skipNormalMode
-	ld a,3		;save flashback in bank 3 (normal mode pc bank)
-	call SavePartyAndItems
-	ret
 
-;this saves the party and items to the location in de
-SavePartyAndItems:
-	push de
+;also returns the $affd or $bffd to see if we should load party mon data or not
+BackupData:
+	ld a, SRAM_ENABLE
+	ld [MBC1SRamEnable], a
+	ld a, $1
+	ld [MBC1SRamBankingMode], a
+	call GetSaveBank	;get the appropriate bank
+	ld [MBC1SRamBank], a
+	
+	ld bc, SIZE_OF_GAMESAVE
+	call CopyData		;restore the backup
+	
+	ld de,sGameSaveInBattleByteOffset - SIZE_OF_GAMESAVE
+	add hl,de	;hl points to the 'Load Battle Party Data?'
+	ld a,[hl]
+	push af
+	
+	xor a
+	ld [MBC1SRamBankingMode], a
+	ld [MBC1SRamEnable], a
+	
+	pop af
+	ret
+	
+;to load the battle party/item data
+RestoreBattleData:
+	ld hl,sBattlePartyItemData		;location of first set of party/item data
+	ld a,2		;save into the Hard Mode PC bank
+	call LoadPartyAndItems
+	ret z		;if the checksum matches, then return
+	;otherwise, load from the backup
+	ld hl,sBackupBattlePartyItemData	;backup location
+	ld a,2		;save into the Hard Mode PC bank
+	call LoadPartyAndItems
+	ret
+	
+;to compare the checksums for the party item data
+ComparePartyItemDataChecksums:
+	push hl
+	ld de,sBattlePartyItemDataChecksum1 - sBattlePartyItemData
+	add hl,de
+	push hl
+	pop de	;de = checksum location
+	pop hl	;hl = start of data
+	push hl
+	
+	;check the party data
+	ld bc, wPartyMonNicksEnd - wPartyCount	;size of party data to checksum
+	call CompareChecksum
+	jr nz,.finish		;return if no match
+	
+	;check the item data
+	inc de	;de = next checksum location
+	ld bc, wBagItemsEnd - wNumBagItems	;size of bag data to checksum
+	call CompareChecksum
+	jr nz,.finish		;return if no match
+	
+	;check the additional data
+	inc de	;de = next checksum location
+	ld bc, wAdditionalInBattleDataEnd - wAdditionalInBattleData	;size of additional data to checksum
+	call CompareChecksum
+	jr nz,.finish		;return if no match	
+	
+	;check the total data
+	inc de	;de = next (total) checksum location
+	pop hl	;hl = start of data
+	push hl
+	ld bc, sBattlePartyItemDataTotalChecksum - sBattlePartyItemData	;size of data to checksum
+	call CompareChecksum
+.finish
+	pop hl
+	ret
+	
+;to Load the battle party/item data
+LoadPartyAndItems:
+	push hl
 	push af
 	ld a, SRAM_ENABLE
 	ld [MBC1SRamEnable], a
 	ld a, $1
 	ld [MBC1SRamBankingMode], a
-	pop af
+	pop af	
 	ld [MBC1SRamBank], a
-	ld hl, wPartyCount
+	
+	call ComparePartyItemDataChecksums
+	pop hl
+	jr nz,.finish	;return with no zero flag if doesnt match
+	
+	push hl
+	ld de, wPartyCount
 	ld bc, wPartyMonNicksEnd - wPartyCount	;total size of party
 	call CopyData
-	ld hl, wNumBoxItems
-	ld bc, wBoxItemsEnd - wNumBoxItems	;total size to copy
+	
+	ld de, wNumBagItems
+	ld bc, wBagItemsEnd - wNumBagItems	;total size to copy
 	call CopyData
-	pop hl	;hl = start point
-	ld bc, wPartyMonNicksEnd - wPartyCount + wBoxItemsEnd - wNumBoxItems	;size of data to checksum
-	call SAVCheckSum
-	ld [hl],a	;end of all other data
+	
+	ld de, wAdditionalInBattleData
+	ld bc, wAdditionalInBattleDataEnd - wAdditionalInBattleData	;total size to copy
+	call CopyData
+	
+	callab RemovePartyPokemonCaughtInBattle	;remove all party pokemon that were caught in the current battle
+	
+	pop hl
+	xor a	;set zero flag
+.finish
+	push af
 	xor a
 	ld [MBC1SRamBankingMode], a
 	ld [MBC1SRamEnable], a
-	ret
-	
-	
-;this is the save function that is run to save the in-battle parties:
-SaveInBattle:
-	ld de,$ba50		;location of first set of party/item data
-	ld a,2		;save into the Hard Mode PC bank
-	call SavePartyAndItems
-	ld de, $bc4b	;backup location
-	ld a,2		;save into the Hard Mode PC bank
-	call SavePartyAndItems
-	ld a, SRAM_ENABLE
-	ld [MBC1SRamEnable], a
-	ld a, $1
-	ld [MBC1SRamBankingMode], a
-	call GetSaveBank	;get the save bank for the current mode (it should only ever be hard mode)
-	ld [MBC1SRamBank], a
-	ld a,1
-	ld [$affd],a	;this byte holds whether or not we use the in-battle party bytes
-	ld [$bffd],a
-	xor a
-	ld [MBC1SRamBankingMode], a
-	ld [MBC1SRamEnable], a
-	ret
-	
+	pop af
+	ret	;return with zero flag
 
+FileDataDestroyedText: ; 7361e (1c:761e)
+	TX_FAR _FileDataDestroyedText
+	db "@"
+	
+	
+	
+;Saving Functions
+	
 SaveSAV: ;$770a
 	callba PrintSaveScreenText
 	ld hl,WouldYouLikeToSaveText
@@ -347,7 +383,19 @@ GameSavedText: ; 73782 (1c:7782)
 OlderFileWillBeErasedText: ; 73787 (1c:7787)
 	TX_FAR _OlderFileWillBeErasedText
 	db "@"
-
+	
+;to copy data and return a checksum:
+CopyDataAndChecksum:
+	push de
+	push bc
+	call CopyData
+	pop bc	;size of data
+	pop hl ;start location
+	push de
+	call SAVCheckSum	;generate checksum
+	pop de
+	ret
+	
 SaveSAVtoSRAM0: ; 7378c (1c:778c)
 	ld a, SRAM_ENABLE
 	ld [MBC1SRamEnable], a
@@ -357,40 +405,47 @@ SaveSAVtoSRAM0: ; 7378c (1c:778c)
 	ld [MBC1SRamBank], a
 	
 	xor a
-	ld [$affd],a	;this byte holds whether or not we use the in-battle party bytes
+	ld [sGameSaveStart + sGameSaveInBattleByteOffset],a	;this byte holds whether or not we use the in-battle party bytes
 	
 	ld hl, wPlayerName
-	ld de, $a000
-	ld bc, $b
-	call CopyData
+	ld de, sGameSaveStart
+	ld bc, SIZE_OF_PLAYER_NAME_SAVE_DATA
+	call CopyDataAndChecksum
+	ld [sGameSaveStart + sGameSaveChecksum1Offset],a	;save the checksum
 	
-	ld hl, $d2f7
-	ld de, $a00b
-	ld bc, W_NUMINBOX - $d2f7
-	call CopyData
+	ld hl, wStoryLineData
+	ld bc, wStorylineDataEnd - wStoryLineData
+	call CopyDataAndChecksum
+	ld [sGameSaveStart + sGameSaveChecksum2Offset],a	;save the checksum
 	
 	ld hl, wSpriteStateData1
-	ld de, $a794
-	ld bc, $200
-	call CopyData
-	
-	ld hl, W_NUMINBOX
-	ld de, $ab28
-	ld bc, wEndOfData - W_NUMINBOX
-	call CopyData
+	ld bc, wSpriteStateDataEnd - wSpriteStateData1
+	call CopyDataAndChecksum
+	ld [sGameSaveStart + sGameSaveChecksum3Offset],a	;save the checksum
 	
 	ld hl, wPartyCount
-	ld de, $a994
-	ld bc, $d2f7 - wPartyCount
-	call CopyData
+	ld bc, wPartyMonNicksEnd - wPartyCount
+	call CopyDataAndChecksum
+	ld [sGameSaveStart + sGameSaveChecksum4Offset],a	;save the checksum
+	
+	ld hl, wPCBoxData
+	ld bc, wBoxMonNicksEnd - wPCBoxData
+	call CopyDataAndChecksum
+	ld [sGameSaveStart + sGameSaveChecksum5Offset],a	;save the checksum
+	
+	ld hl, wAdditionalData
+	ld bc, wEndOfAdditionalData - wAdditionalData
+	call CopyDataAndChecksum
+	ld [sGameSaveStart + sGameSaveChecksum6Offset],a	;save the checksum
 	
 	ld a, [hTilesetType]
-	ld [$affe], a
+	ld [de], a		;save the tileset type
 	
-	ld hl, $a000
-	ld bc, $f8b	+ wEndOfData - wBoxMonNicksEnd ;original length + additional data
-	call SAVCheckSum
-	ld [$afff], a
+	ld hl, sGameSaveStart		;start of data
+	ld bc, SIZE_OF_GAMESAVE - 2	;size of gamesave data (including checksums)
+	call SAVCheckSum	;generate the checksum
+	ld [hl],a	;save the checksum
+	
 	xor a
 	ld [MBC1SRamBankingMode], a
 	ld [MBC1SRamEnable], a
@@ -403,10 +458,11 @@ SaveSAVtoSRAM: ; 73848 (1c:7848)
 	call IsHardMode	;hard mode?
 	ret z		;return if not
 	
-	ld hl, $a000
-	ld de, $b000
+	ld hl, sGameSaveStart
+	ld de, sBackupGameSaveStart
 	call BackupData		;back-up the save
 	ret
+
 	
 
 SAVCheckSum: ; 73856 (1c:7856)
@@ -423,6 +479,111 @@ SAVCheckSum: ; 73856 (1c:7856)
 	ld a, d
 	cpl
 	ret
+	
+	
+	
+	
+	
+	
+	
+;this is the save function that is run before switching to flashback mode.  It saves the players items and party to b498 in SRAM0:
+SaveForFlashback:
+	ld de, sHardFlashbackBackupPartyItemData	;where to save the party and items for hard mode
+	call IsHardMode
+	jr nz,.skipNormalMode	;dont load normal mode pointer if hard mode
+	ld de, sNormalFlashbackBackupPartyItemData	;where to save the party and items to for normal mode
+.skipNormalMode
+	ld a,3		;save flashback in bank 3 (normal mode pc bank)
+	call SavePartyAndItems
+	ret
+
+;this saves the party and items to the location in de
+SavePartyAndItems:
+	push de
+	push af
+	ld a, SRAM_ENABLE
+	ld [MBC1SRamEnable], a
+	ld a, $1
+	ld [MBC1SRamBankingMode], a
+	pop af
+	ld [MBC1SRamBank], a
+	
+	ld hl, wPartyCount
+	ld bc, wPartyMonNicksEnd - wPartyCount	;total size of party
+	call CopyDataAndChecksum
+	
+	pop hl
+	push hl
+	ld bc,sNormalFlashbackBackupPartyItemDataChecksum1 - sNormalFlashbackBackupPartyItemData	;offset to the first checksum
+	add hl,bc	;hl = pointer to first checksum
+	ld [hl],a	;store the checksum
+	
+	ld hl, wNumBagItems
+	ld bc, wBagItemsEnd - wNumBagItems	;total size to copy
+	call CopyDataAndChecksum
+	
+	pop hl
+	push hl
+	ld bc,sNormalFlashbackBackupPartyItemDataChecksum2 - sNormalFlashbackBackupPartyItemData	;offset to the first checksum
+	add hl,bc	;hl = pointer to 2nd checksum
+	ld [hl],a	;store the checksum
+	
+	ld hl, wAdditionalInBattleData
+	ld bc, wAdditionalInBattleDataEnd - wAdditionalInBattleData	;total size to copy
+	call CopyDataAndChecksum
+	
+	pop hl
+	push hl
+	ld bc,sNormalFlashbackBackupPartyItemDataChecksum3 - sNormalFlashbackBackupPartyItemData	;offset to the first checksum
+	add hl,bc	;hl = pointer to 3rd checksum
+	ld [hl],a	;store the checksum
+	
+	pop hl	;hl = start point
+	ld bc, sNormalFlashbackBackupPartyItemDataTotalChecksum - sNormalFlashbackBackupPartyItemData	;size of data to checksum
+	call SAVCheckSum
+	ld [hl],a	;store the checksum
+	xor a
+	ld [MBC1SRamBankingMode], a
+	ld [MBC1SRamEnable], a
+	ret
+	
+	
+;this is the save function that is run to save the in-battle parties:
+SaveInBattle:
+	ld de,sBattlePartyItemData		;location of first set of party/item data
+	ld a,2		;save into the Hard Mode PC bank
+	call SavePartyAndItems
+	
+	ld a, SRAM_ENABLE
+	ld [MBC1SRamEnable], a
+	ld a, $1
+	ld [MBC1SRamBankingMode], a
+	ld a,2		;save into the hard mode pc bank
+	ld [MBC1SRamBank], a
+	
+	ld bc,sBackupBattlePartyItemData - sBattlePartyItemData	;size of data to copy
+	ld de,sBackupBattlePartyItemData	;where to copy to
+	ld hl,sBattlePartyItemData		;where to copy from
+	call CopyData
+	
+	call GetSaveBank	;get the save bank for the current mode (it should only ever be hard mode)
+	ld [MBC1SRamBank], a
+	
+	ld a,1
+	ld [sGameSaveStart + sGameSaveInBattleByteOffset],a	;this byte holds whether or not we use the in-battle party bytes
+	ld [sBackupGameSaveStart + sGameSaveInBattleByteOffset],a
+	
+	xor a
+	ld [MBC1SRamBankingMode], a
+	ld [MBC1SRamEnable], a
+	ret
+	
+	
+	
+	
+;PC Functions
+	
+	
 
 ;save the CheckSums for each PC box in the current bank
 Func_73863: ; 73863 (1c:7863)
@@ -753,17 +914,13 @@ SAVCheckRandomID: ;$7ad1
 	ld [MBC1SRamBankingMode],a
 	call GetSaveBank	;get the appropriate bank
 	ld [MBC1SRamBank],a
-	ld a,[$a000]
+	ld a,[sGameSaveStart]
 	and a
 	jr z,.next
-	ld hl,$a000
-	ld bc,$f8b	+ wEndOfData - wBoxMonNicksEnd
-	call SAVCheckSum
-	ld c,a
-	ld a,[$afff]
-	cp c
+	ld hl,sGameSaveStart
+	call CompareChecksums	;see if the checksums all match
 	jr nz,.next
-	ld hl,$a06d
+	ld hl,sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA + (wPlayerID - wStoryLineData) ;point to the wplayerid in the save game data
 	ld a,[hli]
 	ld h,[hl]
 	ld l,a
@@ -777,6 +934,18 @@ SAVCheckRandomID: ;$7ad1
 	ld [MBC1SRamBankingMode],a
 	ld [$0000],a
 	ret
+	
+	
+	
+	
+	
+	
+	
+	
+	
+;Obsolete Functoins
+	
+	
 	
 LoadSAVCheckSum2:
 
@@ -836,7 +1005,7 @@ PadFlashbackSRAM_FF:
 .clear
 	xor a	;both are in bank 0 (normal save bank)
 	ld [MBC1SRamBank], a	;otherwise, we need to clear some data in bank 0
-	ld bc, wPartyMonNicksEnd - wPartyCount + wBoxItemsEnd - wNumBoxItems + 1
+	ld bc, wPartyMonNicksEnd - wPartyCount + wBagItemsEnd - wNumBagItems + wAdditionalInBattleDataEnd - wAdditionalInBattleData + 4
 	ld a, $ff
 	jp FillMemory
 	
