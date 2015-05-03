@@ -49,7 +49,10 @@ PKMNLeaguePC: ; 0x7657e
 	jp GBPalNormal
 
 Func_765e5: ; 765e5 (1d:65e5)
-	ld c, PARTY_LENGTH
+	push af
+	ld a,[wMaxPartyMons]		;get the max party size
+	ld c, a	; PARTY_LENGTH
+	pop af
 .loop
 	push bc
 	call Func_76610

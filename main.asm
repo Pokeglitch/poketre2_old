@@ -3600,14 +3600,18 @@ ResetBoulderPushFlags: ; f2dd (3:72dd)
 
 _AddPartyMon: ; f2e5 (3:72e5)
 	ld de, wPartyCount ; wPartyCount
+	ld a,[wMaxPartyMons]		;get the max party size
+	ld b,a		;store into b
 	ld a, [wcc49]
 	and $f
-	jr z, .asm_f2f2
+	jr z, .start
 	ld de, wEnemyPartyCount ; wEnemyPartyCount
-.asm_f2f2
+	ld b,6	;party size for enemy
+.start
+	inc b
 	ld a, [de]
 	inc a
-	cp PARTY_LENGTH + 1
+	cp b	;	PARTY_LENGTH + 1
 	ret nc
 	ld [de], a
 	ld a, [de]
@@ -3868,8 +3872,10 @@ AddPartyMon_WriteMovePP: ; f476 (3:7476)
 ; used in the cable club trade center
 _AddEnemyMonToPlayerParty: ; f49d (3:749d)
 	ld hl, wPartyCount
+	ld a,[wMaxPartyMons]		;get the max party size
+	ld b,a	;	store into b
 	ld a, [hl]
-	cp PARTY_LENGTH
+	cp b	; PARTY_LENGTH
 	scf
 	ret z            ; party full, return failure
 	inc a
@@ -3943,8 +3949,10 @@ Func_f51e: ; f51e (3:751e)
 	jr .boxFull
 .checkPartyMonSlots
 	ld hl, wPartyCount ; wPartyCount
+	ld a,[wMaxPartyMons]		;get the max party size
+	ld b,a		;store into b
 	ld a, [hl]
-	cp PARTY_LENGTH
+	cp b	; PARTY_LENGTH
 	jr nz, .partyOrBoxNotFull
 .boxFull
 	scf
@@ -4490,6 +4498,8 @@ InitPlayerData2:
 	call InitializeEmptyList
 	ld hl, wNumBoxItems
 	call InitializeEmptyList
+	ld a,3	;initialize max # of pokemon to 3
+	ld [wMaxPartyMons],a
 
 START_MONEY EQU $3000
 	ld hl, wPlayerMoney + 1

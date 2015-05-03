@@ -15,9 +15,9 @@ FarBattleRandom:
 ;to see if the map is an outdoor map
 IsLandscapeOutdoor:
 	ld a,[wBattleLandscape]		;load the landscape
-	bit 4,a						;is it a temporary landscape?
+	bit 7,a						;is it a temporary landscape?
 	call nz,GetMapLandscape		;if so, then get the original landscape
-	and a,$0F					;only keep the landscape value
+	and a,$7F				;ignore the "temporary?" bit
 	ld hl,OutdoorLandscapes
 	ld de,1
 	jp IsInArray				;try to find it in the array

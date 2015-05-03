@@ -263,8 +263,10 @@ Func_21618: ; 21618 (8:5618)
 	call PrintText
 	jp Func_214e8
 .asm_21627
+	ld a,[wMaxPartyMons]		;get the max party size
+	ld l,a		;store into l
 	ld a, [wPartyCount]
-	cp PARTY_LENGTH
+	cp l	; PARTY_LENGTH
 	jr nz, .asm_21637
 	ld hl, CantTakeMonText
 	call PrintText

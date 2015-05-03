@@ -48,7 +48,8 @@ SetupPokeballs: ; 0x3a8a6
 	ld a, [de]
 	push af
 	ld de, wBuffer
-	ld c, PARTY_LENGTH
+	ld a,[wMaxPartyMons]		;get the max party size
+	ld c, a	;PARTY_LENGTH
 	ld a, $34 ; empty pokeball
 .emptyloop
 	ld [de], a
@@ -96,7 +97,8 @@ PickPokeball: ; 3a8c2 (e:68c2)
 
 WritePokeballOAMData: ; 3a8e1 (e:68e1)
 	ld de, wBuffer
-	ld c, PARTY_LENGTH
+	ld a,[wMaxPartyMons]		;get the max party size
+	ld c, a	;PARTY_LENGTH
 .loop
 	ld a, [W_BASECOORDY] ; wd082
 	ld [hli], a

@@ -109,8 +109,12 @@ ItemUseBall: ; d687 (3:5687)
 	ld a,[W_BATTLETYPE]
 	dec a
 	jr z,.UseBall
+	push bc
+	ld a,[wMaxPartyMons]		;get the max party size
+	ld b,a		;store into b
 	ld a,[wPartyCount]	;is Party full?
-	cp a,PARTY_LENGTH
+	cp a,b	; PARTY_LENGTH
+	pop bc
 	jr nz,.UseBall
 	ld a,[W_NUMINBOX]	;is Box full?
 	cp a,MONS_PER_BOX
@@ -420,8 +424,12 @@ ItemUseBall: ; d687 (3:5687)
 	ld [wd11e],a
 	predef ShowPokedexData
 .checkParty	;$58f4
+	push bc
+	ld a,[wMaxPartyMons]		;get the max party size
+	ld b,a		;store into b
 	ld a,[wPartyCount]
-	cp a,PARTY_LENGTH		;is party full?
+	cp a,b	;PARTY_LENGTH		;is party full?
+	pop bc
 	jr z,.sendToBox
 	xor a
 	ld [wcc49],a

@@ -24,7 +24,7 @@ DisplayAdditionalNoDamageText:
 
 DisplayLandscapeNoDamageText:
 	ld a,[wBattleLandscape]
-	and a,$0F	;only keep the landscape info
+	and a,$7F				;ignore the "temporary?" bit
 	ld hl,LandscapeNoDamageTextTable
 	ld de,3
 	call IsInArray
@@ -159,7 +159,7 @@ EffectivenessTextTable:
 DisplayLandscapeDamageEffectText:
 	push af
 	ld a,[wBattleLandscape]
-	and a,$0F	;only keep the landscape
+	and a,$7F				;ignore the "temporary?" bit
 	ld hl,LandscapeDamageTextTable
 	call PrintExtraBattleText
 	pop af
@@ -194,9 +194,6 @@ DisplayWeatherDamageEffectText:
 DisplayWeatherTextCommon:
 	push af
 	ld a,[wBattleWeather]
-	swap a
-	and a,$0F	;only keep weather
-	rrc a	;shift right one
 	call PrintExtraBattleText
 .finish
 	pop af

@@ -6912,9 +6912,16 @@ PrintEmptyString: ; 3ee94 (f:6e94)
 	db "@"
 
 
+;to check to see if the current battle is occuring in replay mode
+;returns nz if replay mode
+IsReplayMode:
+	ld hl,wAdditionalBattleTypeBits
+	bit 4,[hl]		;is replay bit set?
+	ret
+	
+
 BattleRandom:
 ; Link battles use a shared PRNG.
-
 	ld a, [wLinkState]
 	cp LINK_STATE_BATTLING
 	jp z,.linkBattle	;link battle if so
@@ -6934,6 +6941,7 @@ BattleRandom:
 	ld a, [hl]
 	pop bc
 	pop hl
+	ld [wBattleRandom],a	;store a (in case we ran this from a different bank)
 	ret c
 
 ; if we picked the last seed, we need to recalculate the nine seeds
@@ -6963,10 +6971,26 @@ BattleRandom:
 	pop af
 	pop bc
 	pop hl
-.finish
-	ld [wBattleRandom],a	;store a (in case we ran this from a different bank
+	ld [wBattleRandom],a	;store a (in case we ran this from a different bank)
 	ret
-
+.finish
+	ld [wBattleRandom],a	;store a (in case we ran this from a different bank)
+	push bc
+	push de
+	push hl
+	
+	call IsReplayMode	;are we watching a replay?
+	jr z,.storeRandom	;if not, then store the value to the SRAM
+	call GetReplayValue	;get the next replay value
+	jr .exit
+.storeRandom
+	call SaveReplayValue	;save the replay value that is in wBattleRandom
+.exit
+	ld a,[wBattleRandom]	;load the value into back a
+	pop hl
+	pop de
+	pop bc
+	ret
 
 HandleExplodingAnimation: ; 3eed3 (f:6ed3)
 	ld a, [H_WHOSETURN]
@@ -8444,7 +8468,7 @@ ChargeEffect: ; 3f88c (f:788c)
 	cp FLY_EFFECT
 	jr nz, .notFly
 	ld a,[wBattleLandscape]
-	and a,$0F	;only keep
+	and a,$7F				;ignore the "temporary?" bit
 	cp a,UNDERGROUND_SCAPE	;underground?
 	jr nz,.notUnderground
 	;decrement PP
@@ -8467,7 +8491,7 @@ ChargeEffect: ; 3f88c (f:788c)
 	jr nz, .notDigOrFly
 
 	ld a,[wBattleLandscape]
-	and a,$0F	;only keep
+	and a,$7F				;ignore the "temporary?" bit
 	cp a,SKY_SCAPE	;sky?
 	jr nz,.notSky
 	;decrement PP
@@ -9124,3 +9148,69 @@ AddDamageCommonFinish:
 	ld [wHPBarType],a
 	predef UpdateHPBar2 ; animate the HP bar shortening
 	jp DrawHUDsAndHPBars
+	
+	
+;to get a replay value from the location pointed to in the WRAM
+GetReplayValue:
+	ld de,wReplayDataPointer
+	ld a,[de]
+	ld l,a
+	inc de
+	ld a,[de]
+	ld h,a	;hl = pointer that was stored
+	inc hl
+	ld a,h
+	ld [de],a
+	dec de
+	ld a,l
+	ld [de],a	;increase the pointer to point to the next location
+	dec hl	;hl = pointer to original location
+	ld a,[wReplayBank]
+	bit 7,a		;is the data stored in the SRAM
+	jr z,.SRAM		;then read from sram
+	res 7,a	;turn off the bit (already contains the bank)
+	ld bc,1		;1 byte
+	ld de,wBattleRandom		;copy into battle random
+	jp FarCopyData	;a already contains the bank
+.SRAM
+	push af
+	ld a, SRAM_ENABLE
+	ld [MBC1SRamEnable], a
+	ld a, $1
+	ld [MBC1SRamBankingMode], a
+	pop af	;get the appropriate bank
+	ld [MBC1SRamBank], a
+	ld a,[hl]	;load the value into a
+	ld [wBattleRandom],a	;store into battle random
+	xor a
+	ld [MBC1SRamBankingMode], a
+	ld [MBC1SRamEnable], a
+	ret
+	
+;to save a replay value to the SRAM:
+SaveReplayValue:
+	ld de,wReplayDataPointer
+	ld a,[de]
+	ld l,a
+	inc de
+	ld a,[de]
+	ld h,a	;hl = pointer that was stored
+	inc hl
+	ld a,h
+	ld [de],a
+	dec de
+	ld a,l
+	ld [de],a	;increase the pointer to point to the next location
+	dec hl	;hl = pointer to original location
+	ld a, SRAM_ENABLE
+	ld [MBC1SRamEnable], a
+	ld a, $1
+	ld [MBC1SRamBankingMode], a
+	ld a,[wReplayBank]	;get the appropriate bank
+	ld [MBC1SRamBank], a
+	ld a,[wBattleRandom]	;store battle random in a
+	ld [hl],a	;store into HL
+	xor a
+	ld [MBC1SRamBankingMode], a
+	ld [MBC1SRamEnable], a
+	ret

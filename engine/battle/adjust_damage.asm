@@ -284,7 +284,7 @@ HoloOrShadowCheck:
 ;to check the landscape to see if it matches the type, and multiply by 1.5 if so
 Landscape15xDamageCheck:
 	ld a,[wBattleLandscape]	;load the landscape
-	and a,$0F				;only keep the landscape value
+	and a,$7F				;ignore the "temporary?" bit
 	ld d,0
 	ld e,a
 	ld hl,LandscapeType15Table	;pointer to the landscape vs type for 1.5 table
@@ -304,7 +304,7 @@ Landscape0xDamageCheck:
 	ld a,[wd11e]			;get the move type
 	ld b,a	;store into b
 	ld a,[wBattleLandscape]	;load the landscape
-	and a,$0F				;only keep the landscape value
+	and a,$7F				;ignore the "temporary?" bit
 	ld c,a	;store into c
 	ld hl,LandscapeType0Table	;pointer to the landscape vs type for 0 table
 	
@@ -331,9 +331,6 @@ WeatherDamageCheck:
 	call IsLandscapeOutdoor		;are we in an outdoor landscape?
 	ret nc						;return if not
 	ld a,[wBattleWeather]		;load the weather
-	swap a
-	and a,$0F					;only keep the weather value
-	rrc a
 	ld d,0
 	ld e,a
 	ld hl,WeatherType15Table
@@ -403,7 +400,7 @@ EnvironmentDamageCheck:
 ;to check for other ways the damage might be modified
 RemainingDamageChecks:
 	ld a,[wBattleLandscape]		;check the battle landscape
-	and a,$0F		;only keep the landscape
+	and a,$7F				;ignore the "temporary?" bit
 	cp VIRTUAL_REALITY_SCAPE		;is it virtual reality?
 	jr nz,.skipVirtualReality			;skip down if not
 	call GetCurrentAttack		;load the current attack into a

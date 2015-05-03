@@ -2,8 +2,12 @@ _GivePokemon: ; 4fda5 (13:7da5)
 	call EnableAutoTextBoxDrawing
 	xor a
 	ld [wccd3], a
+	push bc
+	ld a,[wMaxPartyMons]		;get the max party size
+	ld b,a		;store into b
 	ld a, [wPartyCount] ; wPartyCount
-	cp PARTY_LENGTH
+	cp b	; PARTY_LENGTH
+	pop bc
 	jr c, .asm_4fe01
 	ld a, [W_NUMINBOX] ; wda80
 	cp MONS_PER_BOX

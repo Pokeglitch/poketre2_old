@@ -99,8 +99,10 @@ DayCareMScript_562e1: ; 562e1 (15:62e1)
 
 .asm_56333
 	call PrintText
+	ld a,[wMaxPartyMons]		;get the max party size
+	ld l,a	;store into l
 	ld a, [wPartyCount]
-	cp PARTY_LENGTH
+	cp l	; PARTY_LENGTH
 	ld hl, DayCareMText_56440
 	jp z, .asm_56403
 	ld de, wTrainerFacingDirection

@@ -1499,11 +1499,13 @@ wBottledPotion::
 	ds 1
 wPotionCounter::
 	ds 1
-	
+
+wMaxPartyMons::
+	ds 1
 wAdditionalInBattleDataEnd::
 
 wExtraBytes::
-	ds 35
+	ds 34
 	
 wNumBoxItems:: ; d31d
 	ds 1
@@ -2421,6 +2423,7 @@ wBattleBackground::
 	
 ;the battle landscape id and weather
 wBattleWeather::
+	ds 1
 wBattleLandscape::
 	ds 1
 	
@@ -2479,6 +2482,7 @@ wPreBattleBits::
 ;	Bit 1 : In last stand mode?
 ;	Bit 2 : Fully shadow battle?
 ;	Bit 3 : First pokemon in the horde battle?
+;	Bit 4 : Watching a Replay?
 wAdditionalBattleTypeBits::
 	ds 1
 	
@@ -2796,9 +2800,17 @@ wTempLandscapeTimeCounter::
 wPreviousAttackDamage::
 	ds 2
 		
-		
 wEndOfNewBattleBytes::
 	ds 1
+	
+	
+;Holds the pointer where the game will read/save the replay data
+;holds which bank we can find the replay data
+;if bit 7 = 1, then we read from the SRAM
+wReplayBank::
+	ds 1
+wReplayDataPointer::
+	ds 2
 
 
 SECTION "Stack", WRAMX[$dfff], BANK[1]
@@ -2815,7 +2827,30 @@ S_SPRITEBUFFER0:: ds SPRITEBUFFERSIZE ; b000
 S_SPRITEBUFFER1:: ds SPRITEBUFFERSIZE ; b188
 S_SPRITEBUFFER2:: ds SPRITEBUFFERSIZE ; b310
 
-sHallOfFame:: ds 1 ; b498
+REPLAY_PLAYER_DATA_LENGTH EQU $100			;make this function to add up all of the data
+REPLAY_RANDOM_DATA_LENGTH EQU 500
+
+wReplayBackupData::
+	ds REPLAY_PLAYER_DATA_LENGTH
+	
+wNewReplayPlayerData::
+	ds REPLAY_PLAYER_DATA_LENGTH
+	
+wReplay1PlayerData::
+	ds REPLAY_PLAYER_DATA_LENGTH
+wReplay2PlayerData::
+	ds REPLAY_PLAYER_DATA_LENGTH
+wReplay3PlayerData::
+	ds REPLAY_PLAYER_DATA_LENGTH
+	
+wNewReplayData::
+	ds REPLAY_RANDOM_DATA_LENGTH
+wNewReplayDataEnd::
+	
+wReplay1Data::
+	ds REPLAY_RANDOM_DATA_LENGTH
+wReplay1DataEnd::
+	ds 1
 
 SECTION "Hard Mode Gamesave", SRAM, BANK[1]
 sHardModeGameSave::
@@ -2852,6 +2887,11 @@ sBackupBattlePartyItemDataChecksum3::
 sBackupBattlePartyItemDataTotalChecksum::
 	ds 1
 	
+wReplay2Data::
+	ds REPLAY_RANDOM_DATA_LENGTH
+wReplay2DataEnd::
+	ds 1
+	
 SECTION "Normal Mode PC Banks", SRAM, BANK[3]
 sNormalModePCBanks::
 	ds NUM_OF_PC_BOXES * SIZE_OF_PC_BOX
@@ -2880,3 +2920,7 @@ sHardFlashbackBackupPartyItemDataChecksum3::
 sHardFlashbackBackupPartyItemDataTotalChecksum::
 	ds 1
 	
+wReplay3Data::
+	ds REPLAY_RANDOM_DATA_LENGTH
+wReplay3DataEnd::
+	ds 1

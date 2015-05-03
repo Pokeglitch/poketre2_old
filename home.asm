@@ -19,6 +19,7 @@ GetHordeIsInBattle:
 .finish
 	pop hl
 	ret
+	
 
 ; Hardware interrupts
 SECTION "vblank", ROM0 [$40]
