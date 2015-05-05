@@ -204,8 +204,10 @@ _NocturnalText:
 	prompt
 
 _EarlyBirdText:
-	text ""
-	line ""
+	text $5a
+	line "woke up due to"
+	cont "it's Early Bird"
+	cont "ability!"
 	prompt
 
 _PredatorText:
@@ -284,8 +286,9 @@ _RechargeText:
 	prompt
 
 _InsomniaText:
-	text ""
-	line ""
+	text $59, "'s"
+	line "Insomnia ability"
+	cont "prevented sleep!"
 	prompt
 
 _FlameBodyText:

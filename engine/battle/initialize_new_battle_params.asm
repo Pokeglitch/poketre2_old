@@ -8,8 +8,14 @@ GetMapLandscape:
 	ret
 	
 FarBattleRandom:
+	push de
+	push hl
+	push bc
 	callab BattleRandom
 	ld a,[wBattleRandom]
+	pop bc
+	pop hl
+	pop de
 	ret
 	
 ;to see if the map is an outdoor map

@@ -690,7 +690,6 @@ HandleRadio_DecreaseOwnStats:
 	push de
 	push hl
 	push bc
-.tryAgain
 	call BattleRandom
 	ld h,0
 	ld l,7
@@ -698,7 +697,7 @@ HandleRadio_DecreaseOwnStats:
 	sub a,36	;subtract a by 36
 	jr c,.applyEffect	;if we've gone below 0, then apply the affect
 	dec l
-	jr z,.tryAgain	;if we've done this seven times, then try again
+	jr z,.damageHP	;if we've done this seven times, then just damage the HP
 	jr .loop	;otherwise, loop
 .applyEffect
 	dec l	;set l to index starting from 0
@@ -3548,7 +3547,13 @@ CheckPlayerStatusConditions: ; 3d854 (f:5854)
 	call PrintText
 	jr .sleepDone
 .WakeUp
-	ld hl,WokeUpText
+	ld hl, EarlyBirdText2	;load 
+	ld a,AB_EARLY_BIRD
+	call DoesAttackerHaveAbility	;check to see if the pokemon has the early bird ability
+	and a
+	jr nz,.printWokeUp	;print the early bird ability if so
+	ld hl, WokeUpText	;otherwise, print normal woke up text
+.printWokeUp
 	call PrintText
 .sleepDone
 	xor a
@@ -5080,12 +5085,17 @@ ApplyAttackToEnemyPokemon: ; 3e0df (f:60df)
 	add b
 	ld b,a ; b = level * 1.5
 ; loop until a random number in the range [1, b) is found
-.loop
 	call BattleRandom
-	and a
-	jr z,.loop
+	jr .skipSubtract	;skip the sub b the first time
+.loop
+	sub a,b	;reduce the random value by b
+.skipSubtract
 	cp b
-	jr nc,.loop
+	jr nc,.loop ;if greater than or equal to b, then divide by 2 and try again
+	and a
+	jr nz,.skipZero	;if the random value was not zero, then dont increase
+	inc a	;otherwise, increase to 1
+.skipZero
 	ld b,a
 .storeDamage ; store damage value at b
 	ld hl,W_DAMAGE
@@ -5240,10 +5250,17 @@ ApplyAttackToPlayerPokemon: ; 3e1a0 (f:61a0)
 ; loop until a random number in the range [0, b) is found
 ; this differs from the range when the player attacks, which is [1, b)
 ; it's possible for the enemy to do 0 damage with Psywave, but the player always does at least 1 damage
-.loop
 	call BattleRandom
+	jr .skipDown	;dont subtract b the first time
+.loop
+	sub a,b	;subtract b if it didn't carry the first time
+.skipDown
 	cp b
 	jr nc,.loop
+	and a
+	jr nz,.notZero	;if not zero, then dont increase
+	inc a		;otherwise, set minimum to 1
+.notZero
 	ld b,a
 .storeDamage
 	ld hl,W_DAMAGE
@@ -5525,11 +5542,9 @@ MetronomePickMove: ; 3e348 (f:6348)
 .pickMoveLoop
 	call BattleRandom
 	and a
-	jr z,.pickMoveLoop
-	cp a,NUM_ATTACKS + 1 ; max normal move number + 1 (this is Struggle's move number)
-	jr nc,.pickMoveLoop
+	jr z,.pickMoveLoop	;try again if zero
 	cp a,METRONOME
-	jr z,.pickMoveLoop
+	jr z,.pickMoveLoop	;try again if metronome
 	ld [hl],a
 	jr ReloadMoveData
 
@@ -5788,9 +5803,12 @@ RandomizeDamage: ; 3e687 (f:6687)
 	ld a, [hl]
 	ld [H_MULTIPLICAND + 2], a
 ; loop until a random number greater than or equal to 217 is generated
-.loop
 	call BattleRandom
 	rrca
+	jr .skipAdd	;dont add 39 the first time
+.loop
+	add a,39	;add 39 to the random value (255-216)
+.skipAdd
 	cp 217
 	jr c, .loop
 	ld [H_MULTIPLIER], a
@@ -6062,7 +6080,13 @@ CheckEnemyStatusConditions: ; 3e88f (f:688f)
 	call PlayNonMoveAnimation
 	jr .sleepDone
 .wokeUp
-	ld hl, WokeUpText
+	ld hl, EarlyBirdText2	;load 
+	ld a,AB_EARLY_BIRD
+	call DoesAttackerHaveAbility	;check to see if the pokemon has the early bird ability
+	and a
+	jr nz,.printWokeUp	;print the early bird ability if so
+	ld hl, WokeUpText	;otherwise, print normal woke up text
+.printWokeUp
 	call PrintText
 .sleepDone
 	xor a
@@ -6422,24 +6446,45 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	call GetMonHeader
 	ld a, [W_ENEMYBATTSTATUS3]
 	bit Transformed, a ; is enemy mon transformed?
-	ld hl, wcceb ; copied DVs from when it used Transform
+	jr z,.notTransformedDVs
+	ld hl, wccea ; copied DVs from when it used Transform
 	ld a, [hli]
 	ld b, [hl]
-	jr nz, .storeDVs
-	ld a, [W_ISINBATTLE]
-	cp $2 ; is it a trainer battle?
-; fixed DVs for trainer mon
-	ld a, $98
-	ld b, $88
-	jr z, .storeDVs
+	inc hl
+	ld c, [hl]
+	jr .storeDVs
+.notTransformedDVs
+	call GetHordeIsInBattle
+	cp $2 ; is it a trainer or horde battle?
+	jr nz,.notTrainerDVs
+; load DV's from party
+	ld hl, wEnemyMon1HPSpDefDV
+	ld a, [wWhichPokemon]
+	ld bc, wEnemyMon2 - wEnemyMon1
+	call AddNTimes
+	ld a, [hl]
+	ld bc, wEnemyMon1DVs - wEnemyMon1HPSpDefDV
+	add hl,bc	;hl now points to the original DVs
+	ld b, [hl]
+	inc hl
+	ld c,[hl]
+	jr .storeDVs
+.notTrainerDVs
 ; random DVs for wild mon
 	call BattleRandom
 	ld b, a
 	call BattleRandom
+	ld c, a
+	call BattleRandom
 .storeDVs
+	ld [wEnemyMonHPSpDefDV],a
 	ld hl, wEnemyMonDVs
+	ld a,b
 	ld [hli], a
-	ld [hl], b
+	ld [hl], c
+	
+	;done with DVs
+	
 	ld de, wEnemyMonLevel
 	ld a, [W_CURENEMYLVL]
 	ld [de], a
@@ -6489,8 +6534,8 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	ld a, [hli]            ; copy type 2
 	ld [de], a
 	inc de
-	ld a, [hli]            ; copy catch rate
-	ld [de], a
+	ld a,[hli]		;copy catch rate
+	ld [de],a	
 	inc de
 	ld a, [W_ISINBATTLE]
 	cp $2 ; is it a trainer battle?
@@ -6536,6 +6581,17 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	inc de
 	dec b
 	jr nz, .copyBaseStatsLoop
+	
+	;store some new bytes
+	ld hl,W_MONHABILITY1
+	ld a,[hli]
+	ld [wEnemyMonAbility1],a
+	ld a,[hli]
+	ld [wEnemyMonAbility2],a
+	ld a,[hl]
+	ld [wEnemyMonBaseSpDef],a
+	
+	
 	ld hl, W_MONHCATCHRATE
 	ld a, [hli]
 	ld [de], a
@@ -6562,6 +6618,7 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	ld de, wEnemyMonUnmodifiedLevel
 	ld bc, $b
 	call CopyData
+			
 	call GetHordeIsInBattle
 	dec a	; is it a wild battle?
 	jr z,.finishWild	;finish wild if so
@@ -6571,6 +6628,26 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	call CalcModStatsSavewD11E
 	ret
 .finishWild
+	;finish up initializing additional stats
+	ld a,$FF
+	ld [wEnemyMonMorale],a	;set the enemy mon moral to $FF
+	
+	ld hl,wEnemyMonSpecialDefense
+	ld de,wEnemyMonUnmodifiedSpecialDefense
+	ld a,[hli]
+	ld [de],a
+	inc de
+	ld a,[hl]
+	ld [de],a	;copy the calculated special defense stat and store as unmodified special defense
+	
+	call BattleRandom
+	and a,$1	;get the gender
+	call DetermineNewTraits2
+	ld [wEnemyMonTraits],a
+	
+	call DetermineWildPokemonChecksum	;generate this pokemons checksum using the wild pokemon stats
+	ld [wEnemyMonChecksum],a
+	
 	ld a, $7 ; default stat mod
 	ld b, $8 ; number of stat mods
 	ld hl, wEnemyMonStatMods
@@ -7476,12 +7553,6 @@ SleepEffect: ; 3f1fc (f:71fc)
 	ld bc, W_PLAYERBATTSTATUS2
 
 .sleepEffect
-	ld a, [bc]
-	bit NeedsToRecharge, a ; does the target need to recharge? (hyper beam)
-	res NeedsToRecharge, a ; target no longer needs to recharge
-	ld [bc], a
-	jr nz, .setSleepCounter ; if the target had to recharge, all hit tests will be skipped
-	                        ; including the event where the target already has another status
 	ld a, [de]
 	ld b, a
 	and $7
@@ -7498,11 +7569,35 @@ SleepEffect: ; 3f1fc (f:71fc)
 	ld a, [W_MOVEMISSED]
 	and a
 	jr nz, .didntAffect
-.setSleepCounter
 ; set target's sleep counter to a random number between 1 and 7
+	ld a,AB_INSOMNIA	;check to see if the pokemon has the insomnia ability
+	call DoesDefenderHaveAbility
+	and a
+	jr z,.setSleepCounter	;if not, then skip down
+	ld hl, InsomniaText2
+	jp PrintText
+.setSleepCounter
+	ld a,[bc]
+	res NeedsToRecharge, a ; target no longer needs to recharge
+	ld [bc],a
+	ld a,AB_EARLY_BIRD
+	call DoesDefenderHaveAbility	;check to see if the pokemon has the early bird ability
+	and a
+	jr z,.getRandom	;get a random value if not
+	ld a,1	;otherwise, set to 1
+	jr .notZero	;and skip down
+.getRandom
 	call BattleRandom
-	and $7
-	jr z, .setSleepCounter
+	jr .skipSub	;dont subtract the first time
+.loop
+	sub a,7	;subtract 7 from the value
+.skipSub
+	cp 8	;compare to 8
+	jr nc, .loop	;loop if it was 8 or greater
+	and a
+	jr nz,.notZero	;skip down if not zer
+	inc a	;if zero, set to 1
+.notZero	
 	ld [de], a
 	call PlayCurrentMoveAnimation2
 	ld hl, FellAsleepText
@@ -8278,10 +8373,13 @@ SwitchAndTeleportEffect: ; 3f739 (f:7739)
 	add b
 	ld c, a
 	inc c
-.asm_3f751
 	call BattleRandom
+	jr .skipSubtract	;don't subtract c the first time
+.loop1
+	sub a,c	;subtract c from a
+.skipSubtract
 	cp c
-	jr nc, .asm_3f751
+	jr nc, .loop1	;loop if its c or greater
 	srl b
 	srl b
 	cp b
@@ -8320,10 +8418,13 @@ SwitchAndTeleportEffect: ; 3f739 (f:7739)
 	add b
 	ld c, a
 	inc c
-.asm_3f7a4
 	call BattleRandom
+	jr .skipSubtract2	;dont subtract c the first time
+.loop2
+	sub a,c		;subtract a by c
+.skipSubtract2
 	cp c
-	jr nc, .asm_3f7a4
+	jr nc, .loop2	;loop if greater than or equal to c
 	srl b
 	srl b
 	cp b
@@ -8632,14 +8733,29 @@ ConfusionEffect: ; 3f961 (f:7961)
 ConfusionSideEffectSuccess: ; 3f96f (f:796f)
 	ld a, [H_WHOSETURN]
 	and a
+	ld de, wEnemyMonType
 	ld hl, W_ENEMYBATTSTATUS1
 	ld bc, W_ENEMYCONFUSEDCOUNTER
 	ld a, [W_PLAYERMOVEEFFECT]
 	jr z, .confuseTarget
+	ld de, wBattleMonType
 	ld hl, W_PLAYERBATTSTATUS1
 	ld bc, W_PLAYERCONFUSEDCOUNTER
 	ld a, [W_ENEMYMOVEEFFECT]
 .confuseTarget
+	push af
+	ld a,[de]
+	cp a,MIND	;mind type?
+	jr z,.failForMind	;then fail
+	inc de
+	ld a,[de]
+	cp a,MIND	;second type is mind?
+	jr nz,.notMind	;then dont fail
+.failForMind
+	pop af
+	jr ConfusionEffectFailed
+.notMind
+	pop af
 	bit Confused, [hl] ; is mon confused?
 	jr nz, ConfusionEffectFailed
 	set Confused, [hl] ; mon is now confused
@@ -8728,17 +8844,7 @@ MimicEffect: ; 3f9ed (f:79ed)
 .asm_3fa13
 	bit Invulnerable, a
 	jr nz, .asm_3fa74
-.asm_3fa17
-	push hl
-	call BattleRandom
-	and $3
-	ld c, a
-	ld b, $0
-	add hl, bc
-	ld a, [hl]
-	pop hl
-	and a
-	jr z, .asm_3fa17
+	call PickRandomNonZeroMove
 	ld d, a
 	ld a, [H_WHOSETURN]
 	and a
@@ -8837,16 +8943,7 @@ DisableEffect: ; 3fa8a (f:7a8a)
 	and a
 	jr nz, .moveMissed
 .pickMoveToDisable
-	push hl
-	call BattleRandom
-	and $3
-	ld c, a
-	ld b, $0
-	add hl, bc
-	ld a, [hl]
-	pop hl
-	and a
-	jr z, .pickMoveToDisable ; loop until a non-00 move slot is found
+	call PickRandomNonZeroMove
 	ld [wd11e], a ; store move number
 	push hl
 	ld a, [H_WHOSETURN]
@@ -9214,3 +9311,116 @@ SaveReplayValue:
 	ld [MBC1SRamBankingMode], a
 	ld [MBC1SRamEnable], a
 	ret
+
+;to check the defenders abilities to see if the value a matches
+;returns zero if no match, 1 if ability 1 and 2 if ability 2
+DoesDefenderHaveAbility:
+	push bc
+	push hl
+	push af
+; values for player turn
+	ld hl,wEnemyMonAbility1
+	ld a,[H_WHOSETURN]
+	and a
+	jr z,.next
+;values for enemy turn
+	ld hl,wBattleMonAbility1
+.next
+	jr CheckAbilityMatchCommon
+
+;to check the attackers abilities to see if the value in a matches
+DoesAttackerHaveAbility:
+	push bc
+	push hl
+	push af
+; values for enemy turn
+	ld hl,wEnemyMonAbility1
+	ld a,[H_WHOSETURN]
+	and a
+	jr nz,CheckAbilityMatchCommon
+;values for player turn
+	ld hl,wBattleMonAbility1
+	;fall through	
+;to check if a matches b or c
+CheckAbilityMatchCommon:
+	pop af
+	ld b,[hl]; b = ability 1 of defender
+	inc hl  
+	ld c,[hl] ; b = ability 2 of defender
+	ld h,1
+	cp b	;does the ability match the pokemons first ability?
+	jr z,.match
+	inc h
+	cp c	;does the ability match the pokemons second ability?
+	jr z,.match
+	xor a	;otherwise, set return value to 0
+	jr .finish	
+.match
+	ld a,h	;set the index into a
+.finish
+	pop hl
+	pop bc
+	ret
+	
+;to pick a random move from the players list (only if its non-zero)
+PickRandomNonZeroMove:
+	push hl
+	inc hl
+	ld a,[hli]	;get the second attack
+	and a
+	jr nz,.checkAttack3	;skip down if not zero
+	xor a	;otherwise, load the first attack
+	jr .attackFound
+.checkAttack3
+	ld a,[hli]	;get the third attack
+	and a
+	jr nz,.checkAttack4	;skip down if not zero
+	call BattleRandom
+	and $1		;only keep the first bit
+	jr .attackFound
+.checkAttack4
+	ld a,[hl]	;get the fourth attack
+	and a
+	jr nz,.allFourAttacks	;if all four attacks are options, then skip down
+	call BattleRandom
+	cp $55
+	jr c,.notFirst	;skip down if $55 or greater
+	xor a	;load first attack
+	jr .attackFound
+.notFirst
+	cp $aa
+	jr c,.notSecond	;skip down if $aa or greater
+	ld a,1	;load 2nd attack
+	jr .attackFound
+.notSecond
+	ld a,2	;load 3rd attack
+	jr.attackFound	
+.allFourAttacks
+	call BattleRandom
+	and $3
+	;fall through
+.attackFound
+	pop hl
+	push hl	;reset hl
+	ld c, a
+	ld b, $0
+	add hl, bc
+	ld a, [hl]
+	pop hl
+	ret
+	
+InsomniaText2:
+	TX_FAR _InsomniaText
+	db "@"
+	
+EarlyBirdText2:
+	TX_FAR _EarlyBirdText
+	db "@"
+
+DetermineNewTraits2:
+	ret
+		
+;to determine and save a wild pokemons checksum
+DetermineWildPokemonChecksum:
+	ret
+	

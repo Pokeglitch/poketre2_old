@@ -3604,7 +3604,7 @@ _AddPartyMon: ; f2e5 (3:72e5)
 	ld b,a		;store into b
 	ld a, [wcc49]
 	and $f
-	jr z, .start
+	jr z, .start	;adding to players party
 	ld de, wEnemyPartyCount ; wEnemyPartyCount
 	ld b,6	;party size for enemy
 .start
@@ -3634,12 +3634,44 @@ _AddPartyMon: ; f2e5 (3:72e5)
 .asm_f315
 	ld a, [$ffe4]
 	dec a
-	call SkipFixedLengthTextEntries
-	ld d, h
-	ld e, l
-	ld hl, wPlayerName ; wd158
-	ld bc, $b
-	call CopyData
+	call SkipFixedLengthTextEntries	;hl points to the OT name
+	ld b, $b
+	xor a
+.clearOTNameLoop
+	ld [hli],a
+	dec b
+	jr nz,.clearOTNameLoop	;erase the 11 OT name bytes
+	
+	;to set the morale:
+	ld bc,wPartyMon1Morale - wPartyMon2OT
+	add hl,bc		;hl points to the morale
+	call DetermineNewMorale
+	
+	ld [hld],a		;store morale and decrease hl to point to traits
+	ld a, [wcc49]
+	and a
+	jr nz, .enemyTraits	;skip down if it is the enemy trait
+	call Random
+	jr .afterTraits
+.enemyTraits
+	call BattleRandomFar2
+.afterTraits
+	and $1	;only keep the first bit (male or female)
+	call DetermineNewTraits	;randomly set the bits for 'holo' or 'shadow' pokemon
+	ld [hl],a
+	
+	;done adding traits, add in abilities
+	ld bc,wPartyMon1Ability1 - wPartyMon1Traits
+	add hl,bc		;hl = abilities
+	ld de,W_MONHABILITY1
+	ld a,[de]
+	inc de
+	ld [hli],a
+	ld a,[de]
+	ld [hl],a
+	
+	;done adding abilities
+	
 	ld a, [wcc49]
 	and a
 	jr nz, .asm_f33f
@@ -3675,9 +3707,14 @@ _AddPartyMon: ; f2e5 (3:72e5)
 	push hl
 	ld a, [wcc49]
 	and $f
-	ld a, $98     ; set enemy trainer mon IVs to fixed average values
-	ld b, $88
-	jr nz, .writeFreshMonData
+	jr z, .playerPokemonDVs	;skip down if player party
+	call BattleRandomFar2
+	ld c,a
+	call BattleRandomFar2
+	ld b,a
+	call BattleRandomFar2
+	jr .writeFreshMonData
+.playerPokemonDVs
 	ld a, [wcf91]
 	ld [wd11e], a
 	push de
@@ -3706,15 +3743,23 @@ _AddPartyMon: ; f2e5 (3:72e5)
 	and a
 	jr nz, .copyEnemyMonData
 	call Random ; generate random IVs
+	ld c,a
+	call Random
 	ld b, a
 	call Random
 .writeFreshMonData ; f3b3
 	push bc
-	ld bc, $1b
-	add hl, bc
+	ld bc, wPartyMon1HPSpDefDV - wPartyMon1
+	add hl, bc	;hl = hp/sp def dev
+	ld [hl], a
+	ld bc, wPartyMon1DVs - wPartyMon1HPSpDefDV	;hl = dvs
+	add hl,bc
 	pop bc
-	ld [hli], a
+	ld [hl], c
+	inc hl
 	ld [hl], b         ; write IVs
+	
+	;done with IVs
 	ld bc, $fff4
 	add hl, bc
 	ld a, $1
@@ -3735,8 +3780,12 @@ _AddPartyMon: ; f2e5 (3:72e5)
 	inc de
 	jr .copyMonTypesAndMoves
 .copyEnemyMonData
-	ld bc, $1b
-	add hl, bc
+	ld bc, wPartyMon1HPSpDefDV - wPartyMon1
+	add hl, bc	;hl = hp/sp def dev
+	ld a, [wEnemyMonHPSpDefDV]
+	ld [hl], a
+	ld bc, wPartyMon1DVs - wPartyMon1HPSpDefDV	;hl = dvs
+	add hl,bc
 	ld a, [wEnemyMonDVs] ; copy IVs from cur enemy mon
 	ld [hli], a
 	ld a, [wEnemyMonDVs + 1]
@@ -3760,9 +3809,7 @@ _AddPartyMon: ; f2e5 (3:72e5)
 	inc de
 	ld a, [hli]       ; type 2
 	ld [de], a
-	inc de
-	ld a, [hli]       ; unused (?)
-	ld [de], a
+	inc de				;removed 'Catch Rate'
 	ld hl, W_MONHMOVES
 	ld a, [hli]
 	inc de
@@ -3785,12 +3832,20 @@ _AddPartyMon: ; f2e5 (3:72e5)
 	ld [wHPBarMaxHP], a
 	predef WriteMonMoves
 	pop de
-	ld a, [wPlayerID]  ; set trainer ID to player ID
+	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
+	and a
+	jr z, .skipCopyEnemySpecialDefense	;if not in battle, then don't copy the enemy pokemons special defense
+	ld a,[wEnemyMonSpecialDefense]
+	ld [de],a
 	inc de
-	ld [de], a
-	ld a, [wPlayerID + 1]
+	ld a,[wEnemyMonSpecialDefense + 1]
+	ld [de],a
+	jr .finishSpecialDefense
+	
+.skipCopyEnemySpecialDefense
 	inc de
-	ld [de], a
+.finishSpecialDefense
+	inc de
 	push de
 	ld a, [W_CURENEMYLVL]
 	ld d, a
@@ -3835,7 +3890,29 @@ _AddPartyMon: ; f2e5 (3:72e5)
 	ld b, $0
 	call CalcStats         ; calculate fresh set of stats
 .done
+	ld hl, wPartyMon1Checksum ; wd273
+	ld a, [wcc49]
+	and $f
+	jr z, .skipEnemyData	;don't load the enemy data
+	ld hl, wEnemyMon1Checksum
+.skipEnemyData
+	ld a, [$ffe4]
+	dec a
+	call SkipFixedLengthTextEntries	;hl points to the pokemon checksum
+	call DeterminePokemonChecksum
+	ld [hl],a
 	scf
+	ret
+	
+BattleRandomFar2:
+	push de
+	push hl
+	push bc
+	callab BattleRandom
+	ld a,[wBattleRandom]
+	pop bc
+	pop hl
+	pop de
 	ret
 
 LoadMovePPs: ; f473 (3:7473)
@@ -4085,6 +4162,22 @@ Func_f51e: ; f51e (3:751e)
 	and a
 	ret
 
+;if in battle, juts copy from enemy and set the 'caught in this battle' bit
+;to randomly set the 'holo' or 'shadow' pokemon bits.
+;Only wild pokemon can be randomly shadow. (can also depend on if pre-function bit is set)
+;Enemy trainer pokemon will only be holo or shadow depending on if a pre-function bit is set
+;If player party, the 'isegg' bit will be set if the pre-function bit is set
+DetermineNewTraits:
+	ret
+	
+;if in battle: copy from trainer and divide by 4.
+;if wild battle or out of battle, pre-set value
+;depends on the trainer if enemy
+DetermineNewMorale:
+	ret
+	
+DeterminePokemonChecksum:
+	ret
 
 FlagActionPredef:
 	call GetPredefRegisters

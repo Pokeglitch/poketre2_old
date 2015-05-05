@@ -431,6 +431,7 @@ wSafariEscapeFactor:: ; cce8
 wSafariBaitFactor:: ; cce9
 	ds 1;
 
+wccea::
 	ds 1
 
 wcceb:: ds 1
@@ -1483,7 +1484,7 @@ wPartyMon1Traits::
 	ds 1
 wPartyMon1Morale::
 	ds 1
-wPartyMon1LastOTByte:
+wPartyMon1Checksum::
 	ds 1
 
 wPartyMon2OT:: ds 11 * 5
@@ -2306,7 +2307,7 @@ wEnemyMon1Traits::
 	ds 1
 wEnemyMon1Morale::
 	ds 1
-wEnemyMon1LastOTByte:
+wEnemyMon1Checksum::
 	ds 1
 
 wEnemyMon2OT:: ds 11 * 5
@@ -2382,7 +2383,7 @@ wBoxMon1Traits::
 	ds 1
 wBoxMon1Morale::
 	ds 1
-wBoxMon1LastOTByte::
+wBoxMon1Checksum::
 	ds 1
 
 wBoxMon2OT::    ds 11 * 9 ; dd2a
@@ -2457,7 +2458,9 @@ wAdditionalBattleBits1::
 	ds 1
 	
 ;stores which type was used (for displaying correct environment text)
-wWhichTypeUsed::	
+wWhichTypeUsed::
+	ds 1
+	
 ;stores which ability was used in battle (for setting correct text bit)
 wWhichAbilityUsed::
 	ds 1
@@ -2527,6 +2530,8 @@ wEnemyMonTraits::
 	ds 1
 wEnemyMonMorale::
 	ds 1
+wEnemyMonChecksum::
+	ds 1
 
 wEnemyMonSpecialDefense::
 	ds 2
@@ -2539,6 +2544,8 @@ wEnemyMonInvisibilityCounter::
 wEnemyMonFirewall::
 	ds 1
 wEnemyMonBaseSpDef::
+	ds 1
+wEnemyMonHPSpDefDV::
 	ds 1
 	
 
