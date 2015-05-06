@@ -30,25 +30,26 @@ LoadAdditionalMonBytes:
 	ld a,[W_MONHBASESPECIALD]	;load the pokemons base special defense into a
 	ld [wEnemyMonBaseSpDef],a		;store into base special defense byte
 .skipBaseSpDef
-	ld hl,wPartyMon1SpDefense	;special defense pointer
+	ld hl,wPartyMon1HPSpDefDV	;special defense EV pointer
 	ld de,wPlayerMonUnmodifiedSpecialDefense	;where to save to
 	ld a, [H_WHOSETURN]
 	and a
 	jr z, .saveSpDef	;don't load enemy data if its the players turn
-	ld hl,wEnemyMon1SpDefense	;special defense pointer
+	ld hl,wEnemyMon1HPSpDefDV	;special defense EV pointer
 	ld de,wEnemyMonUnmodifiedSpecialDefense	;where to save to
 .saveSpDef
 	ld a,[wWhichPokemon]	;get the index of the pokemon we are copying from
 	ld bc,wPartyMon2 - wPartyMon1	;the difference between each pokemon
+	call AddNTimes	;hl now points to the specific pokemons special def/hp DV
 	
-.getPKSpDefLoop
+	ld a, [H_WHOSETURN]
 	and a
-	jr z,.copySpDef		;exit when we reach zero
-	add hl,bc	;move to next pokemon
-	dec a
-	jr .getPKSpDefLoop	;loop
-	
+	jr z, .copySpDef	;don't save the iv's if players turn
+	ld a,[hl]
+	ld [wEnemyMonHPSpDefDV],a	;store the special defense DV
 .copySpDef
+	ld bc,wPartyMon1SpDefense - wPartyMon1HPSpDefDV
+	add hl,bc		;hl now points to the special defense
 	ld a,[hli]
 	ld [de],a
 	inc de
@@ -56,25 +57,34 @@ LoadAdditionalMonBytes:
 	ld [de],a	;store the special defense into the in-battle unmodified special defense
 	
 	;now load the other additional bytes
+	ld bc,W_PLAYERBATTSTATUS1	;temporary battle bits
+	push bc
+	ld de,wPartyMon1SecondaryStatus - wPartyMon1Abilities	;what we add to get to secondary status
+	push de
 	ld hl,wPartyMon1Abilities	;start of additional bytes pointer
 	ld de,wBattleMonAbility	;where to save to
-	ld bc,W_PLAYERBATTSTATUS1	;temporary battle bits
+	ld bc,7						;we only copy 7 bytes for the player
 	ld a, [H_WHOSETURN]
 	and a
 	jr z, .saveAdditionalBytes	;don't load enemy data if its the players turn
-	ld hl,wEnemyMon1Abilities	;start of additional bytes pointer
-	ld de,wEnemyMonAbility	;where to save to
+	pop de
+	pop bc
 	ld bc,W_ENEMYBATTSTATUS1	;temporary battle bits
+	push bc
+	ld de,wEnemyMon1SecondaryStatus - wEnemyMon1SpDefenseEV	;what we add to get to secondary status
+	push de
+	ld hl,wEnemyMon1SpDefenseEV	;start of additional bytes pointer
+	ld de,wEnemyMonSpDefenseEV	;where to save to
+	ld bc,11		;copy 11 bytes for enemy
 .saveAdditionalBytes
 	push bc
 	ld a,[wWhichPokemon]	;get the index of the pokemon we are copying from
 	call SkipFixedLengthTextEntries	;go to the data of the corresponding pokemon
+	pop bc	;recover the size of the data to copy
 	push hl
-	ld bc,7		;size of data we copy over
 	call CopyData	;copy the data from hl to de
-	
 	pop hl
-	ld de,wPartyMon1SecondaryStatus - wPartyMon1Abilities
+	pop de
 	add hl,de	;hl now points to the secondary status
 	pop bc
 	

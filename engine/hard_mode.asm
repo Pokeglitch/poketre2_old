@@ -5,7 +5,7 @@ RemovePokemonCaughtInBattle:
 	ret
 	
 RemovePCPokemonCaughtInBattle:
-	ld a,01
+	ld a,1
 	ld [wcf95],a	;specify the PC box
 	ld hl,wPartyMon1Traits	;pointer to the first mon traits
 	ld a,[W_NUMINBOX]		;number of pokemon in the box
@@ -30,7 +30,7 @@ RemovePokemonCaughtInBattleCommon:
 	push af	;save the index	
 	call SkipFixedLengthTextEntries	;go to the pokemon trait
 	pop af	;get the index
-	bit 7,[hl]		;was this pokemon caught in the current battle?
+	bit CaughtInCurrentBattleTrait,[hl]		;was this pokemon caught in the current battle?
 	jr z,.dontRemove	;dont remove if not
 	ld [wWhichPokemon],a	;save the pokemon index
 	call RemovePokemon	;remove the pokemon	
@@ -59,7 +59,7 @@ ResetPokemonCaughtInBattleBitCommon:
 .loop
 	and a
 	ret z		;return when we have no more pokemon left	
-	res 7,[hl]		;reset the 'caught in current battle' bit
+	res CaughtInCurrentBattleTrait,[hl]		;reset the 'caught in current battle' bit
 	add hl,bc	;move to next pokemon
 	dec a
 	jr .loop	;loop

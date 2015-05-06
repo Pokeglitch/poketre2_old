@@ -5091,7 +5091,7 @@ ApplyAttackToEnemyPokemon: ; 3e0df (f:60df)
 	sub a,b	;reduce the random value by b
 .skipSubtract
 	cp b
-	jr nc,.loop ;if greater than or equal to b, then divide by 2 and try again
+	jr nc,.loop ;if greater than or equal to b, then subtract b and try again
 	and a
 	jr nz,.skipZero	;if the random value was not zero, then dont increase
 	inc a	;otherwise, increase to 1
@@ -6640,8 +6640,6 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	ld a,[hl]
 	ld [de],a	;copy the calculated special defense stat and store as unmodified special defense
 	
-	call BattleRandom
-	and a,$1	;get the gender
 	call DetermineNewTraits2
 	ld [wEnemyMonTraits],a
 	
@@ -9417,7 +9415,88 @@ EarlyBirdText2:
 	TX_FAR _EarlyBirdText
 	db "@"
 
+;this is only for wild pokemon
 DetermineNewTraits2:
+	push hl
+	push bc
+	xor a		;set the value to zero
+	ld hl,W_MONHGENDEREGGGROUP
+	bit 7,[hl]		;can this pokemon be female?
+	jr z,.cantBeFemale	;skip down if not
+	bit 6,[hl]		;can this pokemon be male
+	jr nz,.randomlyChooseGender	;if this pokemon can also be male, then randomly choose
+	set FemaleTrait,a	;otherwise, set the female bit
+	jr .afterGender
+.cantBeFemale
+	bit 6,[hl]		;can this pokemon be male?
+	jr nz,.afterGender	;if so, then dont get any bits
+	set GenderlessTrait,a	;otherwise, set the genderless bit
+	jr .afterGender
+.randomlyChooseGender
+	call BattleRandom	;get a random value
+	and $1	;only keep the first bit (male or female)
+.afterGender
+	;check the pre-set trait bits to see if this pokemon should be forced holo or shadow
+	ld hl,wPresetTraits
+	bit PresetHolo,[hl]	;is it holo?
+	jr nz,.setHolo
+	bit PresetShadow,[hl]	;is it shadow?
+	jr nz,.setShadow
+	
+	ld b,a	;store the traits byte
+	
+	ld hl,wActiveCheats
+	;otherwise, randomly set holo
+	call BattleRandom	;get random value
+	dec a
+	jr nz,.notHolo	;if it didnt return 01, then skip the rest of the holo check
+	bit LuckyCharmCheat,[hl]	;is the Lucky Charm cheat active?
+	jr nz,.skipSecondHoloCheck	;then skip the second holo check
+	
+	call BattleRandom	;get another random value
+	cp $20		;compare to $20 (1/8 chance, 1/2000 overall)
+	jr nc,.notHolo	;if its $20 or greater, then its not holo
+.skipSecondHoloCheck
+	ld a,b	;recover the traits byte
+	jr .setHolo	;and set the holo bit	
+	
+.notHolo
+	;if not holo, see if randomly set shadow
+	dec a	;was the first random byte 2 or the second random byte 1?
+	jr nz,.notShadow	;skip down to not shadow if not
+	push hl
+	ld hl,wMajorCheckpoints	;load the major checkpoints
+	bit SummonedGhosts,[hl]	;have we summon ghosts?
+	pop hl
+	jr z,.notShadow	;if not, then skip the shadow check
+	
+	call GetTimeOfDay		;get the time of day
+	jr z,.notShadow		;if day time, then skip the shadow check
+	
+	bit LuckyCharmCheat,[hl]	;is the lucky charm cheat active?
+	jr nz,.skipSecondShadowCheck	;skip the second shadow check if so
+	
+	call BattleRandom
+	bit 0,a		;was bit 0 set? (50% chance)
+	jr z,.notShadow	;if not, then its not shadow
+	
+.skipSecondShadowCheck
+	ld a,b	;recover the traits byte
+	jr .setShadow
+	
+.notShadow
+	ld a,b
+	jr .finish
+
+.setHolo
+	set HoloTrait,a
+	jr .finish
+.setShadow
+	set ShadowTrait,a
+	
+.finish
+	pop bc
+	pop hl
 	ret
 		
 ;to determine and save a wild pokemons checksum

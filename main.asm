@@ -3648,15 +3648,6 @@ _AddPartyMon: ; f2e5 (3:72e5)
 	call DetermineNewMorale
 	
 	ld [hld],a		;store morale and decrease hl to point to traits
-	ld a, [wcc49]
-	and a
-	jr nz, .enemyTraits	;skip down if it is the enemy trait
-	call Random
-	jr .afterTraits
-.enemyTraits
-	call BattleRandomFar2
-.afterTraits
-	and $1	;only keep the first bit (male or female)
 	call DetermineNewTraits	;randomly set the bits for 'holo' or 'shadow' pokemon
 	ld [hl],a
 	
@@ -4162,12 +4153,96 @@ Func_f51e: ; f51e (3:751e)
 	and a
 	ret
 
-;if in battle, juts copy from enemy and set the 'caught in this battle' bit
-;to randomly set the 'holo' or 'shadow' pokemon bits.
-;Only wild pokemon can be randomly shadow. (can also depend on if pre-function bit is set)
-;Enemy trainer pokemon will only be holo or shadow depending on if a pre-function bit is set
-;If player party, the 'isegg' bit will be set if the pre-function bit is set
+;to random if its the players turn and battle random if its the enemies turn
+RandomOrBattleRandom:
+	ld a, [wcc49]
+	and a
+	jp nz,BattleRandomFar2	;use BattleRandom if it is the enemy
+	jp Random
+	
+;To set pokemon traits when adding to players or enemy trainers party
 DetermineNewTraits:
+	push hl
+	push bc
+	ld a, [W_ISINBATTLE]
+	and a
+	jr z,.createNewTrait	;create new trait if not in battle
+	ld hl,wEnemyMonTraits	;trait for player to copy
+	ld a, [wcc49]
+	and a
+	jr z,.copyTrait	;skip down if its players turn
+	ld hl,wBattleMonTraits	;trait for enemy to copy
+.copyTrait
+	ld a,[hl]
+	set CaughtInCurrentBattleTrait,a
+	jr .finish
+.createNewTrait
+	xor a		;set the value to zero
+	ld hl,W_MONHGENDEREGGGROUP
+	bit 7,[hl]		;can this pokemon be female?
+	jr z,.cantBeFemale	;skip down if not
+	bit 6,[hl]		;can this pokemon be male
+	jr nz,.randomlyChooseGender	;if this pokemon can also be male, then randomly choose
+	set FemaleTrait,a	;otherwise, set the female bit
+	jr .afterGender
+.cantBeFemale
+	bit 6,[hl]		;can this pokemon be male?
+	jr nz,.afterGender	;if so, then dont get any bits
+	set GenderlessTrait,a	;otherwise, set the genderless bit
+	jr .afterGender
+.randomlyChooseGender
+	call RandomOrBattleRandom	;get a random value
+	and $1	;only keep the first bit (male or female)
+.afterGender
+	;check the pre-set trait bits to see if this pokemon should be forced holo or shadow
+	ld hl,wPresetTraits
+	bit PresetHolo,[hl]	;is it holo?
+	jr nz,.setHolo
+	bit PresetShadow,[hl]	;is it shadow?
+	jr nz,.setShadow
+	bit PresetEgg,[hl]	;egg?
+	jr nz,.setEgg
+	bit PresetHealBall,[hl]	;heal ball?
+	jr z,.skipHealBall	;skip heal ball if not
+	
+	set HealBallTrait,a	;otherwise, set the heal ball trait
+	res PresetHealBall,[hl]	;and reset the 'preset heal ball' trait
+	;fall through
+.skipHealBall
+	ld b,a	;store the traits byte
+	ld a, [wcc49]
+	and a
+	ld a,b	;restore the traits byte
+	jr nz,.finish	;skip down to 'caught in current battle' check if it is the enemys party (can't randomly add a holo to it)
+
+	
+	ld hl,wActiveCheats
+	;otherwise, randomly set holo
+	call Random	;get random value
+	dec a
+	ld a,b	;restore the traits byte
+	jr nz,.finish	;if it didnt return 01, then skip the rest of the holo check
+	bit LuckyCharmCheat,[hl]	;is the Lucky Charm cheat active?
+	jr nz,.setHolo	;then skip the second holo check
+	
+	call Random	;get another random value
+	cp $20		;compare to $20 (1/8 chance, 1/2000 overall)
+	ld a,b		;restore the traits byte
+	jr nc,.finish	;if its not under $20 then finish
+
+.setHolo
+	set HoloTrait,a
+	jr .finish
+.setEgg
+	set EggTrait,a
+	res PresetEgg,[hl]	;unset the "preset egg" bit
+	jr .skipHealBall	;continue randomly checking bits
+.setShadow
+	set ShadowTrait,a
+	;fall through
+.finish
+	pop bc
+	pop hl
 	ret
 	
 ;if in battle: copy from trainer and divide by 4.

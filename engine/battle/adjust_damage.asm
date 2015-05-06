@@ -255,7 +255,7 @@ HoloOrShadowCheck:
 	jr nz,.notShadow		;skip if not
 	
 	ld a,b
-	and SHADOW_TRAIT	;is the other pokemon also a shadow?
+	bit ShadowTrait,a	;is the other pokemon also a shadow?
 	ld c,5	;load "half the damage"
 	call nz,MultiplyDamageByAmount	;half the damage if so
 	jr .finish
@@ -264,14 +264,14 @@ HoloOrShadowCheck:
 	cp a,HOLO				;is the attack holo type?
 	jr nz,.finish			;skip down if not
 	ld a,b
-	and SHADOW_TRAIT			;is the pokemon shadow
+	bit ShadowTrait,a			;is the pokemon shadow
 	ld c,20
 	call nz,MultiplyDamageByAmount	;DOUBLE the damage if so
 	
 .finish
 	pop bc
 	ld a,b
-	and SHADOW_TRAIT	;is the other pokemon shadow?
+	bit ShadowTrait,a	;is the other pokemon shadow?
 	jr z,.return	;return if not
 	call GetCurrentAttack
 	call IsPhysicalAttack	;is it a physical attack?

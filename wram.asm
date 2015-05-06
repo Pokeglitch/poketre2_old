@@ -1334,8 +1334,11 @@ W_MONHBASEPRICE :: ;d0cf
 W_MONHEVOSHEDITEM :: ;d0d0
 	ds 1
 	
-W_MONHEXTRABYTES :: ;d0d1
-	ds 2
+W_MONHGENDEREGGGROUP::
+	ds 1
+	
+W_MONHEXTRABYTE :: ;d0d1
+	ds 1
 
 W_MONHSPRITEBANK::	;d0d3
 	ds 1
@@ -2400,8 +2403,19 @@ wPokedexSeen:: ; de8d
 wPokedexSeenEnd::
 	
 ;contains the active totems
-;Bit 0 = Role Reversal
 wTotems:: ;dea9
+	ds 1
+	
+;contains the active cheats
+wActiveCheats::
+	ds 1
+	
+;contains the major checkpoints a player encounters
+wMajorCheckpoints::
+	ds 1
+	
+;contains bits that adjust the time/season (set from pokeflute)
+wPokefluteTimeAdjustment::
 	ds 1
 	
 ;End of Data that we care about saving
@@ -2480,6 +2494,10 @@ wExactDamageMultipler::
 ;	bit 7 : Mr Mime battle
 wPreBattleBits::
 	ds 1
+	
+;bits that are set before a pokemons stats are loaded to preset some traits
+wPresetTraits::
+	ds 1
 
 ;	Bit 0 : In gamble battle?
 ;	Bit 1 : In last stand mode?
@@ -2489,7 +2507,7 @@ wPreBattleBits::
 wAdditionalBattleTypeBits::
 	ds 1
 	
-
+	
 ;contains additional information about the pokemon in battle:
 wBattleMonAbility::
 wBattleMonAbility1::
@@ -2515,8 +2533,13 @@ wBattleMonInvisibilityCounter::
 	ds 1
 wBattleMonFirewall::
 	ds 1
-	
 
+	
+wEnemyMonSpDefenseEV::
+	ds 2
+;note, the below byte is never used. just there to easily copy everything
+wEnemyMonSecondaryStatus::
+	ds 1
 wEnemyMonAbility::
 wEnemyMonAbility1::
 	ds 1

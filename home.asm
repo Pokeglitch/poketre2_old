@@ -20,6 +20,19 @@ GetHordeIsInBattle:
 	pop hl
 	ret
 	
+;to see what the time of day is
+;returns nz if night time
+GetTimeOfDay:
+	push hl
+	push af
+	ld a,[W_PLAYTIMEHOURS + 1]	;get the hours low byte
+	ld hl,wPokefluteTimeAdjustment
+	add [hl]		;add to a
+	bit 0,a		;is the 0th bit set?
+	pop hl		;pop af into hl
+	ld a,h		;restore the A value
+	pop hl
+	ret
 
 ; Hardware interrupts
 SECTION "vblank", ROM0 [$40]
