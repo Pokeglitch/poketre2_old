@@ -42,11 +42,14 @@ LoadAdditionalMonBytes:
 	ld bc,wPartyMon2 - wPartyMon1	;the difference between each pokemon
 	call AddNTimes	;hl now points to the specific pokemons special def/hp DV
 	
+	ld bc,wBattleMonHPSpDefDV
 	ld a, [H_WHOSETURN]
 	and a
-	jr z, .copySpDef	;don't save the iv's if players turn
+	jr z, .notEnemyDV	;don't load enemy iv's if players turn
+	ld bc,wEnemyMonHPSpDefDV
+.notEnemyDV
 	ld a,[hl]
-	ld [wEnemyMonHPSpDefDV],a	;store the special defense DV
+	ld [bc],a	;store the special defense DV
 .copySpDef
 	ld bc,wPartyMon1SpDefense - wPartyMon1HPSpDefDV
 	add hl,bc		;hl now points to the special defense
@@ -75,7 +78,7 @@ LoadAdditionalMonBytes:
 	push de
 	ld hl,wEnemyMon1SpDefenseEV	;start of additional bytes pointer
 	ld de,wEnemyMonSpDefenseEV	;where to save to
-	ld bc,11		;copy 11 bytes for enemy
+	ld bc,10		;copy 10 bytes for enemy
 .saveAdditionalBytes
 	push bc
 	ld a,[wWhichPokemon]	;get the index of the pokemon we are copying from
@@ -426,6 +429,13 @@ SaveAdditionalMonBytes:
 	jr z,.skipCursed
 	set 2,[hl]		;set cursed bit
 .skipCursed
+	ld a, [H_WHOSETURN]
+	and a
+	ret nz	;return and don't save morale if its the enemys turn
+	ld bc,wPartyMon1Morale-wPartyMon1SecondaryStatus
+	add hl,bc		;hl now points to morale
+	ld a,[wBattleMonMorale]
+	ld [hl],a
 	ret
 	
 ;to save the temporary pokemon bytes to a stored location for ths specific pokemon

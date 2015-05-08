@@ -380,7 +380,7 @@ ItemUseBall: ; d687 (3:5687)
 	ld [wcf91],a
 	ld a,[wEnemyMonLevel]
 	ld [W_CURENEMYLVL],a
-	callab LoadEnemyMonData
+	;	callab LoadEnemyMonData		removed this, is just seems like an unnecessary step since the pokemon data alreadys exists in the ram.
 	pop af
 	ld [wcf91],a
 	pop hl

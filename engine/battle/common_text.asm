@@ -95,6 +95,12 @@ GhostCantBeIDdText: ; 58e54 (16:4e54)
 	db "@"
 
 PrintSendOutMonMessage: ; 58e59 (16:4e59)
+	ld a,[wBattleMonSpecies2]
+	cp HUMAN		;human being sent out?
+	jr nz,.notLastStand
+	ld hl,IntoLastStandText	;print last stand text if last stand mode
+	jp PrintText
+.notLastStand
 	ld hl, wEnemyMonHP
 	ld a, [hli]
 	or [hl]
@@ -137,6 +143,10 @@ PrintSendOutMonMessage: ; 58e59 (16:4e59)
 .printText
 	jp PrintText
 
+IntoLastStandText:
+	TX_FAR _IntoLastStandText
+	db "@"
+	
 GoText: ; 58eae (16:4eae)
 	TX_FAR _GoText
 	db $08 ; asm

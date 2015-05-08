@@ -1337,7 +1337,7 @@ W_MONHEVOSHEDITEM :: ;d0d0
 W_MONHGENDEREGGGROUP::
 	ds 1
 	
-W_MONHEXTRABYTE :: ;d0d1
+W_MONHBASEMORALE :: ;d0d1
 	ds 1
 
 W_MONHSPRITEBANK::	;d0d3
@@ -1487,7 +1487,7 @@ wPartyMon1Traits::
 	ds 1
 wPartyMon1Morale::
 	ds 1
-wPartyMon1Checksum::
+wPartyMon1LastByte::
 	ds 1
 
 wPartyMon2OT:: ds 11 * 5
@@ -1506,10 +1506,80 @@ wPotionCounter::
 
 wMaxPartyMons::
 	ds 1
-wAdditionalInBattleDataEnd::
+	
+;contains the active totems
+wTotems:: ;dea9
+	ds 1
+	
+;contains the active cheats
+wActiveCheats::
+	ds 1
+	
+;contains the major checkpoints a player encounters
+wMajorCheckpoints::
+	ds 1
+	
+;contains bits that adjust the time/season (set from pokeflute)
+wPokefluteTimeAdjustment::
+	ds 1
+	
+wMrMimeFlags::
+	ds 1
+wMrMimeMap::
+	ds 1
+wMrMimeHP::
+	ds 2
+wMrMimeDVs::
+	ds 3
+wMrMimeTraits::
+	ds 1
+wMrMimeStatus::
+	ds 1
+wMrMimeSecondaryStatus::
+	ds 1
+	
+wPlayerLevel::
+	ds 1
+wLastStandHP::
+	ds 2
+wLastStandStatus::
+	ds 1
+wLastStandSecondaryStatus::
+	ds 1
+wLastStandDelayedDamage::
+	ds 2
+wLastStandDelayedCounter::
+	ds 1
+wLastStandMaxHP::
+	ds 2
+		
+wAdditionalInBattleDataToClear::
+;bytes that are used before the battle starts
+;	Bit 0 :	Virtual reality
+;	bit 1 : Rain storm
+;	bit 2 : Snow storm
+;	Bit 3 :	We've aready performed the special pk check this battle
+;	bit 4 : Holographic pokemon
+;	bit 5 : Shadow pokemon
+;	bit 6 : Horde battle
+;	bit 7 : Enemy can use last stand
+wPreBattleBits::
+	ds 1
 
+;	Bit 0 : In gamble battle?
+;	Bit 1 : In last stand mode?
+;	Bit 2 : Fully shadow battle?
+;	Bit 3 : First pokemon in the horde battle?
+;	Bit 4 : Watching a Replay?
+wAdditionalBattleTypeBits::
+	ds 1
+	
+wPresetTraits::
+	ds 1
+	
+wAdditionalInBattleDataEnd::
 wExtraBytes::
-	ds 34
+	ds 7
 	
 wNumBoxItems:: ; d31d
 	ds 1
@@ -2310,7 +2380,7 @@ wEnemyMon1Traits::
 	ds 1
 wEnemyMon1Morale::
 	ds 1
-wEnemyMon1Checksum::
+wEnemyMon1LastByte::
 	ds 1
 
 wEnemyMon2OT:: ds 11 * 5
@@ -2386,7 +2456,7 @@ wBoxMon1Traits::
 	ds 1
 wBoxMon1Morale::
 	ds 1
-wBoxMon1Checksum::
+wBoxMon1LastByte::
 	ds 1
 
 wBoxMon2OT::    ds 11 * 9 ; dd2a
@@ -2402,21 +2472,30 @@ wPokedexSeen:: ; de8d
 	flag_array NUM_POKEMON
 wPokedexSeenEnd::
 	
-;contains the active totems
-wTotems:: ;dea9
+
+wMoraleBoostStepCounter::
+	ds 1
+
+wTaskBytes::
+	flag_array 100		;100 tasks
+	
+;these are set when not in the main loop.
+;The main loop will compare these flags to the main flags to see if it was just unlocked or not
+wSubTaskBytes::
+	flag_array 100		;100 tasks
+	
+	
+;Best Time/High Score flags
+wHighScoreFlags::
 	ds 1
 	
-;contains the active cheats
-wActiveCheats::
-	ds 1
+;second day care mon
+W_DAYCAREMON2NAME:: ds 11
+W_DAYCAREMON2OT::   ds 11
+
+wDayCareMon2:: box_struct wDayCareMon2
 	
-;contains the major checkpoints a player encounters
-wMajorCheckpoints::
-	ds 1
 	
-;contains bits that adjust the time/season (set from pokeflute)
-wPokefluteTimeAdjustment::
-	ds 1
 	
 ;End of Data that we care about saving
 wEndOfAdditionalData::
@@ -2481,32 +2560,7 @@ wWhichAbilityUsed::
 	
 ;contains the exact damage multiplier, for the battle text
 wExactDamageMultipler::
-	ds 1
-	
-;bytes that are used before the battle starts
-;	Bit 0 :	Virtual reality
-;	bit 1 : Rain storm
-;	bit 2 : Snow storm
-;	Bit 3 :	We've aready performed the special pk check this battle
-;	bit 4 : Holographic pokemon
-;	bit 5 : Shadow pokemon
-;	bit 6 : Horde battle
-;	bit 7 : Mr Mime battle
-wPreBattleBits::
-	ds 1
-	
-;bits that are set before a pokemons stats are loaded to preset some traits
-wPresetTraits::
-	ds 1
-
-;	Bit 0 : In gamble battle?
-;	Bit 1 : In last stand mode?
-;	Bit 2 : Fully shadow battle?
-;	Bit 3 : First pokemon in the horde battle?
-;	Bit 4 : Watching a Replay?
-wAdditionalBattleTypeBits::
-	ds 1
-	
+	ds 1	
 	
 ;contains additional information about the pokemon in battle:
 wBattleMonAbility::
@@ -2533,6 +2587,8 @@ wBattleMonInvisibilityCounter::
 	ds 1
 wBattleMonFirewall::
 	ds 1
+wBattleMonHPSpDefDV::
+	ds 1
 
 	
 wEnemyMonSpDefenseEV::
@@ -2552,8 +2608,6 @@ wEnemyMonDelayedDamageCounter::
 wEnemyMonTraits::
 	ds 1
 wEnemyMonMorale::
-	ds 1
-wEnemyMonChecksum::
 	ds 1
 
 wEnemyMonSpecialDefense::

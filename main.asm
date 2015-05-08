@@ -3881,17 +3881,6 @@ _AddPartyMon: ; f2e5 (3:72e5)
 	ld b, $0
 	call CalcStats         ; calculate fresh set of stats
 .done
-	ld hl, wPartyMon1Checksum ; wd273
-	ld a, [wcc49]
-	and $f
-	jr z, .skipEnemyData	;don't load the enemy data
-	ld hl, wEnemyMon1Checksum
-.skipEnemyData
-	ld a, [$ffe4]
-	dec a
-	call SkipFixedLengthTextEntries	;hl points to the pokemon checksum
-	call DeterminePokemonChecksum
-	ld [hl],a
 	scf
 	ret
 	
@@ -4251,9 +4240,6 @@ DetermineNewTraits:
 DetermineNewMorale:
 	ret
 	
-DeterminePokemonChecksum:
-	ret
-
 FlagActionPredef:
 	call GetPredefRegisters
 
@@ -6790,9 +6776,10 @@ INCLUDE "engine/items/tm_prices.asm"
 SECTION "bank36",ROMX,BANK[$36]
 INCLUDE "engine/hard_mode.asm"
 
-;bank for the new text 
+;bank for the new text and battle hud
 SECTION "bank37",ROMX,BANK[$37]
 INCLUDE "text/additional_battle_text.asm"
+INCLUDE "engine/battle/battle_hud.asm"
 
 
 ;bank for the new battle functions
@@ -6804,6 +6791,7 @@ INCLUDE "data/new_battle_tables.asm"
 INCLUDE "data/type_effects.asm"
 INCLUDE "engine/battle/store_reload_temp_battle_bytes.asm"
 INCLUDE "engine/battle/in_battle_potion_effects.asm"
+INCLUDE "engine/battle/moved_battle_routines.asm"
 
 SECTION "bank39",ROMX,BANK[$39]
 INCLUDE "engine/evolution.asm"

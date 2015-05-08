@@ -506,3 +506,24 @@ _LimitedByCursedText:
 	line "limited by the"
 	cont "curse!"
 	prompt
+	
+_TrainerLastStandText:
+	TX_RAM W_TRAINERNAME
+	text " went"
+	line "into Last Stand"
+	cont "mode!"
+	prompt
+
+_TrainerLastStandText2:
+	TX_RAM W_TRAINERNAME
+	text ": I"
+	line "won't go down"
+	cont "without a fight!"
+	prompt
+	
+_IntoLastStandText:
+	TX_RAM wPlayerName
+	text " went"
+	line "into Last Stand"
+	cont "mode!"
+	prompt

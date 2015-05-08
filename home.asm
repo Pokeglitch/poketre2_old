@@ -13,7 +13,7 @@ GetHordeIsInBattle:
 	push hl
 	ld a,[W_ISINBATTLE]
 	ld hl,wPreBattleBits
-	bit 7,[hl]
+	bit HordeBattleBit,[hl]
 	jr z,.finish	;if not horde, then don't adjust
 	ld a,2		;otherwise, set to 'trainer battle'
 .finish

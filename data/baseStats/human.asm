@@ -13,7 +13,7 @@ INCBIN "pic/trainer/james.pic",0,1 ; 55, sprite dimensions
 dw JamesPicFront
 dw JamesPicBack
 ; attacks known at lvl 0
-db 0
+db SCRATCH
 db 0
 db 0
 db 0

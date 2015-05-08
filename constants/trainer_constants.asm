@@ -83,6 +83,8 @@ SAVANA		  EQU $28
 
 GENTLEMAN     EQU $29
 SONY2         EQU $2A
+
+POKEGLITCH	  EQU $2B
 SONY3         EQU $2B
 
 LORELEI       EQU $2C

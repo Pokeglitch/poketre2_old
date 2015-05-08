@@ -96,131 +96,6 @@ SpecialEffectsCont: ; 3c049 (f:4049)
 	db TRAPPING_EFFECT
 	db -1
 
-SlidePlayerAndEnemySilhouettesOnScreen: ; 3c04c (f:404c)
-	call LoadPlayerBackPic
-	ld a, MESSAGE_BOX ; the usual text box at the bottom of the screen
-	ld [wTextBoxID], a
-	call DisplayTextBoxID
-	hlCoord 1, 5
-	ld bc, $307
-	call ClearScreenArea
-	call DisableLCD
-	call LoadFontTilePatterns
-	call LoadHudAndHpBarAndStatusTilePatterns
-	ld hl, vBGMap0
-	ld bc, $400
-.clearBackgroundLoop
-	ld a, $7f
-	ld [hli], a
-	dec bc
-	ld a, b
-	or c
-	jr nz, .clearBackgroundLoop
-; copy the work RAM tile map to VRAM
-	ld hl, wTileMap
-	ld de, vBGMap0
-	ld b, 18 ; number of rows
-.copyRowLoop
-	ld c, 20 ; number of columns
-.copyColumnLoop
-	ld a, [hli]
-	ld [de], a
-	inc e
-	dec c
-	jr nz, .copyColumnLoop
-	ld a, 12 ; number of off screen tiles to the right of screen in VRAM
-	add e ; skip the off screen tiles
-	ld e, a
-	jr nc, .noCarry
-	inc d
-.noCarry
-	dec b
-	jr nz, .copyRowLoop
-	call EnableLCD
-	ld a, $90
-	ld [hWY], a
-	ld [rWY], a
-	xor a
-	ld [hTilesetType], a
-	ld [hSCY], a
-	dec a
-	ld [wUpdateSpritesEnabled], a
-	call Delay3
-	xor a
-	ld [H_AUTOBGTRANSFERENABLED], a
-	ld b, $70
-	ld c, $90
-	ld a, c
-	ld [hSCX], a
-	call DelayFrame
-	ld a, %11100100 ; inverted palette for silhouette effect
-	ld [rBGP], a
-	ld [rOBP0], a
-	ld [rOBP1], a
-.slideSilhouettesLoop ; slide silhouettes of the player's pic and the enemy's pic onto the screen
-	ld h, b
-	ld l, $40
-	call SetScrollXForSlidingPlayerBodyLeft ; begin background scrolling on line $40
-	inc b
-	inc b
-	ld h, $0
-	ld l, $60
-	call SetScrollXForSlidingPlayerBodyLeft ; end background scrolling on line $60
-	call SlidePlayerHeadLeft
-	ld a, c
-	ld [hSCX], a
-	dec c
-	dec c
-	jr nz, .slideSilhouettesLoop
-	ld a, $1
-	ld [H_AUTOBGTRANSFERENABLED], a
-	ld a, $31
-	ld [$ffe1], a
-	hlCoord 1, 5
-	predef Func_3f0c6
-	xor a
-	ld [hWY], a
-	ld [rWY], a
-	inc a
-	ld [H_AUTOBGTRANSFERENABLED], a
-	call Delay3
-	ld b, $1
-	call GoPAL_SET
-	call HideSprites
-	ld hl, PrintBeginningBattleText
-	ld b, BANK(PrintBeginningBattleText)
-	jp Bankswitch
-
-; when a battle is starting, silhouettes of the player's pic and the enemy's pic are slid onto the screen
-; the lower of the player's pic (his body) is part of the background, but his head is a sprite
-; the reason for this is that it shares Y coordinates with the lower part of the enemy pic, so background scrolling wouldn't work for both pics
-; instead, the enemy pic is part of the background and uses the scroll register, while the player's head is a sprite and is slid by changing its X coordinates in a loop
-SlidePlayerHeadLeft: ; 3c0ff (f:40ff)
-	push bc
-	ld hl, wOAMBuffer + $01
-	ld c, $15 ; number of OAM entries
-	ld de, $4 ; size of OAM entry
-.loop
-	dec [hl] ; decrement X
-	dec [hl] ; decrement X
-	add hl, de ; next OAM entry
-	dec c
-	jr nz, .loop
-	pop bc
-	ret
-
-SetScrollXForSlidingPlayerBodyLeft: ; 3c110 (f:4110)
-	ld a, [rLY]
-	cp l
-	jr nz, SetScrollXForSlidingPlayerBodyLeft
-	ld a, h
-	ld [rSCX], a
-.loop
-	ld a, [rLY]
-	cp h
-	jr z, .loop
-	ret
-
 StartBattle: ; 3c11e (f:411e)
 	xor a
 	ld [wPartyGainExpFlags], a
@@ -311,7 +186,14 @@ StartBattle: ; 3c11e (f:411e)
 ; fainted, go to the next one
 	ld hl, wWhichPokemon
 	inc [hl]
-	jr .findFirstAliveMonLoop
+	ld a,[wMaxPartyMons]
+	cp [hl]		;have we reached the last pokemon
+	jr nz,.findFirstAliveMonLoop	;loop if not
+	;should I set the wWhichPokemon index to 0 here?  how often does it get used?  will there be bugs if it it is larger than the party?
+	ld hl,wPresetTraits
+	set PresetLastStand,[hl]		;otherwise, make sure the next pokemon loaded is a HUMAN last stand mode
+	ld a,HUMAN
+	jr .saveSpecies
 .foundFirstAliveMon
 	ld a, [wWhichPokemon]
 	ld [wPlayerMonNumber], a
@@ -321,12 +203,17 @@ StartBattle: ; 3c11e (f:411e)
 	ld b, 0
 	add hl, bc
 	ld a, [hl] ; species
+.saveSpecies
 	ld [wcf91], a
 	ld [wBattleMonSpecies2], a
 	call LoadScreenTilesFromBuffer1
+	ld a,[wBattleMonSpecies2]
+	cp HUMAN	;are we sending out human?
+	jr z,.skipSlidingSprite	;then dont slide away trainer sprite
 	hlCoord 1, 5
 	ld a, $9
 	call SlideTrainerPicOffScreen
+.skipSlidingSprite
 	call SaveScreenTilesToBuffer1
 	ld a, [wWhichPokemon]
 	ld c, a
@@ -960,6 +847,16 @@ HandleEnemyMonFainted: ; 3c525 (f:4525)
 	ld a, [hli]
 	or [hl] ; does battle mon have 0 HP?
 	jr nz, .skipReplacingBattleMon ; if not, skip replacing battle mon
+	ld a,[wPresetTraits]
+	bit PresetLastStand,a	;is the last stand bit set?
+	jr z,.notForceLastStand		;if not, then dont go into last stand
+	call LoadBattleMonFromParty
+	call SendOutMon
+	jr .skipReplacingBattleMon
+.notForceLastStand
+	ld a,[wBattleMonSpecies2]
+	cp HUMAN		;is the player already in last stand mode?
+	jr nz,.skipReplacingBattleMon	;then dont allow player to choose next mon
 	call DoUseNextMonDialogue ; this call is useless in a trainer battle. it shouldn't be here
 	ret c
 	call ChooseNextMon
@@ -1002,9 +899,18 @@ FaintEnemyPokemon ; 0x3c567
 	ld hl, wPlayerUsedMove
 	ld [hli], a
 	ld [hl], a
+	ld a,[wEnemyMonSpecies2]
+	cp HUMAN
+	jr nz,.slideDown	;slide mon down if not human
+	hlCoord 18, 0
+	ld a,8
+	call SlideTrainerPicOffScreen	;if human, then just scroll offscreen
+	jr .skipDown
+.slideDown
 	hlCoord 12, 5
 	deCoord 12, 6
 	call SlideDownFaintedMonPic
+.skipDown
 	ld hl, wTileMap
 	ld bc, $40b
 	call ClearScreenArea
@@ -1043,6 +949,11 @@ FaintEnemyPokemon ; 0x3c567
 	and a
 	ret z
 	ld hl, EnemyMonFaintedText
+	ld a,[wEnemyMonSpecies2]
+	cp HUMAN
+	jr nz,.notHuman
+	ld hl,TrainerDefeatedText
+.notHuman
 	call PrintText
 	call PrintEmptyString
 	call SaveScreenTilesToBuffer1
@@ -1119,6 +1030,16 @@ AnyEnemyPokemonAliveCheck: ; 3c64f (f:464f)
 	dec b
 	jr nz, .nextPokemon
 	and a
+	ret nz		;return if there are pokemon left
+	ld a,[wEnemyMonSpecies2]
+	cp HUMAN		;is the current pokemon 'human'?
+	ld a,0		;load 0 into a anyway
+	jr z,.returnNoPokemon	;then return no pokemon if so (already was in last stand mode)
+	ld hl,wPreBattleBits
+	bit EnemyCanUseLastStand,[hl]		;can the enemy use last stand?
+	ret
+.returnNoPokemon
+	and a	;set zero flag
 	ret
 
 ; stores whether enemy ran in Z flag
@@ -1164,8 +1085,12 @@ TrainerBattleVictory: ; 3c696 (f:4696)
 	cp LINK_STATE_BATTLING
 	ld a, b
 	call nz, PlayBattleVictoryMusic
+	ld hl,wPreBattleBits
+	bit EnemyCanUseLastStand,[hl]
+	jr nz,.lastStand		;if it ended in last stand, then we already displayed the defeated text
 	ld hl, TrainerDefeatedText
 	call PrintText
+.lastStand
 	ld a, [wLinkState]
 	cp LINK_STATE_BATTLING
 	ret z
@@ -1219,9 +1144,24 @@ HandlePlayerMonFainted: ; 3c700 (f:4700)
 	call AnyEnemyPokemonAliveCheck
 	jp z, TrainerBattleVictory
 .doUseNextMonDialogue
+	ld a,[wPresetTraits]
+	bit PresetLastStand,a	;is the last stand bit set?
+	jr z,.notForcedLastStand		;if not, then skip down
+	call LoadBattleMonFromParty
+	call SendOutMon		;send out the next mon (last stand)
+	jr .skipChoosingNextMon
+.notForcedLastStand
+	ld a,[wBattleMonSpecies2]
+	cp HUMAN		;is the player already in last stand mode?
+	jr z,.skipChoosingNextMon	;if so, then dont show the next mon dialogue
+.showNextMonDialogue
 	call DoUseNextMonDialogue
 	ret c ; return if the player ran from battle
 	call ChooseNextMon
+.skipChoosingNextMon
+	ld hl, wEnemyMonHP
+	ld a, [hli]
+	or [hl]
 	jp nz, MainInBattleLoop ; if the enemy mon has more than 0 HP, go back to battle loop
 ; the enemy mon has 0 HP
 	ld a, $1
@@ -1378,6 +1318,9 @@ HandlePlayerBlackOut: ; 3c837 (f:4837)
 .notSony1Battle
 	ld b, $0
 	call GoPAL_SET
+	ld a,[wBattleMonSpecies2]
+	cp HUMAN		;was the last pokemon to faint a human?
+	jr z,.skipText	;then don't display the blacked out text
 	ld hl, PlayerBlackedOutText2
 	ld a, [wLinkState]
 	cp LINK_STATE_BATTLING
@@ -1385,6 +1328,7 @@ HandlePlayerBlackOut: ; 3c837 (f:4837)
 	ld hl, LinkBattleLostText
 .noLinkBattle
 	call PrintText
+.skipText
 	ld a, [wd732]
 	res 5, a
 	ld [wd732], a
@@ -1545,6 +1489,9 @@ EnemySendOutFirstMon: ; 3c92a (f:492a)
 	ld b,$FF
 .next2
 	inc b
+	ld a,[wEnemyPartyCount]	;load total number of enemy pokemon into a
+	cp b		;compare to b
+	jr z,.lastStand	;if we've gone through every pokemon, then trainer will be going into last stand mode
 	ld a,[wEnemyMonPartyPos]
 	cp b
 	jr z,.next2
@@ -1559,8 +1506,16 @@ EnemySendOutFirstMon: ; 3c92a (f:492a)
 	ld a,[hli]
 	ld c,a
 	ld a,[hl]
-	or c
-	jr z,.next2
+	or c		;is pokemon fainted?
+	jr z,.next2	;loop if so
+	jr .next3	;otherwise, load the pokemon name and level from party
+.lastStand
+	xor a
+	ld [wWhichPokemon],a		;just set which pokemon as the first pokemon (to avoid any possible issues in other scripts)
+	ld a,[wEnemyMon1Level]		;use the first pokemon level as the level
+	ld [W_CURENEMYLVL],a
+	ld a,HUMAN		;pokemon id
+	jr .loadEnemyData	;and load the data
 .next3
 	ld a,[wWhichPokemon]
 	ld hl,wEnemyMon1Level
@@ -1575,6 +1530,7 @@ EnemySendOutFirstMon: ; 3c92a (f:492a)
 	ld b,0
 	add hl,bc
 	ld a,[hl]
+.loadEnemyData
 	ld [wEnemyMonSpecies2],a
 	ld [wcf91],a
 	call LoadEnemyMonData
@@ -1597,6 +1553,9 @@ EnemySendOutFirstMon: ; 3c92a (f:492a)
 	ld a,[W_OPTIONS]
 	bit 6,a
 	jr nz,.next4
+	ld a,[wEnemyMonSpecies2]
+	cp HUMAN	;is the next pokemon a human?
+	jr z,.next4	;then no 'about to use' text
 	ld hl, TrainerAboutToUseText
 	call PrintText
 	hlCoord 0, 7
@@ -1640,11 +1599,23 @@ EnemySendOutFirstMon: ; 3c92a (f:492a)
 	ld b,1
 	call GoPAL_SET
 	call GBPalNormal
-	ld hl,TrainerSentOutText
-	call PrintText
 	ld a,[wEnemyMonSpecies2]
 	ld [wcf91],a
 	ld [wd0b5],a
+	cp HUMAN	;is the next pokemon a human?
+	jr nz,.notHuman
+	call _LoadTrainerPic	;otherwise, load enemy went into last stand mode text
+	ld a,$CF
+	ld [$FFE1],a
+	call ScrollTrainerPicAfterBattle	;slide in the trainer pic
+	ld hl,TrainerLastStandText
+	call PrintText
+	ld hl,TrainerLastStandText2
+	call PrintText
+	jr .dontLoadPokemonSprite
+.notHuman
+	ld hl,TrainerSentOutText
+	call PrintText
 	call GetMonHeader
 	ld de,vFrontPic
 	call LoadMonFrontSprite
@@ -1654,6 +1625,7 @@ EnemySendOutFirstMon: ; 3c92a (f:492a)
 	predef Func_3f073
 	ld a,[wEnemyMonSpecies2]
 	call PlayCry
+.dontLoadPokemonSprite
 	call DrawEnemyHUDAndHPBar
 	ld a,[wCurrentMenuItem]
 	and a
@@ -1670,6 +1642,12 @@ TrainerAboutToUseText: ; 3ca79 (f:4a79)
 
 TrainerSentOutText: ; 3ca7e (f:4a7e)
 	TX_FAR _TrainerSentOutText
+	db "@"
+TrainerLastStandText: ; 3ca7e (f:4a7e)
+	TX_FAR _TrainerLastStandText
+	db "@"
+TrainerLastStandText2: ; 3ca7e (f:4a7e)
+	TX_FAR _TrainerLastStandText2
 	db "@"
 
 ; tests if the player has any pokemon that are not fainted
@@ -1688,7 +1666,37 @@ AnyPartyAlive: ; 3ca83 (f:4a83)
 	dec e
 	jr nz, .partyMonsLoop
 	ld d, a
+	and a
+	ret nz	;return if there are pokemon that aren't fainted
+	ld a,[W_ISINBATTLE]
+	and a
+	jr nz,.battleCheck	;run the battle check if we are not in battle
+	ld hl,wTotems
+	bit LastStandTotem,[hl]		;is last stand on?
+	ret z		;return if not
+	ld hl,wLastStandHP	;load in the last stand hp
+	ld a,[hli]	;load last stand high byte into a
+	or [hl]		;if last stand hp (high or low) are not zero, then a will be non zero
+	ld d,a		;store into d
 	ret
+.battleCheck
+	ld a,[wBattleMonSpecies2]
+	cp HUMAN		;is the current pokemon already human?
+	ld a,0	;set a to zero anyway
+	jr z,.checkLastStandHp		;check hp if we are already in last stand mode
+	ld hl,wTotems
+	bit LastStandTotem,[hl]		;is last stand on?
+	ret z		;return if not
+.checkLastStandHp
+	ld hl,wLastStandHP	;load in the last stand hp
+	ld a,[hli]	;load last stand high byte into a
+	or [hl]		;if last stand hp (high or low) are not zero, then a will be non zero
+	ld d,a		;store into d
+	ret z
+	ld hl,wPresetTraits
+	set PresetLastStand,[hl]		;set the bit so the next pokemon loaded will be Human
+	ret
+	
 
 ; tests if player mon has fainted
 ; stores whether mon has fainted in Z flag
@@ -1843,9 +1851,145 @@ NoRunningText: ; 3cb9c (f:4b9c)
 GotAwayText: ; 3cba1 (f:4ba1)
 	TX_FAR _GotAwayText
 	db "@"
+	
+;to load the last stand moves:
+LoadLastStandMoves:
+	ret
+	
+;to load the player last stand:
+LoadLastStand:
+	res PresetLastStand,[hl]
+	
+	;store the species
+	ld a,HUMAN
+	ld [wBattleMonSpecies2],a
+	ld [wBattleMonSpecies],a
+	ld [wd0b5],a
+	call GetMonHeader
+	
+	;store the level
+	ld a,[wPlayerLevel]
+	ld [wBattleMonLevel],a
+	
+	;zero the dvs
+	xor a
+	ld [wBattleMonHPSpDefDV],a
+	ld [wBattleMonDVs],a
+	ld [wBattleMonDVs +1],a
+	
+	;store the types
+	ld a,[W_MONHTYPE1]
+	ld [wBattleMonType1],a
+	ld a,[W_MONHTYPE2]
+	ld [wBattleMonType2],a
+	
+	call LoadLastStandMoves
+	
+	;store the stats
+	ld hl,wBattleMonDVs - 11	;when calculating stat using DVs, it adds 11 to HL
+	ld de, wBattleMonMaxHP
+	ld b,0	;do not use 'stat experience' in the calcs
+	call CalcStats
+	
+	
+	ld a,[wLastStandMaxHP]
+	cpl
+	ld d,a
+	ld a,[wLastStandMaxHP + 1]
+	cpl
+	ld e,a
+	inc de	;de = 0-previous max hp
+	
+	ld a,[wBattleMonMaxHP]
+	ld h,a
+	ld [wLastStandMaxHP],a
+	ld a,[wBattleMonMaxHP + 1]
+	ld l,a		;hl = new max hp
+	ld [wLastStandMaxHP + 1],a
+	add hl,de	;hl will now equal how much the max hp was increased
+	
+	ld a,[wLastStandHP]
+	ld d,a
+	ld a,[wLastStandHP + 1]
+	ld e,a		;hl = previous last stand hp
+	add hl,de		;raise the previous hp with the same amount the max hp increased
+	ld a,h
+	ld [wLastStandHP],a
+	ld a,l
+	ld [wLastStandHP + 1],a
+
+	
+	;store the 'unmodified' stats
+	ld hl, wBattleMonLevel
+	ld de, wPlayerMonUnmodifiedLevel
+	ld bc, $b
+	call CopyData
+	ld a,[wBattleMonSpecialDefense]
+	ld [wPlayerMonUnmodifiedSpecialDefense],a
+	ld a,[wBattleMonSpecialDefense + 1]
+	ld [wPlayerMonUnmodifiedSpecialDefense + 1],a
+	
+	;reload the HP and Status
+	ld a,[wLastStandHP]
+	ld [wBattleMonHP],a
+	ld a,[wLastStandHP + 1]
+	ld [wBattleMonHP + 1],a
+	ld a,[wLastStandStatus]
+	ld [wBattleMonStatus],a
+	
+	;store the 'nickname'
+	ld hl,wPlayerName
+	ld de, wBattleMonNick
+	ld bc, $b
+	call CopyData
+	
+	;store the OT data
+	ld hl,wBattleMonAbility	
+	ld a,[W_MONHABILITY1]
+	ld [hli],a
+	ld a,[W_MONHABILITY2]
+	ld [hli],a	;store abilities
+	ld de,wLastStandDelayedDamage
+	ld a,[de]
+	ld [hli],a
+	inc de
+	ld a,[de]
+	ld [hli],a	;store delayed damage
+	inc de
+	ld a,[de]
+	ld [hli],a	;store delayed damage counter
+	xor a
+	ld [hli],a	;no traits
+	ld a,$FF
+	ld [hl],a		;load max morale
+	
+	;zero the stat modifiers
+	ld a, $7 ; default stat mod
+	ld b, $8 ; number of stat mods
+	ld hl, wPlayerMonStatMods
+.statModLoop
+	ld [hli], a
+	dec b
+	jr nz, .statModLoop
+	
+	xor a
+	;zero some other bytes that are normally loaded from the party:
+	ld [W_PLAYERTOXICCOUNTER],a
+	ld [W_PLAYERDISABLEDMOVE],a
+	ld [wPlayerDisabledMoveNumber],a
+	ld [wBattleMonCursedFearCounter],a
+	ld [W_PLAYERCONFUSEDCOUNTER],a
+	
+	call ApplyBurnAndParalysisPenaltiesToEnemy
+	callab ApplyEnemyPotionStatBoost
+	call CalcModStatsSavewD11E
+	ret
 
 ; copies from party data to battle mon data when sending out a new player mon
 LoadBattleMonFromParty: ; 3cba6 (f:4ba6)
+	ld hl,wPresetTraits
+	bit PresetLastStand,[hl]
+	jp nz,LoadLastStand	;load last stand if bit is set
 	ld a, [wWhichPokemon]
 	ld bc, $2c
 	ld hl, wPartyMon1Species
@@ -1962,6 +2106,9 @@ SendOutMon: ; 3cc91 (f:4c91)
 	call GoPAL_SET
 	ld hl, W_ENEMYBATTSTATUS1
 	res UsingTrappingMove, [hl]
+	ld a,[wBattleMonSpecies2]
+	cp HUMAN		;human being sent out?
+	jr z,.skipAnimation	;dont show animation if so
 	ld a, $1
 	ld [H_WHOSETURN], a
 	ld a, POOF_ANIM
@@ -1971,6 +2118,7 @@ SendOutMon: ; 3cc91 (f:4c91)
 	ld a, [wcf91]
 	call PlayCry
 	call PrintEmptyString
+.skipAnimation
 	jp SaveScreenTilesToBuffer1
 
 ; show 2 stages of the player getting smaller before disappearing
@@ -2005,6 +2153,37 @@ AnimateRetreatingPlayerMon: ; 3ccfa (f:4cfa)
 
 ; reads player's current mon's HP into wBattleMonHP
 ReadPlayerMonCurHPAndStatus: ; 3cd43 (f:4d43)
+	ld a,[wBattleMonSpecies2]
+	cp HUMAN		;are we in last stand mode?
+	jr nz,.notHuman
+	ld hl,wLastStandHP
+	ld a,[wBattleMonHP]
+	ld [hli],a
+	ld a,[wBattleMonHP+1]
+	ld [hli],a
+	ld a,[wBattleMonStatus]
+	ld [hli],a
+	xor a
+	push hl
+	ld hl,W_PLAYERBATTSTATUS3
+	bit 0,[hl]	;toxic bit set?
+	jr z,.skipToxic
+	set 0,a		;set toxic bit
+.skipToxic
+	bit 1,[hl]	;delayed damage bit set?
+	jr z,.skipDelayedDamage
+	set 5,a		;set delayed damage bit
+.skipDelayedDamage
+	pop hl
+	ld [hli],a
+	ld a,[wBattleMonDelayedDamage]
+	ld [hli],a
+	ld a,[wBattleMonDelayedDamage + 1]
+	ld [hli],a
+	ld a,[wBattleMonDelayedDamageCounter]
+	ld [hl],a	;store delayed damage counter
+	jr .checkMrMime
+.notHuman
 	ld a, [wPlayerMonNumber]
 	ld hl, wPartyMon1HP
 	ld bc, wPartyMon2 - wPartyMon1
@@ -2015,163 +2194,40 @@ ReadPlayerMonCurHPAndStatus: ; 3cd43 (f:4d43)
 	ld bc, $4               ; 2 bytes HP, 1 byte unknown (unused?), 1 byte status
 	call CopyData
 	callab StoreExtraPlayerMonBytesFromBattle
+.checkMrMime
+	ld a,[wEnemyMonSpecies2]
+	cp MR_MIME	;mr mime?
+	jr nz,.finish	;finish if not
+	ld a,[wEnemyMonHP]
+	ld [wMrMimeHP],a
+	ld a,[wEnemyMonHP+1]
+	ld [wMrMimeHP + 1],a
+	ld a,[wEnemyMonStatus]
+	ld [wMrMimeStatus],a
+	xor a
+	push hl
+	ld hl,W_ENEMYBATTSTATUS3
+	bit 0,[hl]	;toxic bit set?
+	jr z,.skipToxic2
+	set 0,a		;set toxic bit
+.skipToxic2
+	pop hl
+	ld [wMrMimeSecondaryStatus],a
+.finish
 	ret
 
-DrawHUDsAndHPBars: ; 3cd5a (f:4d5a)
+DrawHUDsAndHPBars::
 	call DrawPlayerHUDAndHPBar
 	jp DrawEnemyHUDAndHPBar
 
-DrawPlayerHUDAndHPBar: ; 3cd60 (f:4d60)
-	xor a
-	ld [H_AUTOBGTRANSFERENABLED], a
-	hlCoord 9, 7
-	ld bc, $50b
-	call ClearScreenArea
-	callab PlacePlayerHUDTiles
-	hlCoord 18, 9
-	ld [hl], $73
-	ld de, wBattleMonNick
-	hlCoord 10, 7
-	call CenterMonName
-	call PlaceString
-	ld hl, wBattleMonSpecies
-	ld de, wLoadedMon
-	ld bc, $c
-	call CopyData
-	ld hl, wBattleMonLevel
-	ld de, wLoadedMonLevel
-	ld bc, $b
-	call CopyData
-	hlCoord 14, 8
-	push hl
-	inc hl
-	ld de, wLoadedMonStatus
-	call PrintStatusConditionNotFainted
-	pop hl
-	jr nz, .asm_3cdae
-	call PrintLevel
-.asm_3cdae
-	ld a, [wLoadedMonSpecies]
-	ld [wcf91], a
-	hlCoord 10, 9
-	predef DrawHP
-	ld a, $1
-	ld [H_AUTOBGTRANSFERENABLED], a
-	ld hl, wcf1d
-	call GetBattleHealthBarColor
-	ld hl, wBattleMonHP
-	ld a, [hli]
-	or [hl]
-	jr z, .asm_3cdd9
-	ld a, [wccf6]
-	and a
-	ret nz
-	ld a, [wcf1d]
-	cp $2
-	jr z, .asm_3cde6
-.asm_3cdd9
-	ld hl, wLowHealthAlarm
-	bit 7, [hl] ;low health alarm enabled?
-	ld [hl], $0
-	ret z
-	xor a
-	ld [wc02a], a
+DrawPlayerHUDAndHPBar::
+	callab _DrawPlayerHUDAndHPBar
 	ret
-.asm_3cde6
-	ld hl, wLowHealthAlarm
-	set 7, [hl] ;enable low health alarm
+	
+DrawEnemyHUDAndHPBar::
+	callab _DrawEnemyHUDAndHPBar
 	ret
-
-DrawEnemyHUDAndHPBar: ; 3cdec (f:4dec)
-	xor a
-	ld [H_AUTOBGTRANSFERENABLED], a
-	ld hl, wTileMap
-	ld bc, $40c
-	call ClearScreenArea
-	callab PlaceEnemyHUDTiles
-	ld de, wEnemyMonNick
-	hlCoord 1, 0
-	call CenterMonName
-	call PlaceString
-	hlCoord 4, 1
-	push hl
-	inc hl
-	ld de, wEnemyMonStatus
-	call PrintStatusConditionNotFainted
-	pop hl
-	jr nz, .skipPrintLevel ; if the mon has a status condition, skip printing the level
-	ld a, [wEnemyMonLevel]
-	ld [wLoadedMonLevel], a
-	call PrintLevel
-.skipPrintLevel
-	ld hl, wEnemyMonHP
-	ld a, [hli]
-	ld [H_MULTIPLICAND + 1], a
-	ld a, [hld]
-	ld [H_MULTIPLICAND + 2], a
-	or [hl] ; is current HP zero?
-	jr nz, .hpNonzero
-; current HP is 0
-; set variables for DrawHPBar
-	ld c, a
-	ld e, a
-	ld d, $6
-	jp .drawHPBar
-.hpNonzero
-	xor a
-	ld [H_MULTIPLICAND], a
-	ld a, 48
-	ld [H_MULTIPLIER], a
-	call Multiply ; multiply current HP by 48
-	ld hl, wEnemyMonMaxHP
-	ld a, [hli]
-	ld b, a
-	ld a, [hl]
-	ld [H_DIVISOR], a
-	ld a, b
-	and a ; is max HP > 255?
-	jr z, .doDivide
-; if max HP > 255, scale both (current HP * 48) and max HP by dividing by 4 so that max HP fits in one byte
-; (it needs to be one byte so it can be used as the divisor for the Divide function)
-	ld a, [H_DIVISOR]
-	srl b
-	rr a
-	srl b
-	rr a
-	ld [H_DIVISOR], a
-	ld a, [H_PRODUCT + 2]
-	ld b, a
-	srl b
-	ld a, [H_PRODUCT + 3]
-	rr a
-	srl b
-	rr a
-	ld [H_PRODUCT + 3], a
-	ld a, b
-	ld [H_PRODUCT + 2], a
-.doDivide
-	ld a, [H_PRODUCT + 2]
-	ld [H_DIVIDEND], a
-	ld a, [H_PRODUCT + 3]
-	ld [H_DIVIDEND + 1], a
-	ld a, $2
-	ld b, a
-	call Divide ; divide (current HP * 48) by max HP
-	ld a, [H_QUOTIENT + 3]
-; set variables for DrawHPBar
-	ld e, a
-	ld a, $6
-	ld d, a
-	ld c, a
-.drawHPBar
-	xor a
-	ld [wHPBarType], a
-	hlCoord 2, 2
-	call DrawHPBar
-	ld a, $1
-	ld [H_AUTOBGTRANSFERENABLED], a
-	ld hl, wcf1e
-
+	
 GetBattleHealthBarColor: ; 3ce90 (f:4e90)
 	ld b, [hl]
 	call GetHealthBarColor
@@ -2180,33 +2236,7 @@ GetBattleHealthBarColor: ; 3ce90 (f:4e90)
 	ret z
 	ld b, $1
 	jp GoPAL_SET
-
-; center's mon's name on the battle screen
-; if the name is 1 or 2 letters long, it is printed 2 spaces more to the right than usual
-; (i.e. for names longer than 4 letters)
-; if the name is 3 or 4 letters long, it is printed 1 space more to the right than usual
-; (i.e. for names longer than 4 letters)
-CenterMonName: ; 3ce9c (f:4e9c)
-	push de
-	inc hl
-	inc hl
-	ld b, $2
-.loop
-	inc de
-	ld a, [de]
-	cp $50
-	jr z, .done
-	inc de
-	ld a, [de]
-	cp $50
-	jr z, .done
-	dec hl
-	dec b
-	jr nz, .loop
-.done
-	pop de
-	ret
-
+	
 DisplayBattleMenu: ; 3ceb3 (f:4eb3)
 	call LoadScreenTilesFromBuffer1 ; restore saved screen
 	ld a, [W_BATTLETYPE]
@@ -6440,7 +6470,40 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	ld a, [wLinkState]
 	cp LINK_STATE_BATTLING
 	jp z, LoadEnemyMonFromParty
+	;randomly check mr mime
+	call GetHordeIsInBattle
+	cp a,$2	; is it a trainer battle?
+	jr z,.skipMrMime	;then no chance of mr mime battle
+	ld a,[wMrMimeFlags]
+	bit MrMimeCaughtOrFainted,a
+	jr nz,.skipMrMime		;if mr mime is not roaming anymore, then skip down
+	bit MrMimeRoaming,a
+	jr z,.skipMrMime		;if mr mime still isnt roaming, then skip down
+	ld hl,wMrMimeMap
+	ld a,[W_CURMAP]
+	cp [hl]		;is mr mime in the current map?
+	jr nz,.skipMrMime	;skip down if not
+	call BattleRandom	;otherwise, call battle random
+	cp 5
+	jr nc,.skipMrMime	;if 5 or greater, then no mr mime
+	ld a,MR_MIME
+	ld [wEnemyMonSpecies2],a
+	ld a,30		;level 30
+	ld [W_CURENEMYLVL],a
+.skipMrMime
 	ld a, [wEnemyMonSpecies2]
+	cp HUMAN		;is the pokemon human
+	jr nz,.notLastStand		;then its not last stand mode
+	ld hl,W_MONHFRONTSPRITE
+	ld a,[wTrainerPicPointer]
+	ld [hli],a
+	ld a,[wTrainerPicPointer + 1]
+	ld [hl],a		;set the pokemon front pic pointer to the enemy front pic pointer
+	ld a,$13
+	ld [W_MONHSPRITEBANK],a		;set the pokemon pic bank to the enemy trainer pic bank (all trainers are in bank $13
+	ld a,1
+	ld [W_ISINBATTLE],a	;set the battle mode to wild briefly
+.notLastStand
 	ld [wEnemyMonSpecies], a
 	ld [wd0b5], a
 	call GetMonHeader
@@ -6454,6 +6517,21 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	ld c, [hl]
 	jr .storeDVs
 .notTransformedDVs
+	ld a, [wEnemyMonSpecies2]
+	cp MR_MIME		;mr mime battle?
+	jr nz,.notMrMimeDVs	;then don't load Mr Mime dvs
+	ld hl,wMrMimeFlags
+	bit MrMimeEncountered,[hl]		;have we encountered mr mime?
+	jr z,.notMrMimeDVs	;create new random ones if we havent
+	ld hl,wMrMimeDVs
+	ld a,[hli]
+	ld [wEnemyMonHPSpDefDV],a
+	ld a,[hli]
+	ld [wEnemyMonDVs],a
+	ld a,[hl]
+	ld [wEnemyMonDVs+1],a	;store the DVs
+	jr .doneWithDVs
+.notMrMimeDVs
 	call GetHordeIsInBattle
 	cp $2 ; is it a trainer or horde battle?
 	jr nz,.notTrainerDVs
@@ -6484,7 +6562,7 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	ld [hl], c
 	
 	;done with DVs
-	
+.doneWithDVs
 	ld de, wEnemyMonLevel
 	ld a, [W_CURENEMYLVL]
 	ld [de], a
@@ -6600,8 +6678,14 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	ld [de], a
 	ld a, [wEnemyMonSpecies2]
 	ld [wd11e], a
+	cp HUMAN		;is it human?
+	jr nz,.notHuman	;then load the pokemon name
+	ld hl,W_TRAINERNAME
+	jr .copyName
+.notHuman
 	call GetMonName
 	ld hl, wcd6d
+.copyName
 	ld de, wEnemyMonNick
 	ld bc, $b
 	call CopyData
@@ -6620,8 +6704,8 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	call CopyData
 			
 	call GetHordeIsInBattle
-	dec a	; is it a wild battle?
-	jr z,.finishWild	;finish wild if so
+	cp a,2	; is it a trainer battle?
+	jr nz,.finishWild	;finish wild if not
 	callab LoadExtraEnemyMonBytesIntoBattle
 	call ApplyBurnAndParalysisPenaltiesToEnemy
 	callab ApplyEnemyPotionStatBoost
@@ -6629,8 +6713,8 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	ret
 .finishWild
 	;finish up initializing additional stats
-	ld a,$FF
-	ld [wEnemyMonMorale],a	;set the enemy mon moral to $FF
+	ld a,[W_MONHBASEMORALE]
+	ld [wEnemyMonMorale],a	;set the enemy mon moral to the base morale
 	
 	ld hl,wEnemyMonSpecialDefense
 	ld de,wEnemyMonUnmodifiedSpecialDefense
@@ -6642,10 +6726,7 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	
 	call DetermineNewTraits2
 	ld [wEnemyMonTraits],a
-	
-	call DetermineWildPokemonChecksum	;generate this pokemons checksum using the wild pokemon stats
-	ld [wEnemyMonChecksum],a
-	
+		
 	ld a, $7 ; default stat mod
 	ld b, $8 ; number of stat mods
 	ld hl, wEnemyMonStatMods
@@ -6653,6 +6734,55 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	ld [hli], a
 	dec b
 	jr nz, .statModLoop
+	ld a, [wEnemyMonSpecies2]
+	cp MR_MIME
+	jr nz,.notMrMime	;skip down if not Mr.Mime
+	ld hl,wMrMimeFlags
+	bit MrMimeEncountered,[hl]	;have we already encountered mr mime?
+	jr z,.saveMrMimeBytes	;if we haven't, then save these bytes as the new mr mime values
+	;otherwise, we load the data:
+	ld hl,wMrMimeHP		;start of mr mime data
+	ld a,[hli]
+	ld [wEnemyMonHP],a
+	ld a,[hli]
+	ld [wEnemyMonHP + 1],a	;load the HP
+	ld a,[hli]
+	ld [wEnemyMonHPSpDefDV],a
+	ld a,[hli]
+	ld [wEnemyMonDVs],a
+	ld a,[hli]
+	ld [wEnemyMonDVs+1],a	;store the DVs
+	ld a,[hli]
+	ld [wEnemyMonTraits],a	;store the traits
+	ld a,[hli]
+	ld [wEnemyMonStatus],a	;store the status
+	ld a,[hli]
+	ld [wEnemyMonSecondaryStatus],a	;store the secondary status
+	jr .finish
+.saveMrMimeBytes
+	set MrMimeEncountered,[hl]	;set the 'encountered' flag
+	ld hl,wMrMimeHP		;start of mr mime data
+	ld de,wEnemyMonHP
+	ld a,[de]
+	ld [hli],a
+	inc de
+	ld a,[de]
+	ld [hli],a		;store the HP
+	ld a,[wEnemyMonHPSpDefDV]
+	ld [hli],a
+	ld a,[wEnemyMonDVs]
+	ld [hli],a
+	ld a,[wEnemyMonDVs + 1]
+	ld [hli],a		;store the DVs
+	ld a,[wEnemyMonTraits]
+	ld [hl],a		;store the traits
+	jr .finish
+.notMrMime
+	cp HUMAN		;is the pokemon human
+	jr nz,.finish		;then just finish
+	ld a,2
+	ld [W_ISINBATTLE],a	;set the battle mode back to Trainer battle
+.finish
 	ret
 
 ; calls BattleTransition to show the battle transition animation and initializes some battle variables
@@ -6702,82 +6832,7 @@ SwapPlayerAndEnemyLevels: ; 3ec81 (f:6c81)
 	ld [wEnemyMonLevel], a
 	pop bc
 	ret
-
-;to load a 6x6 player back pic
-Load6x6BackPic:
-	ld de,vBackPic
-	ld a,$66
-	push de
-	jp FinishLoading6x6BackSprite
 	
-; loads either red back pic or old man back pic
-; also writes OAM data and loads tile patterns for the Red or Old Man back sprite's head
-; (for use when scrolling the player sprite and enemy's silhouettes on screen)
-LoadPlayerBackPic: ; 3ec92 (f:6c92)
-	ld a, [wTotems]
-	bit 0,a ; is the Role Reversal on?
-	ld de, JamesPicBack
-	jr z, .next
-	ld de, JessiePicBack
-.next
-	ld a, BANK(JamesPicBack)
-	call UncompressSpriteFromDE
-	call Load6x6BackPic
-	ld hl, wOAMBuffer
-	xor a
-	ld [$FF8B], a ; initial tile number
-	ld b, $7 ; 7 columns
-	ld e, $a0 ; X for the left-most column
-.loop ; each loop iteration writes 3 OAM entries in a vertical column
-	ld c, $3 ; 3 tiles per column
-	ld d, $38 ; Y for the top of each column
-.innerLoop ; each loop iteration writes 1 OAM entry in the column
-	ld [hl], d ; OAM Y
-	inc hl
-	ld [hl], e ; OAM X
-	ld a, $8 ; height of tile
-	add d ; increase Y by height of tile
-	ld d, a
-	inc hl
-	ld a, [$FF8B]
-	ld [hli], a ; OAM tile number
-	inc a ; increment tile number
-	ld [$FF8B], a
-	inc hl
-	dec c
-	jr nz, .innerLoop
-	ld a, [$FF8B]
-	add $4 ; increase tile number by 4
-	ld [$FF8B], a
-	ld a, $8 ; width of tile
-	add e ; increase X by width of tile
-	ld e, a
-	dec b
-	jr nz, .loop
-	ld a, $a
-	ld [$0], a
-	xor a
-	ld [$4000], a
-	ld hl, vSprites
-	ld de, S_SPRITEBUFFER1
-	ld a, [H_LOADEDROMBANK]
-	ld b, a
-	ld c, 7 * 7
-	call CopyVideoData
-	xor a
-	ld [$0], a
-	ld a, $31
-	ld [$ffe1], a
-	hlCoord 1, 5
-	predef_jump Func_3f0c6
-
-; does nothing since no stats are ever selected (barring glitches)
-DoubleOrHalveSelectedStats: ; 3ed02 (f:6d02)
-	callab DoubleSelectedStats
-	ld hl, HalveSelectedStats
-	ld b, BANK(HalveSelectedStats)
-	jp Bankswitch
-
 ScrollTrainerPicAfterBattle: ; 3ed12 (f:6d12)
 	ld hl, _ScrollTrainerPicAfterBattle
 	ld b, BANK(_ScrollTrainerPicAfterBattle)
@@ -7213,7 +7268,7 @@ InitWildBattle: ; 3ef8b (f:6f8b)
 InitBattle_Common: ; 3efeb (f:6feb)
 	ld b, $0
 	call GoPAL_SET
-	call SlidePlayerAndEnemySilhouettesOnScreen
+	callab SlidePlayerAndEnemySilhouettesOnScreen
 	xor a
 	ld [H_AUTOBGTRANSFERENABLED], a
 	ld hl, .emptyString
@@ -7257,12 +7312,25 @@ _LoadTrainerPic: ; 3f04b (f:704b)
 	ld e, a
 	ld a, [wTrainerPicPointer + 1] ; wd034
 	ld d, a ; de contains pointer to trainer pic
-	ld a, [wLinkState]
-	and a
-	ld a, Bank(TrainerPics) ; this is where all the trainer pics are (not counting Red's)
-	jr z, .loadSprite
-	ld a, Bank(JamesPicFront)
+	ld a,[W_TRAINERCLASS]
+	cp SONY1	;are we battling the rival?
+	jr z,.checkTotem	;if so, then check the totem
+	cp SONY2	;battle the 2nd rival trainer data?
+	jr nz,.loadSprite	;if not, then load sprite
+;otherwise, we are loading the rival pic, so check totem
+.checkTotem
+	ld a,[wTotems]
+	bit RoleReversalTotem,a		;role reversal
+	jr z,.loadSprite		;load the sprite if not
+	ld hl,JamesPicFront
+	ld a,l
+	ld e,l
+	ld [wTrainerPicPointer],a
+	ld a,h
+	ld d,h
+	ld [wTrainerPicPointer + 1],a	;otherwise, save JamesPicFront instead
 .loadSprite
+	ld a, Bank(JamesPicFront)
 	call UncompressSpriteFromDE
 	ld de, vFrontPic
 	ld a, $77
@@ -7368,25 +7436,6 @@ asm_3f0d0: ; 3f0d0 (f:70d0)
 	dec b
 	jr nz, .asm_3f0f4
 	ret
-
-LoadMonBackPic: ; 3f103 (f:7103)
-; Assumes the monster's attributes have
-; been loaded with GetMonHeader.
-	ld a, [wBattleMonSpecies2]
-	ld [wcf91], a
-	hlCoord 1, 5
-	ld b, $7
-	ld c, $8
-	call ClearScreenArea
-	ld hl,  W_MONHBACKSPRITE - W_MONHEADER
-	call UncompressMonSprite
-	call Load6x6BackPic
-	ld hl, vSprites
-	ld de, vBackPic
-	ld c, (2*SPRITEBUFFERSIZE)/16 ; count of 16-byte chunks to be copied
-	ld a, [H_LOADEDROMBANK]
-	ld b, a
-	jp CopyVideoData
 
 JumpMoveEffect: ; 3f132 (f:7132)
 	call _JumpMoveEffect
@@ -9497,9 +9546,5 @@ DetermineNewTraits2:
 .finish
 	pop bc
 	pop hl
-	ret
-		
-;to determine and save a wild pokemons checksum
-DetermineWildPokemonChecksum:
 	ret
 	
