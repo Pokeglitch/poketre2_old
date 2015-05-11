@@ -527,3 +527,9 @@ _IntoLastStandText:
 	line "into Last Stand"
 	cont "mode!"
 	prompt
+	
+_TrainerRetreatedText::
+	TX_RAM W_TRAINERNAME
+	text " "
+	line "retreated!"
+	prompt

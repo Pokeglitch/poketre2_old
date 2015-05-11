@@ -368,7 +368,9 @@ ItemUseBall: ; d687 (3:5687)
 	jr .next16
 .next15	;$5871
 	set Transformed,[hl]
-	ld hl,wcceb
+	ld hl,wccea
+	ld a,[wEnemyMonHPSpDefDV]
+	ld [hli],a
 	ld a,[wEnemyMonDVs]
 	ld [hli],a
 	ld a,[wEnemyMonDVs + 1]

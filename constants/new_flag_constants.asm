@@ -1,6 +1,8 @@
 ;bits for totems
 RoleReversalTotem	EQU 0
 LastStandTotem		EQU 1
+IronTotem			EQU 2
+MasterTrainerTotem	EQU 3
 
 
 
@@ -11,7 +13,6 @@ CantSetHighScoreBit EQU 0
 MrMimeRoaming EQU 0
 MrMimeEncountered EQU 1
 MrMimeCaughtOrFainted EQU 2
-
 
 
 

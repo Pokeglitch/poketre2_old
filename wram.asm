@@ -1538,8 +1538,6 @@ wMrMimeStatus::
 wMrMimeSecondaryStatus::
 	ds 1
 	
-wPlayerLevel::
-	ds 1
 wLastStandHP::
 	ds 2
 wLastStandStatus::
@@ -1579,7 +1577,7 @@ wPresetTraits::
 	
 wAdditionalInBattleDataEnd::
 wExtraBytes::
-	ds 7
+	ds 8
 	
 wNumBoxItems:: ; d31d
 	ds 1

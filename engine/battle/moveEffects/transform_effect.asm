@@ -14,6 +14,9 @@ TransformEffect_: ; 3bab1 (e:7ab1)
 .hitTest
 	bit Invulnerable, a ; is mon invulnerable to typical attacks? (fly/dig)
 	jp nz, .failed
+	ld a,[hl]	;load the defending species into a
+	cp HUMAN		;are we trying to transform into a human?
+	jp z, .failed	;then fail
 	push hl
 	push de
 	push bc
@@ -68,6 +71,8 @@ TransformEffect_: ; 3bab1 (e:7ab1)
 	and a
 	jr z, .next
 ; save enemy mon DVs in wcceb/wccec (enemy turn only)
+	ld a,[wBattleMonHPSpDefDV]
+	ld [wccea], a		;store sp def/hp ivs
 	ld a, [de]
 	ld [wcceb], a
 	inc de

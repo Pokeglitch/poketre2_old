@@ -3605,6 +3605,13 @@ _AddPartyMon: ; f2e5 (3:72e5)
 	ld a, [wcc49]
 	and $f
 	jr z, .start	;adding to players party
+	ld a,[wTotems]
+	bit IronTotem,a		;is the iron totem set?
+	jr z,.notIronTotem	;then dont double
+	ld a,[W_CURENEMYLVL]
+	add a		;double
+	ld [W_CURENEMYLVL],a
+.notIronTotem
 	ld de, wEnemyPartyCount ; wEnemyPartyCount
 	ld b,6	;party size for enemy
 .start
@@ -4317,6 +4324,8 @@ FlagAction:
 
 HealParty:
 ; Restore HP and PP.
+	xor a
+	ld [wWhichPokemon], a
 
 	ld hl, wPartySpecies
 	ld de, wPartyMon1HP
@@ -4327,7 +4336,7 @@ HealParty:
 
 	push hl
 	push de
-
+	
 	ld hl, wPartyMon1Status - wPartyMon1HP
 	add hl, de
 	xor a
@@ -4376,7 +4385,23 @@ HealParty:
 	dec b
 	jr nz, .pp
 	pop de
+	
+	
+	ld a,[wWhichPokemon]
+	ld hl, wPartyMon1Traits
+	call SkipFixedLengthTextEntries
+	ld a,[hld]		;load the secondary status into a
+	bit EggTrait,a	;is the pokemon an egg?
+	jr nz,.skipHealingHP	;don't heal HP if its an egg
 
+	xor a
+	ld [hld],a
+	ld [hld],a
+	ld [hld],a		;clear the delayed damage bytes
+	dec hl
+	dec hl
+	ld [hld],a		;clear the secondary status bytes
+	
 	ld hl, wPartyMon1MaxHP - wPartyMon1HP
 	add hl, de
 	ld a, [hli]
@@ -4384,6 +4409,7 @@ HealParty:
 	inc de
 	ld a, [hl]
 	ld [de], a
+.skipHealingHP
 
 	pop de
 	pop hl
@@ -4395,6 +4421,10 @@ HealParty:
 	add hl, bc
 	ld d, h
 	ld e, l
+	
+	ld hl,wWhichPokemon
+	inc [hl]
+	
 	pop hl
 	jr .healmon
 
@@ -4413,6 +4443,18 @@ HealParty:
 	inc [hl]
 	dec b
 	jr nz, .ppup
+	;to heal the last stand bytes
+	xor a
+	ld hl,wLastStandStatus
+	ld [hli],a
+	ld [hli],a
+	ld [hli],a
+	ld [hli],a
+	ld [hli],a
+	ld a,[hli]
+	ld [wLastStandHP],a
+	ld a,[hl]
+	ld [wLastStandHP + 1],a
 	ret
 
 

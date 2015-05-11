@@ -211,13 +211,14 @@ MonsterNameCharsCommon:: ; 1a37 (0:1a37)
 	; print “Enemy ”
 	ld a,[wEnemyMonSpecies2]
 	cp HUMAN
-	jr z,.skipPlayingEnemyString	;dont say "Enemy" if enemy is in last stand
+	ld de,W_TRAINERNAME
+	jr z,.skipPlayingEnemyString	;dont say "Enemy" and just use the trainer name if the pokemon is Human
 	ld de,Char5AText
 	call PlaceString
+	ld de,wEnemyMonNick ; enemy active monster name
 .skipPlayingEnemyString
 	ld h,b
 	ld l,c
-	ld de,wEnemyMonNick ; enemy active monster name
 
 FinishDTE:: ; 1a4b (0:1a4b)
 	call PlaceString

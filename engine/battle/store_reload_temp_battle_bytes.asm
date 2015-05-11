@@ -207,7 +207,7 @@ LoadStoredBattleBytes:
 	pop de
 	ld a,[wWhichPokemon]
 	push af
-	rr a	;divide by two, since they are grouped together by 2
+	srl a	;divide by two, since they are grouped together by 2
 	ld bc,wEnemyPartyMon3AttackMod - wEnemyPartyMon1AttackMod		;distance between each set of data
 .findStoredStatsLoop
 	and a
@@ -353,7 +353,7 @@ ClearBattleBytes:
 	pop hl
 	ld a,[wWhichPokemon]
 	push af
-	rr a	;divide by two, since they are grouped together by 2
+	srl a	;divide by two, since they are grouped together by 2
 	ld bc,wEnemyPartyMon3AttackMod - wEnemyPartyMon1AttackMod		;distance between each set of data
 .findStoredStatsLoop
 	and a
@@ -503,7 +503,7 @@ StoreBattleBytes:
 	pop de
 	ld a,[wWhichPokemon]
 	push af
-	rr a	;divide by two, since they are grouped together by 2
+	srl a	;divide by two, since they are grouped together by 2
 	ld bc,wEnemyPartyMon3AttackMod - wEnemyPartyMon1AttackMod		;distance between each set of data
 .findStoredStatsLoop
 	and a

@@ -952,7 +952,7 @@ FaintEnemyPokemon ; 0x3c567
 	ld a,[wEnemyMonSpecies2]
 	cp HUMAN
 	jr nz,.notHuman
-	ld hl,TrainerDefeatedText
+	ld hl,TrainerRetreatedText
 .notHuman
 	call PrintText
 	call PrintEmptyString
@@ -1085,12 +1085,8 @@ TrainerBattleVictory: ; 3c696 (f:4696)
 	cp LINK_STATE_BATTLING
 	ld a, b
 	call nz, PlayBattleVictoryMusic
-	ld hl,wPreBattleBits
-	bit EnemyCanUseLastStand,[hl]
-	jr nz,.lastStand		;if it ended in last stand, then we already displayed the defeated text
 	ld hl, TrainerDefeatedText
 	call PrintText
-.lastStand
 	ld a, [wLinkState]
 	cp LINK_STATE_BATTLING
 	ret z
@@ -1112,6 +1108,9 @@ MoneyForWinningText: ; 3c6e4 (f:46e4)
 
 TrainerDefeatedText: ; 3c6e9 (f:46e9)
 	TX_FAR _TrainerDefeatedText
+	db "@"
+TrainerRetreatedText: ; 3c6e9 (f:46e9)
+	TX_FAR _TrainerRetreatedText
 	db "@"
 
 PlayBattleVictoryMusic: ; 3c6ee (f:46ee)
@@ -1856,6 +1855,11 @@ GotAwayText: ; 3cba1 (f:4ba1)
 LoadLastStandMoves:
 	ret
 	
+;to get the player level
+GetPlayerLevel:
+	ld a,10
+	ret
+	
 ;to load the player last stand:
 LoadLastStand:
 	res PresetLastStand,[hl]
@@ -1867,9 +1871,20 @@ LoadLastStand:
 	ld [wd0b5],a
 	call GetMonHeader
 	
+	ld a,[W_CURENEMYLVL]
+	push af		;store the enemy mon level
+	
 	;store the level
-	ld a,[wPlayerLevel]
+	call GetPlayerLevel
+	srl a	;divide by 2
+	bit MasterTrainerTotem,[hl]	;is the Master Trainer totem set?
+	jr nz,.saveLevel		;then save level regardless of value
+	cp a,100				;compare to level 100
+	jr c,.saveLevel			;if under 100, then just save level
+	ld a,100				;otherwise, load to 100
+.saveLevel
 	ld [wBattleMonLevel],a
+	ld [W_CURENEMYLVL],a		;temporarily store into enemy mon level (for calculating stats)
 	
 	;zero the dvs
 	xor a
@@ -1890,6 +1905,9 @@ LoadLastStand:
 	ld de, wBattleMonMaxHP
 	ld b,0	;do not use 'stat experience' in the calcs
 	call CalcStats
+	
+	pop af
+	ld [W_CURENEMYLVL],a		;restore the enemy mon level
 	
 	
 	ld a,[wLastStandMaxHP]
@@ -1980,8 +1998,8 @@ LoadLastStand:
 	ld [wBattleMonCursedFearCounter],a
 	ld [W_PLAYERCONFUSEDCOUNTER],a
 	
-	call ApplyBurnAndParalysisPenaltiesToEnemy
-	callab ApplyEnemyPotionStatBoost
+	call ApplyBurnAndParalysisPenaltiesToPlayer
+	callab ApplyPlayerPotionStatBoost
 	call CalcModStatsSavewD11E
 	ret
 
@@ -2121,36 +2139,6 @@ SendOutMon: ; 3cc91 (f:4c91)
 .skipAnimation
 	jp SaveScreenTilesToBuffer1
 
-; show 2 stages of the player getting smaller before disappearing
-AnimateRetreatingPlayerMon: ; 3ccfa (f:4cfa)
-	hlCoord 1, 5
-	ld bc, $707
-	call ClearScreenArea
-	hlCoord 3, 7
-	ld bc, $505
-	xor a
-	ld [wcd6c], a
-	ld [H_DOWNARROWBLINKCNT1], a
-	predef Func_79aba
-	ld c, $4
-	call DelayFrames
-	call .clearScreenArea
-	hlCoord 4, 9
-	ld bc, $303
-	ld a, $1
-	ld [wcd6c], a
-	xor a
-	ld [H_DOWNARROWBLINKCNT1], a
-	predef Func_79aba
-	call Delay3
-	call .clearScreenArea
-	ld a, $4c
-	Coorda 5, 11
-.clearScreenArea
-	hlCoord 1, 5
-	ld bc, $707
-	jp ClearScreenArea
-
 ; reads player's current mon's HP into wBattleMonHP
 ReadPlayerMonCurHPAndStatus: ; 3cd43 (f:4d43)
 	ld a,[wBattleMonSpecies2]
@@ -2162,6 +2150,7 @@ ReadPlayerMonCurHPAndStatus: ; 3cd43 (f:4d43)
 	ld a,[wBattleMonHP+1]
 	ld [hli],a
 	ld a,[wBattleMonStatus]
+	and a,%11111000	;dont copy any sleeping status
 	ld [hli],a
 	xor a
 	push hl
@@ -2655,7 +2644,7 @@ SwitchPlayerMon: ; 3d1ba (f:51ba)
 	callab RetreatMon
 	ld c, $32
 	call DelayFrames
-	call AnimateRetreatingPlayerMon
+	callab AnimateRetreatingPlayerMon
 	ld a, [wWhichPokemon]
 	ld [wPlayerMonNumber], a
 	ld c, a
@@ -6564,7 +6553,7 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	;done with DVs
 .doneWithDVs
 	ld de, wEnemyMonLevel
-	ld a, [W_CURENEMYLVL]
+	ld a, [W_CURENEMYLVL]	
 	ld [de], a
 	inc de
 	ld b, $0
@@ -6678,14 +6667,8 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	ld [de], a
 	ld a, [wEnemyMonSpecies2]
 	ld [wd11e], a
-	cp HUMAN		;is it human?
-	jr nz,.notHuman	;then load the pokemon name
-	ld hl,W_TRAINERNAME
-	jr .copyName
-.notHuman
 	call GetMonName
 	ld hl, wcd6d
-.copyName
 	ld de, wEnemyMonNick
 	ld bc, $b
 	call CopyData
@@ -7218,6 +7201,13 @@ asm_3ef3d: ; 3ef3d (f:6f3d)
 InitWildBattle: ; 3ef8b (f:6f8b)
 	ld a, $1
 	ld [W_ISINBATTLE], a
+	ld a,[wTotems]
+	bit IronTotem,a		;iron totem set?
+	jr z,.notIronTotem	;dont double if not
+	ld a,[W_CURENEMYLVL]
+	add a		;double
+	ld [W_CURENEMYLVL],a
+.notIronTotem
 	call LoadEnemyMonData
 	call DoBattleTransitionAndInitBattleVariables
 	ld a, [W_CUROPPONENT]

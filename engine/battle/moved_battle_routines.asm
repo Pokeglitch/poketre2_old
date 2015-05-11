@@ -223,3 +223,33 @@ SetScrollXForSlidingPlayerBodyLeft: ; 3c110 (f:4110)
 	cp h
 	jr z, .loop
 	ret
+	
+; show 2 stages of the player getting smaller before disappearing
+AnimateRetreatingPlayerMon: ; 3ccfa (f:4cfa)
+	hlCoord 1, 5
+	ld bc, $707
+	call ClearScreenArea
+	hlCoord 3, 7
+	ld bc, $505
+	xor a
+	ld [wcd6c], a
+	ld [H_DOWNARROWBLINKCNT1], a
+	predef Func_79aba
+	ld c, $4
+	call DelayFrames
+	call .clearScreenArea
+	hlCoord 4, 9
+	ld bc, $303
+	ld a, $1
+	ld [wcd6c], a
+	xor a
+	ld [H_DOWNARROWBLINKCNT1], a
+	predef Func_79aba
+	call Delay3
+	call .clearScreenArea
+	ld a, $4c
+	Coorda 5, 11
+.clearScreenArea
+	hlCoord 1, 5
+	ld bc, $707
+	jp ClearScreenArea
