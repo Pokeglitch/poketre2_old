@@ -2881,7 +2881,11 @@ wTempLandscapeTimeCounter::
 
 wPreviousAttackDamage::
 	ds 2
-		
+
+;when a pokemon uses transform, this byte holds the original species
+wOriginalTransformedSpecies::
+	ds 1
+
 wEndOfNewBattleBytes::
 	ds 1
 	

@@ -363,7 +363,7 @@ ItemUseBall: ; d687 (3:5687)
 	ld hl,W_ENEMYBATTSTATUS3
 	bit Transformed,[hl]
 	jr z,.next15
-	ld a,$4c
+	ld a,[wOriginalTransformedSpecies]	;load the original species
 	ld [wEnemyMonSpecies2],a
 	jr .next16
 .next15	;$5871
@@ -382,7 +382,7 @@ ItemUseBall: ; d687 (3:5687)
 	ld [wcf91],a
 	ld a,[wEnemyMonLevel]
 	ld [W_CURENEMYLVL],a
-	;	callab LoadEnemyMonData		removed this, is just seems like an unnecessary step since the pokemon data alreadys exists in the ram.
+	callab LoadEnemyMonData
 	pop af
 	ld [wcf91],a
 	pop hl

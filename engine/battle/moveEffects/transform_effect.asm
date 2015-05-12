@@ -54,6 +54,8 @@ TransformEffect_: ; 3bab1 (e:7ab1)
 	push hl
 ; transform user into opposing Pokemon	
 ; species
+	ld a,[de]
+	ld [wOriginalTransformedSpecies],a		;store the original pokemon species
 	ld a, [hl] 
 	ld [de], a
 ; type 1, type 2, catch rate, and moves	
@@ -71,7 +73,7 @@ TransformEffect_: ; 3bab1 (e:7ab1)
 	and a
 	jr z, .next
 ; save enemy mon DVs in wcceb/wccec (enemy turn only)
-	ld a,[wBattleMonHPSpDefDV]
+	ld a,[wEnemyMonHPSpDefDV]
 	ld [wccea], a		;store sp def/hp ivs
 	ld a, [de]
 	ld [wcceb], a
@@ -125,10 +127,20 @@ TransformEffect_: ; 3bab1 (e:7ab1)
 	call GetMonName
 	ld hl, wEnemyMonUnmodifiedAttack
 	ld de, wPlayerMonUnmodifiedAttack
+	ld bc, 8
 	call .copyBasedOnTurn ; original (unmodified) stats
 	ld hl, wEnemyMonStatMods
 	ld de, wPlayerMonStatMods
+	ld bc, 8
 	call .copyBasedOnTurn ; stat mods
+	ld hl, wEnemyMonSpecialDefense
+	ld de, wBattleMonSpecialDefense
+	ld bc, 2
+	call .copyBasedOnTurn ; special defense
+	ld hl, wEnemyMonUnmodifiedSpecialDefense
+	ld de, wPlayerMonUnmodifiedSpecialDefense
+	ld bc, 2
+	call .copyBasedOnTurn ; unmodified special defense
 	ld hl, TransformedText
 	jp PrintText
 
@@ -141,7 +153,6 @@ TransformEffect_: ; 3bab1 (e:7ab1)
 	ld l, e
 	pop de
 .gotStatsOrModsToCopy
-	ld bc, $8
 	jp CopyData
 
 .failed

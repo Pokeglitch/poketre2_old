@@ -79,6 +79,41 @@ LoadAdditionalMonBytes:
 	ld hl,wEnemyMon1SpDefenseEV	;start of additional bytes pointer
 	ld de,wEnemyMonSpDefenseEV	;where to save to
 	ld bc,10		;copy 10 bytes for enemy
+	ld a, [W_ENEMYBATTSTATUS3]
+	bit Transformed, a ; is enemy mon transformed?
+	jr z,.saveAdditionalBytes	;if not, then copy over the OT bytes
+	ld a,[wWhichPokemon]	;get the index of the pokemon we are copying from
+	call SkipFixedLengthTextEntries	;go to the data of the corresponding pokemon
+	push hl
+	ld a,[hli]
+	ld [de],a
+	inc de
+	ld a,[hli]
+	ld [de],a	;copy the sp def EVs
+	inc de
+	inc hl
+	inc de		;skip secondary status
+	ld a,[hli]
+	ld [de],a
+	inc de
+	ld a,[hli]
+	ld [de],a	;copy the abilities
+	inc de
+	inc hl
+	inc de
+	inc hl
+	inc de
+	inc hl
+	inc de	;skip the delayed damages
+	ld a,[hli]
+	ld [de],a
+	inc de
+	ld a,[hli]
+	ld [de],a
+	inc de
+	ld a,[hli]
+	ld [de],a	;finish copying the data	
+	jr .afterTransform
 .saveAdditionalBytes
 	push bc
 	ld a,[wWhichPokemon]	;get the index of the pokemon we are copying from
@@ -86,6 +121,7 @@ LoadAdditionalMonBytes:
 	pop bc	;recover the size of the data to copy
 	push hl
 	call CopyData	;copy the data from hl to de
+.afterTransform		;if we transform, then we dont copy data
 	pop hl
 	pop de
 	add hl,de	;hl now points to the secondary status

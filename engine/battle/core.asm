@@ -1464,6 +1464,9 @@ EnemySendOutFirstMon: ; 3c92a (f:492a)
 	ld hl,wEnemyStatsToDouble ; clear enemy statuses
 	ld [hli],a
 	ld [hli],a
+	inc hl
+	inc hl
+	res Transformed,[hl]		;turn off the transformed bit
 	ld [wccf3],a
 	ld hl,wPlayerUsedMove
 	ld [hli],a
@@ -9456,6 +9459,12 @@ EarlyBirdText2:
 
 ;this is only for wild pokemon
 DetermineNewTraits2:
+	ld a, [W_ENEMYBATTSTATUS3]
+	bit Transformed, a ; is enemy mon transformed?
+	jr z,.notTransformed
+	ld a,[wEnemyMonTraits]		;just load the same traits that were already loaded
+	ret
+.notTransformed
 	push hl
 	push bc
 	xor a		;set the value to zero

@@ -3670,6 +3670,38 @@ _AddPartyMon: ; f2e5 (3:72e5)
 	
 	;done adding abilities
 	
+	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
+	and a
+	jr z, .dontWithOTByts	;if not in battle, then we don't copy additional data from the enemy
+	
+	;to copy secondary status
+	ld bc,wPartyMon1SecondaryStatus - wPartyMon1Ability2
+	add hl,bc		;bc now points to secondary status
+	xor a
+	ld [hl],a		;zero the byte
+	ld a,[W_ENEMYBATTSTATUS3]
+	bit 0,a		;toxic bit set?
+	jr z,.skipToxic
+	set 0,[hl]		;set toxic bit
+.skipToxic
+	bit 5,a		;delayed damage bit set?
+	jr z,.skipDelayedDamage
+	set 1,[hl]		;set delayed damage bit
+.skipDelayedDamage
+	
+	;to copy delayed damage info
+	inc hl
+	inc hl
+	inc hl
+	ld a,[wEnemyMonDelayedDamage]
+	ld [hli],a
+	ld a,[wEnemyMonDelayedDamage+1]
+	ld [hli],a
+	ld a,[wEnemyMonDelayedDamageCounter]
+	ld [hl],a	;copy delayed damage info
+	
+.dontWithOTByts
+	
 	ld a, [wcc49]
 	and a
 	jr nz, .asm_f33f
