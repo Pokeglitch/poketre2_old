@@ -3572,25 +3572,57 @@ AddPartyMon:: ; 3927 (0:3927)
 	pop hl
 	ret
 
-; calculates all 5 stats of current mon and writes them to [de]
+; calculates all 6 stats of current mon and writes them to [de]
+; #6 is special defense
 CalcStats:: ; 3936 (0:3936)
 	ld c, $0
 .statsLoop
 	inc c
 	call CalcStat
+	ld a,c
+	cp 6		;special defense?
+	jr nz,.notSpecialDefense
+	;to see if we are saving to the enemy in battle bytes
+	ld hl,wEnemyMonPP
+	ld a,d
+	cp h
+	jr nz,.checkPlayerInBattle
+	ld a,e
+	cp l
+	jr nz,.checkPlayerInBattle
+	ld hl,wEnemyMonSpecialDefense
+	jr .finish
+.checkPlayerInBattle
+	;to see if we are saving to the enemy in battle bytes
+	ld hl,wBattleMonPP
+	ld a,d
+	cp h
+	jr nz,.notInBattle
+	ld a,e
+	cp l
+	jr nz,.notInBattle
+	ld hl,wBattleMonSpecialDefense
+	jr .finish
+.notInBattle
+	ld hl,wPartyMon1SpDefense - wPartyMon2
+	add hl,de		;hl now points to special defense bytes
+.finish
+	ld a, [H_MULTIPLICAND+1]
+	ld [hli], a
+	ld a, [H_MULTIPLICAND+2]
+	ld [hl], a
+	ret
+.notSpecialDefense
 	ld a, [H_MULTIPLICAND+1]
 	ld [de], a
 	inc de
 	ld a, [H_MULTIPLICAND+2]
 	ld [de], a
 	inc de
-	ld a, c
-	cp $5
-	jr nz, .statsLoop
-	ret
+	jr .statsLoop
 
 ; calculates stat c of current mon
-; c: stat to calc (HP=1,Atk=2,Def=3,Spd=4,Spc=5)
+; c: stat to calc (HP=1,Atk=2,Def=3,Spd=4,Spc Attack=5,Spc Defense=6)
 ; b: consider stat exp?
 ; hl: base ptr to stat exp values ([hl + 2*c - 1] and [hl + 2*c])
 CalcStat:: ; 394a (0:394a)
@@ -3601,8 +3633,16 @@ CalcStat:: ; 394a (0:394a)
 	ld d, a
 	push hl
 	ld hl, W_MONHEADER
+	ld a,c
+	cp 6		;special defense?
+	jr nz,.notSpecialDefenseFromHeader
+	ld hl,W_MONHBASESPECIALD
+	jr .afterSpecialDefenseFromHeader
+	
+.notSpecialDefenseFromHeader
 	ld b, $0
 	add hl, bc
+.afterSpecialDefenseFromHeader
 	ld a, [hl]          ; read base value of stat
 	ld e, a
 	pop hl
@@ -3612,6 +3652,16 @@ CalcStat:: ; 394a (0:394a)
 	and a
 	jr z, .statExpDone  ; consider stat exp?
 	add hl, bc          ; skip to corresponding stat exp value
+	ld a,c
+	cp 12		;special defense?
+	jr nz,.statExpLoop	;skip down if not
+	push bc
+	
+	ld hl,wPartyMon1SpDefenseEV + 1
+	ld a,[wWhichPokemon]
+	call SkipFixedLengthTextEntries
+	
+	pop bc
 .statExpLoop            ; calculates ceil(Sqrt(stat exp)) in b
 	xor a
 	ld [H_MULTIPLICAND], a
@@ -3648,37 +3698,46 @@ CalcStat:: ; 394a (0:394a)
 	jr z, .getSpeedIV
 	cp $5
 	jr z, .getSpecialIV
+	;otherwise, its the special defense/hp
 .getHpIV
-	push bc
-	ld a, [hl]  ; Atk IV
-	swap a
-	and $1
-	sla a
-	sla a
-	sla a
-	ld b, a
-	ld a, [hli] ; Def IV
-	and $1
-	sla a
-	sla a
-	add b
-	ld b, a
-	ld a, [hl] ; Spd IV
-	swap a
-	and $1
-	sla a
-	add b
-	ld b, a
-	ld a, [hl] ; Spc IV
-	and $1
-	add b      ; HP IV: LSB of the other 4 IVs
-	pop bc
-	jr .calcStatFromIV
+	push de
+
+	;to see if we are saving to the enemy in battle bytes
+	ld de,wEnemyMonDVs
+	ld a,d
+	cp h
+	jr nz,.checkPlayerInBattle
+	ld a,e
+	cp l
+	jr nz,.checkPlayerInBattle
+	ld hl,wEnemyMonHPSpDefDV
+	jr .hpOrSpDef
+.checkPlayerInBattle
+	;to see if we are saving to the enemy in battle bytes
+	ld de,wBattleMonDVs
+	ld a,d
+	cp h
+	jr nz,.notInBattle
+	ld a,e
+	cp l
+	jr nz,.notInBattle
+	ld hl,wBattleMonHPSpDefDV
+	jr .hpOrSpDef
+.notInBattle
+	ld de,wPartyMon1HPSpDefDV - wPartyMon1DVs
+	add hl,de		;point to the hp/special defense IVs byte
+.hpOrSpDef
+	pop de
+	ld a,c
+	cp a,6		;special defense?
+	jr z,.getSpecialDefense
+	;otherwise, fall through
 .getAttackIV
 	ld a, [hl]
 	swap a
 	and $f
 	jr .calcStatFromIV
+.getSpecialDefense
 .getDefenseIV
 	ld a, [hl]
 	and $f
@@ -3753,6 +3812,9 @@ CalcStat:: ; 394a (0:394a)
 	inc a                    ; non-HP: (((Base + IV) * 2 + ceil(Sqrt(stat exp)) / 4) * Level) / 100 + 5
 	ld [H_MULTIPLICAND+1], a ; HP: (((Base + IV) * 2 + ceil(Sqrt(stat exp)) / 4) * Level) / 100 + Level + 10
 .noCarry4
+	ld a, [H_MULTIPLICAND]	;check for overflow (second step)
+	and a
+	jr nz,.overflow		;if its not zero, then it overflowed
 	ld a, [H_MULTIPLICAND+1] ; check for overflow (>999)
 	cp $4
 	jr nc, .overflow

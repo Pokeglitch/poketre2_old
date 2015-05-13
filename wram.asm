@@ -511,7 +511,7 @@ wPlayerMonAccuracyMod:: ; cd1e
 	ds 1
 wPlayerMonEvasionMod:: ; cd1f
 	ds 1
-
+wPlayerMonSpecialDefenseMod::
 	ds 3
 
 wEnemyMonUnmodifiedLevel:: ; cd23
@@ -554,6 +554,7 @@ wEnemyMonAccuracyMod:: ; cd32
 wEnemyMonEvasionMod:: ; cd33
 	ds 1
 
+wEnemyMonSpecialDefenseMod::
 wInGameTradeReceiveMonSpecies::
 	ds 1
 
@@ -2889,6 +2890,9 @@ wOriginalTransformedSpecies::
 wEndOfNewBattleBytes::
 	ds 1
 	
+;store the temporary special defense EVs, for use in calculating stats
+wTempSpecialDefenseEVs::
+	ds 2
 	
 ;Holds the pointer where the game will read/save the replay data
 ;holds which bank we can find the replay data

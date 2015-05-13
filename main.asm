@@ -6853,7 +6853,6 @@ INCLUDE "engine/hard_mode.asm"
 ;bank for the new text and battle hud
 SECTION "bank37",ROMX,BANK[$37]
 INCLUDE "text/additional_battle_text.asm"
-INCLUDE "engine/battle/battle_hud.asm"
 
 
 ;bank for the new battle functions
@@ -6866,6 +6865,7 @@ INCLUDE "data/type_effects.asm"
 INCLUDE "engine/battle/store_reload_temp_battle_bytes.asm"
 INCLUDE "engine/battle/in_battle_potion_effects.asm"
 INCLUDE "engine/battle/moved_battle_routines.asm"
+INCLUDE "engine/battle/battle_hud.asm"
 
 SECTION "bank39",ROMX,BANK[$39]
 INCLUDE "engine/evolution.asm"
