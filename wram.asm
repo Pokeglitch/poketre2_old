@@ -1488,7 +1488,7 @@ wPartyMon1Traits::
 	ds 1
 wPartyMon1Morale::
 	ds 1
-wPartyMon1LastByte::
+wPartyMon1RadioDamage::
 	ds 1
 
 wPartyMon2OT:: ds 11 * 5
@@ -2379,7 +2379,7 @@ wEnemyMon1Traits::
 	ds 1
 wEnemyMon1Morale::
 	ds 1
-wEnemyMon1LastByte::
+wEnemyMon1RadioDamage::
 	ds 1
 
 wEnemyMon2OT:: ds 11 * 5
@@ -2455,7 +2455,7 @@ wBoxMon1Traits::
 	ds 1
 wBoxMon1Morale::
 	ds 1
-wBoxMon1LastByte::
+wBoxMon1RadioDamage::
 	ds 1
 
 wBoxMon2OT::    ds 11 * 9 ; dd2a
@@ -2889,11 +2889,7 @@ wOriginalTransformedSpecies::
 
 wEndOfNewBattleBytes::
 	ds 1
-	
-;store the temporary special defense EVs, for use in calculating stats
-wTempSpecialDefenseEVs::
-	ds 2
-	
+		
 ;Holds the pointer where the game will read/save the replay data
 ;holds which bank we can find the replay data
 ;if bit 7 = 1, then we read from the SRAM

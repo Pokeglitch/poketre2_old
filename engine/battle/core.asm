@@ -3925,9 +3925,8 @@ GetDamageVarsForPlayerAttack: ; 3ddcf (f:5dcf)
 	and a
 	ld d, a ; d = move power
 	ret z ; return if move power is zero
-	ld a, [hl] ; a = [W_PLAYERMOVETYPE]
-	cp FIRE ; types >= FIRE are all special
-	jr nc, .specialAttack
+	callab IsPlayerAttackPhysical	;is the player attack physical?
+	jr nc, .specialAttack		;if not, then load special 
 .physicalAttack
 	ld hl, wEnemyMonDefense
 	ld a, [hli]
@@ -3959,10 +3958,10 @@ GetDamageVarsForPlayerAttack: ; 3ddcf (f:5dcf)
 	pop bc
 	jr .scaleStats
 .specialAttack
-	ld hl, wEnemyMonSpecial
+	ld hl, wEnemyMonSpecialDefense
 	ld a, [hli]
 	ld b, a
-	ld c, [hl] ; bc = enemy special
+	ld c, [hl] ; bc = enemy special defense
 	ld a, [W_ENEMYBATTSTATUS3]
 	bit HasLightScreenUp, a ; check for Light Screen
 	jr z, .specialAttackCritCheck
@@ -4038,9 +4037,8 @@ GetDamageVarsForEnemyAttack: ; 3de75 (f:5e75)
 	ld d, a ; d = move power
 	and a
 	ret z ; return if move power is zero
-	ld a, [hl] ; a = [W_ENEMYMOVETYPE]
-	cp FIRE ; types >= FIRE are all special
-	jr nc, .specialAttack
+	callab IsEnemyAttackPhysical
+	jr nc, .specialAttack		;run special attack if so
 .physicalAttack
 	ld hl, wBattleMonDefense
 	ld a, [hli]
@@ -4072,7 +4070,7 @@ GetDamageVarsForEnemyAttack: ; 3de75 (f:5e75)
 	pop bc
 	jr .scaleStats
 .specialAttack
-	ld hl, wBattleMonSpecial
+	ld hl, wBattleMonSpecialDefense
 	ld a, [hli]
 	ld b, a
 	ld c, [hl]

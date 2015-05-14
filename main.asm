@@ -2514,7 +2514,116 @@ CheckForBoulderCollisionWithSprites: ; c636 (3:4636)
 .success
 	xor a
 	ret
+	
+;to boost the morale of all pokemon in the party
+BoostPartyMorale:
+	ld a,[wPartyCount]
+	ld d,a		;store into d
+	ld bc,11
+	ld hl,wPartyMon1Morale
+.loop
+	ld a,[hl]
+	cp $FF		;is the morale maxxed?
+	jr z,.skip
+	inc [hl]		;otherwise, increment
+.skip
+	add hl,bc		;go to next pokemon
+	dec d
+	jr nz,.loop
+	ret
+	
+;to reduce the egg step count
+EggHatchCheck:
+	ld a,[wPartyCount]
+	ld d,a		;store into d
+	ld hl,wPartyMon1Traits
+.loop
+	push de
+	ld a,[hl]
+	bit EggTrait,a		;is the pokemon an egg?
+	jr z,.skip
+	ld bc,wPartyMon1DelayedDamage - wPartyMon1Traits
+	add hl,bc		;get the delayed damage (which is actually the egg hatch counter)
+	ld a,[hli]
+	ld c,[hl]
+	ld b,a			;bc = counter
+	dec bc
+	ld a,c
+	ld [hld],a
+	ld a,b
+	ld [hl],a
+	or c
+	jr nz,.skip		;skip down if we didn't reach zero
+	;remove the egg trait bit
+	ld bc,wPartyMon1Traits - wPartyMon1DelayedDamage
+	add hl,bc
+	res EggTrait,[hl]
+	
+	;show the evolve/egg hatch screen
+	;heal the HP
+	
+.skip
+	ld bc,11
+	add hl,bc		;go to next pokemon
+	pop de
+	dec d
+	jr nz,.loop
+	ret
+	
+;to see if there is delayed damage and to apply it
+DelayedDamageOutOfBattleCheck:
+	ld a,[wPartyCount]
+	ld d,a		;store into d
+	ld hl,wPartyMon1DelayedDamageCounter
+.loop
+	push de
+	ld a,[hl]
+	and a		;is there a counter?
+	jr z,.skip		;skip down if not
+	dec a
+	ld [hl],a		;otherwise, decrease
+	jr nz,.skip		;if we didn't reach zero, then skip
+	;apply the damage to the pokemon HP (don't go below 0)
+	
+	;flash screen , play sound ,and show text
+	
+.skip
+	ld bc,11
+	add hl,bc		;go to next pokemon
+	pop de
+	dec d
+	jr nz,.loop
+	ret
 
+;to reduce the HP if player last stand has radio or burn or poison
+LastStandOutOfBattleDamageCheck:
+	ld a,[wTotems]
+	bit LastStandTotem,a
+	ret z		;return if the totem is inactive
+	ld a,[wLastStandStatus]
+	and (1 << BRN) | (1 << PSN) | (1 << RAD)	;is it burn/psn/radio?
+	ret z		;return if not
+	ld hl,wLastStandHP
+	ld a,[hli]
+	ld c,[hl]
+	ld b,a
+	or c		;is it zero?
+	ret z
+	dec bc
+	ld a,[wLastStandSecondaryStatus]
+	bit 0,a		;is the toxic/wounded bit set?
+	jr z,.dontReduceAgain	;then dont decrease again
+	ld a,b
+	or c		;is it zero?
+	jr z,.dontReduceAgain		;dont reduce again if so
+	dec bc
+.dontReduceAgain
+	ld a,c
+	ld [hld],a
+	ld a,b
+	ld [hl],b	;store the lower hp
+	ret
+	
 ApplyOutOfBattlePoisonDamage: ; c69c (3:469c)
 	ld a, [wd730]
 	add a
@@ -2523,9 +2632,36 @@ ApplyOutOfBattlePoisonDamage: ; c69c (3:469c)
 	and a
 	jp z, .noBlackOut
 	call IncrementDayCareMonExp
+	ld hl,wMoraleBoostStepCounter
+	ld a,[hl]
+	inc a
+	ld [hl],a	;increase the count
+	call z,BoostPartyMorale		;boost morale if we went over 255
+	
+	call EggHatchCheck
+	
 	ld a, [wStepCounter]
 	and $3 ; is the counter a multiple of 4?
-	jp nz, .noBlackOut ; only apply poison damage every fourth step
+	jp nz, .skipPoisonEffectAndSound ; only apply poison damage every fourth step, but still check blackout
+
+	call DelayedDamageOutOfBattleCheck
+	
+	call LastStandOutOfBattleDamageCheck
+	
+	ld hl,wPotionCounter
+	ld a,[hl]	;load the potion counter
+	and a
+	jr z,.afterPotion		;dont reduce the potion if the count is zero
+	dec a
+	ld [hl],a
+	jr nz,.afterPotion		;dont remove the potion if it didnt wear off	
+	
+	ld hl,wActivePotion
+	xor a
+	ld [hl],a
+	
+.afterPotion
+	xor a
 	ld [wWhichPokemon], a
 	ld hl, wPartyMon1Status
 	ld de, wPartySpecies
@@ -2537,56 +2673,83 @@ ApplyOutOfBattlePoisonDamage: ; c69c (3:469c)
 	dec hl
 	and (1 << RAD)	;radioactive?
 	jr z,.applyDamage	;apply damage affect if not
-	push de
-	push hl
-.tryAgain
-	call Random
-	cp a,$FF
-	jr z,.tryAgain	;if it was $ff, then get another
-	ld l,4
-.loop
-	sub a,51	;subtract a by 51
-	jr c,.applyEffect	;if we've gone below 0, then apply the affect
-	dec l
-	jr .loop	;otherwise, loop
-.applyEffect
-	ld a,l	;store the stat index into a
-	pop hl
-	push hl	;get the pointer to the hp low
-	cp a,4
-	jr nz,.findStat	;if it wasn't stat 4 (sp.def), then use normal routine
-	ld bc,wPartyMon1SpDefense - wPartyMon1HP ;to point to the special defense low byte
-	jr .decStat
-	
-.findStat
-	ld bc,wPartyMon1Attack - wPartyMon1HP ;to pointer to attack low byte
-	add hl,bc	;hl now points to player mon 1 attack low
-	push hl
-	pop bc	;bc now points to player mon 1 attack low
-	add a	;double the stat index
-	ld h,0
-	ld l,a	;this is the offset to find the corresponding stat
-	
-.decStat
-	add hl,bc		;hl now points to the respective stat low byte
-	ld a,[hld]
-	ld c,a
-	ld b,[hl]	;bc contains the stat
-	dec bc		;decrease the stat
-	
-	ld a,c
+	ld a, [hld]
+	ld b, a
+	ld a, [hli]
 	or b
-	jr z,.radioDecreaseHP	;if it was zero, then decrease the hp
+	jp z, .nextMon ; already fainted
+	push de
+	push hl	;hl = get the pointer to the hp low
+	ld bc,wPartyMon1Attack - wPartyMon1HP - 2
+	add hl,bc	;hl = pointer to 1 before attack stat
+	;first, check to see if any stats are 1
+	ld c,4	;number of stats to loop
+.checkStatLoop
+	inc hl
+	ld a,[hli]	;get the high byte
+	and a
+	jr nz,.skipLowByte
+	ld a,[hl]	;get the low byte
+	cp 2		;compare the low byte to 1
+	jr c,.radioDecreaseHP		;decrease the HP if the stat is less than 2
+.skipLowByte
+	dec c
+	jr nz,.checkStatLoop	;loop 4 times
 	
-	ld a,b
-	ld [hli],a
-	ld a,c
-	ld [hl],a	;store the stat
+	pop hl
+	push hl
+	ld bc,wPartyMon1SpDefense - wPartyMon1HP - 1 ;to point to the special defense high byte
+	add hl,bc
+	ld a,[hli]	;get the high byte
+	and a
+	jr nz,.reduceStats	;reduce the stats if not zero
+	ld a,[hld]	;get the low byte
+	cp 2		;compare the low byte to 1
+	jr c,.radioDecreaseHP		;decrease the HP if the stat is less than 2
+
+.reduceStats
+	ld a,[wWhichPokemon]
+	ld hl,wPartyMon1RadioDamage
+	call SkipFixedLengthTextEntries	;go to the correct RadioDamageByte
+	ld a,[hl]
+	cp $FF		;is it already at FF?
+	jr z,.radioDecreaseHP		;then reduce the HP instead
+	inc [hl]		;otherwise, increase this byte value
+
+	;first, reduce the special defense
+	pop hl
+	push hl
+	ld bc,wPartyMon1SpDefense - wPartyMon1HP - 1 ;to point to the special defense high byte
+	add hl,bc
+	call .decStat
+	pop hl
+	push hl		;get the HP again
 	
+	ld d,4		;loop 4 times
+	ld bc,wPartyMon1Attack - wPartyMon1HP-1 ;to pointer to attack high byte
+	add hl,bc	;hl now points to player mon 1 attack high
+.decStatLoop
+	call .decStat
+	inc hl
+	inc hl	;move the next stat
+	dec d
+	jr nz,.decStatLoop	;loop 4 times
+		
 	pop hl
 	pop de
 	
 	jr .nextMon
+	
+.decStat
+	ld a,[hli]
+	ld b,a
+	ld c,[hl]		;bc = the stat
+	dec bc
+	ld a,c
+	ld [hld],a
+	ld a,b
+	ld [hl],b
+	ret
 .radioDecreaseHP
 	pop hl
 	pop de

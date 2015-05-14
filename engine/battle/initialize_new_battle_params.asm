@@ -49,6 +49,14 @@ IsHeadAttack:
 	ld de,1
 	jp IsInArray
 
+IsPlayerAttackPhysical:
+	ld a,[W_PLAYERMOVENUM]
+	jr IsPhysicalAttack
+
+IsEnemyAttackPhysical:
+	ld a,[W_ENEMYMOVENUM]
+	;fall through
+
 ;to see if the attack in a is a physical attack
 IsPhysicalAttack:
 	ld hl,PhysicalMovesTable
