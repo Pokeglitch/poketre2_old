@@ -992,24 +992,7 @@ DisplayTextIDInit: ; 7096 (1:7096)
 	jr nz,.skipDrawingTextBoxBorder
 	ld a,[$ff8c] ; text ID (or sprite ID)
 	and a
-	jr nz,.notStartMenu
-; if text ID is 0 (i.e. the start menu)
-; Note that the start menu text border is also drawn in the function directly
-; below this, so this seems unnecessary.
-	ld a,[wd74b]
-	bit 5,a ; does the player have the pokedex?
-; start menu with pokedex
-	hlCoord 10, 0
-	ld b,$0e
-	ld c,$08
-	jr nz,.drawTextBoxBorder
-; start menu without pokedex
-	hlCoord 10, 0
-	ld b,$0c
-	ld c,$08
-	jr .drawTextBoxBorder
-; if text ID is not 0 (i.e. not the start menu) then do a standard dialogue text box
-.notStartMenu
+	jr z,.skipDrawingTextBoxBorder		;dont draw textbox border if start menu
 	hlCoord 0, 12
 	ld b,$04
 	ld c,$12
@@ -2534,6 +2517,8 @@ BoostPartyMorale:
 	
 ;to reduce the egg step count
 EggHatchCheck:
+	xor a
+	ld [wWhichPokemon],a		;initialize the wWhichPokemon byte to 0
 	ld a,[wPartyCount]
 	ld d,a		;store into d
 	ld hl,wPartyMon1Traits
@@ -2554,17 +2539,41 @@ EggHatchCheck:
 	ld [hl],a
 	or c
 	jr nz,.skip		;skip down if we didn't reach zero
+	push hl
+	
 	;remove the egg trait bit
 	ld bc,wPartyMon1Traits - wPartyMon1DelayedDamage
 	add hl,bc
 	res EggTrait,[hl]
 	
 	;show the evolve/egg hatch screen
-	;heal the HP
+	callab HatchEggScreen
 	
+	;heal the HP
+	ld a,[wWhichPokemon]
+	ld hl,wPartyMon1MaxHP
+	ld bc,wPartyMon2 - wPartyMon1
+	call AddNTimes		;go to the correct pokemon
+	ld a,[hli]
+	ld d,a
+	ld a,[hld]
+	ld e,a
+	ld bc,wPartyMon1HP-wPartyMon1MaxHP
+	add hl,bc		;hl now points to the current hp
+	ld a,d
+	ld [hli],a
+	ld [hl],e
+	
+	pop hl
 .skip
 	ld bc,11
 	add hl,bc		;go to next pokemon
+	
+	push hl
+	ld hl,wWhichPokemon	;increase the 'which pokemon' index
+	inc [hl]
+	pop hl
+	
 	pop de
 	dec d
 	jr nz,.loop
@@ -2572,22 +2581,101 @@ EggHatchCheck:
 	
 ;to see if there is delayed damage and to apply it
 DelayedDamageOutOfBattleCheck:
+	xor a
+	ld [wWhichPokemon],a		;initialize which pokemon to 0
 	ld a,[wPartyCount]
 	ld d,a		;store into d
-	ld hl,wPartyMon1DelayedDamageCounter
+	ld hl,wPartyMon1SecondaryStatus
 .loop
 	push de
-	ld a,[hl]
-	and a		;is there a counter?
+	push hl
+	bit DelayedDamage2,[hl]		;is there delayed damage?
 	jr z,.skip		;skip down if not
+	ld bc,wPartyMon1DelayedDamageCounter-wPartyMon1SecondaryStatus
+	add hl,bc		;move to the delayed damage counter
+	ld a,[hl]
 	dec a
-	ld [hl],a		;otherwise, decrease
+	ld [hld],a		;otherwise, decrease
 	jr nz,.skip		;if we didn't reach zero, then skip
-	;apply the damage to the pokemon HP (don't go below 0)
 	
-	;flash screen , play sound ,and show text
+	ld a,[hl]
+	ld e,a
+	xor a
+	ld [hld],a
+	ld d,[hl]
+	ld [hl],a	;store the delayed damage into de and zero
+	
+	ld bc,wPartyMon1SecondaryStatus - wPartyMon1DelayedDamage
+	add hl,bc		;move hl back to the secondary status
+	res DelayedDamage2,[hl]		;turn off the delayed damage bit
+	
+	ld a,[wWhichPokemon]
+	ld hl,wPartyMon1HP
+	ld bc,wPartyMon2 - wPartyMon1		;move to the correct pokemon
+	call AddNTimes
+	
+	ld a,[hli]
+	ld c,[hl]
+	ld b,a		;store the current hp into bc
+	or c
+	jr z,.skip		;skip if the pokemon is already fainted
+	
+	;to set the max damage to the pokemons current HP
+	ld a,d
+	cp b
+	jr c,.applyDamage		;if the current hp high byte is higher, then dont adjust
+	ld a,e
+	cp c
+	jr c,.applyDamage		;if the current hp low byte is higher, then dont adjust
+	push bc
+	pop de		;set the damage to be the pokemon current HP
+	
+.applyDamage
+
+	push hl
+	
+	push bc
+	pop hl
+	
+	;set de to be -de
+	ld a,d
+	cpl
+	ld d,a
+	ld a,e
+	cpl
+	ld e,a
+	inc de
+	add hl,de
+	
+	push hl
+	pop bc
+	pop hl
+	
+	ld a,c
+	ld [hld],a
+	ld [hl],b
+	
+	push bc
+	ld a, [wWhichPokemon]
+	ld hl, wPartyMonNicks
+	call GetPartyMonName
+	call CopyStringToCF4B
+	
+	;show text
+	show_overworld_text DelayedDamageOccuredText
+	
+	;check fainted
+	pop bc
+	ld a,b
+	or c
+	jr nz,.skip	;skip if the hp is not zero
+	
+	show_overworld_text PokemonCF4BFaintedText
 	
 .skip
+	ld hl,wWhichPokemon
+	inc [hl]
+	pop hl
 	ld bc,11
 	add hl,bc		;go to next pokemon
 	pop de
@@ -2595,20 +2683,85 @@ DelayedDamageOutOfBattleCheck:
 	jr nz,.loop
 	ret
 
-;to reduce the HP if player last stand has radio or burn or poison
+;to reduce the HP if player last stand has radio or burn or poison or delayed damage
 LastStandOutOfBattleDamageCheck:
 	ld a,[wTotems]
 	bit LastStandTotem,a
 	ret z		;return if the totem is inactive
-	ld a,[wLastStandStatus]
-	and (1 << BRN) | (1 << PSN) | (1 << RAD)	;is it burn/psn/radio?
-	ret z		;return if not
+	
 	ld hl,wLastStandHP
 	ld a,[hli]
 	ld c,[hl]
-	ld b,a
-	or c		;is it zero?
+	ld b,a		;store the hp into bc
+	or c		;is HP zero?
 	ret z
+	
+	push bc		;save the hp
+	ld a,[wLastStandSecondaryStatus]
+	bit DelayedDamage2,a
+	jr z,.afterDelayedDamage		;skip down if no delayed damage
+	ld a,[wLastStandDelayedDamageCounter]
+	dec a
+	ld [wLastStandDelayedDamageCounter],a
+	jr nz,.afterDelayedDamage
+	
+	ld hl,wLastStandSecondaryStatus
+	res DelayedDamage2,[hl]	;reset the delayed damage bit
+	
+	ld hl,wLastStandDelayedDamage
+	ld a,[hl]
+	ld d,a
+	xor a
+	ld [hli],a
+	ld e,[hl]
+	ld [hl],a		;store the delayed damage into de and zero
+	
+	;to set the max damage to the pokemons current HP
+	ld a,d
+	cp b
+	jr c,.applyDamage		;if the current hp high byte is higher, then dont adjust
+	ld a,e
+	cp c
+	jr c,.applyDamage		;if the current hp low byte is higher, then dont adjust
+	push bc
+	pop de		;set the damage to be the pokemon current HP
+	
+.applyDamage
+	push bc
+	pop hl
+	
+	;set de to be -de
+	ld a,d
+	cpl
+	ld d,a
+	ld a,e
+	cpl
+	ld e,a
+	inc de
+	add hl,de
+	
+	push hl
+	pop bc
+	
+	ld a,b
+	ld [wLastStandHP],a
+	ld a,c
+	ld [wLastStandHP + 1],a
+		
+	;show text
+	show_overworld_text LastStandDelayedDamageOccuredText
+	
+	ld a,c
+	or b
+	pop bc
+	ret z		;return if Last Stand has no HP left
+	push bc
+	
+.afterDelayedDamage
+	pop bc		;restore the hp
+	ld a,[wLastStandStatus]
+	and (1 << BRN) | (1 << PSN) | (1 << RAD)	;is it burn/psn/radio?
+	ret z		;return if not
 	dec bc
 	ld a,[wLastStandSecondaryStatus]
 	bit 0,a		;is the toxic/wounded bit set?
@@ -2642,25 +2795,7 @@ ApplyOutOfBattlePoisonDamage: ; c69c (3:469c)
 	
 	ld a, [wStepCounter]
 	and $3 ; is the counter a multiple of 4?
-	jp nz, .skipPoisonEffectAndSound ; only apply poison damage every fourth step, but still check blackout
-
-	call DelayedDamageOutOfBattleCheck
-	
-	call LastStandOutOfBattleDamageCheck
-	
-	ld hl,wPotionCounter
-	ld a,[hl]	;load the potion counter
-	and a
-	jr z,.afterPotion		;dont reduce the potion if the count is zero
-	dec a
-	ld [hl],a
-	jr nz,.afterPotion		;dont remove the potion if it didnt wear off	
-	
-	ld hl,wActivePotion
-	xor a
-	ld [hl],a
-	
-.afterPotion
+	jp nz, .afterPotion; only apply poison damage every fourth step, but still check blackout
 	xor a
 	ld [wWhichPokemon], a
 	ld hl, wPartyMon1Status
@@ -2822,27 +2957,94 @@ ApplyOutOfBattlePoisonDamage: ; c69c (3:469c)
 	pop hl
 	jp .applyDamageLoop
 .applyDamageLoopDone
-	ld hl, wPartyMon1Status
+	xor a
+	ld [wWhichPokemon],a		;set the which pokemon counter to 0
 	ld a, [wPartyCount]
 	ld d, a
-	ld e, 0
 .countPoisonedLoop
-	ld a, [hl]
+	ld hl,wPartyMon1HP
+	ld bc,wPartyMon2 - wPartyMon1
+	ld a,[wWhichPokemon]
+	call AddNTimes		;go to the hp of the corresponding pokemon
+	
+	ld a,[hli]
+	or [hl]		;check the hp bytes
+	jr z,.nextCountPoisonedPokemon		;go to the next pokemon if zero
+	
+	inc hl
+	inc hl
+	ld a, [hl]		;load the status into a
 	and (1 << BRN) | (1 << PSN) | (1 << RAD)
-	or e
-	ld e, a
-	ld bc, wPartyMon2 - wPartyMon1
-	add hl, bc
+	jr nz,.flashScreen		;flash the screen if one of these bits is set
+	
+	ld hl, wPartyMon1SecondaryStatus
+	ld a,[wWhichPokemon]
+	call SkipFixedLengthTextEntries		;go to the secondary status of the corresponding pokemon
+	
+	ld a,[hl]
+	bit DelayedDamage2,a
+	jr z,.nextCountPoisonedPokemon
+	
+	ld bc,wPartyMon1DelayedDamageCounter - wPartyMon1SecondaryStatus
+	add hl,bc
+	ld a,[hl]
+	cp 1		;is it 1?
+	jr z,.flashScreen		;flash the screen if so
+	
+.nextCountPoisonedPokemon
+	ld hl,wWhichPokemon
+	inc [hl]
 	dec d
 	jr nz, .countPoisonedLoop
-	ld a, e
-	and a ; are any party members poisoned?
-	jr z, .skipPoisonEffectAndSound
+	
+	ld a,[wTotems]
+	bit LastStandTotem,a
+	jr z,.skipPoisonEffectAndSound		;skip down if the last stand totem is off
+	
+	ld hl,wLastStandHP
+	ld a,[hli]
+	or [hl]
+	jr z,.skipPoisonEffectAndSound		;skip down if the last stand has no HP
+	
+	inc hl
+	ld a,[hli]		;load the status
+	and (1 << BRN) | (1 << PSN) | (1 << RAD)
+	jr nz,.flashScreen		;flash screen if last stand has one of these statuses
+	
+	ld a,[hl]		;load the secondary status
+	bit DelayedDamage2,a
+	jr z,.skipPoisonEffectAndSound
+	ld a,[wLastStandDelayedDamageCounter]
+	cp 1
+	jr nz,.skipPoisonEffectAndSound
+	;fall through to flash the screen
+	
+.flashScreen
 	ld b, $2
 	predef ChangeBGPalColor0_4Frames ; change BG white to dark grey for 4 frames
 	ld a, (SFX_02_43 - SFX_Headers_02) / 3
 	call PlaySound
 .skipPoisonEffectAndSound
+	call DelayedDamageOutOfBattleCheck		;apply any delayed damage
+
+	call LastStandOutOfBattleDamageCheck
+
+	
+	ld hl,wPotionCounter
+	ld a,[hl]	;load the potion counter
+	and a
+	jr z,.afterPotion		;dont reduce the potion if the count is zero
+	dec a
+	ld [hl],a
+	jr nz,.afterPotion		;dont remove the potion if it didnt wear off	
+	
+	show_overworld_text PotionWoreOffText
+	
+	ld hl,wActivePotion
+	xor a
+	ld [hl],a
+	
+.afterPotion
 	predef AnyPartyAlive
 	ld a, d
 	and a
@@ -3845,11 +4047,11 @@ _AddPartyMon: ; f2e5 (3:72e5)
 	ld a,[W_ENEMYBATTSTATUS3]
 	bit 0,a		;toxic bit set?
 	jr z,.skipToxic
-	set 0,[hl]		;set toxic bit
+	set Toxic2,[hl]		;set toxic bit
 .skipToxic
 	bit 5,a		;delayed damage bit set?
 	jr z,.skipDelayedDamage
-	set 1,[hl]		;set delayed damage bit
+	set DelayedDamage2,[hl]		;set delayed damage bit
 .skipDelayedDamage
 	
 	;to copy delayed damage info
@@ -7016,6 +7218,7 @@ INCLUDE "engine/hard_mode.asm"
 ;bank for the new text and battle hud
 SECTION "bank37",ROMX,BANK[$37]
 INCLUDE "text/additional_battle_text.asm"
+INCLUDE "engine/new_overworld_text.asm"
 
 
 ;bank for the new battle functions

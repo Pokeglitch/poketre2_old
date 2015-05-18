@@ -1005,6 +1005,14 @@ Func_28cb:: ; 28cb (0:28cb)
 	ld a, b
 	ld [wc0ee], a
 	jp PlaySound
+	
+;to display our new overworld text:
+DisplayNewOverworldText:
+	ld a,[H_LOADEDROMBANK]
+	push af
+	callba DisplayTextIDInit ; initialization
+	callab _DisplayNewOverworldText
+	jp CloseTextDisplay
 
 ; this function is used to display sign messages, sprite dialog, etc.
 ; INPUT: [$ff8c] = sprite ID or text ID

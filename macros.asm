@@ -193,6 +193,22 @@ TX_BCD: MACRO
 	dw \1
 	db \2
 	ENDM
+	
+;new overworld text macro
+add_overworld_text: MACRO
+\1OverworldText::
+	dw \1
+	ENDM
+
+overworld_text_id: MACRO
+	ld a, (\1OverworldText - NewOverworldTextPointersTable) / 2
+	ENDM
+
+show_overworld_text: MACRO
+	overworld_text_id \1
+	ld [wNewOverworldTextID],a
+	call DisplayNewOverworldText
+	ENDM
 
 ; Predef macro.
 add_predef: MACRO

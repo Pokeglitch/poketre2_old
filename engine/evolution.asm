@@ -1,3 +1,78 @@
+HatchEggScreen:
+	ld a,[wWhichPokemon]
+	ld hl,wPartySpecies
+	ld b,0
+	ld c,a
+	add hl,bc		;hl now points to the pokemon id
+	ld a,$FF
+	ld [wHPBarMaxHP],a		;store $FF (egg) as the original pokemon
+	ld a,[hl]
+	ld [wHPBarMaxHP+1],a	;store as the new pokemon
+	
+	show_overworld_text IsHatchingText
+	
+	ld a,[H_LOADEDROMBANK]
+	push af
+	callba DisplayTextIDInit
+	
+	call GBPalWhiteOutWithDelay3		;whiteout the palette
+	call ClearScreen
+	call UpdateSprites
+	
+	ld a,[hSCX]
+	push af
+	ld a,[hSCY]
+	push af		;save the screen x, y positions
+	
+	xor a
+	ld [hSCX],a
+	ld [hSCY],a	;set the screen x, y position to 0
+	
+	call Delay3
+	call GBPalNormal
+	
+	
+	call Func_7bde9
+	jp c, .finish
+	
+	ld a, [wWhichPokemon]
+	ld hl, wPartyMonNicks
+	call GetPartyMonName
+	call CopyStringToCF4B
+	ld hl,_HatchedIntoText
+	call PrintText
+	
+	ld hl, wcd6d
+	ld de, wcf4b
+	ld bc, 11
+	call CopyData
+	
+	ld a, [wWhichPokemon]
+	ld hl, wPartyMonNicks
+	call SkipFixedLengthTextEntries
+	ld a, $2
+	ld [wd07d], a
+	predef AskName
+.finish
+	call GBPalWhiteOutWithDelay3		;whiteout the palette
+	ld c,32
+	call DelayFrames
+	
+	pop af
+	ld [hSCY],a
+	pop af
+	ld [hSCX],a	;restore the X,Y positions
+	
+	call ReloadMapData
+	jp CloseTextDisplay
+
+_HatchedIntoText:
+	TX_FAR HatchedIntoText
+	db "@"
+_IsHatchingText:
+	TX_FAR IsHatchingText
+	db "@"
+
 Func_7bde9: ; 7bde9 (1e:7de9)
 	push hl
 	push de
@@ -97,7 +172,32 @@ Func_7beb4: ; 7beb4 (1e:7eb4)
 	ld b, $b
 	jp GoPAL_SET
 
+EggSprite: INCBIN "pic/other/egg.pic"
+	
 Func_7beb9: ; 7beb9 (1e:7eb9)
+	cp a,$FF		;egg?
+	jr nz,.notEgg
+	
+	ld a, 1
+	ld [W_SPRITEFLIPPED], a
+	
+	ld hl, EggSprite
+	ld a,l
+	ld [W_MONHFRONTSPRITE],a
+	ld a,h
+	ld [W_MONHFRONTSPRITE+1],a
+	ld a,BANK(EggSprite)
+	ld [W_MONHSPRITEBANK],a
+	ld a,$77
+	ld [W_MONHSPRITEDIM],a
+	
+	ld de, vFrontPic
+	call LoadMonFrontSprite
+	
+	xor a
+	ld [W_SPRITEFLIPPED], a
+	ret
+.notEgg
 	call GetMonHeader
 	hlCoord 7, 2
 	jp LoadFlippedFrontSpriteByMonIndex
@@ -153,5 +253,9 @@ asm_7befa: ; 7befa (1e:7efa)
 	ld a, [wccd4]
 	and a
 	jr nz, .asm_7bf08
+	ld a,[wHPBarMaxHP]
+	cp a,$FF		;is it an egg?
+	jr z, .asm_7bf08	;loop if so	(cant cancel)
+	xor a		;set a to 0
 	scf
 	ret

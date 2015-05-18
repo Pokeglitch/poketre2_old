@@ -4,8 +4,6 @@ LastStandTotem		EQU 1
 IronTotem			EQU 2
 MasterTrainerTotem	EQU 3
 
-
-
 ;for the best time/high score flags:
 CantSetHighScoreBit EQU 0
 
@@ -14,7 +12,12 @@ MrMimeRoaming EQU 0
 MrMimeEncountered EQU 1
 MrMimeCaughtOrFainted EQU 2
 
-
+;bits for secondary status
+Toxic2			EQU 0
+DelayedDamage2	EQU 1
+Cursed2			EQU 2
+Confused2		EQU 3
+Fear2			EQU 4
 
 ;bits for Traits:
 FemaleTrait		EQU 0

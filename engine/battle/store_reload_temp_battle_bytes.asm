@@ -129,7 +129,7 @@ LoadAdditionalMonBytes:
 	
 	xor a	;initialize to 0
 	;copy over the secondary status bits to the corresponding in-battle status bits
-	bit 3,[hl]		;confused bit set?
+	bit Confused2,[hl]		;confused bit set?
 	jr z,.skipConfused
 	set 7,a		;otherwise, set the bit
 .skipConfused
@@ -138,19 +138,19 @@ LoadAdditionalMonBytes:
 	xor a	;initialize to 0
 	ld [bc],a
 	inc bc	;move to the third temp status byte (a is already 0)
-	bit 0,[hl]	;toxic bit set?
+	bit Toxic2,[hl]	;toxic bit set?
 	jr z,.skipToxic
 	set 0,a		;set toxic bit
 .skipToxic
-	bit 4,[hl]	;fear bit set?
+	bit Fear2,[hl]	;fear bit set?
 	jr z,.skipFear
 	set 4,a		;set fear bit
 .skipFear
-	bit 1,[hl]	;delayed damage bit set?
+	bit DelayedDamage2,[hl]	;delayed damage bit set?
 	jr z,.skipDelayedDamage
 	set 5,a		;set delayed damage bit
 .skipDelayedDamage
-	bit 2,[hl]	;cursed bit set?
+	bit Cursed2,[hl]	;cursed bit set?
 	jr z,.skipCursed
 	set 6,a		;set cursed bit
 .skipCursed
@@ -444,26 +444,26 @@ SaveAdditionalMonBytes:
 	
 	bit 7,a		;confused bit set?
 	jr z,.skipConfused
-	set 3,[hl]		;otherwise, set the bit
+	set Confused2,[hl]		;otherwise, set the bit
 .skipConfused
 	inc de
 	inc de
 	ld a,[de]
 	bit 0,a		;toxic bit set?
 	jr z,.skipToxic
-	set 0,[hl]		;set toxic bit
+	set Toxic2,[hl]		;set toxic bit
 .skipToxic
 	bit 4,a		;fear bit set?
 	jr z,.skipFear
-	set 4,[hl]		;set fear bit
+	set Fear2,[hl]		;set fear bit
 .skipFear
 	bit 5,a		;delayed damage bit set?
 	jr z,.skipDelayedDamage
-	set 1,[hl]		;set delayed damage bit
+	set DelayedDamage2,[hl]		;set delayed damage bit
 .skipDelayedDamage
 	bit 6,a		;cursed bit set?
 	jr z,.skipCursed
-	set 2,[hl]		;set cursed bit
+	set Cursed2,[hl]		;set cursed bit
 .skipCursed
 	ld a, [H_WHOSETURN]
 	and a
@@ -472,6 +472,12 @@ SaveAdditionalMonBytes:
 	add hl,bc		;hl now points to morale
 	ld a,[wBattleMonMorale]
 	ld [hl],a
+	ld bc,wPartyMon1DelayedDamage-wPartyMon1Morale
+	add hl,bc		;hl now points to delayed damage
+	ld a,[wPartyMon1DelayedDamage]
+	ld [hli],a
+	ld a,[wPartyMon1DelayedDamage+1]
+	ld [hl],a		;store delayed damage
 	ret
 	
 ;to save the temporary pokemon bytes to a stored location for ths specific pokemon

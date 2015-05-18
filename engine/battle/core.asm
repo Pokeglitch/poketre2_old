@@ -2028,11 +2028,11 @@ ReadPlayerMonCurHPAndStatus: ; 3cd43 (f:4d43)
 	ld hl,W_PLAYERBATTSTATUS3
 	bit 0,[hl]	;toxic bit set?
 	jr z,.skipToxic
-	set 0,a		;set toxic bit
+	set Toxic2,a		;set toxic bit
 .skipToxic
-	bit 1,[hl]	;delayed damage bit set?
+	bit 5,[hl]	;delayed damage bit set?
 	jr z,.skipDelayedDamage
-	set 5,a		;set delayed damage bit
+	set DelayedDamage2,a		;set delayed damage bit
 .skipDelayedDamage
 	pop hl
 	ld [hli],a
@@ -2069,7 +2069,7 @@ ReadPlayerMonCurHPAndStatus: ; 3cd43 (f:4d43)
 	ld hl,W_ENEMYBATTSTATUS3
 	bit 0,[hl]	;toxic bit set?
 	jr z,.skipToxic2
-	set 0,a		;set toxic bit
+	set Toxic2,a		;set toxic bit
 .skipToxic2
 	pop hl
 	ld [wMrMimeSecondaryStatus],a

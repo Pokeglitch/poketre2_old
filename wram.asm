@@ -1547,7 +1547,7 @@ wLastStandSecondaryStatus::
 	ds 1
 wLastStandDelayedDamage::
 	ds 2
-wLastStandDelayedCounter::
+wLastStandDelayedDamageCounter::
 	ds 1
 wLastStandMaxHP::
 	ds 2
@@ -2897,6 +2897,10 @@ wReplayBank::
 	ds 1
 wReplayDataPointer::
 	ds 2
+	
+;holds which text to display in the overworld
+wNewOverworldTextID::
+	ds 1
 
 
 SECTION "Stack", WRAMX[$dfff], BANK[1]
