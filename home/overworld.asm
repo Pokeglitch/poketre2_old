@@ -43,7 +43,7 @@ EnterMap::
 OverworldLoop::
 	call DelayFrame
 OverworldLoopLessDelay::
-	call DelayFrame
+	call FinishAutosaveAndDelayFrame
 	call LoadGBPal
 	ld a,[wd736]
 	bit 6,a ; jumping down a ledge?
@@ -1443,7 +1443,7 @@ LoadCurrentMapView:: ; 0caa (0:0caa)
 	ld [$2000],a ; restore previous ROM bank
 	ret
 
-AdvancePlayerSprite:: ; 0d27 (0:0d27)
+_AdvancePlayerSprite:: ; 0d27 (0:0d27)
 	ld a,[wSpriteStateData1 + 3] ; delta Y
 	ld b,a
 	ld a,[wSpriteStateData1 + 5] ; delta X

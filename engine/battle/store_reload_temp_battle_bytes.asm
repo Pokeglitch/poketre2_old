@@ -465,19 +465,30 @@ SaveAdditionalMonBytes:
 	jr z,.skipCursed
 	set Cursed2,[hl]		;set cursed bit
 .skipCursed
-	ld a, [H_WHOSETURN]
-	and a
-	ret nz	;return and don't save morale if its the enemys turn
 	ld bc,wPartyMon1Morale-wPartyMon1SecondaryStatus
 	add hl,bc		;hl now points to morale
+	ld a, [H_WHOSETURN]
+	and a
+	jr nz,.skipMorale	;skip morale if its the enemys turn
 	ld a,[wBattleMonMorale]
 	ld [hl],a
+.skipMorale
 	ld bc,wPartyMon1DelayedDamage-wPartyMon1Morale
 	add hl,bc		;hl now points to delayed damage
-	ld a,[wPartyMon1DelayedDamage]
+	ld de,wBattleMonDelayedDamage
+	ld a, [H_WHOSETURN]
+	and a
+	jr z,.dontLoadEnemyDelayedDamage	;dont load the enemy bytes if its players turn
+	ld de,wEnemyMonDelayedDamage
+.dontLoadEnemyDelayedDamage
+	ld a,[de]
+	inc de
 	ld [hli],a
-	ld a,[wPartyMon1DelayedDamage+1]
-	ld [hl],a		;store delayed damage
+	ld a,[de]
+	inc de
+	ld [hli],a	
+	ld a,[de]
+	ld [hl],a		;store delayed damage and counter
 	ret
 	
 ;to save the temporary pokemon bytes to a stored location for ths specific pokemon

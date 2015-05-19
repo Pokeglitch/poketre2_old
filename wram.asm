@@ -2059,7 +2059,9 @@ W_SEAFOAMISLANDS5CURSCRIPT:: ; d668
 W_ROUTE18GATECURSCRIPT:: ; d669
 	ds 1
 
-	ds 134
+	ds 84
+AutosaveSplit::
+	ds 50
 
 wd6f0:: ds 14
 wd6fe:: ds 2
@@ -2900,6 +2902,13 @@ wReplayDataPointer::
 	
 ;holds which text to display in the overworld
 wNewOverworldTextID::
+	ds 1
+	
+;determines when the game should run the "finish autosave" and when it should backup data
+;bit 0 = finish autosave
+;bit 1 = backup data
+;bit 7 = started a new game and haven't saved yet
+wAutosaveBits::
 	ds 1
 
 

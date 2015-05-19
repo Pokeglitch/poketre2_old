@@ -2074,6 +2074,7 @@ ReadPlayerMonCurHPAndStatus: ; 3cd43 (f:4d43)
 	pop hl
 	ld [wMrMimeSecondaryStatus],a
 .finish
+	predef SaveInBattle
 	ret
 
 DrawHUDsAndHPBars::

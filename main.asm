@@ -5093,6 +5093,8 @@ InitPlayerData2:
 	call InitializeEmptyList
 	ld a,3	;initialize max # of pokemon to 3
 	ld [wMaxPartyMons],a
+	ld hl,wAutosaveBits
+	set 7,[hl]		;set the bit indicating that we have started a new game
 
 START_MONEY EQU $3000
 	ld hl, wPlayerMoney + 1

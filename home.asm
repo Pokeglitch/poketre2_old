@@ -20,6 +20,17 @@ GetHordeIsInBattle:
 	pop hl
 	ret
 	
+;to autosave and enter the map
+FinishAutosaveAndDelayFrame:
+	callab FinishWalkingAutosave	;finish the autosave
+	jp DelayFrame
+	
+;to advance player sprite and autosave:
+AdvancePlayerSprite:
+	call _AdvancePlayerSprite
+	callab AutoSaveWhenWalking	;full autosave
+	ret
+	
 ;to see what the time of day is
 ;returns nz if night time
 GetTimeOfDay:
