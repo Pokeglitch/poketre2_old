@@ -43,7 +43,7 @@ EnterMap::
 OverworldLoop::
 	call DelayFrame
 OverworldLoopLessDelay::
-	call FinishAutosaveAndDelayFrame
+	call DelayFrame
 	call LoadGBPal
 	ld a,[wd736]
 	bit 6,a ; jumping down a ledge?

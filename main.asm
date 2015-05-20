@@ -2506,10 +2506,12 @@ BoostPartyMorale:
 	ld hl,wPartyMon1Morale
 .loop
 	ld a,[hl]
+	push hl
 	cp $FF		;is the morale maxxed?
 	jr z,.skip
 	inc [hl]		;otherwise, increment
 .skip
+	pop hl
 	add hl,bc		;go to next pokemon
 	dec d
 	jr nz,.loop
@@ -2563,7 +2565,6 @@ EggHatchCheck:
 	ld a,d
 	ld [hli],a
 	ld [hl],e
-	
 	pop hl
 .skip
 	ld bc,11

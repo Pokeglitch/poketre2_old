@@ -2059,9 +2059,8 @@ W_SEAFOAMISLANDS5CURSCRIPT:: ; d668
 W_ROUTE18GATECURSCRIPT:: ; d669
 	ds 1
 
-	ds 84
-AutosaveSplit::
-	ds 50
+AfterCurScripts::
+	ds 134
 
 wd6f0:: ds 14
 wd6fe:: ds 2
@@ -2905,8 +2904,9 @@ wNewOverworldTextID::
 	ds 1
 	
 ;determines when the game should run the "finish autosave" and when it should backup data
-;bit 0 = finish autosave
+;bit 0 = we can autosave
 ;bit 1 = backup data
+;bit 2 = autosave party outside of battle
 ;bit 7 = started a new game and haven't saved yet
 wAutosaveBits::
 	ds 1

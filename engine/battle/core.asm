@@ -3926,7 +3926,9 @@ GetDamageVarsForPlayerAttack: ; 3ddcf (f:5dcf)
 	and a
 	ld d, a ; d = move power
 	ret z ; return if move power is zero
+	push de
 	callab IsPlayerAttackPhysical	;is the player attack physical?
+	pop de
 	jr nc, .specialAttack		;if not, then load special 
 .physicalAttack
 	ld hl, wEnemyMonDefense
@@ -4038,7 +4040,9 @@ GetDamageVarsForEnemyAttack: ; 3de75 (f:5e75)
 	ld d, a ; d = move power
 	and a
 	ret z ; return if move power is zero
+	push de
 	callab IsEnemyAttackPhysical
+	pop de
 	jr nc, .specialAttack		;run special attack if so
 .physicalAttack
 	ld hl, wBattleMonDefense

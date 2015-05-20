@@ -335,7 +335,8 @@ SaveSAV: ;$770a
 	ld a,[wd088]
 	dec a
 	jr z,.save
-	call SAVCheckRandomID
+	ld hl,wAutosaveBits
+	bit 7,[hl]		;is the 'new game' bit set?
 	jr z,.save
 	ld hl,OlderFileWillBeErasedText
 	call SaveSAVConfirm
@@ -343,6 +344,10 @@ SaveSAV: ;$770a
 	ret nz
 .save        ;$772d
 	call SaveSAVtoSRAM      ;$7848
+	
+	xor a
+	ld [wAutosaveBits],a	;reset the bit announcing we should finish autosaving or backup
+	
 	hlCoord 1, 13
 	ld bc,$0412
 	call ClearScreenArea ; clear area 4x12 starting at 13,1
@@ -442,15 +447,13 @@ SaveSAVtoSRAM0: ; 7378c (1c:778c)
 	call CopyDataAndChecksum
 	ld [sGameSaveStart + sGameSaveChecksum6Offset],a	;save the checksum
 	
-	ld a, [hTilesetType]
-	ld [de], a		;save the tileset type
-	push af
 	xor a
 	ld [sGameSaveStart + sGameSaveInBattleByteOffset],a	;this byte holds whether or not we use the in-battle party bytes
 	
+	ld a, [hTilesetType]
+	ld [de], a		;save the tileset type
 	ld hl, sGameSaveStart + sGameSaveChecksum1Offset	;start of data
 	ld b, NUM_OF_GAMESAVE_CHECKSUMS - 1	;number of checksums
-	pop af
 .loop
 	add [hl]
 	ld c,a
@@ -489,14 +492,10 @@ CanAutosave:
 .cantSave
 	xor a
 	ret
-	
+		
 AutoSaveWhenWalking:
 	call CanAutosave
 	ret z
-	ld a,[wWalkCounter]
-	cp 8
-	ret z ;return if 8
-	push af
 	
 	ld a, SRAM_ENABLE
 	ld [MBC1SRamEnable], a
@@ -505,10 +504,16 @@ AutoSaveWhenWalking:
 	call GetSaveBank	;get the appropriate bank
 	ld [MBC1SRamBank], a
 	
-	pop af
+	ld a,[wWalkCounter]
+	dec a
 	ld b,0
 	ld c,a
+	ld hl,wAutosaveBits
+	bit 0,[hl]	;should we be backing up?
+	ld hl,WalkingBackupRoutineTable
+	jr nz,.skip		;skip down if so
 	ld hl,WalkingAutosaveRoutineTable
+.skip
 	add hl,bc
 	add hl,bc
 	ld a,[hli]
@@ -521,8 +526,19 @@ AutoSaveWhenWalking:
 	xor a
 	ld [MBC1SRamBankingMode], a
 	ld [MBC1SRamEnable], a
+	inc a		;unset the zero flag
 	ret
-	
+		
+WalkingBackupRoutineTable:
+	dw WalkBackup7
+	dw WalkBackup6
+	dw WalkBackup5
+	dw WalkBackup4
+	dw WalkBackup3
+	dw WalkBackup2
+	dw WalkBackup1
+	dw WalkBackup0
+		
 WalkingAutosaveRoutineTable:
 	dw WalkAutosave7
 	dw WalkAutosave6
@@ -533,147 +549,159 @@ WalkingAutosaveRoutineTable:
 	dw WalkAutosave1
 	dw WalkAutosave0
 	
-;nothing
-WalkAutosave0:
-	ret
-
 ;backup part 1
-WalkAutosave1:
-	ld hl,wAutosaveBits
-	bit 1,[hl]	;should we backup?
-	ret z		;dont backup if not set
-	
+WalkBackup0:
 	ld hl, sGameSaveStart
 	ld de, sBackupGameSaveStart
-	ld bc, SIZE_OF_GAMESAVE/4
-	call CopyData		;restore the backup
-	ret
-	
-;backup part 2
-WalkAutosave2:
-	ld hl,wAutosaveBits
-	bit 1,[hl]	;should we backup?
-	ret z		;dont backup if not set
-	
-	ld hl, sGameSaveStart + (SIZE_OF_GAMESAVE/4)
-	ld de, sBackupGameSaveStart + (SIZE_OF_GAMESAVE/4)
-	ld bc, SIZE_OF_GAMESAVE/4
-	call CopyData		;restore the backup
-	ret
+	ld bc, SIZE_OF_GAMESAVE/8
+	jp CopyData		;save the backup
 
+;backup part 2
+WalkBackup1:
+	ld hl, sGameSaveStart + (SIZE_OF_GAMESAVE/8)
+	ld de, sBackupGameSaveStart + (SIZE_OF_GAMESAVE/8)
+	ld bc, SIZE_OF_GAMESAVE/8
+	jp CopyData		;save the backup
+	
 ;backup part 3
-WalkAutosave3:
-	ld hl,wAutosaveBits
-	bit 1,[hl]	;should we backup?
-	ret z		;dont backup if not set
-	
-	ld hl, sGameSaveStart + 2*(SIZE_OF_GAMESAVE/4)
-	ld de, sBackupGameSaveStart + 2*(SIZE_OF_GAMESAVE/4)
-	ld bc, SIZE_OF_GAMESAVE/4
-	call CopyData		;restore the backup
-	ret
-	
+WalkBackup2:
+	ld hl, sGameSaveStart + 2*(SIZE_OF_GAMESAVE/8)
+	ld de, sBackupGameSaveStart + 2*(SIZE_OF_GAMESAVE/8)
+	ld bc, SIZE_OF_GAMESAVE/8
+	jp CopyData		;save the backup
+
 ;backup part 4
-WalkAutosave4:
-	ld hl,wAutosaveBits
-	bit 1,[hl]	;should we backup?
-	ret z		;dont backup if not set
-	res 1,[hl]		;reset the bit
+WalkBackup3:
+	ld hl, sGameSaveStart + 3*(SIZE_OF_GAMESAVE/8)
+	ld de, sBackupGameSaveStart + 3*(SIZE_OF_GAMESAVE/8)
+	ld bc, SIZE_OF_GAMESAVE/8
+	jp CopyData		;save the backup
 	
-	ld hl, sGameSaveStart + 3*(SIZE_OF_GAMESAVE/4)
-	ld de, sBackupGameSaveStart + 3*(SIZE_OF_GAMESAVE/4)
-	ld bc, SIZE_OF_GAMESAVE/4
-	call CopyData		;restore the backup
-	ret
+;backup part 5
+WalkBackup4:
+	ld hl, sGameSaveStart + 4*(SIZE_OF_GAMESAVE/8)
+	ld de, sBackupGameSaveStart + 4*(SIZE_OF_GAMESAVE/8)
+	ld bc, SIZE_OF_GAMESAVE/8
+	jp CopyData		;save the backup
 	
-;players name
-WalkAutosave5:
-	ld hl, wPlayerName
-	ld de, sGameSaveStart
-	ld bc, SIZE_OF_PLAYER_NAME_SAVE_DATA
-	call CopyDataAndChecksum
-	ld [sGameSaveStart + sGameSaveChecksum1Offset],a	;save the checksum
-	ret
+;backup part 6
+WalkBackup5:
+	ld hl, sGameSaveStart + 5*(SIZE_OF_GAMESAVE/8)
+	ld de, sBackupGameSaveStart + 5*(SIZE_OF_GAMESAVE/8)
+	ld bc, SIZE_OF_GAMESAVE/8
+	jp CopyData		;save the backup
 	
-;pc part 1
-WalkAutosave6:
-	ld de,sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA + (wStorylineDataEnd - wStoryLineData) + (wSpriteStateDataEnd - wSpriteStateData1) + (wPartyMonNicksEnd - wPartyCount)
-	ld hl, wPCBoxData
-	ld bc, wBoxMonNicks - wPCBoxData
-	call CopyDataAndChecksum
-	cpl
-	ld [sGameSaveStart + sGameSaveChecksum5Offset],a	;save the partial checksum
-	ret
+;backup part 7
+WalkBackup6:
+	ld hl, sGameSaveStart + 6*(SIZE_OF_GAMESAVE/8)
+	ld de, sBackupGameSaveStart + 6*(SIZE_OF_GAMESAVE/8)
+	ld bc, SIZE_OF_GAMESAVE/8
+	jp CopyData		;save the backup
 	
-;pc part 2
-WalkAutosave7:
-	ld de,sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA + (wStorylineDataEnd - wStoryLineData) + (wSpriteStateDataEnd - wSpriteStateData1) + (wPartyMonNicksEnd - wPartyCount) + (wBoxMonNicks - wPCBoxData)
-	ld hl, wBoxMonNicks
-	ld bc, wBoxMonNicksEnd - wBoxMonNicks
-	call CopyDataAndChecksum
-	cpl 
-	ld hl,sGameSaveStart + sGameSaveChecksum5Offset
-	add [hl]
-	cpl
-	ld [sGameSaveStart + sGameSaveChecksum5Offset],a	;save the checksum
-	
+;backup part 8
+WalkBackup7:
+	ld hl, sGameSaveStart + 7*(SIZE_OF_GAMESAVE/8)
+	ld de, sBackupGameSaveStart + 7*(SIZE_OF_GAMESAVE/8)
+	ld bc, SIZE_OF_GAMESAVE/8
+	call CopyData		;save the backup
 	
 	ld hl,wAutosaveBits
-	set 0,[hl]		;set bit announcing we should finish autosaving
-	
+	res 0,[hl]	;reset the bit, so next time we will save
 	ret
 	
-;to finish the walking autosave (by saving the party data, map & sprite data)
-FinishWalkingAutosave:
-	call CanAutosave
-	ret z
-	ld a,[wWalkCounter]
-	and a
-	ret nz		;return if walk counter is not zero
-	
-	ld hl,wAutosaveBits
-	bit 0,[hl]		;should we finish autosaving?
-	ret z		;return if not
-	res 0,[hl]		;reset that bit
-	
-	ld a, SRAM_ENABLE
-	ld [MBC1SRamEnable], a
-	ld a, $1
-	ld [MBC1SRamBankingMode], a
-	call GetSaveBank	;get the appropriate bank
-	ld [MBC1SRamBank], a
-	
+;save the map data (game save data part 1)
+WalkAutosave0:
 	ld de,sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA
 	ld hl, wStoryLineData
-	ld bc, wStorylineDataEnd - wStoryLineData
+	ld bc, W_OAKSLABCURSCRIPT - wStoryLineData
 	call CopyDataAndChecksum
-	ld [sGameSaveStart + sGameSaveChecksum2Offset],a	;save the total checksum
-
+	cpl
+	ld [sGameSaveStart + sGameSaveChecksum2Offset],a	;save the partial checksum
+	ret
+	
+;save the sprite data
+WalkAutosave1:
+	ld de,sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA + (wStorylineDataEnd - wStoryLineData)
 	ld hl, wSpriteStateData1
 	ld bc, wSpriteStateDataEnd - wSpriteStateData1
 	call CopyDataAndChecksum
 	ld [sGameSaveStart + sGameSaveChecksum3Offset],a	;save the checksum
+	ret
 	
+;autosave party data
+WalkAutosave2:
+	ld de,sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA + (wStorylineDataEnd - wStoryLineData) + (wSpriteStateDataEnd - wSpriteStateData1)
 	ld hl, wPartyCount
 	ld bc, wPartyMonNicksEnd - wPartyCount
 	call CopyDataAndChecksum
 	ld [sGameSaveStart + sGameSaveChecksum4Offset],a	;save the checksum
+	ret
 	
+;autosave game data part 2
+WalkAutosave3:
+	ld de,sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA + (W_OAKSLABCURSCRIPT - wStoryLineData)
+	ld hl, W_OAKSLABCURSCRIPT
+	ld bc, AfterCurScripts - W_OAKSLABCURSCRIPT
+	call CopyDataAndChecksum
+	cpl
+	ld hl,sGameSaveStart + sGameSaveChecksum2Offset
+	add [hl]
+	ld [sGameSaveStart + sGameSaveChecksum2Offset],a	;save the partial checksum
+	ret
+	
+;autosave game data part 3
+WalkAutosave4:
+	ld de,sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA + (AfterCurScripts - wStoryLineData)
+	ld hl, AfterCurScripts
+	ld bc, wd743 - AfterCurScripts
+	call CopyDataAndChecksum
+	cpl
+	ld hl,sGameSaveStart + sGameSaveChecksum2Offset
+	add [hl]
+	ld [sGameSaveStart + sGameSaveChecksum2Offset],a	;save the partial checksum
+	ret
+	
+;autosave game data part 4
+WalkAutosave5:
+	ld de,sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA + (wd743 - wStoryLineData)
+	ld hl, wd743
+	ld bc, wLinkEnemyTrainerName - wd743
+	call CopyDataAndChecksum
+	cpl
+	ld hl,sGameSaveStart + sGameSaveChecksum2Offset
+	add [hl]
+	ld [sGameSaveStart + sGameSaveChecksum2Offset],a	;save the partial checksum
+	ret
+	
+;autosave game data part 5
+WalkAutosave6:
+	ld de,sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA + (wLinkEnemyTrainerName - wStoryLineData)
+	ld hl, wLinkEnemyTrainerName
+	ld bc, wStorylineDataEnd - wLinkEnemyTrainerName
+	call CopyDataAndChecksum
+	cpl
+	ld hl,sGameSaveStart + sGameSaveChecksum2Offset
+	add [hl]
+	cpl
+	ld [sGameSaveStart + sGameSaveChecksum2Offset],a	;save the partial checksum
+	ret
+	
+;finish up
+WalkAutosave7:
 	ld de,sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA + (wStorylineDataEnd - wStoryLineData) + (wSpriteStateDataEnd - wSpriteStateData1) + (wPartyMonNicksEnd - wPartyCount) + (wBoxMonNicksEnd - wPCBoxData)
 	ld hl, wAdditionalData
 	ld bc, wEndOfAdditionalData - wAdditionalData
 	call CopyDataAndChecksum
 	ld [sGameSaveStart + sGameSaveChecksum6Offset],a	;save the checksum
 	
-	ld a, [hTilesetType]
-	ld [de], a		;save the tileset type
-	push af
 	xor a
 	ld [sGameSaveStart + sGameSaveInBattleByteOffset],a	;this byte holds whether or not we use the in-battle party bytes
 	
+	ld a, [hTilesetType]
+	ld [sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA + (wStorylineDataEnd - wStoryLineData) + (wSpriteStateDataEnd - wSpriteStateData1) + (wPartyMonNicksEnd - wPartyCount) + (wBoxMonNicksEnd - wPCBoxData) + (wEndOfAdditionalData - wAdditionalData)], a		;save the tileset type
+
 	ld hl, sGameSaveStart + sGameSaveChecksum1Offset	;start of checksum data
 	ld b, NUM_OF_GAMESAVE_CHECKSUMS - 1	;number of checksums
-	pop af
 .loop
 	add [hl]
 	ld c,a
@@ -686,12 +714,7 @@ FinishWalkingAutosave:
 	ld [hl],a	;save the checksum
 	
 	ld hl,wAutosaveBits
-	set 1,[hl]	;set the bit so the auto save knows that it can backup
-	
-	xor a
-	ld [MBC1SRamBankingMode], a
-	ld [MBC1SRamEnable], a
-	
+	set 0,[hl]	;set bit saying we should backup
 	ret
 	
 AutoSaveHardMode:
@@ -707,11 +730,10 @@ SaveSAVtoSRAM: ; 73848 (1c:7848)
 	ret z		;return if not
 	ld hl, sGameSaveStart
 	ld de, sBackupGameSaveStart
-	call BackupData		;back-up the save
+	call BackupData		;back-up the saveret
 	xor a
-	ld [wAutosaveBits],a	;reset the bit announcing we should finish autosaving or backup
+	ld [wAutosaveBits],a
 	ret
-
 	
 
 SAVCheckSum: ; 73856 (1c:7856)
@@ -1153,45 +1175,7 @@ Func_73ab8: ; 73ab8 (1c:7ab8)
 	ld [hli], a
 	ld a, [$B7A0]
 	ld [hli], a
-	ret
-		
-
-SAVCheckRandomID: ;$7ad1
-;checks if Sav file is the same by checking player's name 1st letter ($a000)
-; and the two random numbers generated at game beginning
-;(which are stored at wPlayerID)
-	ld a,$0a
-	ld [$0000],a
-	ld a,$01
-	ld [MBC1SRamBankingMode],a
-	call GetSaveBank	;get the appropriate bank
-	ld [MBC1SRamBank],a
-	ld a,[sGameSaveStart]
-	and a
-	jr z,.next
-	ld hl,sGameSaveStart
-	call CompareChecksums	;see if the checksums all match
-	jr nz,.next
-	ld hl,sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA + (wPlayerID - wStoryLineData) ;point to the wplayerid in the save game data
-	ld a,[hli]
-	ld h,[hl]
-	ld l,a
-	ld a,[wPlayerID]
-	cp l
-	jr nz,.next
-	ld a,[wPlayerID + 1]
-	cp h
-.next
-	ld a,$00
-	ld [MBC1SRamBankingMode],a
-	ld [$0000],a
-	ret
-	
-	
-	
-	
-	
-	
+	ret	
 	
 	
 	
