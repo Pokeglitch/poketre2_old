@@ -127,6 +127,7 @@ Func_79ab: ; 79ab (1:79ab)
 .asm_79f8
 	ld hl, wNumBagItems
 	call RemoveItemFromInventory
+	call AutoSaveHardModeHome		;autosave
 	call WaitForSoundToFinish
 	ld a, (SFX_02_55 - SFX_Headers_02) / 3
 	call PlaySound
@@ -181,6 +182,7 @@ Func_7a28: ; 7a28 (1:7a28)
 .asm_7a75
 	ld hl, wNumBoxItems
 	call RemoveItemFromInventory
+	call AutoSaveHardModeHome	;autosave
 	call WaitForSoundToFinish
 	ld a, (SFX_02_55 - SFX_Headers_02) / 3
 	call PlaySound

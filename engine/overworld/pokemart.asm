@@ -98,6 +98,7 @@ DisplayPokemartDialogue_: ; 6c20 (1:6c20)
 	call AddAmountSoldToMoney
 	ld hl,wNumBagItems
 	call RemoveItemFromInventory
+	callab AutoSaveHardMode
 	jp .sellMenuLoop
 .unsellableItem
 	ld hl,PokemartUnsellableItemText
@@ -166,6 +167,7 @@ DisplayPokemartDialogue_: ; 6c20 (1:6c20)
 	call AddItemToInventory
 	jr nc,.bagFull
 	call SubtractAmountPaidFromMoney
+	callab AutoSaveHardMode
 	ld a,[wcf0a] ; flag that is set if something is sold or bought
 	and a
 	jr nz,.skipSettingFlag2

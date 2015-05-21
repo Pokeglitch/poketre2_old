@@ -139,4 +139,6 @@ RemoveItemByID: ; 17f37 (5:7f37)
 	ld a, [$ffdc]
 	ld [wWhichPokemon], a ; wWhichPokemon
 	ld hl, wNumBagItems ; wNumBagItems
-	jp RemoveItemFromInventory
+	call RemoveItemFromInventory
+	callab AutoSaveHardMode
+	ret

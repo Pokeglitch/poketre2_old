@@ -25,6 +25,7 @@ EnterMap::
 	ld hl, wd732
 	ld a, [hl]
 	and 1 << 4 | 1 << 3 ; fly warp or dungeon warp
+	push af
 	jr z, .didNotEnterUsingFlyWarpOrDungeonWarp
 	res 3, [hl]
 	callba EnterMapAnim
@@ -39,6 +40,9 @@ EnterMap::
 	set 6, [hl]
 	xor a
 	ld [wJoyIgnore], a
+	pop af	;restore the flags that checkde if it was a flywarp or dungeon warp
+	jr nz,OverworldLoop		;skip down if didnt fly warp or dungeon warp in
+	call AutoSaveHardModeHome
 
 OverworldLoop::
 	call DelayFrame
@@ -263,10 +267,13 @@ OverworldLoopLessDelay::
 	res 2,[hl]
 	ld a,[wWalkBikeSurfState]
 	dec a ; riding a bike?
-	jr nz,.normalPlayerSpriteAdvancement
+	jr z,.bike		;then we are riding a bike
 	ld a,[wd736]
 	bit 6,a ; jumping a ledge?
 	jr nz,.normalPlayerSpriteAdvancement
+	call PotionSpeedup
+	jr .normalPlayerSpriteAdvancement
+.bike
 	call BikeSpeedup ; if riding a bike and not jumping a ledge
 .normalPlayerSpriteAdvancement
 	call AdvancePlayerSprite
@@ -361,6 +368,12 @@ NewBattle:: ; 0683 (0:0683)
 .noBattle
 	and a
 	ret
+	
+PotionSpeedup:
+	ld a,[wActivePotion]
+	cp SPEED_POTION		;is it the speed potion?
+	ret nz	;return if not
+	jp AdvancePlayerSprite
 
 ; function to make bikes twice as fast as walking
 BikeSpeedup:: ; 06a0 (0:06a0)
@@ -374,6 +387,8 @@ BikeSpeedup:: ; 06a0 (0:06a0)
 	and a,D_UP | D_LEFT | D_RIGHT
 	ret nz
 .goFaster
+	call AdvancePlayerSprite
+	call AdvancePlayerSprite
 	jp AdvancePlayerSprite
 
 ; check if the player has stepped onto a warp after having not collided
@@ -1443,6 +1458,9 @@ LoadCurrentMapView:: ; 0caa (0:0caa)
 	ld [$2000],a ; restore previous ROM bank
 	ret
 
+;to advance player sprite and autosave:
+AdvancePlayerSprite:
+	callab AutoSaveWhenWalking	;full autosave
 _AdvancePlayerSprite:: ; 0d27 (0:0d27)
 	ld a,[wSpriteStateData1 + 3] ; delta Y
 	ld b,a

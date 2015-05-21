@@ -44,6 +44,11 @@ EndOfBattle: ; 137aa (4:77aa)
 	ld [wccd4], a
 	predef EvolutionAfterBattle
 .resetVariables
+	ld a,[W_ISINBATTLE]
+	dec a		;wild battle?
+	jr nz,.notWildBattle
+	callab AutoSaveHardMode		;auto save if wild battle and hard mode
+.notWildBattle
 	xor a
 	ld [wLowHealthAlarm], a ;disable low health alarm
 	ld [wc02a], a

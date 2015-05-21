@@ -666,7 +666,9 @@ ItemUseEvoStone: ; da5b (3:5a5b)
 	ld hl,wNumBagItems
 	ld a,1 ; remove 1 stone
 	ld [wcf96],a
-	jp RemoveItemFromInventory
+	call RemoveItemFromInventory
+	callab AutoSaveHardMode
+	ret
 .noEffect
 	call ItemUseNoEffect
 .canceledItemUse
@@ -2204,7 +2206,9 @@ RemoveUsedItem: ; e571 (3:6571)
 	ld hl,wNumBagItems
 	ld a,1 ; one item
 	ld [wcf96],a ; store quantity
-	jp RemoveItemFromInventory
+	call RemoveItemFromInventory
+	callab AutoSaveHardModeCheckInBattle
+	ret
 
 ItemUseNoEffect: ; e57c (3:657c)
 	ld hl,ItemUseNoEffectText
@@ -2510,6 +2514,7 @@ TossItem_: ; e6f1 (3:66f1)
 	push hl
 	ld a,[wWhichPokemon]
 	call RemoveItemFromInventory
+	callab AutoSaveHardMode
 	ld a,[wcf91]
 	ld [wd11e],a
 	call GetItemName

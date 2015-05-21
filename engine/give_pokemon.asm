@@ -19,6 +19,7 @@ _GivePokemon: ; 4fda5 (13:7da5)
 	callab LoadEnemyMonData
 	call SetPokedexOwnedFlag
 	callab SendNewMonToBox
+	call AutoSaveHardModeHome		;autosave
 	ld hl, wcf4b
 	ld a, [wd5a0]
 	and $7f
@@ -46,6 +47,7 @@ _GivePokemon: ; 4fda5 (13:7da5)
 .asm_4fe01
 	call SetPokedexOwnedFlag
 	call AddPartyMon
+	call AutoSaveHardModeHome		;autosave
 	ld a, $1
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
 	ld [wccd3], a

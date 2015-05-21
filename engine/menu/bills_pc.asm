@@ -235,6 +235,7 @@ BillsPCDeposit:
 	xor a
 	ld [wcf95], a
 	call RemovePokemon
+	call AutoSaveHardModeHome		;autosave
 	call WaitForSoundToFinish
 	ld hl, wWhichTrade
 	ld a, [wd5a0]
@@ -289,6 +290,7 @@ Func_21618: ; 21618 (8:5618)
 	ld a, $1
 	ld [wcf95], a
 	call RemovePokemon
+	call AutoSaveHardModeHome		;autosave
 	call WaitForSoundToFinish
 	ld hl, MonIsTakenOutText
 	call PrintText
@@ -314,6 +316,7 @@ Func_21673: ; 21673 (8:5673)
 	inc a
 	ld [wcf95], a
 	call RemovePokemon
+	call AutoSaveHardModeHome		;autosave
 	call WaitForSoundToFinish
 	ld a, [wcf91]
 	call PlayCry

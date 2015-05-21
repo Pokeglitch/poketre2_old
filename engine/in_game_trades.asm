@@ -138,6 +138,7 @@ InGameTrade_DoTrade: ; 71c07 (1c:5c07)
 	call AddPartyMon
 	call InGameTrade_CopyDataToReceivedMon
 	callab EvolveTradeMon
+	call AutoSaveHardModeHome	;autosave
 	call ClearScreen
 	call InGameTrade_RestoreScreen
 	callba RedrawMapView

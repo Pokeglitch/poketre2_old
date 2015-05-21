@@ -485,6 +485,9 @@ CanAutosave:
 	ld a,[wd730]
 	bit 7, a
 	jr nz,.cantSave		;dont autosave if simulated button pressed
+	ld a,[wAdditionalBattleTypeBits]
+	bit 4,a		;are we watching a replay?
+	jr nz,.cantSave		;dont autosave if watching a replay
 .canSave
 	xor a
 	inc a
@@ -508,12 +511,7 @@ AutoSaveWhenWalking:
 	dec a
 	ld b,0
 	ld c,a
-	ld hl,wAutosaveBits
-	bit 0,[hl]	;should we be backing up?
-	ld hl,WalkingBackupRoutineTable
-	jr nz,.skip		;skip down if so
 	ld hl,WalkingAutosaveRoutineTable
-.skip
 	add hl,bc
 	add hl,bc
 	ld a,[hli]
@@ -521,6 +519,12 @@ AutoSaveWhenWalking:
 	ld l,a		;load the corresponding function from the table
 	ld de,.return
 	push de		;push the return point
+	ld a,[wAutosaveBits]
+	bit 0,a	;should we be saving to the backup bank?
+	ld de,sBackupGameSaveStart
+	jr nz,.skip		;skip down if so
+	ld de,sGameSaveStart
+.skip
 	jp [hl]		;run the associated save function
 .return
 	xor a
@@ -528,16 +532,6 @@ AutoSaveWhenWalking:
 	ld [MBC1SRamEnable], a
 	inc a		;unset the zero flag
 	ret
-		
-WalkingBackupRoutineTable:
-	dw WalkBackup7
-	dw WalkBackup6
-	dw WalkBackup5
-	dw WalkBackup4
-	dw WalkBackup3
-	dw WalkBackup2
-	dw WalkBackup1
-	dw WalkBackup0
 		
 WalkingAutosaveRoutineTable:
 	dw WalkAutosave7
@@ -549,158 +543,146 @@ WalkingAutosaveRoutineTable:
 	dw WalkAutosave1
 	dw WalkAutosave0
 	
-;backup part 1
-WalkBackup0:
-	ld hl, sGameSaveStart
-	ld de, sBackupGameSaveStart
-	ld bc, SIZE_OF_GAMESAVE/8
-	jp CopyData		;save the backup
-
-;backup part 2
-WalkBackup1:
-	ld hl, sGameSaveStart + (SIZE_OF_GAMESAVE/8)
-	ld de, sBackupGameSaveStart + (SIZE_OF_GAMESAVE/8)
-	ld bc, SIZE_OF_GAMESAVE/8
-	jp CopyData		;save the backup
-	
-;backup part 3
-WalkBackup2:
-	ld hl, sGameSaveStart + 2*(SIZE_OF_GAMESAVE/8)
-	ld de, sBackupGameSaveStart + 2*(SIZE_OF_GAMESAVE/8)
-	ld bc, SIZE_OF_GAMESAVE/8
-	jp CopyData		;save the backup
-
-;backup part 4
-WalkBackup3:
-	ld hl, sGameSaveStart + 3*(SIZE_OF_GAMESAVE/8)
-	ld de, sBackupGameSaveStart + 3*(SIZE_OF_GAMESAVE/8)
-	ld bc, SIZE_OF_GAMESAVE/8
-	jp CopyData		;save the backup
-	
-;backup part 5
-WalkBackup4:
-	ld hl, sGameSaveStart + 4*(SIZE_OF_GAMESAVE/8)
-	ld de, sBackupGameSaveStart + 4*(SIZE_OF_GAMESAVE/8)
-	ld bc, SIZE_OF_GAMESAVE/8
-	jp CopyData		;save the backup
-	
-;backup part 6
-WalkBackup5:
-	ld hl, sGameSaveStart + 5*(SIZE_OF_GAMESAVE/8)
-	ld de, sBackupGameSaveStart + 5*(SIZE_OF_GAMESAVE/8)
-	ld bc, SIZE_OF_GAMESAVE/8
-	jp CopyData		;save the backup
-	
-;backup part 7
-WalkBackup6:
-	ld hl, sGameSaveStart + 6*(SIZE_OF_GAMESAVE/8)
-	ld de, sBackupGameSaveStart + 6*(SIZE_OF_GAMESAVE/8)
-	ld bc, SIZE_OF_GAMESAVE/8
-	jp CopyData		;save the backup
-	
-;backup part 8
-WalkBackup7:
-	ld hl, sGameSaveStart + 7*(SIZE_OF_GAMESAVE/8)
-	ld de, sBackupGameSaveStart + 7*(SIZE_OF_GAMESAVE/8)
-	ld bc, SIZE_OF_GAMESAVE/8
-	call CopyData		;save the backup
-	
-	ld hl,wAutosaveBits
-	res 0,[hl]	;reset the bit, so next time we will save
+;to add the difference in hl, add to de, and return as de
+AddToStartPoint:
+	add hl,de
+	push hl
+	pop de
 	ret
 	
 ;save the map data (game save data part 1)
 WalkAutosave0:
-	ld de,sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA
+	push de
+	ld hl,SIZE_OF_PLAYER_NAME_SAVE_DATA
+	call AddToStartPoint
 	ld hl, wStoryLineData
 	ld bc, W_OAKSLABCURSCRIPT - wStoryLineData
 	call CopyDataAndChecksum
 	cpl
-	ld [sGameSaveStart + sGameSaveChecksum2Offset],a	;save the partial checksum
+	pop de
+	ld hl,sGameSaveChecksum2Offset
+	add hl,de
+	ld [hl],a	;save the partial checksum
 	ret
 	
 ;save the sprite data
 WalkAutosave1:
-	ld de,sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA + (wStorylineDataEnd - wStoryLineData)
+	push de
+	ld hl,SIZE_OF_PLAYER_NAME_SAVE_DATA + (wStorylineDataEnd - wStoryLineData)
+	call AddToStartPoint
 	ld hl, wSpriteStateData1
 	ld bc, wSpriteStateDataEnd - wSpriteStateData1
 	call CopyDataAndChecksum
-	ld [sGameSaveStart + sGameSaveChecksum3Offset],a	;save the checksum
+	pop de
+	ld hl,sGameSaveChecksum3Offset
+	add hl,de
+	ld [hl],a	;save the checksum
 	ret
 	
 ;autosave party data
 WalkAutosave2:
-	ld de,sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA + (wStorylineDataEnd - wStoryLineData) + (wSpriteStateDataEnd - wSpriteStateData1)
+	push de
+	ld hl,SIZE_OF_PLAYER_NAME_SAVE_DATA + (wStorylineDataEnd - wStoryLineData) + (wSpriteStateDataEnd - wSpriteStateData1)
+	call AddToStartPoint
 	ld hl, wPartyCount
 	ld bc, wPartyMonNicksEnd - wPartyCount
 	call CopyDataAndChecksum
-	ld [sGameSaveStart + sGameSaveChecksum4Offset],a	;save the checksum
+	pop de
+	ld hl,sGameSaveChecksum4Offset
+	add hl,de
+	ld [hl],a	;save the checksum
 	ret
 	
 ;autosave game data part 2
 WalkAutosave3:
-	ld de,sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA + (W_OAKSLABCURSCRIPT - wStoryLineData)
+	push de
+	ld hl,SIZE_OF_PLAYER_NAME_SAVE_DATA + (W_OAKSLABCURSCRIPT - wStoryLineData)
+	call AddToStartPoint
 	ld hl, W_OAKSLABCURSCRIPT
 	ld bc, AfterCurScripts - W_OAKSLABCURSCRIPT
 	call CopyDataAndChecksum
 	cpl
-	ld hl,sGameSaveStart + sGameSaveChecksum2Offset
+	pop de
+	ld hl,sGameSaveChecksum2Offset
+	add hl,de
 	add [hl]
-	ld [sGameSaveStart + sGameSaveChecksum2Offset],a	;save the partial checksum
+	ld [hl],a	;save the partial checksum
 	ret
 	
 ;autosave game data part 3
 WalkAutosave4:
-	ld de,sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA + (AfterCurScripts - wStoryLineData)
+	push de
+	ld hl,SIZE_OF_PLAYER_NAME_SAVE_DATA + (AfterCurScripts - wStoryLineData)
+	call AddToStartPoint
 	ld hl, AfterCurScripts
 	ld bc, wd743 - AfterCurScripts
 	call CopyDataAndChecksum
 	cpl
-	ld hl,sGameSaveStart + sGameSaveChecksum2Offset
+	pop de
+	ld hl,sGameSaveChecksum2Offset
+	add hl,de
 	add [hl]
-	ld [sGameSaveStart + sGameSaveChecksum2Offset],a	;save the partial checksum
+	ld [hl],a	;save the partial checksum
 	ret
 	
 ;autosave game data part 4
 WalkAutosave5:
-	ld de,sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA + (wd743 - wStoryLineData)
+	push de
+	ld hl,SIZE_OF_PLAYER_NAME_SAVE_DATA + (wd743 - wStoryLineData)
+	call AddToStartPoint
 	ld hl, wd743
 	ld bc, wLinkEnemyTrainerName - wd743
 	call CopyDataAndChecksum
 	cpl
-	ld hl,sGameSaveStart + sGameSaveChecksum2Offset
+	pop de
+	ld hl,sGameSaveChecksum2Offset
+	add hl,de
 	add [hl]
-	ld [sGameSaveStart + sGameSaveChecksum2Offset],a	;save the partial checksum
+	ld [hl],a	;save the partial checksum
 	ret
 	
 ;autosave game data part 5
 WalkAutosave6:
-	ld de,sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA + (wLinkEnemyTrainerName - wStoryLineData)
+	push de
+	ld hl,SIZE_OF_PLAYER_NAME_SAVE_DATA + (wLinkEnemyTrainerName - wStoryLineData)
+	call AddToStartPoint
 	ld hl, wLinkEnemyTrainerName
 	ld bc, wStorylineDataEnd - wLinkEnemyTrainerName
 	call CopyDataAndChecksum
 	cpl
-	ld hl,sGameSaveStart + sGameSaveChecksum2Offset
+	pop de
+	ld hl,sGameSaveChecksum2Offset
+	add hl,de
 	add [hl]
 	cpl
-	ld [sGameSaveStart + sGameSaveChecksum2Offset],a	;save the partial checksum
+	ld [hl],a	;save the partial checksum
 	ret
 	
 ;finish up
 WalkAutosave7:
-	ld de,sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA + (wStorylineDataEnd - wStoryLineData) + (wSpriteStateDataEnd - wSpriteStateData1) + (wPartyMonNicksEnd - wPartyCount) + (wBoxMonNicksEnd - wPCBoxData)
+	push de
+	ld hl,SIZE_OF_PLAYER_NAME_SAVE_DATA + (wStorylineDataEnd - wStoryLineData) + (wSpriteStateDataEnd - wSpriteStateData1) + (wPartyMonNicksEnd - wPartyCount) + (wBoxMonNicksEnd - wPCBoxData)
+	call AddToStartPoint
 	ld hl, wAdditionalData
 	ld bc, wEndOfAdditionalData - wAdditionalData
 	call CopyDataAndChecksum
-	ld [sGameSaveStart + sGameSaveChecksum6Offset],a	;save the checksum
+	pop de
+	ld hl,sGameSaveChecksum6Offset
+	add hl,de
+	ld [hl],a	;save the checksum
 	
 	xor a
-	ld [sGameSaveStart + sGameSaveInBattleByteOffset],a	;this byte holds whether or not we use the in-battle party bytes
+	ld hl,sGameSaveInBattleByteOffset
+	add hl,de
+	ld [hl],a	;this byte holds whether or not we use the in-battle party bytes
 	
 	ld a, [hTilesetType]
-	ld [sGameSaveStart + SIZE_OF_PLAYER_NAME_SAVE_DATA + (wStorylineDataEnd - wStoryLineData) + (wSpriteStateDataEnd - wSpriteStateData1) + (wPartyMonNicksEnd - wPartyCount) + (wBoxMonNicksEnd - wPCBoxData) + (wEndOfAdditionalData - wAdditionalData)], a		;save the tileset type
+	ld hl,SIZE_OF_PLAYER_NAME_SAVE_DATA + (wStorylineDataEnd - wStoryLineData) + (wSpriteStateDataEnd - wSpriteStateData1) + (wPartyMonNicksEnd - wPartyCount) + (wBoxMonNicksEnd - wPCBoxData) + (wEndOfAdditionalData - wAdditionalData)
+	add hl,de
+	ld [hl], a		;save the tileset type
 
-	ld hl, sGameSaveStart + sGameSaveChecksum1Offset	;start of checksum data
+	ld hl,sGameSaveChecksum1Offset	;start of checksum data
+	add hl,de
 	ld b, NUM_OF_GAMESAVE_CHECKSUMS - 1	;number of checksums
 .loop
 	add [hl]
@@ -714,8 +696,23 @@ WalkAutosave7:
 	ld [hl],a	;save the checksum
 	
 	ld hl,wAutosaveBits
-	set 0,[hl]	;set bit saying we should backup
+	bit 0,[hl]	;should we be saving to the backup data?
+	jr nz,.backupBank		;skip down if so
+	set 0,[hl]		;set bit saying next time we save to the backup data
+	jr .finish
+.backupBank
+	ld hl,wAutosaveBits
+	res 0,[hl]	;reset bit, saying we should save to normal data
+	ld hl,sGameSaveStart + sGameSaveTotalChecksumOffset
+	inc [hl]		;corrups the checksum in the normal data so this data gets loaded next time
+.finish
 	ret
+	
+AutoSaveHardModeCheckInBattle:
+	ld a,[W_ISINBATTLE]
+	and a
+	jp nz,SaveInBattle	;if we are in battle, then just save the in battle info
+	;fall through
 	
 AutoSaveHardMode:
 	call CanAutosave	;hard mode?
@@ -780,7 +777,7 @@ SavePartyAndItems:
 	ld [MBC1SRamBank], a
 	
 	ld hl, wPartyCount
-	ld bc, wPartyMonNicksEnd - wPartyCount	;total size of party
+	ld bc, wPartyMonNicksEnd - wPartyCount	;total size of party data
 	call CopyDataAndChecksum
 	
 	pop hl
@@ -821,7 +818,7 @@ SavePartyAndItems:
 	
 ;this is the save function that is run to save the in-battle parties:
 SaveInBattle:
-	call IsHardMode
+	call CanAutosave		;can we autosave?
 	ret z		;dont save if not hard mode
 	ld de,sBattlePartyItemData		;location of first set of party/item data
 	ld a,2		;save into the Hard Mode PC bank

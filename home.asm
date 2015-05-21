@@ -19,12 +19,7 @@ GetHordeIsInBattle:
 .finish
 	pop hl
 	ret
-		
-;to advance player sprite and autosave:
-AdvancePlayerSprite:
-	callab AutoSaveWhenWalking	;full autosave
-	jp _AdvancePlayerSprite
-	
+			
 ;to see what the time of day is
 ;returns nz if night time
 GetTimeOfDay:
@@ -38,10 +33,15 @@ GetTimeOfDay:
 	ld a,h		;restore the A value
 	pop hl
 	ret
+;quick way to autosave
+AutoSaveHardModeHome::
+	callab AutoSaveHardMode
+	ret
 
 ; Hardware interrupts
 SECTION "vblank", ROM0 [$40]
 	jp VBlank
+	
 SECTION "hblank", ROM0 [$48]
 	rst $38
 SECTION "timer",  ROM0 [$50]
@@ -50,8 +50,7 @@ SECTION "serial", ROM0 [$58]
 	jp Serial
 SECTION "joypad", ROM0 [$60]
 	reti
-
-
+	
 SECTION "Home", ROM0
 
 DisableLCD::
@@ -2300,6 +2299,7 @@ TalkToTrainer:: ; 31cc (0:31cc)
 	ret nz
 ; if the player talked to the trainer of his own volition
 	call EngageMapTrainer
+	call AutoSaveHardModeHome		;autosave it we are in hardmode
 	ld hl, W_CURMAPSCRIPT
 	inc [hl]      ; increment map script index before StartTrainerBattle increments it again (next script function is usually EndTrainerBattle)
 	jp StartTrainerBattle
@@ -2315,6 +2315,9 @@ CheckFightingMapTrainers:: ; 3219 (0:3219)
 	ld [wTrainerHeaderFlagBit], a
 	ret
 .trainerEngaging
+	push af
+	call AutoSaveHardModeHome		;autosave it we are in hardmode
+	pop af
 	ld hl, W_FLAGS_D733
 	set 3, [hl]
 	ld [wcd4f], a
@@ -2362,6 +2365,7 @@ EndTrainerBattle:: ; 3275 (0:3275)
 	res 7, [hl]
 	ld hl, wFlags_0xcd60
 	res 0, [hl]                  ; player is no longer engaged by any trainer
+	call AutoSaveHardModeHome		;autosave if hard mode
 	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
 	cp $ff
 	jp z, ResetButtonPressedAndMapScript
@@ -4606,6 +4610,7 @@ GiveItem::
 	ld hl,wNumBagItems
 	call AddItemToInventory
 	ret nc
+	call AutoSaveHardModeHome
 	call GetItemName
 	call CopyStringToCF4B
 	scf

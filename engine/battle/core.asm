@@ -6640,6 +6640,7 @@ asm_3ef23: ; 3ef23 (f:6f23)
 	ret nz
 	callab TryDoWildEncounter
 	ret nz
+	callab AutoSaveHardMode		;autosave, if we are in hard mode
 asm_3ef3d: ; 3ef3d (f:6f3d)
 	ld a, [wMapPalOffset]
 	push af
