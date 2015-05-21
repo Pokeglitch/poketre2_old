@@ -1838,6 +1838,9 @@ LoadLastStand:
 	ld [hli],a
 	ld a,[W_MONHABILITY2]
 	ld [hli],a	;store abilities
+	xor a
+	ld [wBattleMonLearnedTraits],a	;store the learned traits
+	ld hl,wBattleMonDelayedDamage
 	ld de,wLastStandDelayedDamage
 	ld a,[de]
 	ld [hli],a
@@ -6146,6 +6149,11 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	ld a,[W_MONHBASEMORALE]
 	ld [wEnemyMonMorale],a	;set the enemy mon moral to the base morale
 	
+	xor a
+	ld [wEnemyMonLearnedTraits],a		;store the learned traits
+	call DetermineWildHeldItem
+	ld [wEnemyMonHeldItem],a		;store the held item
+	
 	ld hl,wEnemyMonSpecialDefense
 	ld de,wEnemyMonUnmodifiedSpecialDefense
 	ld a,[hli]
@@ -8933,6 +8941,11 @@ EarlyBirdText2:
 	TX_FAR _EarlyBirdText
 	db "@"
 
+;this is only for wild pokemon
+DetermineWildHeldItem:
+	xor a
+	ret
+	
 ;this is only for wild pokemon
 DetermineNewTraits2:
 	ld a, [W_ENEMYBATTSTATUS3]

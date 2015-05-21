@@ -62,10 +62,10 @@ LoadAdditionalMonBytes:
 	;now load the other additional bytes
 	ld bc,W_PLAYERBATTSTATUS1	;temporary battle bits
 	push bc
-	ld de,wPartyMon1SecondaryStatus - wPartyMon1Abilities	;what we add to get to secondary status
+	ld de,wPartyMon1SecondaryStatus - wPartyMon1LearnedTraits	;what we add to get to secondary status
 	push de
-	ld hl,wPartyMon1Abilities	;start of additional bytes pointer
-	ld de,wBattleMonAbility	;where to save to
+	ld hl,wPartyMon1LearnedTraits	;start of additional bytes pointer
+	ld de,wBattleMonLearnedTraits	;where to save to
 	ld bc,7						;we only copy 7 bytes for the player
 	ld a, [H_WHOSETURN]
 	and a
@@ -97,7 +97,7 @@ LoadAdditionalMonBytes:
 	ld [de],a
 	inc de
 	ld a,[hli]
-	ld [de],a	;copy the abilities
+	ld [de],a	;copy the learned traits and held item
 	inc de
 	inc hl
 	inc de
@@ -155,6 +155,16 @@ LoadAdditionalMonBytes:
 	set 6,a		;set cursed bit
 .skipCursed
 	ld [bc],a	;save the temp status byte
+	ld hl,wBattleMonAbility1
+	ld a, [H_WHOSETURN]
+	and a
+	jr z, .skipEnemyAbility	;don't load enemy data if its the players turn
+	ld hl,wEnemyMonAbility1
+.skipEnemyAbility
+	ld a,[W_MONHABILITY1]
+	ld [hli],a
+	ld a,[W_MONHABILITY2]
+	ld [hl],a		;store abilities
 	ret
 	
 ;to load the stored battle bytes for this specific pokemon into battle:
@@ -465,7 +475,17 @@ SaveAdditionalMonBytes:
 	jr z,.skipCursed
 	set Cursed2,[hl]		;set cursed bit
 .skipCursed
-	ld bc,wPartyMon1Morale-wPartyMon1SecondaryStatus
+	ld bc,wPartyMon1HeldItem-wPartyMon1SecondaryStatus
+	add hl,bc		;hl now points to Held Item
+	ld de,wBattleMonHeldItem
+	ld a, [H_WHOSETURN]
+	and a
+	jr z, .skipEnemyHeldItem	;don't load enemy data if its the players turn
+	ld de,wEnemyMonHeldItem
+.skipEnemyHeldItem
+	ld a,[de]
+	ld [hl],a		;store the held item
+	ld bc,wPartyMon1Morale-wPartyMon1HeldItem
 	add hl,bc		;hl now points to morale
 	ld a, [H_WHOSETURN]
 	and a

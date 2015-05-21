@@ -1475,10 +1475,9 @@ wPartyMon1SpDefenseEV::
 	ds 2
 wPartyMon1SecondaryStatus::
 	ds 1
-wPartyMon1Abilities::
-wPartyMon1Ability1::
+wPartyMon1LearnedTraits::
 	ds 1
-wPartyMon1Ability2::
+wPartyMon1HeldItem::
 	ds 1
 wPartyMon1DelayedDamage::
 	ds 2
@@ -1490,7 +1489,7 @@ wPartyMon1Morale::
 	ds 1
 wPartyMon1RadioDamage::
 	ds 1
-
+	
 wPartyMon2OT:: ds 11 * 5
 wPartyMonNicks:: ds 11 * PARTY_LENGTH ; d2b5
 
@@ -2367,10 +2366,9 @@ wEnemyMon1SpDefenseEV::
 	ds 2
 wEnemyMon1SecondaryStatus::
 	ds 1
-wEnemyMon1Abilities::
-wEnemyMon1Ability1::
+wEnemyMon1LearnedTraits::
 	ds 1
-wEnemyMon1Ability2::
+wEnemyMon1HeldItem::
 	ds 1
 wEnemyMon1DelayedDamage::
 	ds 2
@@ -2443,10 +2441,9 @@ wBoxMon1SpDefenseEV::
 	ds 2
 wBoxMon1SecondaryStatus::
 	ds 1
-wBoxMon1Abilities::
-wBoxMon1Ability1::
+wBoxMon1LearnedTraits::
 	ds 1
-wBoxMon1Ability2::
+wBoxMon1HeldItem::
 	ds 1
 wBoxMon1DelayedDamage::
 	ds 2
@@ -2563,10 +2560,9 @@ wExactDamageMultipler::
 	ds 1	
 	
 ;contains additional information about the pokemon in battle:
-wBattleMonAbility::
-wBattleMonAbility1::
+wBattleMonLearnedTraits::
 	ds 1
-wBattleMonAbility2::
+wBattleMonHeldItem::
 	ds 1
 wBattleMonDelayedDamage::
 	ds 2
@@ -2589,6 +2585,11 @@ wBattleMonFirewall::
 	ds 1
 wBattleMonHPSpDefDV::
 	ds 1
+wBattleMonAbility::
+wBattleMonAbility1::
+	ds 1
+wBattleMonAbility2::
+	ds 1
 
 	
 wEnemyMonSpDefenseEV::
@@ -2596,10 +2597,9 @@ wEnemyMonSpDefenseEV::
 ;note, the below byte is never used. just there to easily copy everything
 wEnemyMonSecondaryStatus::
 	ds 1
-wEnemyMonAbility::
-wEnemyMonAbility1::
+wEnemyMonLearnedTraits::
 	ds 1
-wEnemyMonAbility2::
+wEnemyMonHeldItem::
 	ds 1
 wEnemyMonDelayedDamage::
 	ds 2
@@ -2623,6 +2623,11 @@ wEnemyMonFirewall::
 wEnemyMonBaseSpDef::
 	ds 1
 wEnemyMonHPSpDefDV::
+	ds 1
+wEnemyMonAbility::
+wEnemyMonAbility1::
+	ds 1
+wEnemyMonAbility2::
 	ds 1
 	
 
