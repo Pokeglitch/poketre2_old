@@ -6853,7 +6853,15 @@ Func_3f073: ; 3f073 (f:7073)
 	ld a, [H_DOWNARROWBLINKCNT1]
 	add $31
 	jr asm_3f0d0
-
+	
+DrawEvoEggSprite:
+	xor a
+	hlCoord 7, 2
+	call asm_3f0d0
+	xor a
+	ld [W_SPRITEFLIPPED], a
+	ret
+	
 Func_3f0c6: ; 3f0c6 (f:70c6)
 	ld a, [wPredefRegisters]
 	ld h, a

@@ -4,9 +4,10 @@ HatchEggScreen:
 	ld b,0
 	ld c,a
 	add hl,bc		;hl now points to the pokemon id
+	ld a,[hl]
+	ld [wcf1d],a	;store the original pokemon
 	ld a,$FF
 	ld [wHPBarMaxHP],a		;store $FF (egg) as the original pokemon
-	ld a,[hl]
 	ld [wHPBarMaxHP+1],a	;store as the new pokemon
 	
 	show_overworld_text IsHatchingText
@@ -33,10 +34,13 @@ HatchEggScreen:
 	
 	
 	call Func_7bde9
-	jp c, .finish
+	
+	xor a
+	ld [wUpdateSpritesEnabled],a
 	
 	ld a, [wWhichPokemon]
 	ld hl, wPartyMonNicks
+	
 	call GetPartyMonName
 	call CopyStringToCF4B
 	ld hl,_HatchedIntoText
@@ -62,6 +66,10 @@ HatchEggScreen:
 	ld [hSCY],a
 	pop af
 	ld [hSCX],a	;restore the X,Y positions
+	
+	
+	ld a,1
+	ld [wUpdateSpritesEnabled],a
 	
 	call ReloadMapData
 	jp CloseTextDisplay
@@ -96,13 +104,12 @@ Func_7bde9: ; 7bde9 (1e:7de9)
 	ld [H_AUTOBGTRANSFERENABLED], a ; $ffba
 	ld [hTilesetType], a
 	ld a, [wHPBarMaxHP]
-	ld [wcf1d], a
 	ld c, $0
 	call Func_7beb4
 	ld a, [wHPBarMaxHP + 1]
 	ld [wcf91], a
 	ld [wd0b5], a
-	call Func_7beb9
+	call LoadEvoSprite
 	ld de, vFrontPic
 	ld hl, vBackPic
 	ld bc, 7 * 7
@@ -110,10 +117,10 @@ Func_7bde9: ; 7bde9 (1e:7de9)
 	ld a, [wHPBarMaxHP]
 	ld [wcf91], a
 	ld [wd0b5], a
-	call Func_7beb9
+	call LoadEvoSpriteEggFlipped
 	ld a, $1
 	ld [H_AUTOBGTRANSFERENABLED], a ; $ffba
-	ld a, [wHPBarMaxHP]
+	ld a, [wcf1d]
 	call PlayCry
 	call WaitForSoundToFinish
 	ld c, BANK(Music_SafariZone)
@@ -141,7 +148,8 @@ Func_7bde9: ; 7bde9 (1e:7de9)
 	call Func_7bed6
 	ld a, [wHPBarMaxHP + 1]
 .asm_7be81
-	ld [wcf1d], a
+	cp $FF		;was it egg?
+	call z,LoadFinalEggSprite	;then whiteout the screen
 	ld a, $ff
 	ld [wc0ee], a
 	call PlaySound
@@ -172,16 +180,40 @@ Func_7beb4: ; 7beb4 (1e:7eb4)
 	ld b, $b
 	jp GoPAL_SET
 
+LoadFinalEggSprite:
+	call GBPalWhiteOutWithDelay3
+	ld a,[wcf1d]
+	ld [wcf91], a
+	ld [wd0b5], a
+	call LoadEvoSprite
+	call Delay3
+	call GBPalNormal
+	ret
+	
+EggNormalSprite: INCBIN "pic/other/egg_normal.pic"
 EggSprite: INCBIN "pic/other/egg.pic"
+FlippedEggSprite: INCBIN "pic/other/flippedegg.pic"
 	
-Func_7beb9: ; 7beb9 (1e:7eb9)
+LoadEvoSpriteEggFlipped:
 	cp a,$FF		;egg?
-	jr nz,.notEgg
-	
 	ld a, 1
 	ld [W_SPRITEFLIPPED], a
+	jr nz,LoadNotEggSprite
+	ld hl, FlippedEggSprite
+	call LoadEggSprite
+	ret
 	
-	ld hl, EggSprite
+	
+LoadEvoSprite: ; 7beb9 (1e:7eb9)
+	cp a,$FF		;egg?
+	jr nz,LoadNotEggSprite
+	ld a, 1
+	ld [W_SPRITEFLIPPED], a
+	ld hl, EggNormalSprite
+	call LoadEggSprite
+	ret
+	
+LoadEggSprite:
 	ld a,l
 	ld [W_MONHFRONTSPRITE],a
 	ld a,h
@@ -190,14 +222,12 @@ Func_7beb9: ; 7beb9 (1e:7eb9)
 	ld [W_MONHSPRITEBANK],a
 	ld a,$77
 	ld [W_MONHSPRITEDIM],a
-	
 	ld de, vFrontPic
 	call LoadMonFrontSprite
-	
-	xor a
-	ld [W_SPRITEFLIPPED], a
+	callab DrawEvoEggSprite
 	ret
-.notEgg
+	
+LoadNotEggSprite:
 	call GetMonHeader
 	hlCoord 7, 2
 	jp LoadFlippedFrontSpriteByMonIndex
