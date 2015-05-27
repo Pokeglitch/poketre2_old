@@ -115,14 +115,19 @@ Func_7bde9: ; 7bde9 (1e:7de9)
 	ld bc, 7 * 7
 	call CopyVideoData
 	ld a, [wHPBarMaxHP]
+	push af
 	ld [wcf91], a
 	ld [wd0b5], a
 	call LoadEvoSpriteEggFlipped
 	ld a, $1
 	ld [H_AUTOBGTRANSFERENABLED], a ; $ffba
+	pop af
+	cp $FF		;egg?
+	jr z,.skipCry	;then dont play cry
 	ld a, [wcf1d]
 	call PlayCry
 	call WaitForSoundToFinish
+.skipCry
 	ld c, BANK(Music_SafariZone)
 	ld a, MUSIC_SAFARI_ZONE
 	call PlayMusic
@@ -150,6 +155,7 @@ Func_7bde9: ; 7bde9 (1e:7de9)
 .asm_7be81
 	cp $FF		;was it egg?
 	call z,LoadFinalEggSprite	;then whiteout the screen
+	ld [wcf1d],a		;store into cf1d
 	ld a, $ff
 	ld [wc0ee], a
 	call PlaySound
@@ -185,9 +191,11 @@ LoadFinalEggSprite:
 	ld a,[wcf1d]
 	ld [wcf91], a
 	ld [wd0b5], a
+	push af
 	call LoadEvoSprite
 	call Delay3
 	call GBPalNormal
+	pop af		;return the original pokemon id in a
 	ret
 	
 EggNormalSprite: INCBIN "pic/other/egg_normal.pic"

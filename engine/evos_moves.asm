@@ -129,6 +129,11 @@ Evolution_PartyMonLoop: ; loop over party mons
 	ld a, $ff
 	ld [wUpdateSpritesEnabled], a
 	call ClearSprites
+	
+	ld a, [wHPBarMaxHP]
+	ld [wcf1d],a		;store the pokemon index for the cry to be played
+	
+	
 	callab Func_7bde9
 	jp c, CancelledEvolution
 	ld hl, EvolvedText
