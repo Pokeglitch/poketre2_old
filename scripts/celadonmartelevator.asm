@@ -41,7 +41,7 @@ CeladonMartElevatorScript_48631: ; 48631 (12:4631)
 
 CeladonMartElavatorFloors: ; 48643 (12:4643)
 	db $05 ; num elements in list
-	db $56, $57, $58, $59, $5A ; "1F", "2F", "3F", "4F, "5F"
+	db ELEV_1F, ELEV_2F, ELEV_3F, ELEV_4F, ELEV_5F ; "1F", "2F", "3F", "4F, "5F"
 	db $FF ; terminator
 
 CeldaonMartElevatorWarpMaps: ; 4864a (12:464a)

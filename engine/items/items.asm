@@ -2,7 +2,7 @@ UseItem_: ; d5c7 (3:55c7)
 	ld a,1
 	ld [wcd6a],a
 	ld a,[wcf91]	;contains item_ID
-	cp a,HM_01
+	cp a,TM_01
 	jp nc,ItemUseTMHM
 	ld hl,ItemUsePtrTable
 	dec a
@@ -2089,8 +2089,6 @@ ItemUseTMHM: ; e479 (3:6479)
 	ld a,[wcf91]
 	sub a,TM_01
 	push af
-	jr nc,.skipAdding
-	add a,TM_75 - HM_01 + 1 ; if item is an HM, add total size of TM list
 .skipAdding
 	inc a
 	ld [wd11e],a
@@ -2555,7 +2553,7 @@ IsKeyItem_: ; e764 (3:6764)
 	ld a,$01
 	ld [wd124],a
 	ld a,[wcf91]
-	cp a,HM_01 ; is the item an HM or TM?
+	cp a,TM_01 ; is the item an HM or TM?
 	jr nc,.checkIfItemIsHM
 ; if the item is not an HM or TM
 	push af

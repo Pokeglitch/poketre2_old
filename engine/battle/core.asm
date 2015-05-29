@@ -8096,10 +8096,10 @@ ChargeEffect: ; 3f88c (f:788c)
 	ld de, W_ENEMYMOVEEFFECT
 	ld b, ANIM_AF
 .chargeEffect
-	ld a, [de]
 	dec de ; de contains enemy or player MOVENUM
-	cp FLY_EFFECT
-	jr nz, .notFly
+	ld a, [de]
+	cp FLY
+	jr nz, .checkDig
 	ld a,[wBattleLandscape]
 	and a,$7F				;ignore the "temporary?" bit
 	cp a,UNDERGROUND_SCAPE	;underground?
@@ -8108,21 +8108,19 @@ ChargeEffect: ; 3f88c (f:788c)
 	ld hl,DecrementPP
 	ld b,BANK(DecrementPP)
 	call Bankswitch	;de already contains the pointer to the move being used
-	
 	call PrintMonName1Text	;print pk used fly
 	ld c,$38
 	call DelayFrames
 	ld hl,AeroNotUndergroundText
 	jr .printText
-
 .notUnderground
 	set Invulnerable, [hl] ; mon is now invulnerable to typical attacks (fly/dig)
 	ld b, TELEPORT_NONMOVE ; load Teleport's animation
-.notFly
-	ld a, [de]
+	jr .canUseChargeMove
+	
+.checkDig
 	cp DIG
-	jr nz, .notDigOrFly
-
+	jr nz, .checkDive
 	ld a,[wBattleLandscape]
 	and a,$7F				;ignore the "temporary?" bit
 	cp a,SKY_SCAPE	;sky?
@@ -8139,7 +8137,31 @@ ChargeEffect: ; 3f88c (f:788c)
 .notSky
 	set Invulnerable, [hl] ; mon is now invulnerable to typical attacks (fly/dig)
 	ld b, ANIM_C0
-.notDigOrFly
+	jr .canUseChargeMove
+	
+.checkDive
+	cp DIVE
+	jr nz,.canUseChargeMove
+	ld a,[wBattleLandscape]
+	and a,$7F				;ignore the "temporary?" bit
+	cp a,WATER_SCAPE	;water?
+	jr z,.diveInWater	;then we can attack
+	;decrement PP
+	ld hl,DecrementPP
+	ld b,BANK(DecrementPP)
+	call Bankswitch	;de already contains the pointer to the move being used
+	call PrintMonName1Text	;print "pk used dive"
+	ld c,$38
+	call DelayFrames
+	ld hl,WaterAttackOnlyInWaterText	
+	jr .printText
+.diveInWater
+	set Invulnerable, [hl] ; mon is now invulnerable to typical attacks (fly/dig)
+	ld b, ANIM_C0
+	;fall through
+	
+	
+.canUseChargeMove
 	set ChargingUp, [hl]
 	xor a
 	ld [wAnimationType], a
@@ -8154,6 +8176,10 @@ ChargeEffect: ; 3f88c (f:788c)
 
 EarthNotInSkyText:
 	TX_FAR _SkyNoDamageText
+	db "@"
+	
+WaterAttackOnlyInWaterText:
+	TX_FAR _WaterAttackOnlyInWaterText
 	db "@"
 
 AeroNotUndergroundText:
@@ -8181,6 +8207,8 @@ ChargeMoveEffectText: ; 3f8c8 (f:78c8)
 	jr z, .asm_3f8f8
 	cp DIG
 	ld hl, DugAHoleText
+	jr z, .asm_3f8f8
+	ld hl, DoveUnderwaterText
 .asm_3f8f8
 	ret
 
@@ -8206,6 +8234,10 @@ FlewUpHighText: ; 3f90d (f:790d)
 
 DugAHoleText: ; 3f912 (f:7912)
 	TX_FAR _DugAHoleText
+	db "@"
+	
+DoveUnderwaterText: ; 3f912 (f:7912)
+	TX_FAR _DoveUnderwaterText
 	db "@"
 
 TrappingEffect: ; 3f917 (f:7917)

@@ -42,7 +42,7 @@ RocketHideoutElevatorScript_45741: ; 45741 (11:5741)
 
 RocketHideoutElavatorFloors: ; 45754 (11:5754)
 	db $03 ; num elements in list
-	db $55, $54, $61 ; "B1F", "B2F", "B4F"
+	db ELEV_B1F, ELEV_B2F, ELEV_B4F ; "B1F", "B2F", "B4F"
 	db $FF ; terminator
 
 RocketHideoutElevatorWarpMaps: ; 45759 (11:5759)

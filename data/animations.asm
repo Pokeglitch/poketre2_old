@@ -111,7 +111,7 @@ AttackAnimationPointers: ; 7a07d (1e:607d)
 	dw HyperBeamAnim
 	dw PeckAnim
 	dw DrillPeckAnim
-	dw SubmissionAnim
+	dw SubmissionAnim ; DiveAnimation
 	dw LowKickAnim
 	dw CounterAnim
 	dw SeismicTossAnim ; GenesisAnim
@@ -299,7 +299,7 @@ AttackAnimationPointers: ; 7a07d (1e:607d)
 	dw RazorClawAnim
 	dw CrossSlashAnim
 	dw ShredAnim
-	dw WhirlpoolAnim
+	dw RiptideAnim
 
 NonMoveAnimationPointers:
 	dw ShowPicAnim
@@ -1487,7 +1487,7 @@ PiercingScreamAnim:
 RazorClawAnim:
 CrossSlashAnim:
 ShredAnim:
-WhirlpoolAnim:
+RiptideAnim:
 	db SE_FLASH_MON_PIC, $FF
 	db $FF
 

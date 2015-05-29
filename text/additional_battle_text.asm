@@ -396,9 +396,20 @@ _SkyNoDamageText:
 	text "Earth attacks don't"
 	line "work in the sky!"
 	prompt
+	
+_WaterAttackOnlyInWaterText:
+	text "This attack doesn't"
+	line "work outside of"
+	cont "water!"
+	prompt
 
 _UndegroundNoDamageText:
 	text "Aero attacks don't"
+	line "work underground!"
+	prompt
+	
+_AttackUndergroundNoDamageText:
+	text "This attack doesn't"
 	line "work underground!"
 	prompt
 
@@ -489,6 +500,11 @@ _InvisibleNoMoreText:
 _IsInvisibleText:
 	text $59
 	line "is invisible!"
+	prompt
+	
+_DoveUnderwaterText:
+	db $0
+	line "dove underwater!"
 	prompt
 	
 _CursedNoMoreText:

@@ -29,6 +29,9 @@ CARD_KEY      EQU $30
 ;PP_UP        EQU $32
 POKE_DOLL     EQU $33
 COIN          EQU $3B
+FRESH_WATER   EQU $3C
+SODA_POP      EQU $3D
+LEMONADE      EQU $3E
 S_S__TICKET   EQU $3F
 GOLD_TEETH    EQU $40
 OAKS_PARCEL   EQU $46
@@ -38,6 +41,8 @@ LIFT_KEY      EQU $4A
 EXP__ALL      EQU $4B
 OLD_ROD       EQU $4C
 GOOD_ROD      EQU $4D
+PP_UP         EQU $4F
+MAX_ELIXER    EQU $53
 
 
 
@@ -102,9 +107,9 @@ const_value = 1
 	const MAX_REPEL     ; $39
 	const DIRE_HIT      ; $3A
 	const LOG           ; $3B
-	const FRESH_WATER   ; $3C
-	const SODA_POP      ; $3D
-	const LEMONADE      ; $3E
+	const LIPIDS        ; $3C
+	const GOO_B_GONE    ; $3D
+	const COUNTER_CURSE ; $3E
 	const MACHETE       ; $3F
 	const SILVER        ; $40
 	const X_ATTACK      ; $41
@@ -114,18 +119,26 @@ const_value = 1
 	const COIN_CASE     ; $45
 	const SCENT         ; $46
 	const SWEET_SCENT   ; $47
-	const BANSHEE_BALL  ; $48
+	const ROCKET_NAV    ; $48
 	const POKE_FLUTE    ; $49
 	const TORCH         ; $4A
 	const FLASK         ; $4B
 	const LIQUID_COURAGE ; $4C
 	const GAS_CONTAINER ; $4D
 	const SUPER_ROD     ; $4E
-	const PP_UP         ; $4F
+	const SUPER_ETHER  ; $4F
 	const ETHER         ; $50
 	const MAX_ETHER     ; $51
 	const ELIXER        ; $52
-	const MAX_ELIXER    ; $53
+	const SUPER_ELIXER  ; $53
+	const MOTOR
+	const OXYGEN_TANK
+	const PROP_CHAMBER
+	const NOZZLE
+	const COMB_CHAMBER
+	const IGNITION
+	const ROCKET_KEY
+	const COOLANT
 	const PLATINUM
 	const CRYOGENIC_VIAL
 	const NOTE_SHEET
@@ -135,18 +148,14 @@ const_value = 1
 	const CRABSHELLS
 	const DOGBONE
 	const ECTOPLASM
-	const SLUDGE_ITEM
-	const COUNTER_CURSE
-	const GOO_B_GONE
-	const LIPIDS
 
 ;items that can be held
 
 ;berries
 	const BERRY         ;10 hp
 	const GOLD_BERRY    ;20 hp
-	const REPA_BERRY	;5 pp
-	const MINT_BERRY    ;sleep
+	const REPA_BERRY	;50 PP
+	const MINT_BERRY    ;100 PP
 	const PECHA_BERRY   ;poison
 	const RAWST_BERRY   ;burn
 	const LEPPA_BERRY   ;freeze
@@ -155,7 +164,6 @@ const_value = 1
 	const RAZZ_BERRY    ;cursed
 	const BLUK_BERRY    ;fear
 	const NANAB_BERRY   ;radio
-
 ;held items that increase certain type attacks
 	const FAN ;+AERO
 	const IMPLANT ;+BONE
@@ -182,7 +190,6 @@ const_value = 1
 	const MEGAPHONE	;+SOUND
 	const WHETSTONE	;+TALON
 	const PUMP ;+WATER
-
 ;held items that protect against certain type attacks
 	const WINDBREAKER	;-AERO, protect from wind storm
 	const CAST ;-BONE
@@ -209,7 +216,6 @@ const_value = 1
 	const EARMUFFS ;-SOUND
 	const CLIPPERS ;-TALON
 	const UMBRELLA ;-WATER, protects from rain storm
-
 ;held items that boost stats
 	const CLOVER ;increases accuracy
 	const CAMOUFLAGE	;increases evade
@@ -218,93 +224,117 @@ const_value = 1
 	const QUICK_BRACE ;increase speed
 	const POWER_BRACE ;increase att
 	const GUARD_BRACE ;increase def
-
+	const ENERGY_BRACE ;increase pp recovery
 ;other held items
 	const EXP_SHARE	;if alive and in party, will get half exp
 	const HAPPY_STONE	;boosts morale gained
 	const MACHO_BRACE ;each stat EV gets +5 each time exp is gained
-	const LEFTOVERS ;1/16 of hp is restored each turn
 	const GOGGLES	;protected from accuracy drop due to weather
 	const WEATHER_ORB	;boosts the number of turns weather occurs
 
 ;hms and tms
-HM_01         EQU $B0
-HM_02         EQU $B1
-HM_03         EQU $B2
-HM_04         EQU $B3
-HM_05         EQU $B4
-TM_01         EQU $B5
-TM_02         EQU $B6
-TM_03         EQU $B7
-TM_04         EQU $B8
-TM_05         EQU $B9
-TM_06         EQU $BA
-TM_07         EQU $BB
-TM_08         EQU $BC
-TM_09         EQU $BD
-TM_10         EQU $BE
-TM_11         EQU $BF
-TM_12         EQU $C0
-TM_13         EQU $C1
-TM_14         EQU $C2
-TM_15         EQU $C3
-TM_16         EQU $C4
-TM_17         EQU $C5
-TM_18         EQU $C6
-TM_19         EQU $C7
-TM_20         EQU $C8
-TM_21         EQU $C9
-TM_22         EQU $CA
-TM_23         EQU $CB
-TM_24         EQU $CC
-TM_25         EQU $CD
-TM_26         EQU $CE
-TM_27         EQU $CF
-TM_28         EQU $D0
-TM_29         EQU $D1
-TM_30         EQU $D2
-TM_31         EQU $D3
-TM_32         EQU $D4
-TM_33         EQU $D5
-TM_34         EQU $D6
-TM_35         EQU $D7
-TM_36         EQU $D8
-TM_37         EQU $D9
-TM_38         EQU $DA
-TM_39         EQU $DB
-TM_40         EQU $DC
-TM_41         EQU $DD
-TM_42         EQU $DE
-TM_43         EQU $DF
-TM_44         EQU $E0
-TM_45         EQU $E1
-TM_46         EQU $E2
-TM_47         EQU $E3
-TM_48         EQU $E4
-TM_49         EQU $E5
-TM_50         EQU $E6
-TM_51         EQU $E7
-TM_52         EQU $E8
-TM_53         EQU $E9
-TM_54         EQU $EA
-TM_55         EQU $EB
-TM_56         EQU $EC
-TM_57         EQU $ED
-TM_58         EQU $EE
-TM_59         EQU $EF
-TM_60         EQU $F0
-TM_61         EQU $F1
-TM_62         EQU $F2
-TM_63         EQU $F3
-TM_64         EQU $F4
-TM_65         EQU $F5
-TM_66         EQU $F6
-TM_67         EQU $F7
-TM_68         EQU $F8
-TM_69         EQU $F9
-TM_70         EQU $FA
-TM_71         EQU $FB
-TM_72         EQU $FC
-TM_73         EQU $FD
-TM_74         EQU $FE
-TM_75         EQU $FF
+HM_01         EQU $AF
+HM_02         EQU $B0
+HM_03         EQU $B1
+HM_04         EQU $B2
+HM_05         EQU $B3
+TM_01         EQU $AF
+TM_02         EQU $B0
+TM_03         EQU $B1
+TM_04         EQU $B2
+TM_05         EQU $B3
+TM_06         EQU $B4
+TM_07         EQU $B5
+TM_08         EQU $B6
+TM_09         EQU $B7
+TM_10         EQU $B8
+TM_11         EQU $B9
+TM_12         EQU $BA
+TM_13         EQU $BB
+TM_14         EQU $BC
+TM_15         EQU $BD
+TM_16         EQU $BE
+TM_17         EQU $BF
+TM_18         EQU $C0
+TM_19         EQU $C1
+TM_20         EQU $C2
+TM_21         EQU $C3
+TM_22         EQU $C4
+TM_23         EQU $C5
+TM_24         EQU $C6
+TM_25         EQU $C7
+TM_26         EQU $C8
+TM_27         EQU $C9
+TM_28         EQU $CA
+TM_29         EQU $CB
+TM_30         EQU $CC
+TM_31         EQU $CD
+TM_32         EQU $CE
+TM_33         EQU $CF
+TM_34         EQU $D0
+TM_35         EQU $D1
+TM_36         EQU $D2
+TM_37         EQU $D3
+TM_38         EQU $D4
+TM_39         EQU $D5
+TM_40         EQU $D6
+TM_41         EQU $D7
+TM_42         EQU $D8
+TM_43         EQU $D9
+TM_44         EQU $DA
+TM_45         EQU $DB
+TM_46         EQU $DC
+TM_47         EQU $DD
+TM_48         EQU $DE
+TM_49         EQU $DF
+TM_50         EQU $E0
+TM_51         EQU $E1
+TM_52         EQU $E2
+TM_53         EQU $E3
+TM_54         EQU $E4
+TM_55         EQU $E5
+TM_56         EQU $E6
+TM_57         EQU $E7
+TM_58         EQU $E8
+TM_59         EQU $E9
+TM_60         EQU $EA
+TM_61         EQU $EB
+TM_62         EQU $EC
+TM_63         EQU $ED
+TM_64         EQU $EE
+TM_65         EQU $EF
+TM_66         EQU $F0
+TM_67         EQU $F1
+TM_68         EQU $F2
+TM_69         EQU $F3
+TM_70         EQU $F4
+TM_71         EQU $F5
+TM_72         EQU $F6
+TM_73         EQU $F7
+TM_74         EQU $F8
+TM_75         EQU $F9
+TM_76         EQU $FA
+TM_77         EQU $FB
+TM_78         EQU $FC
+TM_79         EQU $FD
+TM_80         EQU $FE
+
+
+
+	
+;elevator floor constants
+ELEV_B4F EQU 0
+ELEV_B3F EQU 1
+ELEV_B2F EQU 2
+ELEV_B1F EQU 3
+ELEV_1F  EQU 4
+ELEV_2F  EQU 5
+ELEV_3F  EQU 6
+ELEV_4F  EQU 7
+ELEV_5F  EQU 8
+ELEV_6F  EQU 9
+ELEV_7F  EQU 10
+ELEV_8F  EQU 11
+ELEV_9F  EQU 12
+ELEV_10F EQU 13
+ELEV_11F EQU 14

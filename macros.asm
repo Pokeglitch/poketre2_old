@@ -24,6 +24,76 @@ const: MACRO
 const_value = const_value + 1
 ENDM
 
+add_tm: MACRO
+\1_TM::
+db \1
+ENDM
+
+;To initialize a learnset, by zeroing the 10 bytes (but storing as variables)
+initLearnset: MACRO
+;to initalize learnset variables 
+Learnset0 = 0
+Learnset1 = 0
+Learnset2 = 0
+Learnset3 = 0
+Learnset4 = 0
+Learnset5 = 0
+Learnset6 = 0
+Learnset7 = 0
+Learnset8 = 0
+Learnset9 = 0
+ENDM
+
+;to add a TM to this learnset
+;The input is the Move name
+learnTM: MACRO
+IF ((\1_TM - TechnicalMachines)/8) == 0
+Learnset0 = Learnset0 + (1 << (\1_TM - TechnicalMachines)%8)
+ENDC
+IF ((\1_TM - TechnicalMachines)/8) == 1
+Learnset1 = Learnset1 + (1 << (\1_TM - TechnicalMachines)%8)
+ENDC
+IF ((\1_TM - TechnicalMachines)/8) == 2
+Learnset2 = Learnset2 + (1 << (\1_TM - TechnicalMachines)%8)
+ENDC
+IF ((\1_TM - TechnicalMachines)/8) == 3
+Learnset3 = Learnset3 + (1 << (\1_TM - TechnicalMachines)%8)
+ENDC
+IF ((\1_TM - TechnicalMachines)/8) == 4
+Learnset4 = Learnset4 + (1 << (\1_TM - TechnicalMachines)%8)
+ENDC
+IF ((\1_TM - TechnicalMachines)/8) == 5
+Learnset5 = Learnset5 + (1 << (\1_TM - TechnicalMachines)%8)
+ENDC
+IF ((\1_TM - TechnicalMachines)/8) == 6
+Learnset6 = Learnset6 + (1 << (\1_TM - TechnicalMachines)%8)
+ENDC
+IF ((\1_TM - TechnicalMachines)/8) == 7
+Learnset7 = Learnset7 + (1 << (\1_TM - TechnicalMachines)%8)
+ENDC
+IF ((\1_TM - TechnicalMachines)/8) == 8
+Learnset8 = Learnset8 + (1 << (\1_TM - TechnicalMachines)%8)
+ENDC
+IF ((\1_TM - TechnicalMachines)/8) == 9
+Learnset9 = Learnset9 + (1 << (\1_TM - TechnicalMachines)%8)
+ENDC
+ENDM
+
+;to save bytes to the game
+endLearnset: MACRO
+db Learnset0
+db Learnset1
+db Learnset2
+db Learnset3
+db Learnset4
+db Learnset5
+db Learnset6
+db Learnset7
+db Learnset8
+db Learnset9
+ENDM
+
+
 homecall: MACRO
 	ld a, [H_LOADEDROMBANK]
 	push af

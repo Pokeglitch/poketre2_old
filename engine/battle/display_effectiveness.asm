@@ -23,12 +23,24 @@ DisplayAdditionalNoDamageText:
 	ret
 
 DisplayLandscapeNoDamageText:
+	ld hl,W_PLAYERMOVENUM
+	ld a,[H_WHOSETURN]
+	and a
+	jr z,.next	;dont load enemy id if players turn
+	ld hl,W_ENEMYMOVENUM
+.next
+	ld a,[hl]
+	ld hl,MovesFailInLandscapeNoDamageText
+	ld de,3
+	call IsInArray
+	jr c,.printText	;if the attack failed because it only works in one landscape, then print text
 	ld a,[wBattleLandscape]
 	and a,$7F				;ignore the "temporary?" bit
 	ld hl,LandscapeNoDamageTextTable
 	ld de,3
 	call IsInArray
 	ret nc		;return if not in array (shouldn't happen)
+.printText
 	inc hl
 	ld a,[hli]
 	ld h,[hl]
@@ -46,6 +58,14 @@ LandscapeNoDamageTextTable:
 	dw VRNoDamageText
 	db MOON_SCAPE
 	dw MoonNoDamageText
+	db $FF
+	
+;moves that dont work in the current landscape and the associated text:
+MovesFailInLandscapeNoDamageText:
+	db DIVE
+	dw WaterNoDamageText
+	db WATERSPOUT
+	dw AttackUndergroundNoDamageText
 	db $FF
 
 DisplayAbility1NoDamageText:
@@ -644,6 +664,14 @@ RawhideText:
 
 SkyNoDamageText:
 	TX_FAR _SkyNoDamageText
+	db "@"
+
+WaterNoDamageText:
+	TX_FAR _WaterAttackOnlyInWaterText
+	db "@"
+	
+AttackUndergroundNoDamageText:
+	TX_FAR _AttackUndergroundNoDamageText
 	db "@"
 
 UndegroundNoDamageText:

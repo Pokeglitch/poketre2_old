@@ -57,6 +57,7 @@ _AdjustDamageForMoveType: ; 3e3a5 (f:63a5)
 	call CheckTypeTableForDamage
 	
 	;do remaining checks
+	call MoveFailInLandscapeCheck
 	call HoloOrShadowCheck
 	call Landscape0xDamageCheck
 	call Landscape15xDamageCheck
@@ -99,6 +100,64 @@ _AdjustDamageForMoveType: ; 3e3a5 (f:63a5)
 	ld a,[wd11e]	;load type into a
 	ld [wWhichTypeUsed],a	;store into "which type used"
 	ret
+	
+;to check to see if the move fails in the current landscape
+MoveFailInLandscapeCheck:
+	ld hl,W_PLAYERMOVENUM
+	ld a,[H_WHOSETURN]
+	and a
+	jr z,.skipEnemyAttackID	;dont load enemy id if players turn
+	ld hl,W_ENEMYMOVENUM
+.skipEnemyAttackID
+	ld b,[hl]
+	ld a,[wBattleLandscape]
+	and a,$7F		;ignore the temporary battle bytes
+	ld c,a
+	ld hl,MoveFailInLandscapeTable
+.check1stTableForMatchLoop
+	ld a,[hli]
+	cp $FF
+	jr z,.checkNextTable
+	cp b
+	jr nz,.loop1
+	ld a,[hl]
+	cp c
+	jr z,.zeroDamage		;set the damage to zero due to the landscape
+.loop1
+	inc hl
+	jr .check1stTableForMatchLoop
+.checkNextTable
+	ld hl,MoveFailAllButLandscapeTable
+.check2ndTableForMatchLoop
+	ld a,[hli]
+	cp $FF
+	jr z,.noMatch
+	cp b
+	jr nz,.loop2
+	ld a,[hl]
+	cp c
+	jr nz,.zeroDamage		;set the damage to zero due to the landscape if the landscapes dont match
+.loop2
+	inc hl
+	jr .check2ndTableForMatchLoop
+.noMatch
+	ret
+.zeroDamage
+	ld hl,wBattleNoDamageText
+	set 0,[hl]				;set the "modified by environment" text bit
+	call SetDamageToZero		;set the damage to zero
+	pop af					;remove the return
+	ret
+	
+;contains attacks that will always fail in the given landscape
+MoveFailInLandscapeTable:
+	db WATERSPOUT,UNDERGROUND_SCAPE
+	db $FF
+ 
+;contains attacks that only succeed in the given landscape
+MoveFailAllButLandscapeTable:
+	db DIVE,WATER_SCAPE
+	db $FF
 	
 ;to check the type chart table to try to find 0x damage
 LookFor0xDamage:

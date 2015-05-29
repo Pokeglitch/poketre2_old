@@ -65,7 +65,7 @@ const_value = 1
 	const HYPER_BEAM   ; 3f
 	const PECK         ; 40
 	const DRILL_PECK   ; 41
-	const SUBMISSION   ; 42
+	const DIVE         ; SUBMISSION   ; 42
 	const LOW_KICK     ; 43
 	const COUNTER      ; 44
 	const GENESIS      ; SEISMIC_TOSS ; 45
@@ -253,7 +253,7 @@ const_value = 1
 	const RAZOR_CLAW
 	const CROSS_SLASH
 	const SHRED
-	const WHIRLPOOL
+	const RIPTIDE
 	
 NUM_ATTACKS EQU const_value + -2
 
@@ -299,3 +299,4 @@ const_value = 1
 	const BAIT_ANIM ; throw bait
 	const ZIG_ZAG_ANIM
 	const TELEPORT_NONMOVE
+	const DIG_NONMOVE

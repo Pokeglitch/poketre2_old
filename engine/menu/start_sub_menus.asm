@@ -384,7 +384,7 @@ StartMenu_Item: ; 13302 (4:7302)
 .useItem
 	ld [wd152],a
 	ld a,[wcf91]
-	cp a,HM_01
+	cp a,TM_01
 	jr nc,.useItem_partyMenu
 	ld hl,UsableItems_CloseMenu
 	ld de,1

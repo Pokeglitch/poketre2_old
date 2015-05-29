@@ -1716,8 +1716,13 @@ PrintListMenuEntries:: ; 2e5a (0:2e5a)
 	jr z,.pokemonPCMenu
 	cp a,$01
 	jr z,.movesMenu
+	cp a,4
+	jr z,.elevatorMenu
 .itemMenu
 	call GetItemName
+	jr .placeNameString
+.elevatorMenu
+	call GetFloorName
 	jr .placeNameString
 .pokemonPCMenu
 	push hl
@@ -1888,6 +1893,14 @@ GetMonName:: ; 2f9e (0:2f9e)
 	ld [$2000],a
 	pop hl
 	ret
+	
+GetFloorName::
+	push hl
+	push bc
+	ld a,[wd11e]
+	ld [wd0b5],a
+	ld a,FLOOR_NAME
+	jr ContinueGetItemName
 
 GetItemName:: ; 2fcf (0:2fcf)
 ; given an item ID at [wd11e], store the name of the item into a string
@@ -1895,20 +1908,21 @@ GetItemName:: ; 2fcf (0:2fcf)
 	push hl
 	push bc
 	ld a,[wd11e]
-	cp HM_01 ; is this a TM/HM?
-	jr nc,.Machine
+	cp TM_01 ; is this a TM/HM?
+	jr nc,GetItemMachineName
 
 	ld [wd0b5],a
 	ld a,ITEM_NAME
+ContinueGetItemName:
 	ld [wNameListType],a
 	ld a,BANK(ItemNames)
 	ld [wPredefBank],a
 	call GetName
-	jr .Finish
+	jr FinishGetItemName
 
-.Machine
+GetItemMachineName
 	call GetMachineName
-.Finish
+FinishGetItemName
 	ld de,wcd6d ; pointer to where item name is stored in RAM
 	pop bc
 	pop hl
@@ -1921,19 +1935,8 @@ GetMachineName:: ; 2ff3 (0:2ff3)
 	push bc
 	ld a,[wd11e]
 	push af
-	cp TM_01 ; is this a TM? [not HM]
-	jr nc,.WriteTM
-; if HM, then write "HM" and add 5 to the item ID, so we can reuse the
-; TM printing code
-	add 5
-	ld [wd11e],a
-	ld hl,HiddenPrefix ; points to "HM"
-	ld bc,2
-	jr .WriteMachinePrefix
-.WriteTM
 	ld hl,TechnicalPrefix ; points to "TM"
 	ld bc,2
-.WriteMachinePrefix
 	ld de,wcd6d
 	call CopyData
 
@@ -1975,11 +1978,7 @@ HiddenPrefix:: ; 303e (0:303e)
 ; sets carry if item is HM, clears carry if item is not HM
 ; Input: a = item ID
 IsItemHM:: ; 3040 (0:3040)
-	cp a,HM_01
-	jr c,.notHM
-	cp a,TM_01
-	ret
-.notHM
+;always returns no carry (there are no more hms)
 	and a
 	ret
 
@@ -3222,6 +3221,7 @@ NamePointers:: ; 375d (0:375d)
 	dw wPartyMonOT ; player's OT names list
 	dw wEnemyMonOT ; enemy's OT names list
 	dw TrainerNames
+	dw ElevatorFloorNames
 
 GetName:: ; 376b (0:376b)
 ; arguments:
@@ -3238,7 +3238,7 @@ GetName:: ; 376b (0:376b)
 	ld [wd11e],a
 	jr nz,.skipHMCheck
 	
-	cp HM_01
+	cp TM_01
 	jp nc, GetMachineName
 	
 .skipHMCheck
@@ -3330,7 +3330,7 @@ GetItemPrice:: ; 37df (0:37df)
 	ld h, [hl]
 	ld l, a
 	ld a, [wcf91] ; a contains item id
-	cp HM_01
+	cp TM_01
 	jr nc, .getTMPrice
 	ld bc, $3
 .asm_3802
