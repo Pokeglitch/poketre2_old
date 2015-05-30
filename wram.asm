@@ -2914,6 +2914,10 @@ wNewOverworldTextID::
 wAutosaveBits::
 	ds 1
 
+;holds which item is being used
+wWhichItemBeingUsed::
+	ds 1
+
 
 SECTION "Stack", WRAMX[$dfff], BANK[1]
 wStack:: ; dfff

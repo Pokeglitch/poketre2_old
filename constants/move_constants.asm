@@ -299,4 +299,3 @@ const_value = 1
 	const BAIT_ANIM ; throw bait
 	const ZIG_ZAG_ANIM
 	const TELEPORT_NONMOVE
-	const DIG_NONMOVE

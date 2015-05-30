@@ -2,6 +2,7 @@ UseItem_: ; d5c7 (3:55c7)
 	ld a,1
 	ld [wcd6a],a
 	ld a,[wcf91]	;contains item_ID
+	ld [wWhichItemBeingUsed],a
 	cp a,TM_01
 	jp nc,ItemUseTMHM
 	ld hl,ItemUsePtrTable
@@ -2553,8 +2554,8 @@ IsKeyItem_: ; e764 (3:6764)
 	ld a,$01
 	ld [wd124],a
 	ld a,[wcf91]
-	cp a,TM_01 ; is the item an HM or TM?
-	jr nc,.checkIfItemIsHM
+	cp a,BERRY ; is the item aa berry (or anything afterwards)
+	jr nc,.notKeyItem	;not key item if so
 ; if the item is not an HM or TM
 	push af
 	ld hl,KeyItemBitfield
@@ -2562,7 +2563,6 @@ IsKeyItem_: ; e764 (3:6764)
 	ld bc,15 ; only 11 bytes are actually used
 	call CopyData
 	pop af
-	dec a
 	ld c,a
 	ld hl,wHPBarMaxHP
 	ld b,$02 ; test bit
@@ -2570,10 +2570,7 @@ IsKeyItem_: ; e764 (3:6764)
 	ld a,c
 	and a
 	ret nz
-.checkIfItemIsHM
-	ld a,[wcf91]
-	call IsItemHM
-	ret c
+.notKeyItem
 	xor a
 	ld [wd124],a
 	ret

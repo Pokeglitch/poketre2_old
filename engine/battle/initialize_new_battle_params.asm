@@ -22,11 +22,21 @@ FarBattleRandom:
 IsLandscapeOutdoor:
 	ld a,[wBattleLandscape]		;load the landscape
 	bit 7,a						;is it a temporary landscape?
-	call nz,GetMapLandscape		;if so, then get the original landscape
-	and a,$7F				;ignore the "temporary?" bit
+	res 7,a						;reset the bit
+	jr z,.notTemp				;skip down if not temporary
+	ld hl,TempLandscapesDoesntChangeLocationTable		;load the table for temporary landscapes that do not change the location
+	ld de,1
+	call IsInArray
+	call c,GetMapLandscape		;if so the temp landscape doesnt change the location, then get the original landscape
+.notTemp
 	ld hl,OutdoorLandscapes
 	ld de,1
 	jp IsInArray				;try to find it in the array
+
+TempLandscapesDoesntChangeLocationTable:
+	db INFERNO_SCAPE
+	db WATER_SCAPE
+	db $FF
 
 ;to get the current attack into a
 GetCurrentAttack:

@@ -235,7 +235,7 @@ GainExperience: ; 5524f (15:524f)
 	ld [wd11e], a
 	callab ApplyBurnAndParalysisPenaltiesToPlayer
 	callab ApplyPlayerPotionStatBoost
-	callab CalcModStatsSavewD11E
+	callab CalcPlayerModStatsSavewD11E
 	callab DrawPlayerHUDAndHPBar
 	callab PrintEmptyString
 	call SaveScreenTilesToBuffer1

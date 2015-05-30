@@ -16,6 +16,7 @@ LandscapeType15Table:
 	db POISON
 	db FIRE
 	db CYBER
+	db WATER
 	db $FF
 	
 ;table containing which types to set the damage 0 (based upon the landscape)
@@ -24,6 +25,8 @@ LandscapeType0Table:
 	db UNDERGROUND_SCAPE,AERO
 	db MOON_SCAPE,AERO
 	db MOON_SCAPE,SOUND
+	db UNDERWATER_SCAPE,FIRE
+	db UNDERWATER_SCAPE,AERO
 	db $FF
 	
 ;table listing the environments that are outdoors
@@ -109,7 +112,7 @@ PhysicalMovesTable:
 	db LAVA
 	db PECK
 	db DRILL_PECK
-	db SUBMISSION
+	db DIVE
 	db LOW_KICK
 	db COUNTER
 	db BLOODSUCK

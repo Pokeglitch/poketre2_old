@@ -389,6 +389,93 @@ OlderFileWillBeErasedText: ; 73787 (1c:7787)
 	TX_FAR _OlderFileWillBeErasedText
 	db "@"
 	
+	
+;to copy the sprite data, adjusting the x y position based upon player movement
+CopySpriteDataAndChecksum:
+	xor a
+	push af
+.loop
+	push bc
+	ld a,h
+	cp $C1		;are we modifying the c1 bytes?
+	jr nz,.notC1
+	ld a,l
+	and a,$0f
+	cp 4
+	jr z,.checkYDirections
+	cp 6
+	jr z,.checkXDirections		;dont check table if we are not checking 4 or 6
+.notC1
+	pop bc
+	pop af
+	add [hl]		;increase the checksum
+	push af
+	ld a, [hli]
+	ld [de], a
+.afterAdjustPosition
+	inc de
+	dec bc
+	ld a, c
+	or b
+	jr nz, .loop
+	pop af	
+	cpl		;complement a
+	ret
+.checkYDirections
+	ld a,[$c109]	;load player facing direction
+	ld b,-2		;what to add
+	cp a,4		;up?
+	jr z,.finishCheckingY
+	ld b,2		;what to add
+	and a		;down?
+	jr nz,.notC1	;if not down, then run normal routine
+.finishCheckingY
+	ld a,[hl]
+	ld c,a		;store into c
+	and a,$7	;keep the bottom 3 bytes
+	jr z,.notC1	;if the sprite is already at an acceptable position, then skip down
+	add -4		;adjust for ones that are on screen
+	jr z,.notC1	;if the sprite is already at an acceptable position, then skip down
+	jr .finishDirectionAdjustment
+	
+.checkXDirections
+	ld a,[$c109]	;load player facing direction
+	ld b,-2		;what to add
+	cp a,8		;left?
+	jr z,.finishCheckingX
+	ld b,2		;what to add
+	cp a,12		;right?
+	jr nz,.notC1	;if not right, then run normal routine
+.finishCheckingX
+	ld a,[hl]
+	ld c,a		;store into c
+	and a,$7	;keep the bottom 3 bytes
+	jr z,.notC1	;if the sprite is already at an acceptable position, then skip down
+	;fall through	
+.finishDirectionAdjustment
+	ld a,c
+	add b		;adjust
+	ld [de],a	;store
+	
+	pop bc
+	
+	push hl
+	push de
+	pop hl
+	pop de
+	
+	pop af
+	add [hl]
+	push af
+	
+	push hl
+	push de
+	pop hl
+	pop de
+	
+	inc hl
+	jr .afterAdjustPosition
+	
 ;to copy data and return a checksum:
 CopyDataAndChecksum:
 	xor a
@@ -498,8 +585,15 @@ CanAutosave:
 		
 AutoSaveWhenWalking:
 	call CanAutosave
-	ret z
-	
+	jr nz,.canAutosave	;then autosave
+	ld bc,$0600
+.delayLoop
+	dec bc
+	ld a,b
+	or c
+	jr nz,.delayLoop	;otherwise, delay some (so there is no noticable difference betwen autosaving and not autosaving)
+	ret
+.canAutosave
 	ld a, SRAM_ENABLE
 	ld [MBC1SRamEnable], a
 	ld a, $1
@@ -572,7 +666,7 @@ WalkAutosave1:
 	call AddToStartPoint
 	ld hl, wSpriteStateData1
 	ld bc, wSpriteStateDataEnd - wSpriteStateData1
-	call CopyDataAndChecksum
+	call CopySpriteDataAndChecksum
 	pop de
 	ld hl,sGameSaveChecksum3Offset
 	add hl,de

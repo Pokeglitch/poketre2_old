@@ -128,19 +128,23 @@ MoveFailInLandscapeCheck:
 	jr .check1stTableForMatchLoop
 .checkNextTable
 	ld hl,MoveFailAllButLandscapeTable
+	ld d,0		;if d = 0 at the end, then we can attack
 .check2ndTableForMatchLoop
 	ld a,[hli]
 	cp $FF
 	jr z,.noMatch
 	cp b
 	jr nz,.loop2
+	ld d,1		;set d to 1, meaning we found an attack
 	ld a,[hl]
 	cp c
-	jr nz,.zeroDamage		;set the damage to zero due to the landscape if the landscapes dont match
+	ret z	;return if we found a match
 .loop2
 	inc hl
 	jr .check2ndTableForMatchLoop
 .noMatch
+	dec d
+	jr z,.zeroDamage	;if d was 1, then zero the damage
 	ret
 .zeroDamage
 	ld hl,wBattleNoDamageText
@@ -157,6 +161,7 @@ MoveFailInLandscapeTable:
 ;contains attacks that only succeed in the given landscape
 MoveFailAllButLandscapeTable:
 	db DIVE,WATER_SCAPE
+	db DIVE,UNDERWATER_SCAPE
 	db $FF
 	
 ;to check the type chart table to try to find 0x damage

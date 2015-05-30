@@ -29,6 +29,85 @@ add_tm: MACRO
 db \1
 ENDM
 
+;to initialize the key item bitfield
+initKeyItems: MACRO
+;to initalize learnset variables 
+Bitfield1 = 0
+Bitfield2 = 0
+Bitfield3 = 0
+Bitfield4 = 0
+Bitfield5 = 0
+Bitfield6 = 0
+Bitfield7 = 0
+Bitfield8 = 0
+Bitfield9 = 0
+Bitfield10 = 0
+Bitfield11 = 0
+Bitfield12 = 0
+Bitfield13 = 0
+ENDM
+
+;to add an item to this bitfield
+;The input is the item id
+addKeyItem: MACRO
+IF \1/8 == 0
+Bitfield1 = Bitfield1 + (1 << \1%8)
+ENDC
+IF \1/8 == 1
+Bitfield2 = Bitfield2 + (1 << \1%8)
+ENDC
+IF \1/8 == 2
+Bitfield3 = Bitfield3 + (1 << \1%8)
+ENDC
+IF \1/8 == 3
+Bitfield4 = Bitfield4 + (1 << \1%8)
+ENDC
+IF \1/8 == 4
+Bitfield5 = Bitfield5 + (1 << \1%8)
+ENDC
+IF \1/8 == 5
+Bitfield6 = Bitfield6 + (1 << \1%8)
+ENDC
+IF \1/8 == 6
+Bitfield7 = Bitfield7 + (1 << \1%8)
+ENDC
+IF \1/8 == 7
+Bitfield8 = Bitfield8 + (1 << \1%8)
+ENDC
+IF \1/8 == 8
+Bitfield9 = Bitfield9 + (1 << \1%8)
+ENDC
+IF \1/8 == 9
+Bitfield10 = Bitfield10 + (1 << \1%8)
+ENDC
+IF \1/8 == 10
+Bitfield11 = Bitfield11 + (1 << \1%8)
+ENDC
+IF \1/8 == 11
+Bitfield12 = Bitfield12 + (1 << \1%8)
+ENDC
+IF \1/8 == 12
+Bitfield1 = Bitfield1 + (1 << \1%8)
+ENDC
+ENDM
+
+;to save the key item bitfield
+saveKeyItems: MACRO
+db Bitfield1
+db Bitfield2
+db Bitfield3
+db Bitfield4
+db Bitfield5
+db Bitfield6
+db Bitfield7
+db Bitfield8
+db Bitfield9
+db Bitfield10
+db Bitfield11
+db Bitfield12
+db Bitfield13
+ENDM
+
 ;To initialize a learnset, by zeroing the 10 bytes (but storing as variables)
 initLearnset: MACRO
 ;to initalize learnset variables 

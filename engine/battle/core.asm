@@ -1874,7 +1874,7 @@ LoadLastStand:
 	
 	call ApplyBurnAndParalysisPenaltiesToPlayer
 	callab ApplyPlayerPotionStatBoost
-	call CalcModStatsSavewD11E
+	call CalcPlayerModStatsSavewD11E
 	ret
 
 ; copies from party data to battle mon data when sending out a new player mon
@@ -1916,7 +1916,7 @@ LoadBattleMonFromParty: ; 3cba6 (f:4ba6)
 	callab LoadExtraPlayerMonBytesIntoBattle
 	call ApplyBurnAndParalysisPenaltiesToPlayer
 	callab ApplyPlayerPotionStatBoost
-	call CalcModStatsSavewD11E
+	call CalcPlayerModStatsSavewD11E
 	ret
 
 ; copies from enemy party data to current enemy mon data when sending out a new enemy mon
@@ -1955,7 +1955,7 @@ LoadEnemyMonFromParty: ; 3cc13 (f:4c13)
 	callab LoadExtraEnemyMonBytesIntoBattle
 	call ApplyBurnAndParalysisPenaltiesToEnemy
 	callab ApplyEnemyPotionStatBoost
-	call CalcModStatsSavewD11E
+	call CalcEnemyModStatsSavewD11E
 	ld hl, W_MONHBASESTATS
 	ld de, wEnemyMonBaseStats
 	ld b, $5
@@ -5170,10 +5170,126 @@ MoveHitTest: ; 3e56b (f:656b)
 	ld hl,W_PLAYERBATTSTATUS1
 	res UsingTrappingMove,[hl] ; end multi-turn attack e.g. wrap
 	ret
+	
+;to adjust the move accuracy if the weather deems it
 
+;to adjust the move accuracy if the 
+	
+;to see if the move has a better accuracy in the current weather:
+CheckMoveAccuracyInWeather:
+	push af
+	push bc
+	push hl
+	ld a,[hl]
+	ld c,a		;c = attack id
+	ld hl,MovesWeatherAccuracyTable
+	ld a,[wBattleWeather]
+	ld b,a		;b = battle weather
+.loop
+	ld a,[hli]
+	cp $FF		;end of table?
+	jr z,.finish
+	cp c		;attacks match?
+	jr nz,.incHLandLoop
+	ld a,[hl]
+	cp b		;weather matches?
+	jr z,.matchFound	;then store the new accuracy
+.incHLandLoop
+	inc hl
+	inc hl
+	jr .loop
+.matchFound
+	inc hl
+	ld a,[hl]		;new accuracy
+	pop hl
+	ld bc,4
+	add hl,bc
+	ld [hl],a		;store new accuracy
+	jr .finishSkipHL
+
+.finish
+	pop hl
+	ld bc,4
+	add hl,bc		;hl nows points to accuracy
+.finishSkipHL
+	pop bc
+	pop af
+	ret
+	
+;move, weather, new accuracy
+MovesWeatherAccuracyTable:
+	db TORNADO,WIND_STORM_WEATHER,98 percent
+	db THUNDER,THUNDER_STORM_WEATHER,98 percent
+	db BLIZZARD,SNOW_STORM_WEATHER,98 percent
+	db $FF
+	
+;to temporaily alter the accuracy and evasion modifiers
+AlterAccuracyAndEvasionModifiers:
+	push de
+	ld hl,wEnemyMonInvisibilityCounter
+	ld a,[wBattleMonAbility1]
+	ld d,a
+	ld a,[wBattleMonAbility2]
+	ld e,a
+	ld a,[H_WHOSETURN]
+	and a
+	jr z,.skipEnemyInvisibility
+	ld hl,wBattleMonInvisibilityCounter
+	ld a,[wEnemyMonAbility1]
+	ld d,a
+	ld a,[wEnemyMonAbility2]
+	ld e,a
+.skipEnemyInvisibility
+	ld a,[hl]		;load the counter into a
+	and a
+	jr z,.skipInvisible
+	ld c,13		;set the evasion counter to the max if invisible
+.skipInvisible
+	ld a,[wBattleWeather]
+	and a
+	jr z,.afterWeather
+	;pokemon with AB_SEE_THROUGH are not physically affected by the weather
+	ld a, AB_SEE_THROUGH
+	cp d
+	jr z,.afterWeather
+	cp e
+	jr z,.afterWeather
+	
+	dec b		;decrease the accuracy
+	jr nz,.afterWeather	;if its not zero, then skip down
+	inc b		;set back to 1
+.afterWeather
+	push bc
+	push de
+	;night time & outdoor decrease accuracy, unless ability is AB_NOCTURNAL
+	callab IsLandscapeOutdoor
+	pop de
+	pop bc
+	jr nc,.afterDayNight
+	ld a,[wBattleEnvironment]
+	bit TemporaryTimeBit,a			;is the day/night reversed?
+	jr z,.notTemporary		;skip down if not
+	inc a		;swap the first bit if so
+.notTemporary
+	bit NightTimeBit,a
+	jr z,.afterDayNight		;if not nighttime, then skip down
+	ld a, AB_NOCTURNAL
+	cp d
+	jr z,.afterDayNight
+	cp e
+	jr z,.afterDayNight
+	
+	dec b		;decrease the accuracy
+	jr nz,.afterDayNight	;if its not zero, then skip down
+	inc b		;set back to 1
+	
+.afterDayNight
+	pop de
+	ret
+	
 ; values for player turn
 CalcHitChance: ; 3e624 (f:6624)
-	ld hl,W_PLAYERMOVEACCURACY
+	ld hl,W_PLAYERMOVENUM
 	ld a,[H_WHOSETURN]
 	and a
 	push af	;store the flags
@@ -5181,24 +5297,18 @@ CalcHitChance: ; 3e624 (f:6624)
 	ld b,a
 	ld a,[wEnemyMonEvasionMod]
 	ld c,a
-	ld a,[wEnemyMonInvisibilityCounter]
-	and a		;invisible?
-	jr z,.skipInvisible
-	ld c,13	;maximum value for evasion if invisible
-.skipInvisible
+	call AlterAccuracyAndEvasionModifiers
 	pop af	;recover the flags
 	jr z,.next
 ; values for enemy turn
-	ld hl,W_ENEMYMOVEACCURACY
+	ld hl,W_ENEMYMOVENUM
 	ld a,[wEnemyMonAccuracyMod]
 	ld b,a
 	ld a,[wPlayerMonEvasionMod]
 	ld c,a
-	ld a,[wBattleMonInvisibilityCounter]
-	and a		;invisible?
-	jr z,.next
-	ld c,13	;maximum value for evasion if invisible
+	call AlterAccuracyAndEvasionModifiers
 .next
+	call CheckMoveAccuracyInWeather		;check the move num and see if the weather increases the accuracy
 	ld a,$0e
 	sub c
 	ld c,a ; c = 14 - EVASIONMOD (this "reflects" the value over 7, so that an increase in the target's evasion
@@ -6142,7 +6252,7 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	callab LoadExtraEnemyMonBytesIntoBattle
 	call ApplyBurnAndParalysisPenaltiesToEnemy
 	callab ApplyEnemyPotionStatBoost
-	call CalcModStatsSavewD11E
+	call CalcEnemyModStatsSavewD11E
 	ret
 .finishWild
 	;finish up initializing additional stats
@@ -6345,11 +6455,28 @@ HalveAttackDueToBurn: ; 3ed64 (f:6d64)
 .storeAttack
 	ld [hl], b
 	ret
-	
+		
+;this is based on whose turn
 CalcModStatsSavewD11E:
+	ld a,[H_WHOSETURN]
+	and a
+	jr z,CalcPlayerModStatsSavewD11E
+	;fall through if enemy turn
+	
+CalcEnemyModStatsSavewD11E:
 	ld a,[wd11e]
 	push af	;back up d11e
-	ld a, [H_WHOSETURN]
+	ld a, 1 ;enemy stats
+	ld [wd11e],a	;load whose turn into d11e
+	call CalculateModifiedStats	;update the stats
+	pop af
+	ld [wd11e],a	;restore d11e
+	ret
+	
+CalcPlayerModStatsSavewD11E:
+	ld a,[wd11e]
+	push af	;back up d11e
+	ld a,0	;players stats
 	ld [wd11e],a	;load whose turn into d11e
 	call CalculateModifiedStats	;update the stats
 	pop af
@@ -8146,6 +8273,8 @@ ChargeEffect: ; 3f88c (f:788c)
 	and a,$7F				;ignore the "temporary?" bit
 	cp a,WATER_SCAPE	;water?
 	jr z,.diveInWater	;then we can attack
+	cp a,UNDERWATER_SCAPE	;underwater?
+	jr z,.diveInWater	;then we can attack
 	;decrement PP
 	ld hl,DecrementPP
 	ld b,BANK(DecrementPP)
@@ -8170,10 +8299,121 @@ ChargeEffect: ; 3f88c (f:788c)
 	ld a, [de]
 	ld [wWhichTrade], a
 	ld hl, ChargeMoveEffectText
+	call PrintText
+	;check to see if the pokemon can also attack in the same turn
+	call CanChargeMoveAttackInCurrentTurn
+	ret nz		;return if not
+	
+	ld a, [H_WHOSETURN]
+	and a
+	jr nz,.enemyTurn
+	call PlayerCanExecuteChargingMove		;apply the attack damage if player turn
+	pop af
+	ret
+.enemyTurn
+	call EnemyCanExecuteChargingMove		;apply the attack damage for enemy turn
+	pop af		;remove the return (which will set b to 1)
+	ret
 .printText
 	jp PrintText
 
+;to see if the environment is set up for a pokemon to skip charging up
+CanChargeMoveAttackInCurrentTurn:
+	ld a,[wWhichTrade]		;load attack into a
+	ld b,a
+	ld hl,ChargeMoveSkipLandscapeTable
+	ld a,[wBattleLandscape]
+	ld c,a
+.landscapeLoop	
+	ld a,[hli]
+	cp $FF		;end of table?
+	jr z,.weatherCheck
+	cp b		;attacks match?
+	jr nz,.incHLandLandscapeLoop
+	ld a,[hl]
+	cp c		;landscapes match?
+	jr z,.returnSuccess	;then return success
+.incHLandLandscapeLoop
+	inc hl
+	jr .landscapeLoop
+	
+.weatherCheck
+	ld hl,ChargeMoveSkipWeatherTable
+	ld a,[wBattleWeather]
+	ld c,a
+.weatherLoop	
+	ld a,[hli]
+	cp $FF		;end of table?
+	jr z,.otherCheck
+	cp b		;attacks match?
+	jr nz,.incHLandWeatherLoop
+	ld a,[hl]
+	cp c		;weathers match?
+	jr z,.returnSuccess	;then return success
+.incHLandWeatherLoop
+	inc hl
+	jr .weatherLoop
 
+.otherCheck
+	ld hl,ChargeMoveSkipAdditionalCheckTable
+	ld de,3
+	ld a,b
+	call IsInArray	;see if the attack is in the array
+	jr nc,.finish	;exit if the attack is not in the array
+	inc hl
+	ld a,[hli]
+	ld h,[hl]
+	ld l,a
+	jp hl		;run the other check
+	
+.finish
+	xor a
+	inc a		;unset the zero flag
+	ret
+.returnSuccess
+	xor a
+	ret
+
+;move, landscape
+ChargeMoveSkipLandscapeTable:
+	db SKY_ATTACK,SKY_SCAPE
+	db FLY,SKY_SCAPE
+	db DIG,UNDERGROUND_SCAPE
+	db DIVE,UNDERWATER_SCAPE
+	db $FF
+	
+;move, weather
+ChargeMoveSkipWeatherTable:
+	db RAZOR_WIND,WIND_STORM_WEATHER
+	db $FF
+	
+;move, function
+ChargeMoveSkipAdditionalCheckTable:
+	db SOLARBEAM
+	dw SolarbeamSkipChargingCheck
+	db $FF
+	
+SolarbeamSkipChargingCheck:
+	callab IsLandscapeOutdoor
+	jr nc,.finish	;finish if not
+	ld a,[wBattleEnvironment]
+	bit TemporaryTimeBit,a			;is the day/night reversed?
+	jr z,.notTemporary		;skip down if not
+	inc a			;otherwise, switch bit 0
+.notTemporary
+	and NIGHT_TIME
+	jr nz,.finish	;skip down if night time
+	ld a,[wBattleWeather]
+	and a
+	jr z,.returnSuccess		;if there is no weather, then return success
+.finish
+	xor a
+	inc a		;unset the zero flag
+	ret
+.returnSuccess
+	xor a
+	ret
+	
 EarthNotInSkyText:
 	TX_FAR _SkyNoDamageText
 	db "@"

@@ -31,12 +31,12 @@ LoadAdditionalMonBytes:
 	ld [wEnemyMonBaseSpDef],a		;store into base special defense byte
 .skipBaseSpDef
 	ld hl,wPartyMon1HPSpDefDV	;special defense EV pointer
-	ld de,wPlayerMonUnmodifiedSpecialDefense	;where to save to
+	ld de,wBattleMonSpecialDefense	;where to save to
 	ld a, [H_WHOSETURN]
 	and a
 	jr z, .saveSpDef	;don't load enemy data if its the players turn
 	ld hl,wEnemyMon1HPSpDefDV	;special defense EV pointer
-	ld de,wEnemyMonUnmodifiedSpecialDefense	;where to save to
+	ld de,wEnemyMonSpecialDefense	;where to save to
 .saveSpDef
 	ld a,[wWhichPokemon]	;get the index of the pokemon we are copying from
 	ld bc,wPartyMon2 - wPartyMon1	;the difference between each pokemon
@@ -56,8 +56,15 @@ LoadAdditionalMonBytes:
 	ld a,[hli]
 	ld [de],a
 	inc de
+	ld a,[hld]
+	ld [de],a
+	inc de
+	ld a,[hli]
+	ld [de],a
+	inc de
 	ld a,[hl]
-	ld [de],a	;store the special defense into the in-battle unmodified special defense
+	ld [de],a	;store the special defense into the in-battle unmodified and normal special defense
+	
 	
 	;now load the other additional bytes
 	ld bc,W_PLAYERBATTSTATUS1	;temporary battle bits
