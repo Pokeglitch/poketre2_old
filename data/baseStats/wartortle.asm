@@ -4,7 +4,7 @@ db 59 ; base hp
 db 63 ; base attack
 db 80 ; base defense
 db 58 ; base speed
-db $41 ; base special
+db 65 ; base special
 db WATER ; species type 1
 db WATER ; species type 2
 db 45 ; catch rate
@@ -14,15 +14,15 @@ dw WartortlePicFront
 dw WartortlePicBack
 ; attacks known at lvl 0
 db TACKLE
-db TAIL_WHIP
-db BUBBLE
-db 0
+db LEER
+db SPLASH
+db RIPTIDE
 db 3 ; growth rate
 db AB_TOUGH_SKIN	;ability 1
 db 00	;ability 2
-db $50	;special defense
-db 00	;base selling price
+db 80	;special defense
+db 250	;base selling price
 db 00	;evolution shed item
-db 00	;extra byte 1
-db 00	;extra byte 2
+db CAN_BE_MALE + CAN_BE_FEMALE + EG_TURTLE	;possible genders and egg group
+db 70	;base morale
 db BANK(WartortlePicFront) ; sprite bank

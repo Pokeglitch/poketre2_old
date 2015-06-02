@@ -2538,6 +2538,7 @@ wBattleDamageText::
 ;	Bit 0 : Landscape
 ;	Bit 1 : Ability 1 of Defending PK
 ;	Bit 2 : Ability 2 of Defending PK
+;	Bit 3 : Invincibility Potion
 wBattleNoDamageText::
 	ds 1
 

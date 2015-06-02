@@ -70,6 +70,15 @@ HeadBasedMovesTables:
 	db INJECTION
 	db $FF
 
+;table containing all "physical" moves that are boosted by aero type or  flying dragon ability:
+BirdMovesTable:
+	db WING_ATTACK
+	db PECK
+	db DRILL_PECK
+	db TRIPLE_PECK
+	db RAPTOR_STRIKE
+	db $FF
+	
 ;table containing all "Physical" moves
 PhysicalMovesTable:
 	db POUND

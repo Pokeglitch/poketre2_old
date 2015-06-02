@@ -26,7 +26,7 @@ endm
 	move COSMIC_RAY,    RADIOACTIVATE_EFFECT,         80,  COSMIC,     95,  30	
 	move STAB,          FLINCH_SIDE_EFFECT2,          55,  TALON,      95,  10	
 	move GUST,          NO_ADDITIONAL_EFFECT,         40,  AERO,      100,  5	
-	move WING_ATTACK,   NO_ADDITIONAL_EFFECT,         35,  AERO,      100,  5	
+	move WING_ATTACK,   NO_ADDITIONAL_EFFECT,         35,  PHYSICAL,  100,  5	
 	move WHIRLWIND,     SWITCH_AND_TELEPORT_EFFECT,    0,  AERO,       85,  20
 	move FLY,           FLY_EFFECT,                   70,  AERO,       95,  25	
 	move BIND,          TRAPPING_EFFECT,              30,  PHYSICAL,   75,  20
@@ -73,8 +73,8 @@ endm
 	move BUBBLEBEAM,    SPEED_DOWN_SIDE_EFFECT,       65,  WATER,     100,  20
 	move AURORA_BEAM,   ATTACK_DOWN_SIDE_EFFECT,      65,  COSMIC,    100,  20
 	move HYPER_BEAM,    HYPER_BEAM_EFFECT,           150,  PHYSICAL,   90,   35	
-	move PECK,          NO_ADDITIONAL_EFFECT,         35,  AERO,      100,  5	
-	move DRILL_PECK,    NO_ADDITIONAL_EFFECT,         80,  AERO,      100,  20
+	move PECK,          NO_ADDITIONAL_EFFECT,         35,  PHYSICAL,  100,  5	
+	move DRILL_PECK,    NO_ADDITIONAL_EFFECT,         80,  PHYSICAL,  100,  20
 	move DIVE,		    CHARGE_EFFECT,                95,  WATER,  	  100,  30	
 	move LOW_KICK,      FLINCH_SIDE_EFFECT2,          50,  FIGHTING,   90,  20
 	move COUNTER,       NO_ADDITIONAL_EFFECT,          1,  FIGHTING,  100,  20
@@ -83,7 +83,7 @@ endm
 	move BLOODSUCK,     DRAIN_HP_EFFECT,              35,  BUG,       100,  25	
 	move CYBER_BEAM,    NO_ADDITIONAL_EFFECT,        125,  CYBER,      80,   35	
 	move LEECH_SEED,    LEECH_SEED_EFFECT,             0,  PLANT,      90,  30	
-	move CALCIFY,       DEFENSE_UP1_EFFECT,            0,  BONE,      100,  30	
+	move CONCENTRATE,   ACCURACY_UP1_EFFECT,           0,  MIND,      100,  30	
 	move RAZOR_LEAF,    NO_ADDITIONAL_EFFECT,         55,  PLANT,      95,  15	
 	move SOLARBEAM,     CHARGE_EFFECT,               120,  PLANT,     100,  30	
 	move POISONPOWDER,  POISON_EFFECT,                 0,  POISON,     75,  5	
@@ -113,7 +113,7 @@ endm
 	move NIGHT_SHADE,   SPECIAL_DAMAGE_EFFECT,         0,  GHOST,     100,  25	
 	move TELEPATHIC,    MIMIC_EFFECT,                  0,  MIND,      100,  30	
 	move SCREECH,       DEFENSE_DOWN2_EFFECT,          0,  SOUND,      85,  3
-	move TRIPLE_PECK,   TRIPLE_PECK_EFFECT,           30,  AERO,      100,  30	
+	move TRIPLE_PECK,   TRIPLE_PECK_EFFECT,           30,  PHYSICAL,  100,  30	
 	move RECOVER,       HEAL_EFFECT,                   0,  MAGIC,     100,  20
 	move HARDEN,        DEFENSE_UP1_EFFECT,            0,  BUG,       100,  10	
 	move ACID_SILK,     BURN_SIDE_EFFECT1,            50,  BUG,        90,  20
@@ -154,15 +154,15 @@ endm
 	move STING,         POISON_SIDE_EFFECT2,          80,  BUG,        90,  30	
 	move SKY_ATTACK,    CHARGE_EFFECT,               140,  AERO,       90,   35	
 	move TRANSFORM,     TRANSFORM_EFFECT,              0,  MAGIC,     100,  30	
-	move RAPTOR_STRIKE, NO_ADDITIONAL_EFFECT,        100,  AERO,       90,  30	
+	move RAPTOR_STRIKE, NO_ADDITIONAL_EFFECT,        100,  PHYSICAL,   90,  30	
 	move CYBER_ATTACK,  NO_ADDITIONAL_EFFECT,         80,  CYBER,      95,  30	
 	move SPORE,         SLEEP_EFFECT,                  0,  PLANT,     100,  25	
 	move CHARGE,        FLINCH_SIDE_EFFECT1,          50,  HOOF,      100,  15	
 	move PSYWAVE,       SPECIAL_DAMAGE_EFFECT,         1,  MIND,       80,  25	
-	move SPLASH,        SPLASH_EFFECT,                 0,  WATER,     100,  3
-	move ACID_ARMOR,    DEFENSE_UP2_EFFECT,            0,  POISON,    100,  3
+	move SPLASH,        NO_ADDITIONAL_EFFECT,         20,  WATER,     100,  20
+	move GLUE_GUN,      EVASION_DOWN1_EFFECT,          0,  GOO,       100,  30
 	move DRENCH,        DEC_SPEC_DEFENSE_EFFECT,       0,  WATER,      95,  15	
-	move WIGHT_WALKER,  OHKO_EFFECT,                   1,  BONE,       25,   35	
+	move WIGHT_WALKER,  OHKO_EFFECT,                   1,  BONE,       25,  35	
 	move FURY_SWIPES,   TWO_TO_FIVE_ATTACKS_EFFECT,   15,  TALON,      80,  25	
 	move BONEMERANG,    ATTACK_TWICE_EFFECT,          50,  BONE,       90,  30	
 	move REST,          HEAL_EFFECT,                   0,  MIND,      100,  30	
@@ -230,8 +230,8 @@ endm
 	move IRON_CURTAIN,  WALL_EFFECT,                   0,  METAL,     100,  30	
 	move HEAT_TREAT,    HEAT_TREAT_EFFECT,             0,  METAL,     100,  30	
 	move HEAVY_METAL,   NO_ADDITIONAL_EFFECT,         60,  METAL,     100,  15	
-	move ANNODIZE,      DEFENSE_UP1_EFFECT,            0,  METAL,     100,  25	
-	move STEEL_BURST,   NO_ADDITIONAL_EFFECT,        120,  METAL,      75,   35	
+	move SIDE_STEP,      EVASION_UP1_EFFECT,            0,  PHYSICAL,  100,  25	
+	move STEEL_BURST,   NO_ADDITIONAL_EFFECT,        120,  METAL,      75,  35	
 	move SHRAPNEL,      NO_ADDITIONAL_EFFECT,         90,  METAL,      95,  25	
 	move IRON_TAIL,     NO_ADDITIONAL_EFFECT,        100,  METAL,     100,  30	
 	move INNER_PEACE,   INC_SPEC_DEFENSE_EFFECT,       0,  MIND,      100,  25	

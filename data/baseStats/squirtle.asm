@@ -4,7 +4,7 @@ db 44 ; base hp
 db 48 ; base attack
 db 65 ; base defense
 db 43 ; base speed
-db $32 ; base special
+db 50 ; base special
 db WATER ; species type 1
 db WATER ; species type 2
 db 45 ; catch rate
@@ -20,9 +20,9 @@ db 0
 db 3 ; growth rate
 db AB_TOUGH_SKIN	;ability 1
 db 00	;ability 2
-db $40	;special defense
-db 00	;base selling price
+db 64	;special defense
+db 250	;base selling price
 db 00	;evolution shed item
-db 00	;extra byte 1
-db 00	;extra byte 2
+db CAN_BE_MALE + CAN_BE_FEMALE + EG_TURTLE	;possible genders and egg group
+db 70	;base morale
 db BANK(SquirtlePicFront) ; sprite bank

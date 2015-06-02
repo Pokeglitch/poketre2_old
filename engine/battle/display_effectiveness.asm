@@ -20,7 +20,14 @@ DisplayAdditionalNoDamageText:
 	jr nz,DisplayAbility1NoDamageText
 	bit 2,a		;no damage due to ability 2?
 	jr nz,DisplayAbility2NoDamageText
+	bit 3,a		;no damage due to invincibility potion?
+	jr nz,DisplayInvincibilityNoDamageText
 	ret
+	
+DisplayInvincibilityNoDamageText:
+	ld hl,ProtectedByInvincibilityPotionText
+	call PrintText
+	jp ClearBattleTextBits
 
 DisplayLandscapeNoDamageText:
 	ld hl,W_PLAYERMOVENUM
@@ -66,6 +73,12 @@ MovesFailInLandscapeNoDamageText:
 	dw WaterNoDamageText
 	db WATERSPOUT
 	dw AttackUndergroundNoDamageText
+	db ROCK_THROW
+	dw NoRocksHereText
+	db ICEBALL
+	dw NoIceHereText
+	db SNOWBALL
+	dw NoSnowHereText
 	db $FF
 
 DisplayAbility1NoDamageText:
@@ -112,6 +125,8 @@ DisplayEffectiveness: ; 2fb7b (b:7b7b)
 	
 	bit 3,a		;time of day?
 	call nz,DisplayTimeDamageEffectText
+	
+	call DisplayHeldItemDamageEffectText
 	
 .displayAbilityText
 	; values for player turn
@@ -183,6 +198,60 @@ DisplayLandscapeDamageEffectText:
 	ld hl,LandscapeDamageTextTable
 	call PrintExtraBattleText
 	pop af
+	ret
+	
+DisplayHeldItemDamageEffectText:
+	ld hl,wBattleMonHeldItem
+	ld de,wEnemyMonHeldItem
+	ld a,[H_WHOSETURN]
+	and a
+	ld a,[W_PLAYERMOVETYPE]
+	jr z,.skipEnemyTurn	;dont swap hl and de if players turn
+	push hl
+	push de
+	pop hl
+	pop de
+	ld a,[W_ENEMYMOVETYPE]
+.skipEnemyTurn
+	push af		;save the type
+	add FAN		;add fan (fan is start of the boosting held items)
+	cp [hl]
+	call z,.boostedText		;if they match, then print the boosted text
+	pop af
+	push de
+	pop hl
+	add WINDBREAKER	;add the start of the limiting held items by the defender
+	cp [hl]
+	call z,.limitedText		;if they match, then print the limited text
+	ret
+.boostedText
+	ld hl,BoostedByHeldItemText
+	jr .finish
+.limitedText
+	ld hl,LimitedByHeldItemText
+.finish
+	push de
+	ld d,a
+	
+	ld a,[$ffdc]
+	push af
+	ld a,[wd11e]
+	push af
+	
+	ld a,d
+	dec a
+	ld [$ffdc], a
+	ld [wd11e], a
+	push hl
+	call GetItemName
+	call CopyStringToCF4B ; copy name to wcf4b
+	pop hl
+	call PrintText
+	pop af
+	ld [wd11e], a
+	pop af
+	ld [$ffdc], a
+	pop de
 	ret
 	
 LandscapeDamageTextTable:
@@ -684,4 +753,25 @@ VRNoDamageText:
 	
 MoonNoDamageText:
 	TX_FAR _MoonNoDamageText
+	db "@"
+	
+NoRocksHereText:
+	TX_FAR _NoRocksHereText
+	db "@"
+NoIceHereText:
+	TX_FAR _NoIceHereText
+	db "@"
+NoSnowHereText:
+	TX_FAR _NoSnowHereText
+	db "@"
+	
+ProtectedByInvincibilityPotionText:
+	TX_FAR _ProtectedByInvincibilityPotionText
+	db "@"
+	
+BoostedByHeldItemText:
+	TX_FAR _BoostedByHeldItemText
+	db "@"
+LimitedByHeldItemText:
+	TX_FAR _LimitedByHeldItemText
 	db "@"

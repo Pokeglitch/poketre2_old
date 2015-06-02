@@ -549,3 +549,41 @@ _TrainerRetreatedText::
 	text " "
 	line "retreated!"
 	prompt
+	
+_NoRocksHereText::
+	text "There's no rocks"
+	line "to use!"
+	prompt
+	
+_NoSnowHereText::
+	text "There's no snow"
+	line "to use!"
+	prompt
+	
+_NoIceHereText::
+	text "There's no ice"
+	line "to use!"
+	prompt
+	
+_ProtectedByInvincibilityPotionText::
+	text $59, "'s"
+	line "protected by the"
+	cont "Invincibility"
+	cont "potion!"
+	prompt
+	
+_BoostedByHeldItemText::
+	text "It was boosted by"
+	line $5a, "'s"
+	cont "@"
+	TX_RAM wcf4b
+	text "."
+	prompt
+	
+_LimitedByHeldItemText::
+	text "It was limited by"
+	line $59, "'s"
+	cont "@"
+	TX_RAM wcf4b
+	text "."
+	prompt

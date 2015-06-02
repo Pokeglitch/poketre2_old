@@ -324,7 +324,6 @@ Evolution_ReloadTilesetTilePatterns: ; 3af52 (e:6f52)
 	jp ReloadTilesetTilePatterns
 
 LearnMoveFromLevelUp: ; 3af5b (e:6f5b)
-	ld hl, EvosMovesPointerTable
 	ld a, [wd11e] ; species
 	ld [wcf91], a
 	dec a

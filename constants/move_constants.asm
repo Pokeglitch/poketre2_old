@@ -73,7 +73,7 @@ const_value = 1
 	const BLOODSUCK    ; ABSORB       ; 47
 	const CYBER_BEAM   ; MEGA_DRAIN   ; 48
 	const LEECH_SEED   ; 49
-	const CALCIFY      ; GROWTH       ; 4a
+	const CONCENTRATE  ; GROWTH       ; 4a
 	const RAZOR_LEAF   ; 4b
 	const SOLARBEAM    ; 4c
 	const POISONPOWDER ; 4d
@@ -150,7 +150,7 @@ const_value = 1
 	const CHARGE       ; FLASH        ; 94
 	const PSYWAVE      ; 95
 	const SPLASH       ; 96
-	const ACID_ARMOR   ; 97
+	const GLUE_GUN      ; ACID_ARMOR   ; 97
 	const DRENCH       ; CRABHAMMER   ; 98
 	const WIGHT_WALKER ; EXPLOSION    ; 99
 	const FURY_SWIPES  ; 9a
@@ -220,7 +220,7 @@ const_value = 1
 	const IRON_CURTAIN
 	const HEAT_TREAT
 	const HEAVY_METAL
-	const ANNODIZE
+	const SIDE_STEP
 	const STEEL_BURST
 	const SHRAPNEL
 	const IRON_TAIL

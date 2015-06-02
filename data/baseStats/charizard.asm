@@ -4,7 +4,7 @@ db 78 ; base hp
 db 84 ; base attack
 db 78 ; base defense
 db 100 ; base speed
-db $6D ; base special
+db 109 ; base special
 db FIRE ; species type 1
 db DRAGON ; species type 2
 db 45 ; catch rate
@@ -20,9 +20,9 @@ db LEER
 db 3 ; growth rate
 db AB_FLYING_DRAGON	;ability 1
 db AB_FLAME_BODY	;ability 2
-db $55	;special defense
-db 00	;base selling price
+db 85	;special defense
+db 250	;base selling price
 db 00	;evolution shed item
-db 00	;extra byte 1
-db 00	;extra byte 2
+db CAN_BE_MALE + CAN_BE_FEMALE + EG_DRAGON	;possible genders and egg group
+db 70	;base morale
 db BANK(CharizardPicFront) ; sprite bank

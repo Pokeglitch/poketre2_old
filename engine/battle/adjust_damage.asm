@@ -51,13 +51,28 @@ _AdjustDamageForMoveType: ; 3e3a5 (f:63a5)
 	ld e,$FF	;otherwise, load $FF into e
 	
 .notMatchingTypes
+	ld a,[wActiveCheats]
+	bit InvertCheat,a		;is the invert cheat active
 	ld bc,$0014	;look for 2x damage
+	jr z,.skipInvertCheat1		;skip the invert cheat if not active
+	ld bc,$0005		;otherwise, use the 2x damage table but apply .5x damage	
+.skipInvertCheat1
 	call CheckTypeTableForDamage
+	
+	ld a,[wActiveCheats]
+	bit InvertCheat,a		;is the invert cheat active
 	ld bc,$0105	;look for 0.5 damage
+	jr z,.skipInvertCheat2		;skip the invert cheat if not active
+	ld bc,$0114	;otherwise, use the 0.5x damage table but apply 2x damage
+.skipInvertCheat2
 	call CheckTypeTableForDamage
 	
 	;do remaining checks
+	call CheckBirdMoves
+	call CheckInvincibilityPotion
+	call CheckHeldItem
 	call MoveFailInLandscapeCheck
+	call MoveFailInLandscapeUnlessTypesMatchCheck
 	call HoloOrShadowCheck
 	call Landscape0xDamageCheck
 	call Landscape15xDamageCheck
@@ -101,6 +116,178 @@ _AdjustDamageForMoveType: ; 3e3a5 (f:63a5)
 	ld [wWhichTypeUsed],a	;store into "which type used"
 	ret
 	
+;to boost or reduce the damage by 10% based upon the pokemons held item
+CheckHeldItem:
+	ld hl,wBattleMonHeldItem
+	ld de,wEnemyMonHeldItem
+	ld a,[H_WHOSETURN]
+	and a
+	ld a,[W_PLAYERMOVETYPE]
+	jr z,.skipEnemyTurn	;dont swap hl and de if players turn
+	push hl
+	push de
+	pop hl
+	pop de
+	ld a,[W_ENEMYMOVETYPE]
+.skipEnemyTurn
+	push af		;save the type
+	add FAN		;add fan (fan is start of the boosting held items)
+	cp [hl]
+	call z,.boostBy10		;if they match, then boost the damage by 10 percent
+	pop af
+	push de
+	pop hl
+	add WINDBREAKER	;add the start of the limiting held items by the defender
+	cp [hl]
+	call z,.reduceBy10		;if they match, then reduce the damage by 10 percent
+	ret
+.boostBy10
+	ld c,11	;110%
+	jr .finish
+.reduceBy10
+	ld c,9	;90%
+.finish
+	jp MultiplyDamageByAmount
+	
+;to reduce damage to zero if the pokemon is protected by invincibility
+CheckInvincibilityPotion:
+	ld hl,wActivePotion
+	ld a,[H_WHOSETURN]
+	and a
+	jr nz,.skipEnemyPotion	;dont load enemy potion if enemies turn
+	ld hl,wEnemyActivePotion
+.skipEnemyPotion
+	ld a,[hl]
+	cp INVINCIBILITY_POTION
+	ret nz		;return if not invincibility
+	ld hl,wBattleNoDamageText
+	set 3,[hl]				;set the "protected by invincibility potion" text bit
+	call SetDamageToZero
+	pop af	;remove the return
+	ret
+	
+;to boost by 1.5 (STAB) if the attack is a bird move and the pokemon has flying dragon ability or aero type
+CheckBirdMoves:
+	ld hl,W_PLAYERMOVENUM
+	ld a,[H_WHOSETURN]
+	and a
+	jr z,.skipEnemyAttackID	;dont load enemy id if players turn
+	ld hl,W_ENEMYMOVENUM
+.skipEnemyAttackID
+	ld a,[hl]		;load the attack into a
+	ld hl,BirdMovesTable
+	ld de,1
+	call IsInArray
+	ret nc		;return if not a bird move
+	ld hl,wBattleMonType
+	ld de,wBattleMonAbility1
+	ld a,[H_WHOSETURN]
+	and a
+	jr z,.skipEnemyInfo	;dont load enemy info if players turn
+	ld hl,wEnemyMonType
+	ld de,wEnemyMonAbility1
+.skipEnemyInfo
+	ld a,AERO
+	cp [hl]
+	jr z,.applySTAB
+	inc hl
+	cp [hl]
+	jr z,.applySTAB
+	push de
+	pop hl
+	ld a,AB_FLYING_DRAGON
+	cp [hl]
+	jr z,.applySTAB
+	inc hl
+	cp [hl]
+	ret nz		;return if no matches
+	;fall through
+.applySTAB
+	call MultiplyDamageBy15
+	ld hl,wDamageMultipliers
+	set 7,[hl]
+	ret
+	
+;to check to see if the move fails in the current landscape unless the types match
+MoveFailInLandscapeUnlessTypesMatchCheck:
+	ld de,wBattleMonType
+	ld hl,W_PLAYERMOVENUM
+	ld a,[H_WHOSETURN]
+	and a
+	jr z,.skipEnemyAttackID	;dont load enemy id if players turn
+	ld hl,W_ENEMYMOVENUM
+	ld de,wEnemyMonType
+.skipEnemyAttackID
+	ld a,[hl]
+	
+	ld bc,W_PLAYERMOVETYPE - W_PLAYERMOVENUM
+	add hl,bc
+	push hl
+	
+	ld b,a
+	ld a,[wBattleLandscape]
+	and a,$7F		;ignore the temporary battle bytes
+	ld c,a
+	ld hl,MoveFailInLandscapeUnlessTypesMatchTable
+.check1stTableForMatchLoop
+	ld a,[hli]
+	cp $FF
+	jr z,.checkNextTable
+	cp b
+	jr nz,.loop1
+	ld a,[hl]
+	cp c
+	jr z,.checkIfTypesMatch		;check to see if the types match
+.loop1
+	inc hl
+	jr .check1stTableForMatchLoop	
+.checkNextTable
+	ld hl,MoveFailAllButLandscapeUnlessTypesMatchTable
+	push de
+	ld d,0		;if d = 0 at the end, then we can attack
+.check2ndTableForMatchLoop
+	ld a,[hli]
+	cp $FF
+	jr z,.noMatch
+	cp b
+	jr nz,.loop2
+	ld d,1		;set d to 1, meaning we found an attack
+	ld a,[hl]
+	cp c
+	jr nz,.loop2	;loop if environment doesn't match
+	pop de
+	pop hl
+	ret	;return if we found a match
+.loop2
+	inc hl
+	jr .check2ndTableForMatchLoop
+.noMatch
+	dec d
+	jr z,.checkIfTypesMatch	;if d was 1, then check if the types match
+	pop de
+	pop hl
+	ret
+.checkIfTypesMatchPopDE
+	pop de
+.checkIfTypesMatch			;check to see if the types match
+	pop hl
+	ld a,[de]
+	ld b,a
+	inc de
+	ld a,[de]
+	ld c,a		;bc = pokemons types
+	ld a,[hl]			;load the attack type
+	cp b
+	ret z
+	cp c
+	ret z		;return if either type matches
+	;otherwise, zero the damage
+	ld hl,wBattleNoDamageText
+	set 0,[hl]				;set the "modified by environment" text bit
+	call SetDamageToZero		;set the damage to zero
+	pop af					;remove the return
+	ret
+	
 ;to check to see if the move fails in the current landscape
 MoveFailInLandscapeCheck:
 	ld hl,W_PLAYERMOVENUM
@@ -122,7 +309,7 @@ MoveFailInLandscapeCheck:
 	jr nz,.loop1
 	ld a,[hl]
 	cp c
-	jr z,.zeroDamage		;set the damage to zero due to the landscape
+	jr z,.zeroDamage		;zero the damage if match found
 .loop1
 	inc hl
 	jr .check1stTableForMatchLoop
@@ -156,6 +343,21 @@ MoveFailInLandscapeCheck:
 ;contains attacks that will always fail in the given landscape
 MoveFailInLandscapeTable:
 	db WATERSPOUT,UNDERGROUND_SCAPE
+	db RIPTIDE,UNDERGROUND_SCAPE
+	db $FF
+	
+;contains attacks that will always fail in the given landscape unless the types match
+MoveFailInLandscapeUnlessTypesMatchTable:
+	db ROCK_THROW,INDOOR_SCAPE
+	db ROCK_THROW,WATER_SCAPE
+	db $FF
+	
+;contains attacks the only succeed in the given landscape unless the types match
+MoveFailAllButLandscapeUnlessTypesMatchTable:
+	db SNOWBALL,SNOW_SCAPE
+	db SNOWBALL,SNOW_CLIFF_TOP_SCAPE
+	db ICEBALL,SNOW_SCAPE
+	db ICEBALL,SNOW_CLIFF_TOP_SCAPE
 	db $FF
  
 ;contains attacks that only succeed in the given landscape
@@ -169,8 +371,7 @@ LookFor0xDamage:
 	push hl
 	push bc
 	push de
-	ld a,2
-	;to skip through the first two sets of data in the type chart (they are for 2x and 0.5x)
+	ld a,2 ;to skip through the first two sets of data in the type chart (they are for 2x and 0.5x)
 .loop1
 	push af
 .loop2

@@ -21,8 +21,8 @@ db 0 ; growth rate
 db AB_PICKPOCKET	;ability 1
 db 00	;ability 2
 db 50	;special defense
-db 00	;base selling price
-db 00	;evolution shed item
-db 00	;extra byte 1
-db 00	;extra byte 2
+db 250	;base selling price
+db WHISKERS	;evolution shed item
+db CAN_BE_MALE + CAN_BE_FEMALE + EG_CAT	;possible genders and egg group
+db 70	;base morale
 db BANK(MeowthPicFront) ; sprite bank

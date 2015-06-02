@@ -43,4 +43,5 @@ EnemyCanUseLastStand	EQU 7
 SummonedGhosts		EQU 1
 
 ;bits for CheatCodes
+InvertCheat			EQU 0
 LuckyCharmCheat		EQU 3

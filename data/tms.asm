@@ -9,6 +9,7 @@ TechnicalMachines:: ; 13773 (4:7773)
 	add_tm BUG_BITE
 	add_tm CHARGE
 	add_tm CHOMP
+	add_tm CONCENTRATE
 	add_tm COSMIC_RAY
 	add_tm CYBER_BEAM
 	add_tm DEFENSE_CURL
@@ -49,13 +50,12 @@ TechnicalMachines:: ; 13773 (4:7773)
 	add_tm POLLEN_BLAST
 	add_tm PSYWAVE
 	add_tm PULSAR
-	add_tm REFRACTION
 	add_tm REST
 	add_tm ROCK_THROW
 	add_tm SANDSTORM
-	add_tm SHADOW_SURGE
 	add_tm SHOCK
 	add_tm SHRAPNEL
+	add_tm SIDE_STEP
 	add_tm SKY_ATTACK
 	add_tm SLASH
 	add_tm SNOWBALL

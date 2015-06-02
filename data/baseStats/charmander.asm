@@ -4,7 +4,7 @@ db 39 ; base hp
 db 52 ; base attack
 db 43 ; base defense
 db 65 ; base speed
-db $3C ; base special attack
+db 60 ; base special attack
 db FIRE ; species type 1
 db FIRE ; species type 2
 db 45 ; catch rate
@@ -20,9 +20,9 @@ db 0
 db 3 ; growth rate
 db AB_FLAME_BODY	;ability 1
 db 00	;ability 2
-db $32	;special defense
-db 00	;base selling price
+db 50	;special defense
+db 250	;base selling price
 db 00	;evolution shed item
-db 00	;extra byte 1
-db 00	;extra byte 2
+db CAN_BE_MALE + CAN_BE_FEMALE + EG_MONSTER	;possible genders and egg group
+db 70	;base morale
 db BANK(CharmanderPicFront) ; sprite bank

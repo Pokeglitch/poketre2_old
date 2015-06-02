@@ -13,16 +13,16 @@ INCBIN "pic/bmon/firewolf.pic",0,1 ; 55, sprite dimensions
 dw FirewolfPicFront
 dw FirewolfPicBack
 ; attacks known at lvl 0
-db 0
-db 0
-db 0
-db 0
+db ROAR
+db EMBER
+db LEER
+db BONE_CLUB
 db 5 ; growth rate
 db AB_RAWHIDE	;ability 1
 db AB_FLAME_BODY	;ability 2
 db 105	;special defense
-db 00	;base selling price
-db 00	;evolution shed item
-db 00	;extra byte 1
-db 00	;extra byte 2
+db 250	;base selling price
+db DOGBONE	;evolution shed item
+db CAN_BE_MALE + CAN_BE_FEMALE + EG_DOG	;possible genders and egg group
+db 70	;base morale
 db BANK(FirewolfPicFront) ; sprite bank

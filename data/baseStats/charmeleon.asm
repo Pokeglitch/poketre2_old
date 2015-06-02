@@ -4,7 +4,7 @@ db 58 ; base hp
 db 64 ; base attack
 db 58 ; base defense
 db 80 ; base speed
-db $50 ; base special
+db 80 ; base special
 db FIRE ; species type 1
 db FIRE ; species type 2
 db 45 ; catch rate
@@ -16,13 +16,13 @@ dw CharmeleonPicBack
 db SCRATCH
 db GROWL
 db EMBER
-db 0
+db LEER
 db 3 ; growth rate
 db AB_FLAME_BODY	;ability 1
 db 00	;ability 2
-db $41	;special defense
-db 00	;base selling price
+db 65	;special defense
+db 250	;base selling price
 db 00	;evolution shed item
-db 00	;extra byte 1
-db 00	;extra byte 2
+db CAN_BE_MALE + CAN_BE_FEMALE + EG_MONSTER ;possible genders and egg group
+db 70	;base morale
 db BANK(CharmeleonPicFront) ; sprite bank

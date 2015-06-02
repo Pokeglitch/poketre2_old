@@ -5171,9 +5171,6 @@ MoveHitTest: ; 3e56b (f:656b)
 	res UsingTrappingMove,[hl] ; end multi-turn attack e.g. wrap
 	ret
 	
-;to adjust the move accuracy if the weather deems it
-
-;to adjust the move accuracy if the 
 	
 ;to see if the move has a better accuracy in the current weather:
 CheckMoveAccuracyInWeather:
@@ -5226,6 +5223,9 @@ MovesWeatherAccuracyTable:
 ;to temporaily alter the accuracy and evasion modifiers
 AlterAccuracyAndEvasionModifiers:
 	push de
+	push hl
+	ld a,[wBattleMonHeldItem]
+	push af
 	ld hl,wEnemyMonInvisibilityCounter
 	ld a,[wBattleMonAbility1]
 	ld d,a
@@ -5234,6 +5234,9 @@ AlterAccuracyAndEvasionModifiers:
 	ld a,[H_WHOSETURN]
 	and a
 	jr z,.skipEnemyInvisibility
+	pop af
+	ld a,[wEnemyMonHeldItem]
+	push af
 	ld hl,wBattleMonInvisibilityCounter
 	ld a,[wEnemyMonAbility1]
 	ld d,a
@@ -5245,6 +5248,9 @@ AlterAccuracyAndEvasionModifiers:
 	jr z,.skipInvisible
 	ld c,13		;set the evasion counter to the max if invisible
 .skipInvisible
+	pop af		;retrieve the held item
+	cp GOGGLES	;holding goggles?
+	jr z,.afterWeather		;then unaffected by the weather
 	ld a,[wBattleWeather]
 	and a
 	jr z,.afterWeather
@@ -5284,21 +5290,19 @@ AlterAccuracyAndEvasionModifiers:
 	inc b		;set back to 1
 	
 .afterDayNight
+	pop hl
 	pop de
 	ret
 	
 ; values for player turn
 CalcHitChance: ; 3e624 (f:6624)
 	ld hl,W_PLAYERMOVENUM
-	ld a,[H_WHOSETURN]
-	and a
-	push af	;store the flags
 	ld a,[wPlayerMonAccuracyMod]
 	ld b,a
 	ld a,[wEnemyMonEvasionMod]
 	ld c,a
-	call AlterAccuracyAndEvasionModifiers
-	pop af	;recover the flags
+	ld a,[H_WHOSETURN]
+	and a
 	jr z,.next
 ; values for enemy turn
 	ld hl,W_ENEMYMOVENUM
@@ -5306,8 +5310,8 @@ CalcHitChance: ; 3e624 (f:6624)
 	ld b,a
 	ld a,[wPlayerMonEvasionMod]
 	ld c,a
-	call AlterAccuracyAndEvasionModifiers
 .next
+	call AlterAccuracyAndEvasionModifiers
 	call CheckMoveAccuracyInWeather		;check the move num and see if the weather increases the accuracy
 	ld a,$0e
 	sub c
