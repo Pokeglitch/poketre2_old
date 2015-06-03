@@ -110,9 +110,9 @@ EvosMovesPointerTable: ; 3b05c (e:705c)
 	dw Mon046_EvosMoves
 	dw Mon061_EvosMoves
 	dw Mon062_EvosMoves
-	dw Mon013_EvosMoves
-	dw Mon014_EvosMoves
-	dw Mon015_EvosMoves
+	dw Weedle_EvosMoves
+	dw Kakuna_EvosMoves
+	dw Beedrill_EvosMoves
 	dw Mon170_EvosMoves	;MissingNo
 	dw Mon085_EvosMoves
 	dw Mon057_EvosMoves
@@ -121,9 +121,9 @@ EvosMovesPointerTable: ; 3b05c (e:705c)
 	dw Mon087_EvosMoves
 	dw Mon171_EvosMoves	;MissingNo
 	dw Mon172_EvosMoves	;MissingNo
-	dw Mon010_EvosMoves
-	dw Mon011_EvosMoves
-	dw Mon012_EvosMoves
+	dw Caterpie_EvosMoves
+	dw Metapod_EvosMoves
+	dw Butterfree_EvosMoves
 	dw Mon068_EvosMoves
 	dw Mon173_EvosMoves	;MissingNo
 	dw Mon055_EvosMoves
@@ -211,6 +211,362 @@ EvosMovesPointerTable: ; 3b05c (e:705c)
 ;	dw Hitmaninja_EvosMoves
 ;	dw Human_EvosMoves
 
+Meowth_EvosMoves: ; 3b55c (e:755c)
+;MEOWTH
+;Evolutions
+	db EV_LEVEL_MORALE,30,200,PERSIAN
+	db 0
+;Learnset
+	db 12,BITE
+	db 17,PAY_DAY
+	db 24,SCREECH
+	db 31,SHARPEN
+	db 39,FURY_SWIPES
+	db 46,SLASH
+	db 56,RAZOR_CLAW
+	db 66,SABERTOOTH
+	db 0
+	
+Persian_EvosMoves: ; 3b7ed (e:77ed)
+;PERSIAN
+;Evolutions
+	db EV_MEGA,1,EV_MEGA_EVOLVE,PANTHERA
+	db 0
+;Learnset
+	db 12,BITE
+	db 17,PAY_DAY
+	db 24,SCREECH
+	db 32,SHARPEN
+	db 41,FURY_SWIPES
+	db 51,SLASH
+	db 62,RAZOR_CLAW
+	db 73,SABERTOOTH
+	db 0
+	
+Panthera_EvosMoves:
+;Evolutions
+	db EV_MEGA,1,EV_MEGA_DEVOLVE,PERSIAN
+	db 0
+;Learnset
+	db 12,BITE
+	db 17,PAY_DAY
+	db 24,SCREECH
+	db 32,SHARPEN
+	db 41,FURY_SWIPES
+	db 51,SLASH
+	db 62,RAZOR_CLAW
+	db 73,SABERTOOTH
+	db 0
+	
+Growlithe_EvosMoves: ; 3b374 (e:7374)
+;GROWLITHE
+;Evolutions
+	db EV_LEVEL_HELD_ITEM,30,CHARCOAL,ARCANINE
+	db 0
+;Learnset
+	db 18,EMBER
+	db 23,LEER
+	db 30,BONE_CLUB
+	db 38,HOWL
+	db 45,CHOMP
+	db 55,FLAMETHROWER
+	db 65,FERAL
+	db 0
+	
+Arcanine_EvosMoves: ; 3b2de (e:72de)
+;ARCANINE
+;Evolutions
+	db EV_MEGA,1,EV_MEGA_EVOLVE,FIREWOLF
+	db 0
+;Learnset
+	db 18,EMBER
+	db 23,LEER
+	db 30,BONE_CLUB
+	db 40,HOWL
+	db 49,CHOMP
+	db 60,FLAMETHROWER
+	db 74,FERAL
+	db 0
+	
+Firewolf_EvosMoves:
+;Evolutions
+	db EV_MEGA,1,EV_MEGA_DEVOLVE,ARCANINE
+	db 0
+;Learnset
+	db 18,EMBER
+	db 23,LEER
+	db 30,BONE_CLUB
+	db 40,HOWL
+	db 49,CHOMP
+	db 60,FLAMETHROWER
+	db 74,FERAL
+	db 0
+	
+Bulbasaur_EvosMoves: ; 3b844 (e:7844)
+;BULBASAUR
+;Evolutions
+	db EV_LEVEL,20,IVYSAUR
+	db 0
+;Learnset
+	db 7,LEECH_SEED
+	db 13,VINE_WHIP
+	db 20,POISONPOWDER
+	db 27,POISON_IVY
+	db 34,RAZOR_LEAF
+	db 42,SPORE
+	db 50,SOLARBEAM
+	db 58,SUNLIGHT
+	db 67,BIOSHOCK
+	db 0	
+	
+Ivysaur_EvosMoves: ; 3b24b (e:724b)
+;IVYSAUR
+;Evolutions
+	db EV_LEVEL_TILE,40,EV_GRASS_TILE,VENUSAUR
+	db 0
+;Learnset
+	db 7,LEECH_SEED
+	db 13,VINE_WHIP
+	db 21,POISONPOWDER
+	db 28,POISON_IVY
+	db 36,RAZOR_LEAF
+	db 45,SPORE
+	db 54,SOLARBEAM
+	db 64,SUNLIGHT
+	db 75,BIOSHOCK
+	db 0
+	
+Venusaur_EvosMoves: ; 3b857 (e:7857)
+;VENUSAUR
+;Evolutions
+	db EV_MEGA,1,EV_MEGA_EVOLVE,SAPUSAUR
+	db 0
+;Learnset
+	db 7,LEECH_SEED
+	db 13,VINE_WHIP
+	db 23,POISONPOWDER
+	db 30,POISON_IVY
+	db 39,RAZOR_LEAF
+	db 49,SPORE
+	db 60,SOLARBEAM
+	db 71,SUNLIGHT
+	db 83,BIOSHOCK
+	db 0
+	
+Sapusaur_EvosMoves: ; 3b857 (e:7857)
+;Evolutions
+	db EV_MEGA,1,EV_MEGA_DEVOLVE,VENUSAUR
+	db 0
+;Learnset
+	db 7,LEECH_SEED
+	db 13,VINE_WHIP
+	db 23,POISONPOWDER
+	db 30,POISON_IVY
+	db 39,RAZOR_LEAF
+	db 49,SPORE
+	db 60,SOLARBEAM
+	db 71,SUNLIGHT
+	db 83,BIOSHOCK
+	db 0
+
+Charmander_EvosMoves: ; 3b938 (e:7938)
+;CHARMANDER
+;Evolutions
+	db EV_LEVEL,20,CHARMELEON
+	db 0
+;Learnset
+	db 9,EMBER
+	db 15,LEER
+	db 22,RAGE
+	db 30,FIRE_SPIN
+	db 38,SLASH
+	db 46,FLAMETHROWER
+	db 55,INFERNO
+	db 0
+	
+Charmeleon_EvosMoves: ; 3b95a (e:795a)
+;CHARMELEON
+;Evolutions
+	db EV_LEVEL_TILE,40,EV_LAVA_TILE,CHARIZARD
+	db 0
+;Learnset
+	db 9,EMBER
+	db 15,LEER
+	db 23,RAGE
+	db 31,FIRE_SPIN
+	db 40,SLASH
+	db 49,FLAMETHROWER
+	db 59,INFERNO
+	db 0
+	
+Charizard_EvosMoves: ; 3b97c (e:797c)
+;CHARIZARD
+;Evolutions
+	db EV_MEGA,1,EV_MEGA_EVOLVE,CHARCOLT
+	db 0
+;Learnset
+	db 9,EMBER
+	db 15,LEER
+	db 25,RAGE
+	db 32,FIRE_SPIN
+	db 42,SLASH
+	db 52,FLAMETHROWER
+	db 65,INFERNO
+	db 75,RAPTOR_STRIKE
+	db 85,SERPENT_SCORN
+	db 0
+	
+Charcolt_EvosMoves:
+;Evolutions
+	db EV_MEGA,1,EV_MEGA_DEVOLVE,CHARIZARD
+	db 0
+;Learnset
+	db 9,EMBER
+	db 15,LEER
+	db 25,RAGE
+	db 32,FIRE_SPIN
+	db 42,SLASH
+	db 52,FLAMETHROWER
+	db 65,INFERNO
+	db 75,RAPTOR_STRIKE
+	db 85,SERPENT_SCORN
+	db 0
+	
+Squirtle_EvosMoves: ; 3b949 (e:7949)
+;SQUIRTLE
+;Evolutions
+	db EV_LEVEL,20,WARTORTLE
+	db 0
+;Learnset
+	db 8,SPLASH
+	db 15,RIPTIDE
+	db 22,BITE
+	db 28,DEFENSE_CURL
+	db 36,WATERSPOUT
+	db 43,BUBBLEBEAM
+	db 51,HEADBUTT
+	db 61,TSUNAMI
+	db 72,HYDRO_CANNON
+	db 0
+	
+Wartortle_EvosMoves: ; 3b96b (e:796b)
+;WARTORTLE
+;Evolutions
+	db EV_LEVEL_TILE,40,EV_WATER_TILE,BLASTOISE
+	db 0
+;Learnset
+	db 8,SPLASH
+	db 15,RIPTIDE
+	db 23,BITE
+	db 30,DEFENSE_CURL
+	db 38,WATERSPOUT
+	db 46,BUBBLEBEAM
+	db 56,HEADBUTT
+	db 67,TSUNAMI
+	db 78,HYDRO_CANNON
+	db 0
+	
+Blastoise_EvosMoves: ; 3b346 (e:7346)
+;BLASTOISE
+;Evolutions
+	db EV_MEGA,1,EV_MEGA_EVOLVE,RAINER
+	db 0
+;Learnset
+	db 8,SPLASH
+	db 15,RIPTIDE
+	db 25,BITE
+	db 32,DEFENSE_CURL
+	db 41,WATERSPOUT
+	db 50,BUBBLEBEAM
+	db 61,HEADBUTT
+	db 73,TSUNAMI
+	db 84,HYDRO_CANNON
+	db 0
+	
+Rainer_EvosMoves: ; 3b346 (e:7346)
+;BLASTOISE
+;Evolutions
+	db EV_MEGA,1,EV_MEGA_DEVOLVE,BLASTOISE
+	db 0
+;Learnset
+	db 8,SPLASH
+	db 15,RIPTIDE
+	db 25,BITE
+	db 32,DEFENSE_CURL
+	db 41,WATERSPOUT
+	db 50,BUBBLEBEAM
+	db 61,HEADBUTT
+	db 73,TSUNAMI
+	db 84,HYDRO_CANNON
+	db 0
+
+	
+Caterpie_EvosMoves: ; 3b742 (e:7742)
+;CATERPIE
+;Evolutions
+	db EV_SEASON_CHANGE + WINTER_ONLY,1,METAPOD
+	db 0
+;Learnset
+	db 0
+	
+Metapod_EvosMoves: ; 3b747 (e:7747)
+;METAPOD
+;Evolutions
+	db EV_SEASON_CHANGE + SUMMER_ONLY,1,BUTTERFREE
+	db 0
+;Learnset
+	db 10,HARDEN
+	db 15,MOLT
+	db 0
+	
+Butterfree_EvosMoves: ; 3b74c (e:774c)
+;BUTTERFREE
+;Evolutions
+	db 0
+;Learnset
+	db 18,GUST
+	db 20,ACID_SILK
+	db 23,CONFUSION
+	db 25,MEDITATE
+	db 28,PSYBEAM
+	db 33,SLEEP_POWDER
+	db 38,RAZOR_WIND
+	db 0
+
+Weedle_EvosMoves: ; 3b6e4 (e:76e4)
+;WEEDLE
+;Evolutions
+	db EV_SEASON_CHANGE + WINTER_ONLY,1,KAKUNA
+	db 0
+;Learnset
+	db 0
+	
+Kakuna_EvosMoves: ; 3b6e9 (e:76e9)
+;KAKUNA
+;Evolutions
+	db EV_SEASON_CHANGE + SUMMER_ONLY,1,BEEDRILL
+	db 0
+;Learnset
+	db 10,HARDEN
+	db 15,MOLT
+	db 0
+	
+Beedrill_EvosMoves: ; 3b6ee (e:76ee)
+;BEEDRILL
+;Evolutions
+	db 0
+;Learnset
+	db 18,FURY_ATTACK
+	db 21,ACID_SILK
+	db 25,SHARPEN
+	db 29,RAGE
+	db 33,INJECTION
+	db 37,HASTEN
+	db 42,VENOM_SHOT
+	db 0
+	
+	
+	
 Mon112_EvosMoves: ; 3b1d8 (e:71d8)
 ;RHYDON
 ;Evolutions
@@ -306,22 +662,7 @@ Mon080_EvosMoves: ; 3b23b (e:723b)
 	db 44,AMNESIA
 	db 55,PSYCHIC_M
 	db 0
-Ivysaur_EvosMoves: ; 3b24b (e:724b)
-;IVYSAUR
-;Evolutions
-	db EV_LEVEL_TILE,40,EV_GRASS_TILE,VENUSAUR
-	db 0
-;Learnset
-	db 7,LEECH_SEED
-	db 13,VINE_WHIP
-	db 21,POISONPOWDER
-	db 28,POISON_IVY
-	db 36,RAZOR_LEAF
-	db 43,SPORE
-	db 50,SOLARBEAM
-	db 58,SUNLIGHT
-	db 68,BIOSHOCK
-	db 0
+
 	
 Mon103_EvosMoves: ; 3b25e (e:725e)
 ;EXEGGUTOR
@@ -435,34 +776,9 @@ Mon131_EvosMoves: ; 3b2d0 (e:72d0)
 	db 46,HYDRO_PUMP
 	db 0
 	
-Firewolf_EvosMoves:
-;Evolutions
-	db EV_MEGA,1,EV_MEGA_DEVOLVE,ARCANINE
-	db 0
-;Learnset
-	db 18,EMBER
-	db 23,LEER
-	db 30,BONE_CLUB
-	db 40,HOWL
-	db 49,CHOMP
-	db 60,FLAMETHROWER
-	db 74,FERAL
-	db 0
+
 	
-Arcanine_EvosMoves: ; 3b2de (e:72de)
-;ARCANINE
-;Evolutions
-	db EV_MEGA,1,EV_MEGA_EVOLVE,FIREWOLF
-	db 0
-;Learnset
-	db 18,EMBER
-	db 23,LEER
-	db 30,BONE_CLUB
-	db 40,HOWL
-	db 49,CHOMP
-	db 60,FLAMETHROWER
-	db 74,FERAL
-	db 0
+
 Mon151_EvosMoves: ; 3b2e0 (e:72e0)
 ;MEW
 ;Evolutions
@@ -547,37 +863,9 @@ Mon120_EvosMoves: ; 3b332 (e:7332)
 	db 47,HYDRO_PUMP
 	db 0
 	
-Rainer_EvosMoves: ; 3b346 (e:7346)
-;BLASTOISE
-;Evolutions
-	db EV_MEGA,1,EV_MEGA_DEVOLVE,BLASTOISE
-	db 0
-;Learnset
-	db 8,SPLASH
-	db 15,RIPTIDE
-	db 25,BITE
-	db 32,DEFENSE_CURL
-	db 40,BUBBLEBEAM
-	db 48,HEADBUTT
-	db 59,TSUNAMI
-	db 74,HYDRO_CANNON
-	db 0
+
 	
-Blastoise_EvosMoves: ; 3b346 (e:7346)
-;BLASTOISE
-;Evolutions
-	db EV_MEGA,1,EV_MEGA_EVOLVE,RAINER
-	db 0
-;Learnset
-	db 8,SPLASH
-	db 15,RIPTIDE
-	db 25,BITE
-	db 32,DEFENSE_CURL
-	db 40,BUBBLEBEAM
-	db 48,HEADBUTT
-	db 59,TSUNAMI
-	db 74,HYDRO_CANNON
-	db 0
+
 	
 Mon127_EvosMoves: ; 3b354 (e:7354)
 ;PINSIR
@@ -617,20 +905,7 @@ Mon153_EvosMoves: ; 3b372 (e:7372)
 	db 0
 ;Learnset
 	db 0
-Growlithe_EvosMoves: ; 3b374 (e:7374)
-;GROWLITHE
-;Evolutions
-	db EV_LEVEL_HELD_ITEM,30,CHARCOAL,ARCANINE
-	db 0
-;Learnset
-	db 18,EMBER
-	db 23,LEER
-	db 30,BONE_CLUB
-	db 38,HOWL
-	db 45,CHOMP
-	db 55,FLAMETHROWER
-	db 65,FERAL
-	db 0
+
 Mon095_EvosMoves: ; 3b384 (e:7384)
 ;ONIX
 ;Evolutions
@@ -1084,21 +1359,8 @@ Mon132_EvosMoves: ; 3b55a (e:755a)
 	db 0
 ;Learnset
 	db 0
-Meowth_EvosMoves: ; 3b55c (e:755c)
-;MEOWTH
-;Evolutions
-	db EV_LEVEL_MORALE,30,200,PERSIAN
-	db 0
-;Learnset
-	db 12,BITE
-	db 17,PAY_DAY
-	db 24,SCREECH
-	db 31,SHARPEN
-	db 39,FURY_SWIPES
-	db 46,SLASH
-	db 56,RAZOR_CLAW
-	db 66,SABERTOOTH
-	db 0
+	
+
 Mon098_EvosMoves: ; 3b56b (e:756b)
 ;KRABBY
 ;Evolutions
@@ -1452,32 +1714,7 @@ Mon062_EvosMoves: ; 3b6de (e:76de)
 	db 16,HYPNOSIS
 	db 19,WATER_GUN
 	db 0
-Mon013_EvosMoves: ; 3b6e4 (e:76e4)
-;WEEDLE
-;Evolutions
-	db EV_LEVEL,7,KAKUNA
-	db 0
-;Learnset
-	db 0
-Mon014_EvosMoves: ; 3b6e9 (e:76e9)
-;KAKUNA
-;Evolutions
-	db EV_LEVEL,10,BEEDRILL
-	db 0
-;Learnset
-	db 0
-Mon015_EvosMoves: ; 3b6ee (e:76ee)
-;BEEDRILL
-;Evolutions
-	db 0
-;Learnset
-	db 12,FURY_ATTACK
-	db 16,FOCUS_ENERGY
-	db 20,TWINEEDLE
-	db 25,RAGE
-	db 30,PIN_MISSILE
-	db 35,AGILITY
-	db 0
+
 
 Mon170_EvosMoves: ; 3b6fc (e:76fc)
 ;MISSINGNO
@@ -1556,33 +1793,8 @@ Mon172_EvosMoves: ; 3b740 (e:7740)
 	db 0
 ;Learnset
 	db 0
-Mon010_EvosMoves: ; 3b742 (e:7742)
-;CATERPIE
-;Evolutions
-	db EV_LEVEL,7,METAPOD
-	db 0
-;Learnset
-	db 0
-Mon011_EvosMoves: ; 3b747 (e:7747)
-;METAPOD
-;Evolutions
-	db EV_LEVEL,10,BUTTERFREE
-	db 0
-;Learnset
-	db 0
-Mon012_EvosMoves: ; 3b74c (e:774c)
-;BUTTERFREE
-;Evolutions
-	db 0
-;Learnset
-	db 12,CONFUSION
-	db 15,POISONPOWDER
-	db 16,STUN_SPORE
-	db 17,SLEEP_POWDER
-	db 21,SUPERSONIC
-	db 26,WHIRLWIND
-	db 32,PSYBEAM
-	db 0
+
+	
 Mon068_EvosMoves: ; 3b75c (e:775c)
 ;MACHAMP
 ;Evolutions
@@ -1751,36 +1963,9 @@ Mon110_EvosMoves: ; 3b7e1 (e:77e1)
 	db 53,EXPLOSION
 	db 0
 
-Panthera_EvosMoves:
-;Evolutions
-	db EV_MEGA,1,EV_MEGA_DEVOLVE,PERSIAN
-	db 0
-;Learnset
-	db 12,BITE
-	db 17,PAY_DAY
-	db 24,SCREECH
-	db 32,SHARPEN
-	db 41,FURY_SWIPES
-	db 51,SLASH
-	db 62,RAZOR_CLAW
-	db 73,SABERTOOTH
-	db 0
+
 	
-Persian_EvosMoves: ; 3b7ed (e:77ed)
-;PERSIAN
-;Evolutions
-	db EV_MEGA,1,EV_MEGA_EVOLVE,PANTHERA
-	db 0
-;Learnset
-	db 12,BITE
-	db 17,PAY_DAY
-	db 24,SCREECH
-	db 32,SHARPEN
-	db 41,FURY_SWIPES
-	db 51,SLASH
-	db 62,RAZOR_CLAW
-	db 73,SABERTOOTH
-	db 0
+
 Mon105_EvosMoves: ; 3b7f9 (e:77f9)
 ;MAROWAK
 ;Evolutions
@@ -1858,54 +2043,10 @@ Mon121_EvosMoves: ; 3b842 (e:7842)
 	db 0
 ;Learnset
 	db 0
-Bulbasaur_EvosMoves: ; 3b844 (e:7844)
-;BULBASAUR
-;Evolutions
-	db EV_LEVEL,20,IVYSAUR
-	db 0
-;Learnset
-	db 7,LEECH_SEED
-	db 13,VINE_WHIP
-	db 20,POISONPOWDER
-	db 27,POISON_IVY
-	db 34,RAZOR_LEAF
-	db 41,SPORE
-	db 48,SOLARBEAM
-	db 56,SUNLIGHT
-	db 65,BIOSHOCK
-	db 0	
+
 	
-Sapusaur_EvosMoves: ; 3b857 (e:7857)
-;Evolutions
-	db EV_MEGA,1,EV_MEGA_DEVOLVE,VENUSAUR
-	db 0
-;Learnset
-	db 7,LEECH_SEED
-	db 13,VINE_WHIP
-	db 23,POISONPOWDER
-	db 30,POISON_IVY
-	db 39,RAZOR_LEAF
-	db 46,SPORE
-	db 54,SOLARBEAM
-	db 64,SUNLIGHT
-	db 75,BIOSHOCK
-	db 0
-Venusaur_EvosMoves: ; 3b857 (e:7857)
-;VENUSAUR
-;Evolutions
-	db EV_MEGA,1,EV_MEGA_EVOLVE,SAPUSAUR
-	db 0
-;Learnset
-	db 7,LEECH_SEED
-	db 13,VINE_WHIP
-	db 23,POISONPOWDER
-	db 30,POISON_IVY
-	db 39,RAZOR_LEAF
-	db 46,SPORE
-	db 54,SOLARBEAM
-	db 64,SUNLIGHT
-	db 75,BIOSHOCK
-	db 0
+
+
 	
 Mon073_EvosMoves: ; 3b867 (e:7867)
 ;TENTACRUEL
@@ -2120,100 +2261,17 @@ Mon186_EvosMoves: ; 3b936 (e:7936)
 	db 0
 ;Learnset
 	db 0
-Charmander_EvosMoves: ; 3b938 (e:7938)
-;CHARMANDER
-;Evolutions
-	db EV_LEVEL,20,CHARMELEON
-	db 0
-;Learnset
-	db 9,EMBER
-	db 15,LEER
-	db 22,RAGE
-	db 30,FIRE_SPIN
-	db 38,SLASH
-	db 46,FLAMETHROWER
-	db 55,INFERNO
-	db 0
-	
-Squirtle_EvosMoves: ; 3b949 (e:7949)
-;SQUIRTLE
-;Evolutions
-	db EV_LEVEL,20,WARTORTLE
-	db 0
-;Learnset
-	db 8,SPLASH
-	db 15,RIPTIDE
-	db 22,BITE
-	db 28,DEFENSE_CURL
-	db 36,BUBBLEBEAM
-	db 43,HEADBUTT
-	db 51,TSUNAMI
-	db 62,HYDRO_CANNON
-	db 0
-	
-Charmeleon_EvosMoves: ; 3b95a (e:795a)
-;CHARMELEON
-;Evolutions
-	db EV_LEVEL_TILE,40,EV_LAVA_TILE,CHARIZARD
-	db 0
-;Learnset
-	db 9,EMBER
-	db 15,LEER
-	db 23,RAGE
-	db 31,FIRE_SPIN
-	db 40,SLASH
-	db 49,FLAMETHROWER
-	db 59,INFERNO
-	db 0
-	
-Wartortle_EvosMoves: ; 3b96b (e:796b)
-;WARTORTLE
-;Evolutions
-	db EV_LEVEL_TILE,40,EV_WATER_TILE,BLASTOISE
-	db 0
-;Learnset
-	db 8,SPLASH
-	db 15,RIPTIDE
-	db 23,BITE
-	db 30,DEFENSE_CURL
-	db 38,BUBBLEBEAM
-	db 45,HEADBUTT
-	db 55,TSUNAMI
-	db 67,HYDRO_CANNON
-	db 0
-	
-Charcolt_EvosMoves:
-;Evolutions
-	db EV_MEGA,1,EV_MEGA_DEVOLVE,CHARIZARD
-	db 0
-;Learnset
-	db 9,EMBER
-	db 15,LEER
-	db 25,RAGE
-	db 32,FIRE_SPIN
-	db 42,SLASH
-	db 52,FLAMETHROWER
-	db 65,INFERNO
-	db 75,RAPTOR_STRIKE
-	db 85,SERPENT_SCORN
-	db 0
 
-Charizard_EvosMoves: ; 3b97c (e:797c)
-;CHARIZARD
-;Evolutions
-	db EV_MEGA,1,EV_MEGA_EVOLVE,CHARCOLT
-	db 0
-;Learnset
-	db 9,EMBER
-	db 15,LEER
-	db 25,RAGE
-	db 32,FIRE_SPIN
-	db 42,SLASH
-	db 52,FLAMETHROWER
-	db 65,INFERNO
-	db 75,RAPTOR_STRIKE
-	db 85,SERPENT_SCORN
-	db 0
+	
+
+	
+
+	
+
+	
+
+
+
 
 Mon187_EvosMoves: ; 3b98a (e:798a)
 ;MISSINGNO

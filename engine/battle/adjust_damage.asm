@@ -71,6 +71,7 @@ _AdjustDamageForMoveType: ; 3e3a5 (f:63a5)
 	call CheckBirdMoves
 	call CheckInvincibilityPotion
 	call CheckHeldItem
+	call CheckSkillsAndTraits
 	call MoveFailInLandscapeCheck
 	call MoveFailInLandscapeUnlessTypesMatchCheck
 	call HoloOrShadowCheck
@@ -115,6 +116,49 @@ _AdjustDamageForMoveType: ; 3e3a5 (f:63a5)
 	ld a,[wd11e]	;load type into a
 	ld [wWhichTypeUsed],a	;store into "which type used"
 	ret
+	
+;to boost the damage by 10% if parent and other pokemon is of the same gender
+;boost damage by 10% if other pokemon attacked first and pokemon knows pacing skill
+CheckSkillsAndTraits:
+	ld hl,wBattleMonTraits
+	ld de,wEnemyMonTraits
+	ld a,[H_WHOSETURN]
+	and a
+	jr z,.skipEnemyTurn	;dont swap hl and de if players turn
+	push hl
+	push de
+	pop hl
+	pop de
+.skipEnemyTurn
+	bit ParentTrait,[hl]		;is the attacking pokemon a parent?
+	jr z,.afterParent		;skip down if not
+	ld a,[de]		;load defending pokemon into a
+	bit FemaleTrait,[hl]		;is the attacking pokemon female?
+	jr z,.checkMale				;skip down if not female
+	bit FemaleTrait,a		;is the defending pokemon female?
+	call nz,.boostDamage		;boost damage if so
+	jr .afterParent
+.checkMale
+	bit FemaleTrait,a		;is the defending pokemon female?
+	call z,.boostDamage		;boost damage if it is not female	
+	;fall through
+.afterParent
+	ld a,[H_WHOSETURN]
+	ld hl,wWhoAttackedFirst
+	cp [hl]		;did this pokemon attack first?
+	jr z,.afterPacing
+	ld hl,wBattleMonLearnedTraits
+	and a
+	jr z,.skipEnemyPacing		;skip down if players turn
+	ld hl,wEnemyMonLearnedTraits
+.skipEnemyPacing
+	bit PacingSkill,[hl]		;does the attacking pokemon have the pacing skill?
+	call nz,.boostDamage		;boost the damage if so
+.afterPacing
+	ret
+.boostDamage
+	ld c,11	;110%
+	jp MultiplyDamageByAmount
 	
 ;to boost or reduce the damage by 10% based upon the pokemons held item
 CheckHeldItem:

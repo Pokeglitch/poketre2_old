@@ -394,6 +394,7 @@ MainInBattleLoop: ; 3c233 (f:4233)
 .enemyMovesFirst
 	ld a, $1
 	ld [H_WHOSETURN], a
+	ld [wWhoAttackedFirst],a
 	callab TrainerAI
 	jr c, .AIActionUsedEnemyFirst
 	call ExecuteEnemyMove
@@ -420,6 +421,8 @@ MainInBattleLoop: ; 3c233 (f:4233)
 	call CheckNumAttacksLeft
 	jp MainInBattleLoop
 .playerMovesFirst
+	xor a
+	ld [wWhoAttackedFirst],a
 	call ExecutePlayerMove
 	ld a, [wEscapedFromBattle]
 	and a ; was Teleport, Road, or Whirlwind used to escape from battle?
@@ -1874,6 +1877,7 @@ LoadLastStand:
 	
 	call ApplyBurnAndParalysisPenaltiesToPlayer
 	callab ApplyPlayerPotionStatBoost
+	callab ApplyPlayerHeldItemStatBoost
 	call CalcPlayerModStatsSavewD11E
 	ret
 
@@ -1916,6 +1920,7 @@ LoadBattleMonFromParty: ; 3cba6 (f:4ba6)
 	callab LoadExtraPlayerMonBytesIntoBattle
 	call ApplyBurnAndParalysisPenaltiesToPlayer
 	callab ApplyPlayerPotionStatBoost
+	callab ApplyPlayerHeldItemStatBoost
 	call CalcPlayerModStatsSavewD11E
 	ret
 
@@ -1955,6 +1960,7 @@ LoadEnemyMonFromParty: ; 3cc13 (f:4c13)
 	callab LoadExtraEnemyMonBytesIntoBattle
 	call ApplyBurnAndParalysisPenaltiesToEnemy
 	callab ApplyEnemyPotionStatBoost
+	callab ApplyEnemyHeldItemStatBoost
 	call CalcEnemyModStatsSavewD11E
 	ld hl, W_MONHBASESTATS
 	ld de, wEnemyMonBaseStats
@@ -2722,6 +2728,7 @@ LinkBattleExchangeData: ; 3d605 (f:5605)
 	dec b
 	jr nz, .asm_3d654
 	ret
+
 
 ExecutePlayerMove: ; 3d65e (f:565e)
 	xor a
@@ -3940,28 +3947,9 @@ GetDamageVarsForPlayerAttack: ; 3ddcf (f:5dcf)
 	ld c, [hl] ; bc = enemy defense
 	ld a, [W_ENEMYBATTSTATUS3]
 	bit HasReflectUp, a ; check for Reflect
-	jr z, .physicalAttackCritCheck
-; if the enemy has used Reflect, double the enemy's defense
-	sla c
-	rl b
+	call nz, DoubleBCUpTo999 ;if the enemy has used Reflect, double the enemy's defense
 .physicalAttackCritCheck
 	ld hl, wBattleMonAttack
-	ld a, [wCriticalHitOrOHKO]
-	and a ; check for critical hit
-	jr z, .scaleStats
-; in the case of a critical hit, reset the player's attack and the enemy's defense to their base values
-	ld c, 3 ; defense stat
-	call GetEnemyMonStat
-	ld a, [H_PRODUCT + 2]
-	ld b, a
-	ld a, [H_PRODUCT + 3]
-	ld c, a
-	push bc
-	ld hl, wPartyMon1Attack
-	ld a, [wPlayerMonNumber]
-	ld bc, wPartyMon2 - wPartyMon1
-	call AddNTimes
-	pop bc
 	jr .scaleStats
 .specialAttack
 	ld hl, wEnemyMonSpecialDefense
@@ -3970,30 +3958,10 @@ GetDamageVarsForPlayerAttack: ; 3ddcf (f:5dcf)
 	ld c, [hl] ; bc = enemy special defense
 	ld a, [W_ENEMYBATTSTATUS3]
 	bit HasLightScreenUp, a ; check for Light Screen
-	jr z, .specialAttackCritCheck
-; if the enemy has used Light Screen, double the enemy's special
-	sla c
-	rl b
-; reflect and light screen boosts do not cap the stat at 999, so weird things will happen during stats scaling if
-; a Pokemon with 512 or more Defense has ued Reflect, or if a Pokemon with 512 or more Special has used Light Screen
-.specialAttackCritCheck
+	call nz, DoubleBCUpTo999 ; if the enemy has used Light Screen, double the enemy's special
 	ld hl, wBattleMonSpecial
-	ld a, [wCriticalHitOrOHKO]
-	and a ; check for critical hit
-	jr z, .scaleStats
-; in the case of a critical hit, reset the player's and enemy's specials to their base values
-	ld c, 5 ; special stat
-	call GetEnemyMonStat
-	ld a, [H_PRODUCT + 2]
-	ld b, a
-	ld a, [H_PRODUCT + 3]
-	ld c, a
-	push bc
-	ld hl, wPartyMon1Special
-	ld a, [wPlayerMonNumber]
-	ld bc, wPartyMon2 - wPartyMon1
-	call AddNTimes
-	pop bc
+	;fall through
+	
 ; if either the offensive or defensive stat is too large to store in a byte, scale both stats by dividing them by 4
 ; this allows values with up to 10 bits (values up to 1023) to be handled
 ; anything larger will wrap around
@@ -4004,11 +3972,7 @@ GetDamageVarsForPlayerAttack: ; 3ddcf (f:5dcf)
 	or b ; is either high byte nonzero?
 	jr z, .next ; if not, we don't need to scale
 ; bc /= 4 (scale enemy's defensive stat)
-	srl b
-	rr c
-	srl b
-	rr c
-; defensive stat can actually end up as 0, leading to a division by 0 freeze during damage calculation
+	call DivideBCBy4AndNonZero
 ; hl /= 4 (scale player's offensive stat)
 	srl h
 	rr l
@@ -4030,6 +3994,40 @@ GetDamageVarsForPlayerAttack: ; 3ddcf (f:5dcf)
 .done
 	ld a, 1
 	and a
+	ret
+	
+;to double bc, but not exceed 999
+DoubleBCUpTo999:
+	push af
+	sla c
+	rl b
+	ld a,b
+	cp 4
+	jr nc,.setTo999	;over over 3, then set to 999
+	cp 3
+	jr nz,.finish		;if not 3, then finish
+	ld a,c
+	cp $e8
+	jr c,.finish		;if under $3e8, then finish
+.setTo999
+	ld bc,999
+.finish
+	pop af
+	ret
+	
+;to divide bc by 4 and make sure its non zero
+DivideBCBy4AndNonZero:
+	push af
+	srl b
+	rr c
+	srl b
+	rr c
+	ld a,b
+	or c
+	jr nz,.finish		;finish if not zero
+	inc c		;set to 1 if it was zero
+.finish
+	pop af
 	ret
 
 ; sets b, c, d, and e for the CalculateDamage routine in the case of an attack by the enemy mon
@@ -4054,28 +4052,8 @@ GetDamageVarsForEnemyAttack: ; 3de75 (f:5e75)
 	ld c, [hl] ; bc = player defense
 	ld a, [W_PLAYERBATTSTATUS3]
 	bit HasReflectUp, a ; check for Reflect
-	jr z, .physicalAttackCritCheck
-; if the player has used Reflect, double the player's defense
-	sla c
-	rl b
-.physicalAttackCritCheck
+	call nz, DoubleBCUpTo999 ; if the player has used Reflect, double the player's defense (dont go over 999)
 	ld hl, wEnemyMonAttack
-	ld a, [wCriticalHitOrOHKO]
-	and a ; check for critical hit
-	jr z, .scaleStats
-; in the case of a critical hit, reset the player's defense and the enemy's attack to their base values
-	ld hl, wPartyMon1Defense
-	ld a, [wPlayerMonNumber]
-	ld bc, wPartyMon2 - wPartyMon1
-	call AddNTimes
-	ld a, [hli]
-	ld b, a
-	ld c, [hl]
-	push bc
-	ld c, 2 ; attack stat
-	call GetEnemyMonStat
-	ld hl, H_PRODUCT + 2
-	pop bc
 	jr .scaleStats
 .specialAttack
 	ld hl, wBattleMonSpecialDefense
@@ -4084,30 +4062,10 @@ GetDamageVarsForEnemyAttack: ; 3de75 (f:5e75)
 	ld c, [hl]
 	ld a, [W_PLAYERBATTSTATUS3]
 	bit HasLightScreenUp, a ; check for Light Screen
-	jr z, .specialAttackCritCheck
-; if the player has used Light Screen, double the player's special
-	sla c
-	rl b
-; reflect and light screen boosts do not cap the stat at 999, so weird things will happen during stats scaling if
-; a Pokemon with 512 or more Defense has ued Reflect, or if a Pokemon with 512 or more Special has used Light Screen
-.specialAttackCritCheck
+	call nz, DoubleBCUpTo999 ; if the player has used Light Screen, double the player's special
 	ld hl, wEnemyMonSpecial
-	ld a, [wCriticalHitOrOHKO]
-	and a ; check for critical hit
-	jr z, .scaleStats
-; in the case of a critical hit, reset the player's and enemy's specials to their base values
-	ld hl, wPartyMon1Special
-	ld a, [wPlayerMonNumber]
-	ld bc, wPartyMon2 - wPartyMon1
-	call AddNTimes
-	ld a, [hli]
-	ld b, a
-	ld c, [hl]
-	push bc
-	ld c, 5 ; special stat
-	call GetEnemyMonStat
-	ld hl, H_PRODUCT + 2
-	pop bc
+	;fall through
+	
 ; if either the offensive or defensive stat is too large to store in a byte, scale both stats by dividing them by 4
 ; this allows values with up to 10 bits (values up to 1023) to be handled
 ; anything larger will wrap around
@@ -4118,11 +4076,7 @@ GetDamageVarsForEnemyAttack: ; 3de75 (f:5e75)
 	or b ; is either high byte nonzero?
 	jr z, .next ; if not, we don't need to scale
 ; bc /= 4 (scale player's defensive stat)
-	srl b
-	rr c
-	srl b
-	rr c
-; defensive stat can actually end up as 0, leading to a division by 0 freeze during damage calculation
+	call DivideBCBy4AndNonZero
 ; hl /= 4 (scale enemy's offensive stat)
 	srl h
 	rr l
@@ -4144,50 +4098,6 @@ GetDamageVarsForEnemyAttack: ; 3de75 (f:5e75)
 .done
 	ld a, $1
 	and a
-	and a
-	ret
-
-; get stat c of enemy mon
-; c: stat to get (HP=1,Attack=2,Defense=3,Speed=4,Special=5)
-GetEnemyMonStat: ; 3df1c (f:5f1c)
-	push de
-	push bc
-	ld a, [wLinkState]
-	cp LINK_STATE_BATTLING
-	jr nz, .notLinkBattle
-	ld hl, wEnemyMon1Stats
-	dec c
-	sla c
-	ld b, $0
-	add hl, bc
-	ld a, [wEnemyMonPartyPos]
-	ld bc, wEnemyMon2 - wEnemyMon1
-	call AddNTimes
-	ld a, [hli]
-	ld [H_MULTIPLICAND + 1], a
-	ld a, [hl]
-	ld [H_MULTIPLICAND + 2], a
-	pop bc
-	pop de
-	ret
-.notLinkBattle
-	ld a, [wEnemyMonLevel]
-	ld [W_CURENEMYLVL], a
-	ld a, [wEnemyMonSpecies]
-	ld [wd0b5], a
-	call GetMonHeader
-	ld hl, wEnemyMonDVs
-	ld de, wLoadedMonSpeedExp
-	ld a, [hli]
-	ld [de], a
-	inc de
-	ld a, [hl]
-	ld [de], a
-	pop bc
-	ld b, $0
-	ld hl, wLoadedMonSpeedExp - $b ; this base address makes CalcStat look in [wLoadedMonSpeedExp] for DVs
-	call CalcStat
-	pop de
 	ret
 
 CalculateDamage: ; 3df65 (f:5f65)
@@ -4227,7 +4137,21 @@ CalculateDamage: ; 3df65 (f:5f65)
 	and a
 	ret z
 .skipbp
-
+	ld hl,wBattleMonLearnedTraits
+	ld a, [H_WHOSETURN] ; whose turn?
+	and a
+	jr z, .skipEnemySkills		;dont load enemy skills if player turn
+	ld hl,wEnemyMonLearnedTraits
+.skipEnemySkills
+	bit BoostUnder60Skill,[hl]		;does the pokemon have the 'boost under 60' skill?
+	jr z,.afterSkillCheck		;skip down if not
+	ld a,d
+	cp 61		;compare the attack base power to 61
+	jr nc,.afterSkillCheck		;if the base power was over 60, then dont modify
+	srl a	;divide by 2
+	add d
+	ld d,a		;d = d * 1.5	
+.afterSkillCheck
 	xor a
 	ld hl, H_DIVIDEND
 	ldi [hl], a
@@ -5290,6 +5214,61 @@ AlterAccuracyAndEvasionModifiers:
 	inc b		;set back to 1
 	
 .afterDayNight
+	ld hl,wBattleMonLearnedTraits
+	ld de,wEnemyMonLearnedTraits
+	ld a,[H_WHOSETURN]
+	and a
+	jr z,.skipEnemySkills		;skip down if players turn
+	push de
+	push hl
+	pop de
+	pop hl		;swap hl and de
+.skipEnemySkills
+	bit AccuracySkill,[hl]		;does the attacking pokemon have increased accuracy?
+	jr z,.checkEvade		;skip down if not
+	inc b		;increase the accuracy
+	ld a,b
+	cp 14		;is it maxxed out?
+	jr nz,.checkEvade		;skip down if not
+	dec b
+.checkEvade
+	ld a,[de]
+	bit EvasionSkill,a		;does the defending pokemon have increased evade?
+	jr z,.afterSkills		;skip down if not
+	inc c		;incrase the evade
+	ld a,c
+	cp 14		;is it maxxed?
+	jr nz,.afterSkills		;skip down if not
+	dec c
+.afterSkills
+	ld hl,wBattleMonHeldItem
+	ld de,wEnemyMonHeldItem
+	ld a,[H_WHOSETURN]
+	and a
+	jr z,.skipEnemyHeldItem		;skip down if players turn
+	push hl
+	push de
+	pop hl
+	pop de
+.skipEnemyHeldItem
+	ld a,[hl]		;load attackers held item
+	cp CLOVER		;is it CLOVER?
+	jr nz,.checkHeldItemEvade		;skip down if not
+	inc b		;increase the accuracy
+	ld a,b
+	cp 14		;is it maxxed out?
+	jr nz,.checkHeldItemEvade		;skip down if not
+	dec b
+.checkHeldItemEvade
+	ld a,[de]
+	cp CAMOUFLAGE		;is defender holding CAMOUFLAGE?
+	jr nz,.afterHeldItems		;skip down if not
+	inc c		;incrase the evade
+	ld a,c
+	cp 14		;is it maxxed?
+	jr nz,.afterHeldItems		;skip down if not
+	dec c
+.afterHeldItems
 	pop hl
 	pop de
 	ret
@@ -6256,6 +6235,7 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	callab LoadExtraEnemyMonBytesIntoBattle
 	call ApplyBurnAndParalysisPenaltiesToEnemy
 	callab ApplyEnemyPotionStatBoost
+	callab ApplyEnemyHeldItemStatBoost
 	call CalcEnemyModStatsSavewD11E
 	ret
 .finishWild
@@ -6335,6 +6315,8 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 	ld a,2
 	ld [W_ISINBATTLE],a	;set the battle mode back to Trainer battle
 .finish
+	callab ApplyEnemyHeldItemStatBoost
+	call CalcEnemyModStatsSavewD11E
 	ret
 
 ; calls BattleTransition to show the battle transition animation and initializes some battle variables
@@ -8178,6 +8160,21 @@ TwoToFiveAttacksEffect: ; 3f811 (f:7811)
 .asm_3f851
 	inc a
 	inc a
+	push hl
+	push af
+	ld hl,wBattleMonLearnedTraits
+	ld a, [H_WHOSETURN]
+	and a
+	jr z, .skipEnemySkills	;skip down if players turn
+	ld hl,wEnemyMonLearnedTraits
+.skipEnemySkills
+	pop af
+	bit LongerMultiSkill,[hl]		;does the pokemon have the 'longer multiturn' skill?	
+	pop hl
+	jr z,.saveNumberOfHits		;skip down if not
+	cp 5		;is it already 5?
+	jr z,.saveNumberOfHits		;skip down if so
+	inc a	
 .saveNumberOfHits
 	ld [de], a
 	ld [bc], a
@@ -8207,6 +8204,20 @@ FlinchSideEffect: ; 3f85b (f:785b)
 	call BattleRandom
 	cp b
 	ret nc
+	ld a, [H_WHOSETURN]
+	and a
+	ld a,[wBattleMonLearnedTraits]
+	jr nz, .skipEnemyTurn	;skip down if enemys turn
+	ld a,[wEnemyMonLearnedTraits]
+.skipEnemyTurn
+	bit NoFlinchSkill,a		;does the pokemon have the no-flinch skill?
+	jr z,.doesntHaveNoFlinchSkill		;then pokemon will flinch
+	
+	call BattleRandom
+	cp $F4		;95% chance
+	ret c		;if under $F4, then dont flinch
+	
+.doesntHaveNoFlinchSkill
 	set Flinched, [hl] ; set mon's status to flinching
 	call ClearHyperBeam
 	ret

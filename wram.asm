@@ -2918,6 +2918,10 @@ wAutosaveBits::
 ;holds which item is being used
 wWhichItemBeingUsed::
 	ds 1
+	
+;holds who attacked first (player or trainer)
+wWhoAttackedFirst::
+	ds 1
 
 
 SECTION "Stack", WRAMX[$dfff], BANK[1]

@@ -2,7 +2,6 @@ KeyItemBitfield: ; e799 (3:6799)
 	initKeyItems
 	addKeyItem MATCH_BOX
 	addKeyItem RAFT
-	addKeyItem SHELL
 	addKeyItem HELIX_FOSSIL
 	addKeyItem JAIL_KEYCARD
 	addKeyItem ARTIFACT

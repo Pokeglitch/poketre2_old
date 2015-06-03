@@ -207,6 +207,66 @@ RainerLearnset:
 	learnTM SIDE_STEP
 	endLearnset
 	
+WeedleLearnset:
+KakunaLearnset:
+CaterpieLearnset:
+MetapodLearnset:
+	initLearnset
+	endLearnset
+
+ButterfreeLearnset:
+	initLearnset
+	learnTM BODY_SLAM
+	learnTM TAKE_DOWN
+	learnTM STICKY_BOMB
+	learnTM REST
+	learnTM HYPER_BEAM
+	learnTM SNOWBALL
+	
+	learnTM BUG_BITE
+	learnTM MOLT
+	learnTM TORNADO
+	learnTM SKY_ATTACK
+	learnTM PSYWAVE
+	learnTM POLLEN_BLAST
+	
+	learnTM INCENSE
+	learnTM GLARE
+	learnTM HASTEN
+	learnTM DEFENSE_CURL
+	learnTM DRENCH
+	learnTM CONCENTRATE	
+	endLearnset
+
+BeedrillLearnset:
+	initLearnset
+	learnTM BODY_SLAM
+	learnTM TAKE_DOWN
+	learnTM STICKY_BOMB
+	learnTM REST
+	learnTM HYPER_BEAM
+	learnTM SNOWBALL
+	
+	learnTM BUG_BITE
+	learnTM MOLT
+	learnTM SLASH
+	learnTM SKY_ATTACK
+	learnTM POLLEN_BLAST
+	learnTM BIOSHOCK
+	learnTM TOXIC_GAS
+	learnTM VENOM_SHOT
+	learnTM ACID
+	
+	learnTM INCENSE
+	learnTM GLARE
+	learnTM HASTEN
+	learnTM DEFENSE_CURL
+	learnTM DRENCH
+	learnTM CONCENTRATE	
+	endLearnset
+	
+	
+	
 CommonLearnsets:
 
 	learnTM BITE

@@ -70,7 +70,7 @@ const_value = 1
 	const POTION        ; $14
 	const PURIFICATION  ; $15
 	const WINTER_BALL   ; $16
-	const SHELL         ; $17
+	const MOTOR         ; $17
 	const WHITE_SAND    ; $18
 	const SEA_SALT      ; $19
 	const VOLCANIC_ASH  ; $1A
@@ -131,7 +131,6 @@ const_value = 1
 	const MAX_ETHER     ; $51
 	const ELIXER        ; $52
 	const SUPER_ELIXER  ; $53
-	const MOTOR
 	const OXYGEN_TANK
 	const PROP_CHAMBER
 	const NOZZLE
@@ -219,11 +218,11 @@ const_value = 1
 ;held items that boost stats
 	const CLOVER ;increases accuracy
 	const CAMOUFLAGE	;increases evade
-	const VITAL_BRACE ;increase sp. def
-	const FORCE_BRACE ;increase sp. att
-	const QUICK_BRACE ;increase speed
 	const POWER_BRACE ;increase att
 	const GUARD_BRACE ;increase def
+	const QUICK_BRACE ;increase speed
+	const FORCE_BRACE ;increase sp. att
+	const VITAL_BRACE ;increase sp. def
 	const ENERGY_BRACE ;increase pp recovery
 ;other held items
 	const EXP_SHARE	;if alive and in party, will get half exp
@@ -231,6 +230,7 @@ const_value = 1
 	const MACHO_BRACE ;each stat EV gets +5 each time exp is gained
 	const GOGGLES	;protected from accuracy drop due to weather
 	const WEATHER_ORB	;boosts the number of turns weather occurs
+	const FOCUS_BAND	;10% of fainting move leaving 1 hp left
 
 ;hms and tms
 HM_01         EQU $AF
