@@ -1576,8 +1576,13 @@ wPresetTraits::
 	ds 1
 	
 wAdditionalInBattleDataEnd::
+
+;holds which style of alternative sprite should be loaded
+wWhichAltSprite::
+	ds 1
+
 wExtraBytes::
-	ds 8
+	ds 7
 	
 wNumBoxItems:: ; d31d
 	ds 1
@@ -2921,6 +2926,13 @@ wWhichItemBeingUsed::
 	
 ;holds who attacked first (player or trainer)
 wWhoAttackedFirst::
+	ds 1
+	
+;used when loading a pokemon sprite or header, to load specific styles
+;bit 0 = zombie
+;bit 1 = holo
+;bit 2 = shadow
+wAltPokemonSprite::
 	ds 1
 
 

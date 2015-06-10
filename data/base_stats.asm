@@ -209,3 +209,68 @@ INCLUDE "data/baseStats/mewthree.asm"
 INCLUDE "data/baseStats/mewt8.asm"
 INCLUDE "data/baseStats/absentid.asm"
 INCLUDE "data/baseStats/missingno.asm"
+
+;checks to see what source we should use for the pokemon sprite
+CopyAndChangePokemonSpritePointer:
+	call CopyData		;copy the header data
+	ld a,[wWhichAltSprite]
+	and a
+	ret z		;return if no alt sprite
+	ld hl,wd11e
+	ld c,[hl]
+	dec c
+	ld b,0		;bc = pokedex index
+	push bc
+	pop hl
+	push af
+	ld a,4
+.multBy5
+	add hl,bc
+	dec a
+	jr nz,.multBy5		;add the index 5 times (5 alt sprites)
+	
+	push hl
+	pop bc
+	ld hl,AltSpritesTable
+	add hl,bc
+	add hl,bc		;hl now points to the start of the pokemon in the table
+	
+	pop af		;reload the alt sprite id
+	dec a
+	add a
+	ld c,a
+	ld b,0
+	add hl,bc		;hl points to the correct sprite
+	
+	ld a,[hli]
+	ld [W_MONHFRONTSPRITE],a
+	ld a,[hl]
+	ld [W_MONHFRONTSPRITE + 1],a
+	
+	ret
+
+;pointers to the alt sprite for each pokemon in dex order
+AltSpritesTable:
+	dw MeowthChibi
+	dw MeowthDoodle
+	dw MeowthJapanese
+	dw MeowthSketch
+	dw MeowthSketch2
+	
+	dw PersianChibi
+	dw PersianDoodle
+	dw PersianJapanese
+	dw PersianSketch
+	dw PersianSketch2
+	
+	dw GrowlitheChibi
+	dw GrowlitheDoodle
+	dw GrowlitheJapanese
+	dw GrowlitheSketch
+	dw GrowlitheSketch2
+	
+	dw ArcanineChibi
+	dw ArcanineDoodle
+	dw ArcanineJapanese
+	dw ArcanineSketch
+	dw ArcanineSketch2

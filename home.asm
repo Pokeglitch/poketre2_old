@@ -598,7 +598,7 @@ GetMonHeader:: ; 1537 (0:1537)
 	call AddNTimes
 	ld de,W_MONHEADER
 	ld bc,28
-	call CopyData
+	call CopyAndChangePokemonSpritePointer
 	ld a,[wd0b5]
 	ld [W_MONHDEXNUM],a
 	pop af
