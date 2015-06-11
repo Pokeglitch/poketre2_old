@@ -598,7 +598,7 @@ GetMonHeader:: ; 1537 (0:1537)
 	call AddNTimes
 	ld de,W_MONHEADER
 	ld bc,28
-	call CopyAndChangePokemonSpritePointer
+	call CopyData		;copy the header data
 	ld a,[wd0b5]
 	ld [W_MONHDEXNUM],a
 	pop af
@@ -712,14 +712,9 @@ PrintBCDDigit:: ; 1604 (0:1604)
 ; assumes the corresponding mon header is already loaded
 ; hl contains offset to sprite pointer ($b for front or $d for back)
 UncompressMonSprite:: ; 1627 (0:1627)
-	ld bc,W_MONHEADER
-	add hl,bc
-	ld a,[hli]
-	ld [W_SPRITEINPUTPTR],a    ; fetch sprite input pointer
-	ld a,[hl]
-	ld [W_SPRITEINPUTPTR+1],a
-; to use the last byte of the pokemon data as the sprite bank
-	ld a,[W_MONHSPRITEBANK]	
+	ld d,l
+	callab GetPokemonSpritePointer
+	ld a,h		;store the sprite bank into a
 	jp UncompressSpriteData
 
 ; de: destination location

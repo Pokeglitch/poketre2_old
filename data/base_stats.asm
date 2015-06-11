@@ -211,66 +211,136 @@ INCLUDE "data/baseStats/absentid.asm"
 INCLUDE "data/baseStats/missingno.asm"
 
 ;checks to see what source we should use for the pokemon sprite
-CopyAndChangePokemonSpritePointer:
-	call CopyData		;copy the header data
+GetPokemonSpritePointer:
+	ld a,d
+	ld hl,W_MONHBACKSPRITE
+	cp $d		;loading back sprite?
+	jr nz,.loadFrontSprite
+
+.loadOriginalSprite
+	ld a,[hli]
+	ld [W_SPRITEINPUTPTR],a    ; fetch sprite input pointer
+	ld a,[hl]
+	ld [W_SPRITEINPUTPTR+1],a
+	ld a,[W_MONHSPRITEBANK]
+	ld h,a
+	ret
+	
+	
+.loadFrontSprite
+	ld hl,W_MONHFRONTSPRITE
 	ld a,[wWhichAltSprite]
 	and a
-	ret z		;return if no alt sprite
+	jr z,.loadOriginalSprite		;load original if no alt sprite
+	
+	push af
+	
+	;get the index
+	ld a,[wd11e]
+	push af
+	ld a,[W_MONHDEXNUM]
+	ld [wd11e],a
+	predef IndexToPokedex
 	ld hl,wd11e
-	ld c,[hl]
+	ld c, [hl]
+	pop af
+	ld [wd11e],a		;restore what d11e was originally
+	
 	dec c
 	ld b,0		;bc = pokedex index
 	push bc
 	pop hl
-	push af
-	ld a,4
-.multBy5
-	add hl,bc
-	dec a
-	jr nz,.multBy5		;add the index 5 times (5 alt sprites)
+	
+	add hl,bc		;add the index 1 more time (1 alt sprites)
 	
 	push hl
 	pop bc
 	ld hl,AltSpritesTable
 	add hl,bc
+	add hl,bc
 	add hl,bc		;hl now points to the start of the pokemon in the table
 	
-	pop af		;reload the alt sprite id
+	pop af
+	
 	dec a
+	ld c,a
 	add a
+	add c
 	ld c,a
 	ld b,0
 	add hl,bc		;hl points to the correct sprite
-	
+
 	ld a,[hli]
-	ld [W_MONHFRONTSPRITE],a
+	ld [W_SPRITEINPUTPTR],a    ; fetch sprite input pointer
+	ld a,[hli]
+	ld [W_SPRITEINPUTPTR+1],a
 	ld a,[hl]
-	ld [W_MONHFRONTSPRITE + 1],a
-	
+	ld h,a
 	ret
 
 ;pointers to the alt sprite for each pokemon in dex order
 AltSpritesTable:
-	dw MeowthChibi
-	dw MeowthDoodle
 	dw MeowthJapanese
+	db BANK(MeowthJapanese)
 	dw MeowthSketch
-	dw MeowthSketch2
+	db BANK(MeowthSketch)
 	
-	dw PersianChibi
-	dw PersianDoodle
 	dw PersianJapanese
+	db BANK(PersianJapanese)
 	dw PersianSketch
-	dw PersianSketch2
+	db BANK(PersianSketch)
 	
-	dw GrowlitheChibi
-	dw GrowlitheDoodle
 	dw GrowlitheJapanese
+	db BANK(GrowlitheJapanese)
 	dw GrowlitheSketch
-	dw GrowlitheSketch2
+	db BANK(GrowlitheSketch)
 	
-	dw ArcanineChibi
-	dw ArcanineDoodle
 	dw ArcanineJapanese
+	db BANK(ArcanineJapanese)
 	dw ArcanineSketch
-	dw ArcanineSketch2
+	db BANK(ArcanineSketch)
+	
+	dw BulbasaurJapanese
+	db BANK(BulbasaurJapanese)
+	dw BulbasaurSketch
+	db BANK(BulbasaurSketch)
+	
+	dw IvysaurJapanese
+	db BANK(IvysaurJapanese)
+	dw IvysaurSketch
+	db BANK(IvysaurSketch)
+	
+	dw VenusaurJapanese
+	db BANK(VenusaurJapanese)
+	dw VenusaurSketch
+	db BANK(VenusaurSketch)
+	
+	dw CharmanderJapanese
+	db BANK(CharmanderJapanese)
+	dw CharmanderSketch
+	db BANK(CharmanderSketch)
+	
+	dw CharmeleonJapanese
+	db BANK(CharmeleonJapanese)
+	dw CharmeleonSketch
+	db BANK(CharmeleonSketch)
+	
+	dw CharizardJapanese
+	db BANK(CharizardJapanese)
+	dw CharizardSketch
+	db BANK(CharizardSketch)
+	
+	dw SquirtleJapanese
+	db BANK(SquirtleJapanese)
+	dw SquirtleSketch
+	db BANK(SquirtleSketch)
+	
+	dw WartortleJapanese
+	db BANK(WartortleJapanese)
+	dw WartortleSketch
+	db BANK(WartortleSketch)
+	
+	dw BlastoiseJapanese
+	db BANK(BlastoiseJapanese)
+	dw BlastoiseSketch
+	db BANK(BlastoiseSketch)
