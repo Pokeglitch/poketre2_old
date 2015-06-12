@@ -2929,10 +2929,7 @@ wWhoAttackedFirst::
 	ds 1
 	
 ;used when loading a pokemon sprite or header, to load specific styles
-;bit 0 = zombie
-;bit 1 = holo
-;bit 2 = shadow
-wAltPokemonSprite::
+wSpriteFilter::
 	ds 1
 
 

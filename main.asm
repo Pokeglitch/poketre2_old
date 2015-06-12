@@ -6460,21 +6460,7 @@ INCLUDE "engine/items/tm_prices.asm"
 
 ;first bank for the alt mon sprites
 SECTION "bank20",ROMX,BANK[$20]
-MeowthJapanese::      INCBIN "pic/altmons/meowth-japenese-final.pic"
-GrowlitheJapanese::      INCBIN "pic/altmons/growlithe-japanese-final.pic"
-PersianJapanese::      INCBIN "pic/altmons/persian-japanese-final.pic"
-ArcanineJapanese::      INCBIN "pic/altmons/arcanine-japanese-final.pic"
-BulbasaurJapanese::      INCBIN "pic/altmons/bulbasaur-japanese-final.pic"
-IvysaurJapanese::      INCBIN "pic/altmons/ivysaur-japanese-final.pic"
-VenusaurJapanese::      INCBIN "pic/altmons/venusaur-japanese-final.pic"
-CharmanderJapanese::      INCBIN "pic/altmons/charmander-japanese-final.pic"
-CharmeleonJapanese::      INCBIN "pic/altmons/charmeleon-japanese-final.pic"
-CharizardJapanese::      INCBIN "pic/altmons/charizard-japanese-final.pic"
-SquirtleJapanese::      INCBIN "pic/altmons/squirtle-japanese-final.pic"
-WartortleJapanese::      INCBIN "pic/altmons/wartortle-japanese-final.pic"
-BlastoiseJapanese::      INCBIN "pic/altmons/blastoise-japanese-final.pic"
 
-SECTION "bank21",ROMX,BANK[$21]
 MeowthSketch::      INCBIN "pic/altmons/meowth-sketch-final.pic"
 GrowlitheSketch::      INCBIN "pic/altmons/growlithe-sketch-final.pic"
 PersianSketch::      INCBIN "pic/altmons/persian-sketch-final.pic"
@@ -6487,7 +6473,7 @@ CharmeleonSketch::      INCBIN "pic/altmons/charmeleon-sketch-final.pic"
 CharizardSketch::      INCBIN "pic/altmons/charizard-sketch-final.pic"
 SquirtleSketch::      INCBIN "pic/altmons/squirtle-sketch-final.pic"
 
-SECTION "bank22",ROMX,BANK[$22]
+SECTION "bank21",ROMX,BANK[$21]
 MeowthZombie::      INCBIN "pic/altmons/meowth-zombie-final.pic"
 GrowlitheZombie::      INCBIN "pic/altmons/growlithe-zombie-final.pic"
 PersianZombie::      INCBIN "pic/altmons/persian-zombie-final.pic"
@@ -6500,11 +6486,11 @@ CharmeleonZombie::      INCBIN "pic/altmons/charmeleon-zombie-final.pic"
 CharizardZombie::      INCBIN "pic/altmons/charizard-zombie-final.pic"
 SquirtleZombie::      INCBIN "pic/altmons/squirtle-zombie-final.pic"
 
-SECTION "bank24",ROMX,BANK[$24]
+SECTION "bank22",ROMX,BANK[$22]
 WartortleSketch::      INCBIN "pic/altmons/wartortle-sketch-final.pic"
 BlastoiseSketch::      INCBIN "pic/altmons/blastoise-sketch-final.pic"
 
-SECTION "bank25",ROMX,BANK[$25]
+SECTION "bank23",ROMX,BANK[$23]
 WartortleZombie::      INCBIN "pic/altmons/wartortle-zombie-final.pic"
 BlastoiseZombie::      INCBIN "pic/altmons/blastoise-zombie-final.pic"
 

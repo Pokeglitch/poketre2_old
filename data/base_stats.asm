@@ -229,13 +229,50 @@ GetPokemonSpritePointer:
 	
 .loadFrontSprite
 	ld hl,W_MONHFRONTSPRITE
-	ld a,[wWhichAltSprite]
-	and a
-	jr z,.loadOriginalSprite		;load original if no alt sprite
-	
-	push af
-	
+	ld a,[wSpriteFilter]
+	bit ZombieSprite,a
+	jr nz,.loadZombieSprite		;load zombie if bit is set
+	ld a,[wActiveCheats]
+	bit SketchSpritesCheat,a		;load sketch sprite?
+	jr z,.loadOriginalSprite		;load original sprite if not
+		
 	;get the index
+	call .getDexNumber
+	
+	ld a,c
+	ld hl,W_MONHFRONTSPRITE
+	cp DEX_HUMAN
+	jr nc,.loadOriginalSprite		;load the original sprite if the pokedex value is human or higher
+	
+	ld hl,AltSpritesTable
+	
+.loadSpriteFromTable
+	dec c
+	ld b,0		;bc = pokedex index
+	add hl,bc
+	add hl,bc
+	add hl,bc		;hl now points to the start of the pokemon in the table
+	
+	ld a,[hli]
+	ld [W_SPRITEINPUTPTR],a    ; fetch sprite input pointer
+	ld a,[hli]
+	ld [W_SPRITEINPUTPTR+1],a
+	ld a,[hl]
+	ld h,a
+	ret
+.loadZombieSprite
+	;get the index
+	call .getDexNumber
+	
+	ld a,c
+	ld hl,W_MONHFRONTSPRITE
+	cp DEX_HUMAN
+	jr nc,.loadOriginalSprite		;load the original sprite if the pokedex value is human or higher
+	
+	ld hl,ZombieSpritesTable
+	jr .loadSpriteFromTable
+	
+.getDexNumber
 	ld a,[wd11e]
 	push af
 	ld a,[W_MONHDEXNUM]
@@ -245,102 +282,280 @@ GetPokemonSpritePointer:
 	ld c, [hl]
 	pop af
 	ld [wd11e],a		;restore what d11e was originally
+	ret
 	
-	dec c
-	ld b,0		;bc = pokedex index
-	push bc
+;Apply filters after tile is copied:
+ApplyFilters:
+	push de
 	pop hl
+	ld a,[W_SPRITEFLIPPED]	;sprite flipped?
+	and a
+	jr z,.skipSwap	;dont swap if not
+	swap [hl]
+.skipSwap
+	ld a,l
+	bit 0,a
+	inc hl
+	ret z		;return if the first byte
+	dec hl
+	dec hl
+
+	ld a,[wSpriteFilter]
+	bit HoloFilter,a		;holo?
+	call nz,ApplyHoloFilter
+	bit ShadowFilter,a		;shadow?
+	call nz,ApplyShadowFilter
+	bit InvisibleFilter,a		;invis?
+	call nz,ApplyInvisibleFilter
+	bit NightFilter,a		;night?
+	call nz,ApplyNightFilter
+	inc hl
+	inc hl
+	ret		;return
 	
-	add hl,bc		;add the index 1 more time (1 alt sprites)
-	
-	push hl
-	pop bc
-	ld hl,AltSpritesTable
-	add hl,bc
-	add hl,bc
-	add hl,bc		;hl now points to the start of the pokemon in the table
+ApplyHoloFilter:
+	ld b,8
+	push af
+
+.loop
+	call .checkFirstBit	;check the first bit
+	ld a,[hl]
+	rrca
+	ldi [hl],a
+	ld a,[hl]
+	rrca
+	ldd [hl],a
+	dec b
+	jr nz,.loop
 	
 	pop af
-	
-	dec a
-	ld c,a
-	add a
-	add c
-	ld c,a
-	ld b,0
-	add hl,bc		;hl points to the correct sprite
-
-	ld a,[hli]
-	ld [W_SPRITEINPUTPTR],a    ; fetch sprite input pointer
-	ld a,[hli]
-	ld [W_SPRITEINPUTPTR+1],a
-	ld a,[hl]
-	ld h,a
 	ret
+
+.checkFirstBit
+	bit 0,[hl]
+	ret z
+	inc hl
+	bit 0,[hl]
+	dec hl
+	ret z		;return if bit boths are not set (i.e., color is not black)
+	bit 1,[hl]
+	jr nz,.skip1	;skip down if bit to left is set
+	res 0,[hl]
+.skip1
+	inc hl
+	bit 1,[hl]
+	jr nz,.skip2		;skip if bit to left is set
+	res 0,[hl]
+.skip2
+	dec hl
+	ret
+
+ApplyShadowFilter:
+	ld b,8
+	push af
+
+.loop
+	call .checkFirstBit	;check the first bit
+	ld a,[hl]
+	rrca
+	ldi [hl],a
+	ld a,[hl]
+	rrca
+	ldd [hl],a
+	dec b
+	jr nz,.loop
+	
+	pop af
+	ret
+
+.checkFirstBit
+	bit 0,[hl]
+	jr nz,.skip	;skip down if bit is set
+	inc hl
+	ld a,[hld]
+	bit 0,a
+	ret z		;return if 00
+	set 0,[hl]
+	inc hl
+	set 0,[hl]
+	dec hl
+	ret		;otherwise, swap and return
+.skip
+	inc hl
+	ld a,[hld]
+	bit 0,a
+	ret nz		;return if 11
+	res 0,[hl]
+	inc hl
+	set 0,[hl]
+	dec hl
+	ret		;otherwise, swap and return
+	
+ApplyInvisibleFilter:
+	
+	ld b,8
+	push af
+
+.loop
+	call .checkFirstBit	;check the first bit
+	ld a,[hl]
+	rrca
+	ldi [hl],a
+	ld a,[hl]
+	rrca
+	ldd [hl],a
+	dec b
+	jr nz,.loop
+	
+	pop af
+	ret
+
+.checkFirstBit
+	bit 0,[hl]
+	jr z,.setWhite		;set white if its not black
+	inc hl
+	bit 0,[hl]
+	dec hl
+	jr z,.setWhite		;set white if its not black
+	bit 1,[hl]
+	jr z,.setWhite		;set to white if the bit to left is not black
+	inc hl
+	bit 1,[hl]
+	dec hl
+	ret nz			;return if bit to the left is black
+	
+.setWhite
+	res 0,[hl]
+	inc hl
+	res 0,[hl]
+	dec hl
+	ret
+	
+ApplyNightFilter:
+	ld b,8
+	push af
+
+.loop
+	call .checkFirstBit	;check the first bit
+	ld a,[hl]
+	rrca
+	ldi [hl],a
+	ld a,[hl]
+	rrca
+	ldd [hl],a
+	dec b
+	jr nz,.loop
+	
+	pop af
+	ret
+
+.checkFirstBit
+	bit 0,[hl]
+	jr nz,.skip	;skip down if bit is set
+	inc hl
+	ld a,[hld]
+	bit 0,a
+	jr z,.skip2		;return if 00
+	set 0,[hl]
+	inc hl
+	set 0,[hl]
+	dec hl
+	ret		;otherwise, swap and return
+.skip2
+	set 0,[hl]
+	inc hl
+	res 0,[hl]
+	dec hl
+	ret		;otherwise, set to white
+.skip
+	inc hl
+	ld a,[hld]
+	bit 0,a
+	ret nz		;return if 11
+	res 0,[hl]
+	inc hl
+	set 0,[hl]
+	dec hl
+	ret		;otherwise, swap and return
+
 
 ;pointers to the alt sprite for each pokemon in dex order
 AltSpritesTable:
-	dw MeowthJapanese
-	db BANK(MeowthJapanese)
 	dw MeowthSketch
 	db BANK(MeowthSketch)
 	
-	dw PersianJapanese
-	db BANK(PersianJapanese)
 	dw PersianSketch
 	db BANK(PersianSketch)
 	
-	dw GrowlitheJapanese
-	db BANK(GrowlitheJapanese)
 	dw GrowlitheSketch
 	db BANK(GrowlitheSketch)
 	
-	dw ArcanineJapanese
-	db BANK(ArcanineJapanese)
 	dw ArcanineSketch
 	db BANK(ArcanineSketch)
 	
-	dw BulbasaurJapanese
-	db BANK(BulbasaurJapanese)
 	dw BulbasaurSketch
 	db BANK(BulbasaurSketch)
 	
-	dw IvysaurJapanese
-	db BANK(IvysaurJapanese)
 	dw IvysaurSketch
 	db BANK(IvysaurSketch)
 	
-	dw VenusaurJapanese
-	db BANK(VenusaurJapanese)
 	dw VenusaurSketch
 	db BANK(VenusaurSketch)
 	
-	dw CharmanderJapanese
-	db BANK(CharmanderJapanese)
 	dw CharmanderSketch
 	db BANK(CharmanderSketch)
 	
-	dw CharmeleonJapanese
-	db BANK(CharmeleonJapanese)
 	dw CharmeleonSketch
 	db BANK(CharmeleonSketch)
 	
-	dw CharizardJapanese
-	db BANK(CharizardJapanese)
 	dw CharizardSketch
 	db BANK(CharizardSketch)
 	
-	dw SquirtleJapanese
-	db BANK(SquirtleJapanese)
 	dw SquirtleSketch
 	db BANK(SquirtleSketch)
 	
-	dw WartortleJapanese
-	db BANK(WartortleJapanese)
 	dw WartortleSketch
 	db BANK(WartortleSketch)
 	
-	dw BlastoiseJapanese
-	db BANK(BlastoiseJapanese)
 	dw BlastoiseSketch
 	db BANK(BlastoiseSketch)
+	
+ZombieSpritesTable:
+	dw MeowthZombie
+	db BANK(MeowthZombie)
+	
+	dw PersianZombie
+	db BANK(PersianZombie)
+	
+	dw GrowlitheZombie
+	db BANK(GrowlitheZombie)
+	
+	dw ArcanineZombie
+	db BANK(ArcanineZombie)
+	
+	dw BulbasaurZombie
+	db BANK(BulbasaurZombie)
+	
+	dw IvysaurZombie
+	db BANK(IvysaurZombie)
+	
+	dw VenusaurZombie
+	db BANK(VenusaurZombie)
+	
+	dw CharmanderZombie
+	db BANK(CharmanderZombie)
+	
+	dw CharmeleonZombie
+	db BANK(CharmeleonZombie)
+	
+	dw CharizardZombie
+	db BANK(CharizardZombie)
+	
+	dw SquirtleZombie
+	db BANK(SquirtleZombie)
+	
+	dw WartortleZombie
+	db BANK(WartortleZombie)
+	
+	dw BlastoiseZombie
+	db BANK(BlastoiseZombie)

@@ -53,4 +53,13 @@ SummonedGhosts		EQU 1
 
 ;bits for CheatCodes
 InvertCheat			EQU 0
+SketchSpritesCheat	EQU 1
 LuckyCharmCheat		EQU 3
+
+
+;bits for sprite filters
+ZombieSprite	EQU 0
+HoloFilter		EQU 1
+ShadowFilter	EQU 2
+InvisibleFilter EQU 3
+NightFilter		EQU 4

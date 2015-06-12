@@ -855,8 +855,12 @@ InterlaceMergeSpriteBuffers:: ; 16ea (0:16ea)
 	ld bc, 2*SPRITEBUFFERSIZE
 	ld hl, S_SPRITEBUFFER1
 .swapLoop
-	swap [hl]    ; if flipped swap nybbles in all bytes
-	inc hl
+	push bc
+	push hl
+	pop de
+	callab ApplyFilters
+	pop bc
+	
 	dec bc
 	ld a, b
 	or c
@@ -867,7 +871,10 @@ InterlaceMergeSpriteBuffers:: ; 16ea (0:16ea)
 	ld c, (2*SPRITEBUFFERSIZE)/16 ; $31, number of 16 byte chunks to be copied
 	ld a, [H_LOADEDROMBANK]
 	ld b, a
-	jp CopyVideoData
+	call CopyVideoData
+	xor a
+	ld [wSpriteFilter],a ; reset the filters
+	ret
 
 
 INCLUDE "data/collision.asm"
