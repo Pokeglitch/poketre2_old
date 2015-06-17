@@ -288,18 +288,12 @@ GetPokemonSpritePointer:
 ApplyFilters:
 	push de
 	pop hl
-	ld a,[W_SPRITEFLIPPED]	;sprite flipped?
-	and a
-	jr z,.skipSwap	;dont swap if not
-	swap [hl]
-.skipSwap
 	ld a,l
 	bit 0,a
 	inc hl
-	ret z		;return if the first byte
+	jr z,.checkSwap		;just check the swap if the first byte
 	dec hl
 	dec hl
-
 	ld a,[wSpriteFilter]
 	bit HoloFilter,a		;holo?
 	call nz,ApplyHoloFilter
@@ -311,6 +305,12 @@ ApplyFilters:
 	call nz,ApplyNightFilter
 	inc hl
 	inc hl
+.checkSwap
+	ld a,[W_SPRITEFLIPPED]	;sprite flipped?
+	and a
+	jr z,.skipSwap	;dont swap if not
+	swap [hl]
+.skipSwap
 	ret		;return
 	
 ApplyHoloFilter:

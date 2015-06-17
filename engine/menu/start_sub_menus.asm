@@ -553,15 +553,15 @@ DrawTrainerInfo: ; 1349a (4:749a)
 	ld bc,$0400
 	ld a,$03
 	call FarCopyData2
-	ld hl,TextBoxGraphics ; $6288
-	ld de,$00d0
-	add hl,de ; hl = colon tile pattern
-	ld de,vChars1 + $560
+;	ld hl,TextBoxGraphics ; $6288
+;	ld de,$00d0
+;	add hl,de ; hl = colon tile pattern
+;	ld de,vChars1 + $560
 	ld bc,$0010
-	ld a,$04
-	push bc
-	call FarCopyData2
-	pop bc
+;	ld a,$04
+;	push bc
+;	call FarCopyData2
+;	pop bc
 	ld hl,TrainerInfoTextBoxTileGraphics + $80  ; $7c18 ; background tile pattern
 	ld de,vChars1 + $570
 	call TrainerInfo_FarCopyData

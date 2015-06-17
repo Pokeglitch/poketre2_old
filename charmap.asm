@@ -161,7 +161,7 @@ charmap "┘", $7E
 
 charmap "№", $74
 
-charmap " ", $7F
+charmap " ", $C4
 charmap "A", $80
 charmap "B", $81
 charmap "C", $82

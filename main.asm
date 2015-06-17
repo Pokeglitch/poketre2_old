@@ -985,6 +985,7 @@ SafariZoneRestHouses:
 
 ; function that performs initialization for DisplayTextID
 DisplayTextIDInit: ; 7096 (1:7096)
+	call LoadTextBoxTilePatterns
 	xor a
 	ld [wListMenuID],a
 	ld a,[wAutoTextBoxDrawingControl]
@@ -2293,7 +2294,7 @@ PrintSafariZoneSteps: ; c52f (3:452f)
 	cp $a
 	jr nc, .asm_c56d
 	hlCoord 5, 3
-	ld a, $7f
+	ld a, $C4
 	ld [hl], a
 .asm_c56d
 	hlCoord 6, 3
@@ -4630,7 +4631,6 @@ LyingOldManSprite:     INCBIN "gfx/sprites/lying_old_man.2bpp"
 SECTION "Graphics", ROMX, BANK[GFX]
 
 PokemonLogoGraphics:            INCBIN "gfx/pokemon_logo.2bpp"
-FontGraphics:                   INCBIN "gfx/font.1bpp"
 ABTiles:                        INCBIN "gfx/AB.2bpp"
 HpBarAndStatusGraphics:         INCBIN "gfx/hp_bar_and_status.2bpp"
 BattleHudTiles1:                INCBIN "gfx/battle_hud1.1bpp"
@@ -4638,7 +4638,6 @@ BattleHudTiles2:                INCBIN "gfx/battle_hud2.1bpp"
 BattleHudTiles3:                INCBIN "gfx/battle_hud3.1bpp"
 NintendoCopyrightLogoGraphics:  INCBIN "gfx/copyright.2bpp"
 GamefreakLogoGraphics:          INCBIN "gfx/gamefreak.2bpp"
-TextBoxGraphics:                INCBIN "gfx/text_box.2bpp"
 PokedexTileGraphics:            INCBIN "gfx/pokedex.2bpp"
 WorldMapTileGraphics:           INCBIN "gfx/town_map.2bpp"
 PlayerCharacterTitleGraphics:   INCBIN "gfx/player_title.2bpp"
@@ -6523,6 +6522,7 @@ LearnSets: INCLUDE "data/poke_learnsets.asm"
 
 SECTION "bank3A",ROMX,BANK[$3A]
 BaseStats: INCLUDE "data/base_stats.asm"
+INCLUDE "engine/textbox_and_font.asm"
 
 
 SECTION "bank3B",ROMX,BANK[$3B]

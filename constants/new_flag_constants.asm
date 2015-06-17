@@ -63,3 +63,29 @@ HoloFilter		EQU 1
 ShadowFilter	EQU 2
 InvisibleFilter EQU 3
 NightFilter		EQU 4
+
+;bits for which screen
+OverworldScreen	EQU 0
+StartMenuScreen	EQU 1
+BattleScreen	EQU 2
+ItemMenuScreen	EQU 3
+PartyMenuScreen	EQU 4
+TradeScreen		EQU 5
+PCScreen		EQU 6
+EvolutionScreen	EQU 7
+TaskMenuScreen	EQU 8
+StatsScreen		EQU 9
+TextInputScreen	EQU 10
+TrainerCardScreen EQU 11
+GameOverScreen	EQU 12
+
+;text box constants
+TextBoxTopLeft EQU $C0
+TextBoxTop EQU $C1
+TextBoxTopRight EQU $C2
+TextBoxLeft EQU $C3
+TextBoxCenter EQU $C4
+TextBoxRight EQU $C5
+TextBoxBottomLeft EQU $C6
+TextBoxBottom EQU $C7
+TextBoxBottomRight EQU $C8

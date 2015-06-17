@@ -876,7 +876,7 @@ LoadTilesetTilePatternData:: ; 09e8 (0:09e8)
 	ld a,[W_TILESETGFXPTR + 1]
 	ld h,a
 	ld de,vTileset
-	ld bc,$600
+	ld bc,$800
 	ld a,[W_TILESETBANK]
 	jp FarCopyData2
 

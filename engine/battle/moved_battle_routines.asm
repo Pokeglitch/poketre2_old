@@ -111,7 +111,7 @@ SlidePlayerAndEnemySilhouettesOnScreen: ; 3c04c (f:404c)
 	ld hl, vBGMap0
 	ld bc, $400
 .clearBackgroundLoop
-	ld a, $7f
+	ld a, $C4
 	ld [hli], a
 	dec bc
 	ld a, b

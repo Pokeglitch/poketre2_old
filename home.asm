@@ -849,9 +849,6 @@ InterlaceMergeSpriteBuffers:: ; 16ea (0:16ea)
 	dec a
 	ld [H_SPRITEINTERLACECOUNTER], a ; $ff8b
 	jr nz, .interlaceLoop
-	ld a, [W_SPRITEFLIPPED]
-	and a
-	jr z, .notFlipped
 	ld bc, 2*SPRITEBUFFERSIZE
 	ld hl, S_SPRITEBUFFER1
 .swapLoop
@@ -865,7 +862,6 @@ InterlaceMergeSpriteBuffers:: ; 16ea (0:16ea)
 	ld a, b
 	or c
 	jr nz, .swapLoop
-.notFlipped
 	pop hl
 	ld de, S_SPRITEBUFFER1
 	ld c, (2*SPRITEBUFFERSIZE)/16 ; $31, number of 16 byte chunks to be copied
@@ -3071,36 +3067,12 @@ DivideBytes:: ; 366b (0:366b)
 
 
 LoadFontTilePatterns::
-	ld a, [rLCDC]
-	bit 7, a ; is the LCD enabled?
-	jr nz, .on
-.off
-	ld hl, FontGraphics
-	ld de, vFont
-	ld bc, $400
-	ld a, BANK(FontGraphics)
-	jp FarCopyDataDouble ; if LCD is off, transfer all at once
-.on
-	ld de, FontGraphics
-	ld hl, vFont
-	ld bc, BANK(FontGraphics) << 8 | $80
-	jp CopyVideoDataDouble ; if LCD is on, transfer during V-blank
+	callab _LoadFontTilePatterns
+	ret
 
 LoadTextBoxTilePatterns::
-	ld a, [rLCDC]
-	bit 7, a ; is the LCD enabled?
-	jr nz, .on
-.off
-	ld hl, TextBoxGraphics
-	ld de, vChars2 + $600
-	ld bc, $200
-	ld a, BANK(TextBoxGraphics)
-	jp FarCopyData2 ; if LCD is off, transfer all at once
-.on
-	ld de, TextBoxGraphics
-	ld hl, vChars2 + $600
-	ld bc, BANK(TextBoxGraphics) << 8 | $20
-	jp CopyVideoData ; if LCD is on, transfer during V-blank
+	callab _LoadTextBoxTilePatterns
+	ret
 
 LoadHpBarAndStatusTilePatterns::
 	ld a, [rLCDC]

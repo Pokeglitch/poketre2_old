@@ -3,11 +3,11 @@ TextBoxBorder::
 
 	; top row
 	push hl
-	ld a, "┌"
+	ld a, TextBoxTopLeft
 	ld [hli], a
-	inc a ; ─
+	inc a
 	call NPlaceChar
-	inc a ; ┐
+	inc a
 	ld [hl], a
 	pop hl
 
@@ -17,11 +17,12 @@ TextBoxBorder::
 	; middle rows
 .next
 	push hl
-	ld a, "│"
+	ld a,TextBoxLeft
 	ld [hli],a
-	ld a, " "
+	inc a
 	call NPlaceChar
-	ld [hl], "│"
+	inc a
+	ld [hl], a
 	pop hl
 
 	ld de, 20
@@ -30,11 +31,12 @@ TextBoxBorder::
 	jr nz, .next
 
 	; bottom row
-	ld a, "└"
+	inc a
 	ld [hli], a
-	ld a, "─"
+	inc a
 	call NPlaceChar
-	ld [hl], "┘"
+	inc a
+	ld [hl], a
 	ret
 
 NPlaceChar::
@@ -277,7 +279,7 @@ Char58:: ; 1a95 (0:1a95)
 Next1AA2:: ; 1aa2 (0:1aa2)
 	call ProtectedDelay3
 	call ManualTextScroll
-	ld a,$7F
+	ld a,$C4
 	Coorda 18, 16
 Char57:: ; 1aad (0:1aad)
 	pop hl
@@ -327,7 +329,7 @@ Char4B:: ; 1af8 (0:1af8)
 	push de
 	call ManualTextScroll
 	pop de
-	ld a,$7F
+	ld a,$C4
 	Coorda 18, 16
 	;fall through
 Char4C:: ; 1b0a (0:1b0a)
@@ -349,7 +351,7 @@ Next1B18:: ; 1b18 (0:1b18)
 	dec b
 	jr nz,.next
 	hlCoord 1, 16
-	ld a,$7F
+	ld a,$C4
 	ld b,$12
 .next2
 	ld [hli],a

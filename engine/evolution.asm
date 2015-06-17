@@ -51,12 +51,22 @@ HatchEggScreen:
 	ld bc, 11
 	call CopyData
 	
+	
+	ld a,[wcf91]	;store the previous value
+	push af
+	ld a,[wcf1d]	;get the original pokemon
+	ld [wcf91],a	;store the original pokemon
+	
+	
 	ld a, [wWhichPokemon]
 	ld hl, wPartyMonNicks
 	call SkipFixedLengthTextEntries
 	ld a, $2
 	ld [wd07d], a
 	predef AskName
+	
+	pop af
+	ld [wcf91],a	;restore the previous value
 .finish
 	call GBPalWhiteOutWithDelay3		;whiteout the palette
 	ld c,32
