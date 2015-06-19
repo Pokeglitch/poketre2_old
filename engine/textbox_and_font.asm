@@ -55,9 +55,13 @@ TextBoxPointerAndSizeTable:
 	db GameOverScreen
 	dw TaskMenuTextBoxGraphics
 	
+	db TextInputScreen
+	dw KeyboardTextBoxGraphics
+		
 	db $FF
 	
 OverworldTextBoxGraphics:		INCBIN "gfx/overworld_text_box.2bpp"
+KeyboardTextBoxGraphics:		INCBIN "gfx/keyboard_text_box.2bpp"
 ItemMenuTextBoxGraphics:		INCBIN "gfx/item_menu_text_box.2bpp"
 TaskMenuTextBoxGraphics:		INCBIN "gfx/task_menu_text_box.2bpp"
 PCTextBoxGraphics:				INCBIN "gfx/pc_text_box.2bpp"
@@ -124,11 +128,13 @@ FontPointerTable:
 	dw WhiteOnBlackFont			;evolution screen
 	dw BlackOnWhiteFont			;task menu screen
 	dw BlackOnLightGrayFont		;stats screen
-	dw TextInputFont			;text input screen
+	dw KeyboardFont				;text input screen
 	dw BlackOnWhiteFont			;trainer card screen
 	dw BlackOnWhiteFont			;game over screen
 	
-TextInputFont:
+KeyboardFont:					INCBIN "gfx/keyboard_text.2bpp"
+KeyboardHighlightFont:			INCBIN "gfx/keyboard_highlight.2bpp"
+KeyboardPressFont:				INCBIN "gfx/keyboard_pressed.2bpp"
 BlackOnLightGrayFont:			INCBIN "gfx/black_on_light_gray_text.2bpp"
 WhiteOnBlackFont:				INCBIN "gfx/white_on_black_text.2bpp"
 GrayOnBlackFont: 				INCBIN "gfx/light_gray_on_black_text.2bpp"

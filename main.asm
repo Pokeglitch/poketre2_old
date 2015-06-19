@@ -6517,12 +6517,12 @@ INCLUDE "engine/battle/moved_add_mon_to_party.asm"
 INCLUDE "engine/battle/battle_hud.asm"
 
 SECTION "bank39",ROMX,BANK[$39]
-INCLUDE "engine/evolution.asm"
-LearnSets: INCLUDE "data/poke_learnsets.asm"
+INCLUDE "engine/textbox_and_font.asm"
 
 SECTION "bank3A",ROMX,BANK[$3A]
 BaseStats: INCLUDE "data/base_stats.asm"
-INCLUDE "engine/textbox_and_font.asm"
+INCLUDE "engine/evolution.asm"
+LearnSets: INCLUDE "data/poke_learnsets.asm"
 
 
 SECTION "bank3B",ROMX,BANK[$3B]
