@@ -215,7 +215,7 @@ CopyScreenTileBufferToVRAM::
 ClearScreen::
 ; Clear wTileMap, then wait
 ; for the bg map to update.
-	ld a, $7f
+	ld a, $c4
 ClearScreenAltTile::
 	ld bc, 20 * 18
 	inc b

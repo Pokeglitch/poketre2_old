@@ -182,7 +182,8 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	jp [hl]
 .asm_662d
 	call GBPalWhiteOutWithDelay3
-	call ClearScreen
+	ld a,$DD
+	call ClearScreenAltTile
 	call ClearSprites
 	
 	
@@ -384,10 +385,10 @@ PrintAlphabet: ; 676f (1:676f)
 	jp Delay3
 
 LowerCaseAlphabet: ; 679e (1:679e)
-	db "0123456789()qwertyuiop",$e1,$e2,"asdfghjkl'[]zxcvbnm.",$ee,$f5,":;   ",$ba,$bb,$bc,$bd,$be,$bf,"   @"
+	db "0123456789()qwertyuiop",$e1,$e2,"asdfghjkl'[]zxcvbnm.",$ef,$f5,":;   ",$ba,$bb,$bc,$bd,$be,$bf,"   @"
 
 UpperCaseAlphabet: ; 67d6 (1:67d6)
-	db "0123456789()QWERTYUIOP",$e1,$e2,"ASDFGHJKL'[]ZXCVBNM.",$ee,$f5,":;   ",$ba,$bb,$bc,$bd,$be,$bf,"   @"
+	db "0123456789()QWERTYUIOP",$e1,$e2,"ASDFGHJKL'[]ZXCVBNM.",$ef,$f5,":;   ",$ba,$bb,$bc,$bd,$be,$bf,"   @"
 
 PlaceKeyboardCursor:
 	ld a,[wTopMenuItemX]
@@ -756,6 +757,13 @@ CopyLetterTilesToVRAM:
 	ld a,[hli]
 	cp "@"
 	ret z		;return when we reach the end of the string
+	cp " " ;is it space?
+	jr nz,.notSpace
+	push hl
+	ld hl,vFont + $540
+	jr .continueIfSpace		;jump down
+	
+.notSpace
 	push hl
 	
 	ld hl,WhiteOnBlackFont
@@ -772,7 +780,7 @@ CopyLetterTilesToVRAM:
 	and $F0
 	ld c,a
 	add hl,bc	;hl is where to copy from
-	
+.continueIfSpace
 	push hl
 	push de
 	pop hl
