@@ -81,7 +81,7 @@ _AddPartyMon: ; f2e5 (3:72e5)
 	and a
 	jr z, .saveHeldItem	;if not in battle, then we set to 0
 	ld a,[wEnemyMonHeldItem]		;otherwise, copy from the enemy data	
-	jr .saveLearnedTraits	
+	jr .saveHeldItem	
 .trainerHeldItem
 	call DetermineTrainerHeldItem
 .saveHeldItem
@@ -89,7 +89,7 @@ _AddPartyMon: ; f2e5 (3:72e5)
 	
 	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
 	and a
-	jr z, .dontWithOTByts	;if not in battle, then we don't copy additional data from the enemy
+	jr z, .doneWithOTBytes	;if not in battle, then we don't copy additional data from the enemy
 	
 	;to copy secondary status
 	ld bc,wPartyMon1SecondaryStatus - wPartyMon1HeldItem
@@ -117,7 +117,7 @@ _AddPartyMon: ; f2e5 (3:72e5)
 	ld a,[wEnemyMonDelayedDamageCounter]
 	ld [hl],a	;copy delayed damage info
 	
-.dontWithOTByts
+.doneWithOTBytes
 	
 	ld a, [wcc49]
 	and a

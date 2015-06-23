@@ -67,6 +67,10 @@ TaskMenuTextBoxGraphics:		INCBIN "gfx/task_menu_text_box.2bpp"
 PCTextBoxGraphics:				INCBIN "gfx/pc_text_box.2bpp"
 StatsScreenTextBoxGraphics:		INCBIN "gfx/stats_screen_text_box.2bpp"
 
+;the following 2 are copied at the same time
+PCTextBox2Graphics:				INCBIN "gfx/pc_text_box2.2bpp" 
+PCAnimatedPokemonBG:			INCBIN "gfx/pc_sprite_bg.2bpp" 
+
 _LoadFontTilePatterns::
 
 	ld a, [rLCDC]

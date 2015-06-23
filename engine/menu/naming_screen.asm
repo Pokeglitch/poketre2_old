@@ -86,7 +86,9 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	ld hl, wd730
 	set 6, [hl]
 	call GBPalWhiteOutWithDelay3
-	call ClearScreen
+	
+	ld a,$DD
+	call ClearScreenAltTile
 	call UpdateSprites
 	
 	ld a,[wWhichScreen]
@@ -95,11 +97,33 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	ld [wWhichScreen],a
 	call LoadFontTilePatterns
 	call LoadTextBoxTilePatterns
-	
+	call LoadSecondTextBoxBorderTiles
 	ld b, $8
 	call GoPAL_SET
-	call LoadHpBarAndStatusTilePatterns
-	call LoadEDTile
+	
+	hlCoord 2,9
+	ld bc,$50e
+	call TextBoxBorder
+	hlCoord 2,2
+	ld bc,$50e
+	call TextBoxBorderAndAdjust
+	
+	ld a, [wd07d]
+	cp 2	;nickname screen?
+	jr c,.afterClearingSpriteArea		;skip if not
+	hlCoord 14,4
+	ld a,$D9
+	ld [hli],a
+	inc a
+	ld [hld],a
+	ld de,20
+	add hl,de
+	inc a
+	ld [hli],a
+	inc a
+	ld [hl],a
+	
+.afterClearingSpriteArea
 	callba LoadMonPartySpriteGfx
 	call PrintNamingText
 	xor a
@@ -117,12 +141,6 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	ld [hli], a
 	ld [hli], a
 	ld [wPartyMonAnimCounter], a
-	hlCoord 2,9
-	ld bc,$50e
-	call TextBoxBorder
-	hlCoord 2,2
-	ld bc,$50e
-	call TextBoxBorder
 .asm_65ed
 	call PrintAlphabet
 	call GBPalNormal
@@ -331,13 +349,7 @@ DisplayNamingScreen: ; 6596 (1:6596)
 
 .asm_6755
 	ld [wTopMenuItemX], a
-	jp EraseMenuCursor
-
-LoadEDTile: ; 675b (1:675b)
-	ld de, ED_Tile
-	ld hl, vFont + $700
-	ld bc, $1
-	jp CopyVideoDataDouble
+	ret
 
 ED_Tile: ; 6767 (1:6767)
 	INCBIN "gfx/ED_tile.1bpp"
@@ -483,6 +495,44 @@ PlaceKeyboardCursor:
 	ld c,1
 	ret
 	
+;to draw the text box border, but then incrase the tile id's by $10
+TextBoxBorderAndAdjust:
+	push hl
+	push bc
+	call TextBoxBorder
+	pop bc
+	pop hl
+	inc b
+	inc b
+	inc c
+	inc c
+.loop1
+	push hl
+	push bc
+.loop2
+	ld a,[hl]
+	add a,$10
+	ld [hli],a
+	dec c
+	jr nz,.loop2	
+.continueLoop
+	pop bc
+	pop hl
+	dec b
+	ret z
+	ld de,20
+	add hl,de	;move to next row	
+	jr .loop1
+	
+;to copy over the secondary text box border
+LoadSecondTextBoxBorderTiles:
+	ld de,PCTextBox2Graphics			;de is where to copy from
+	ld hl,vFont + $500			;restore hl
+	ld c,14
+	ld b, BANK(PCTextBox2Graphics)
+	jp CopyVideoData
+
+	
 AnimateTilePress:
 	ld a,[wCurrentMenuItem]
 	cp " "
@@ -623,52 +673,55 @@ Func_680e: ; 680e (1:680e)
 	call CalcStringLength
 	ld a, c
 	ld [wHPBarMaxHP], a
-	hlCoord 10, 2
-	ld bc, $10a
-	call ClearScreenArea
-	hlCoord 10, 2
-	ld de, wcf4b
-	call PlaceString
-	hlCoord 10, 3
+	hlCoord 5, 7
 	ld a, [wd07d]
-	cp $2
-	jr nc, .asm_6835
-	ld b, $7
-	jr .asm_6837
-.asm_6835
-	ld b, $a
-.asm_6837
-	ld a, $76
-.asm_6839
-	ld [hli], a
+	cp 2	;nickname screen?
+	jr nc,.dontAdjust		;dont adjust the line if so
+	ld de,-20
+	add hl,de		;move up a line if not pokemon screen
+.dontAdjust
+	ld b,10
+	ld a,$D4
+.clearLoop
+	ld [hli],a
 	dec b
-	jr nz, .asm_6839
+	jr nz,.clearLoop
+
+	ld a,10
+	sub c
+	push af
+	
+	ld hl,wcf4b
+	ld de,$9600
+	call CopyLetterTilesToVRAM
+	
+	pop af
+	ld c,a
+	ld b,0
+	hlCoord 5, 7
+	add hl,bc		;hl is where to copy to
 	ld a, [wd07d]
-	cp $2
-	ld a, [wHPBarMaxHP]
-	jr nc, .asm_684b
-	cp $7
-	jr .asm_684d
-.asm_684b
-	cp $a
-.asm_684d
-	jr nz, .asm_6867
-	call EraseMenuCursor
-	ld a, $11
-	ld [wTopMenuItemX], a
-	ld a, $5
-	ld [wCurrentMenuItem], a
-	ld a, [wd07d]
-	cp $2
-	ld a, $9
-	jr nc, .asm_6867
-	ld a, $6
-.asm_6867
-	ld c, a
-	ld b, $0
-	hlCoord 10, 3
-	add hl, bc
-	ld [hl], $77
+	cp 2	;nickname screen?
+	jr nc,.dontAdjust2		;dont adjust the line if so
+	ld de,-20
+	add hl,de		;move up a line if not pokemon screen
+.dontAdjust2
+	ld a,$60
+	ld de,wcf4b
+.loop2
+	push af
+	ld a,[de]
+	cp $50
+	jr z,.finish
+	pop af
+	ld [hli],a
+	inc a
+	inc de
+	jr .loop2		;print the pokemon string
+.finish
+	pop af
+	ret
+	
 	ret
 
 Func_6871: ; 6871 (1:6871)
@@ -685,22 +738,6 @@ Func_6871: ; 6871 (1:6871)
 	ld [wHPBarNewHP], a
 	ret
 
-Dakutens: ; 6885 (1:6885)
-	db "かが", "きぎ", "くぐ", "けげ", "こご"
-	db "さざ", "しじ", "すず", "せぜ", "そぞ"
-	db "ただ", "ちぢ", "つづ", "てで", "とど"
-	db "はば", "ひび", "ふぶ", "へべ", "ほぼ"
-	db "カガ", "キギ", "クグ", "ケゲ", "コゴ"
-	db "サザ", "シジ", "スズ", "セゼ", "ソゾ"
-	db "タダ", "チヂ", "ツヅ", "テデ", "トド"
-	db "ハバ", "ヒビ", "フブ", "へべ", "ホボ"
-	db $ff
-
-Handakutens: ; 68d6 (1:68d6)
-	db "はぱ", "ひぴ", "ふぷ", "へぺ", "ほぽ"
-	db "ハパ", "ヒピ", "フプ", "へぺ", "ホポ"
-	db $ff
-
 ; calculates the length of the string at wcf4b and stores it in c
 CalcStringLength: ; 68eb (1:68eb)
 	ld hl, wcf4b
@@ -713,15 +750,68 @@ CalcStringLength: ; 68eb (1:68eb)
 	inc c
 	jr .asm_68f0
 
+;to copy over the black text tiles (text pointer in hl) for the corresponding letter into the vram at de
+CopyLetterTilesToVRAM:
+.loop
+	ld a,[hli]
+	cp "@"
+	ret z		;return when we reach the end of the string
+	push hl
+	
+	ld hl,WhiteOnBlackFont
+	cp a,$E0		;are we in the second section of tiles?
+	jr c,.dontAdjust		;skip down if not
+	sub $20		;otherwise, subtract by $20 for the source
+.dontAdjust
+	sub $80		;reduce by the first tile name anyway
+	swap a
+	push af
+	and $0F
+	ld b,a
+	pop af
+	and $F0
+	ld c,a
+	add hl,bc	;hl is where to copy from
+	
+	push hl
+	push de
+	pop hl
+	pop de		;de is where to copy from, hl is where to copy to
+	
+	ld c,1
+	ld b,BANK(WhiteOnBlackFont)
+	call CopyVideoData
+	ld de,$10
+	add hl,de
+	push hl
+	pop de
+	
+	pop hl
+	jr .loop
+	
 PrintNamingText: ; 68f8 (1:68f8)
-	hlCoord 0, 1
+	ld hl,NameLabelString
+	ld de,vFont + $490
+	call CopyLetterTilesToVRAM
+	
+	hlCoord 3,5
 	ld a, [wd07d]
-	ld de, YourTextString
-	and a
-	jr z, .notNickname
-	ld de, RivalsTextString
-	dec a
-	jr z, .notNickname
+	cp 2	;nickname screen?
+	jr nc,.dontAdjust		;dont adjust the line if so
+	ld de,-20
+	add hl,de		;move up a line if not pokemon screen
+.dontAdjust
+	ld a,$C9
+	ld b,5
+.loop
+	ld [hli],a
+	inc a
+	dec b
+	jr nz,.loop		;print the Name: string
+	
+	ld a, [wd07d]
+	cp 2	;nickname screen?
+	ret c		;return if not
 	ld a, [wcf91]
 	ld [wMonPartySpriteSpecies], a
 	push af
@@ -729,30 +819,27 @@ PrintNamingText: ; 68f8 (1:68f8)
 	pop af
 	ld [wd11e], a
 	call GetMonName
-	hlCoord 4, 1
-	call PlaceString
-	ld hl, $1
-	add hl, bc
-	ld [hl], $c9
-	hlCoord 1, 3
-	ld de, NicknameTextString
-	jr .placeString
-.notNickname
-	call PlaceString
-	ld l, c
-	ld h, b
-	ld de, NameTextString
-.placeString
-	jp PlaceString
+	ld hl,wcd6d		;where the name was copied to
+	ld de,$9700
+	call CopyLetterTilesToVRAM
+	
+	ld a,$70
+	hlCoord 3,4
+	ld de,wcd6d
+.loop2
+	push af
+	ld a,[de]
+	cp $50
+	jr z,.finish
+	pop af
+	ld [hli],a
+	inc a
+	inc de
+	jr .loop2		;print the pokemon string
+.finish
+	pop af
+	ret
+	
 
-YourTextString: ; 693f (1:693f)
-	db "YOUR @"
-
-RivalsTextString: ; 6945 (1:6945)
-	db "RIVAL's @"
-
-NameTextString: ; 694d (1:694d)
-	db "NAME?@"
-
-NicknameTextString: ; 6953 (1:6953)
-	db "NICKNAME?@"
+NameLabelString:
+	db "Name:@"

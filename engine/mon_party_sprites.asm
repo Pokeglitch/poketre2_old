@@ -326,11 +326,12 @@ WriteMonPartySpriteOAMBySpecies: ; 71882 (1c:5882)
 ; Write OAM blocks for the party sprite of the species in
 ; [wMonPartySpriteSpecies].
 	xor a
-	ld [hPartyMonIndex], a
+	ld [hPartyMonIndex], a	
 	ld a, [wMonPartySpriteSpecies]
 	call GetPartyMonSpriteID
 	ld [wcd5b], a
-	jr WriteMonPartySpriteOAM
+	ld bc,$3078
+	jr WriteMonPartySpriteOAMAtOffset
 
 UnusedPartyMonSpriteFunction: ; 71890 (1c:5890)
 ; This function is unused and doesn't appear to do anything useful. It looks
@@ -370,6 +371,15 @@ UnusedPartyMonSpriteFunction: ; 71890 (1c:5890)
 	pop hl
 	jp CopyVideoData
 
+;to write the party mon sprite at the given X Y coordinate in bc
+WriteMonPartySpriteOAMAtOffset:
+	push af
+	ld h, wOAMBuffer / $100
+	ld a, [hPartyMonIndex]
+	swap a
+	ld l, a
+	jr FinishWritePartyMonSpriteOAM
+	
 WriteMonPartySpriteOAM: ; 718c3 (1c:58c3)
 ; Write the OAM blocks for the first animation frame into the OAM buffer and
 ; make a copy at wcc5b.
@@ -381,6 +391,7 @@ WriteMonPartySpriteOAM: ; 718c3 (1c:58c3)
 	ld l, a
 	add $10
 	ld b, a
+FinishWritePartyMonSpriteOAM:
 	pop af
 	cp SPRITE_HELIX << 2
 	jr z, .helix

@@ -215,10 +215,11 @@ CopyScreenTileBufferToVRAM::
 ClearScreen::
 ; Clear wTileMap, then wait
 ; for the bg map to update.
+	ld a, $7f
+ClearScreenAltTile::
 	ld bc, 20 * 18
 	inc b
 	ld hl, wTileMap
-	ld a, $7f
 .loop
 	ld [hli], a
 	dec c
