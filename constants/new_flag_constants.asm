@@ -54,7 +54,22 @@ SummonedGhosts		EQU 1
 ;bits for CheatCodes
 InvertCheat			EQU 0
 SketchSpritesCheat	EQU 1
+IWHBYDCheat			EQU 2
 LuckyCharmCheat		EQU 3
+FreePCCheat			EQU 4
+FiresaleCheat		EQU 5
+DesolateCheat		EQU 6
+SmallFryCheat		EQU 7
+
+;bits for 2nd set of cheat codes
+BootcampCheat		EQU 0
+SantasSackCheat		EQU 1
+AgainstMeCheat		EQU 2
+HealthNutCheat		EQU 3
+RedBullCheat		EQU 4
+AlCaponeCheat		EQU 5
+MakeItRainCheat		EQU 6
+SmartphoneCheat		EQU 7
 
 
 ;bits for sprite filters

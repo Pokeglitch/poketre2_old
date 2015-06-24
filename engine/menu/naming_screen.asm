@@ -33,6 +33,7 @@ AskName: ; 64eb (1:64eb)
 	ld a, [W_ISINBATTLE]
 	and a
 	jr nz, .asm_653e
+	call GBPalWhiteOutWithDelay3		;whiteout the palette
 	call ReloadMapSpriteTilePatterns
 .asm_653e
 	call LoadScreenTilesFromBuffer1
@@ -181,6 +182,8 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	push de
 	jp [hl]
 .asm_662d
+	callab CheatCodeCheck
+	jr c,.asm_65ff		;start over if we entered a cheat code
 	call GBPalWhiteOutWithDelay3
 	ld a,$DD
 	call ClearScreenAltTile
@@ -351,9 +354,6 @@ DisplayNamingScreen: ; 6596 (1:6596)
 .asm_6755
 	ld [wTopMenuItemX], a
 	ret
-
-ED_Tile: ; 6767 (1:6767)
-	INCBIN "gfx/ED_tile.1bpp"
 
 PrintAlphabet: ; 676f (1:676f)
 	xor a

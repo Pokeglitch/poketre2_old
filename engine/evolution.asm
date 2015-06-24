@@ -197,6 +197,22 @@ Func_7beb4: ; 7beb4 (1e:7eb4)
 	jp GoPAL_SET
 
 LoadFinalEggSprite:
+	ld b,0
+	ld c,5
+.loop
+	push bc
+	dec c
+	ld hl,.eggCrackTable
+	add hl,bc
+	add hl,bc
+	ld a,[hli]
+	ld h,[hl]
+	ld l,a
+	call LoadEggSprite
+	pop bc
+	dec c
+	jr nz,.loop
+
 	call GBPalWhiteOutWithDelay3
 	ld a,[wcf1d]
 	ld [wcf91], a
@@ -208,6 +224,18 @@ LoadFinalEggSprite:
 	pop af		;return the original pokemon id in a
 	ret
 	
+.eggCrackTable:
+	dw EggCrack5Sprite
+	dw EggCrack4Sprite
+	dw EggCrack3Sprite
+	dw EggCrack2Sprite
+	dw EggCrack1Sprite
+
+EggCrack1Sprite: INCBIN "pic/other/egg_crack1.pic"
+EggCrack2Sprite: INCBIN "pic/other/egg_crack2.pic"
+EggCrack3Sprite: INCBIN "pic/other/egg_crack3.pic"
+EggCrack4Sprite: INCBIN "pic/other/egg_crack4.pic"
+EggCrack5Sprite: INCBIN "pic/other/egg_crack5.pic"
 EggNormalSprite: INCBIN "pic/other/egg_normal.pic"
 EggSprite: INCBIN "pic/other/egg.pic"
 FlippedEggSprite: INCBIN "pic/other/flippedegg.pic"

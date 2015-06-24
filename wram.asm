@@ -1510,11 +1510,7 @@ wMaxPartyMons::
 ;contains the active totems
 wTotems:: ;dea9
 	ds 1
-	
-;contains the active cheats
-wActiveCheats::
-	ds 1
-	
+		
 ;contains the major checkpoints a player encounters
 wMajorCheckpoints::
 	ds 1
@@ -1551,6 +1547,13 @@ wLastStandDelayedDamageCounter::
 wLastStandMaxHP::
 	ds 2
 		
+
+;contains the active cheats
+wActiveCheats::
+	ds 1
+wActiveCheats2::
+	ds 1
+		
 wAdditionalInBattleDataToClear::
 ;bytes that are used before the battle starts
 ;	Bit 0 :	Virtual reality
@@ -1582,7 +1585,7 @@ wWhichAltSprite::
 	ds 1
 
 wExtraBytes::
-	ds 7
+	ds 6
 	
 wNumBoxItems:: ; d31d
 	ds 1

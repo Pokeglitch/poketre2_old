@@ -6522,6 +6522,7 @@ INCLUDE "engine/textbox_and_font.asm"
 SECTION "bank3A",ROMX,BANK[$3A]
 BaseStats: INCLUDE "data/base_stats.asm"
 INCLUDE "engine/evolution.asm"
+INCLUDE "engine/cheat_codes.asm"
 LearnSets: INCLUDE "data/poke_learnsets.asm"
 
 
