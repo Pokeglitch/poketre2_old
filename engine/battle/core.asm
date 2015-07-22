@@ -6769,9 +6769,13 @@ asm_3ef3d: ; 3ef3d (f:6f3d)
 	ld a, [hl]
 	push af
 	res 1, [hl]
+	ld a,[wWhichScreen]
+	push af
+	ld a,BattleScreen
+	ld [wWhichScreen],a
 	callab InitBattleVariables
 	ld a, [wEnemyMonSpecies2]
-	sub $c8
+	sub $c8		;this will cause a bug if we ever encounter a wild pokemon whose index is c8 or higher. but we shouldn't
 	jp c, InitWildBattle
 	ld [W_TRAINERCLASS], a
 	call GetTrainerInformation
@@ -6856,7 +6860,7 @@ InitBattle_Common: ; 3efeb (f:6feb)
 	ld [H_AUTOBGTRANSFERENABLED], a
 	ld hl, .emptyString
 	call PrintText
-	call SaveScreenTilesToBuffer1
+	call SaveScreenTilesToBuffer1	
 	call ClearScreen
 	ld a, $98
 	ld [$ffbd], a
@@ -6878,6 +6882,10 @@ InitBattle_Common: ; 3efeb (f:6feb)
 	call z, DrawEnemyHUDAndHPBar ; draw enemy HUD and HP bar if it's a wild battle
 	call StartBattle
 	callab EndOfBattle
+	
+	pop af
+	ld [wWhichScreen],a
+	
 	pop af
 	ld [wd358], a
 	pop af
