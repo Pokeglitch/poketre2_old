@@ -73,7 +73,6 @@ SmartphoneCheat		EQU 7
 
 
 ;bits for sprite filters
-ZombieSprite	EQU 0
 HoloFilter		EQU 1
 ShadowFilter	EQU 2
 InvisibleFilter EQU 3

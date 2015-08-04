@@ -230,8 +230,6 @@ GetPokemonSpritePointer:
 .loadFrontSprite
 	ld hl,W_MONHFRONTSPRITE
 	ld a,[wSpriteFilter]
-	bit ZombieSprite,a
-	jr nz,.loadZombieSprite		;load zombie if bit is set
 	ld a,[wActiveCheats]
 	bit SketchSpritesCheat,a		;load sketch sprite?
 	jr z,.loadOriginalSprite		;load original sprite if not
@@ -260,17 +258,6 @@ GetPokemonSpritePointer:
 	ld a,[hl]
 	ld h,a
 	ret
-.loadZombieSprite
-	;get the index
-	call .getDexNumber
-	
-	ld a,c
-	ld hl,W_MONHFRONTSPRITE
-	cp DEX_HUMAN
-	jr nc,.loadOriginalSprite		;load the original sprite if the pokedex value is human or higher
-	
-	ld hl,ZombieSpritesTable
-	jr .loadSpriteFromTable
 	
 .getDexNumber
 	ld a,[wd11e]
@@ -520,42 +507,176 @@ AltSpritesTable:
 	dw BlastoiseSketch
 	db BANK(BlastoiseSketch)
 	
-ZombieSpritesTable:
-	dw MeowthZombie
-	db BANK(MeowthZombie)
+	dw CaterpieSketch
+	db BANK(CaterpieSketch)
 	
-	dw PersianZombie
-	db BANK(PersianZombie)
+	dw MetapodSketch
+	db BANK(MetapodSketch)
 	
-	dw GrowlitheZombie
-	db BANK(GrowlitheZombie)
+	dw ButterfreeSketch
+	db BANK(ButterfreeSketch)
 	
-	dw ArcanineZombie
-	db BANK(ArcanineZombie)
+	dw WeedleSketch
+	db BANK(WeedleSketch)
 	
-	dw BulbasaurZombie
-	db BANK(BulbasaurZombie)
+	dw KakunaSketch
+	db BANK(KakunaSketch)
 	
-	dw IvysaurZombie
-	db BANK(IvysaurZombie)
+	dw BeedrillSketch
+	db BANK(BeedrillSketch)
 	
-	dw VenusaurZombie
-	db BANK(VenusaurZombie)
+	dw PidgeySketch
+	db BANK(PidgeySketch)
 	
-	dw CharmanderZombie
-	db BANK(CharmanderZombie)
+	dw PidgeottoSketch
+	db BANK(PidgeottoSketch)
 	
-	dw CharmeleonZombie
-	db BANK(CharmeleonZombie)
+	dw PidgeotSketch
+	db BANK(PidgeotSketch)
 	
-	dw CharizardZombie
-	db BANK(CharizardZombie)
+	dw RattataSketch
+	db BANK(RattataSketch)
 	
-	dw SquirtleZombie
-	db BANK(SquirtleZombie)
+	dw RaticateSketch
+	db BANK(RaticateSketch)
 	
-	dw WartortleZombie
-	db BANK(WartortleZombie)
+	dw SpearowSketch
+	db BANK(SpearowSketch)
 	
-	dw BlastoiseZombie
-	db BANK(BlastoiseZombie)
+	dw FearowSketch
+	db BANK(FearowSketch)
+	
+	dw EkansSketch
+	db BANK(EkansSketch)
+	
+	dw ArbokSketch
+	db BANK(ArbokSketch)
+	
+	dw PichuSketch
+	db BANK(PichuSketch)
+	
+	dw PikachuSketch
+	db BANK(PikachuSketch)
+	
+	dw RaichuSketch
+	db BANK(RaichuSketch)
+	
+	dw SandshrewSketch
+	db BANK(SandshrewSketch)
+	
+	dw SandslashSketch
+	db BANK(SandslashSketch)
+	
+	dw NidoranFSketch
+	db BANK(NidoranFSketch)
+	
+	dw NidorinaSketch
+	db BANK(NidorinaSketch)
+	
+	dw NidoqueenSketch
+	db BANK(NidoqueenSketch)
+	
+	dw NidoranMSketch
+	db BANK(NidoranMSketch)
+	
+	dw NidorinoSketch
+	db BANK(NidorinoSketch)
+	
+	dw NidokingSketch
+	db BANK(NidokingSketch)
+	
+	dw CleffaSketch
+	db BANK(CleffaSketch)
+	
+	dw ClefairySketch
+	db BANK(ClefairySketch)
+	
+	dw ClefableSketch
+	db BANK(ClefableSketch)
+	
+	dw VulpixSketch
+	db BANK(VulpixSketch)
+	
+	dw NinetalesSketch
+	db BANK(NinetalesSketch)
+	
+	dw IgglybuffSketch
+	db BANK(IgglybuffSketch)
+	
+	dw JigglypuffSketch
+	db BANK(JigglypuffSketch)
+	
+	dw WigglytuffSketch
+	db BANK(WigglytuffSketch)
+	
+	dw ZubatSketch
+	db BANK(ZubatSketch)
+	
+	dw GolbatSketch
+	db BANK(GolbatSketch)
+	
+	dw CrobatSketch
+	db BANK(CrobatSketch)
+	
+	dw OddishSketch
+	db BANK(OddishSketch)
+	
+	dw GloomSketch
+	db BANK(GloomSketch)
+	
+	dw VileplumeSketch
+	db BANK(VileplumeSketch)
+	
+	dw BellossomSketch
+	db BANK(BellossomSketch)
+	
+	dw ParasSketch
+	db BANK(ParasSketch)
+	
+	dw ParasectSketch
+	db BANK(ParasectSketch)
+	
+	dw VenonatSketch
+	db BANK(VenonatSketch)
+	
+	dw VenomothSketch
+	db BANK(VenomothSketch)
+	
+	dw DiglettSketch
+	db BANK(DiglettSketch)
+	
+	dw DugtrioSketch
+	db BANK(DugtrioSketch)
+	
+	dw PsyduckSketch
+	db BANK(PsyduckSketch)
+	
+	dw GolduckSketch
+	db BANK(GolduckSketch)
+	
+	dw MankeySketch
+	db BANK(MankeySketch)
+	
+	dw PrimeapeSketch
+	db BANK(PrimeapeSketch)
+	
+	dw PoliwagSketch
+	db BANK(PoliwagSketch)
+	
+	dw PoliwhirlSketch
+	db BANK(PoliwhirlSketch)
+	
+	dw PoliwrathSketch
+	db BANK(PoliwrathSketch)
+	
+	dw PolitoedSketch
+	db BANK(PolitoedSketch)
+	
+	dw AbraSketch
+	db BANK(AbraSketch)
+	
+	dw KadabraSketch
+	db BANK(KadabraSketch)
+	
+	dw AlakazamSketch
+	db BANK(AlakazamSketch)
