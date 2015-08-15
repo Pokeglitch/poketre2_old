@@ -680,3 +680,96 @@ AltSpritesTable:
 	
 	dw AlakazamSketch
 	db BANK(AlakazamSketch)
+	
+	dw MachopSketch
+	db BANK(MachopSketch)
+	
+	dw MachokeSketch
+	db BANK(MachokeSketch)
+	
+	dw MachampSketch
+	db BANK(MachampSketch)
+	
+	dw BellsproutSketch
+	db BANK(BellsproutSketch)
+	
+	dw WeepinbellSketch
+	db BANK(WeepinbellSketch)
+	
+	dw VictreebelSketch
+	db BANK(VictreebelSketch)
+	
+	dw TentacoolSketch
+	db BANK(TentacoolSketch)
+	
+	dw TentacruelSketch
+	db BANK(TentacruelSketch)
+	
+	dw GeodudeSketch
+	db BANK(GeodudeSketch)
+	
+	dw GravelerSketch
+	db BANK(GravelerSketch)
+	
+	dw GolemSketch
+	db BANK(GolemSketch)
+	
+	dw PonytaSketch
+	db BANK(PonytaSketch)
+	
+	dw RapidashSketch
+	db BANK(RapidashSketch)
+	
+	dw SlowpokeSketch
+	db BANK(SlowpokeSketch)
+	
+	dw SlowbroSketch
+	db BANK(SlowbroSketch)
+	
+	dw SlowkingSketch
+	db BANK(SlowkingSketch)
+	
+	dw MagnemiteSketch
+	db BANK(MagnemiteSketch)
+	
+	dw MagnetonSketch
+	db BANK(MagnetonSketch)
+	
+	dw MagnezoneSketch
+	db BANK(MagnezoneSketch)
+	
+	dw FarfetchdSketch
+	db BANK(FarfetchdSketch)
+	
+	dw DoduoSketch
+	db BANK(DoduoSketch)
+	
+	dw DodrioSketch
+	db BANK(DodrioSketch)
+	
+	dw SeelSketch
+	db BANK(SeelSketch)
+	
+	dw DewgongSketch
+	db BANK(DewgongSketch)
+	
+	dw GrimerSketch
+	db BANK(GrimerSketch)
+	
+	dw MukSketch
+	db BANK(MukSketch)
+	
+	dw ShellderSketch
+	db BANK(ShellderSketch)
+	
+	dw CloysterSketch
+	db BANK(CloysterSketch)
+	
+	dw GastlySketch
+	db BANK(GastlySketch)
+	
+	dw HaunterSketch
+	db BANK(HaunterSketch)
+	
+	dw GengarSketch
+	db BANK(GengarSketch)
