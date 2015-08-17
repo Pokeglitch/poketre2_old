@@ -773,3 +773,81 @@ AltSpritesTable:
 	
 	dw GengarSketch
 	db BANK(GengarSketch)
+	
+	dw OnixSketch
+	db BANK(OnixSketch)
+	
+	dw SteelixSketch
+	db BANK(SteelixSketch)
+	
+	dw DrowzeeSketch
+	db BANK(DrowzeeSketch)
+	
+	dw HypnoSketch
+	db BANK(HypnoSketch)
+	
+	dw KrabbySketch
+	db BANK(KrabbySketch)
+	
+	dw KinglerSketch
+	db BANK(KinglerSketch)
+	
+	dw VoltorbSketch
+	db BANK(VoltorbSketch)
+	
+	dw ElectrodeSketch
+	db BANK(ElectrodeSketch)
+	
+	dw ExeggcuteSketch
+	db BANK(ExeggcuteSketch)
+	
+	dw ExeggutorSketch
+	db BANK(ExeggutorSketch)
+	
+	dw CuboneSketch
+	db BANK(CuboneSketch)
+	
+	dw MarowakSketch
+	db BANK(MarowakSketch)
+	
+	dw TyrogueSketch
+	db BANK(TyrogueSketch)
+	
+	dw HitmonleeSketch
+	db BANK(HitmonleeSketch)
+	
+	dw HitmonchanSketch
+	db BANK(HitmonchanSketch)
+	
+	dw HitmontopSketch
+	db BANK(HitmontopSketch)
+	
+	dw LickitungSketch
+	db BANK(LickitungSketch)
+	
+	dw LickilickySketch
+	db BANK(LickilickySketch)
+	
+	dw KoffingSketch
+	db BANK(KoffingSketch)
+	
+	dw WeezingSketch
+	db BANK(WeezingSketch)
+	
+	dw RhyhornSketch
+	db BANK(RhyhornSketch)
+	
+	dw RhydonSketch
+	db BANK(RhydonSketch)
+	
+	dw RhyperiorSketch
+	db BANK(RhyperiorSketch)
+	
+	dw HappinySketch
+	db BANK(HappinySketch)
+	
+	dw ChanseySketch
+	db BANK(ChanseySketch)
+	
+	dw BlisseySketch
+	db BANK(BlisseySketch)

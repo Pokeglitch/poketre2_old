@@ -6577,6 +6577,36 @@ GastlySketch::      INCBIN "pic/altmons/gastly_sketch.pic"
 HaunterSketch::      INCBIN "pic/altmons/haunter_sketch.pic"
 GengarSketch::      INCBIN "pic/altmons/gengar_sketch.pic"
 
+SECTION "bank28",ROMX,BANK[$28]
+OnixSketch::      INCBIN "pic/altmons/onix_sketch.pic"
+SteelixSketch::      INCBIN "pic/altmons/steelix_sketch.pic"
+DrowzeeSketch::      INCBIN "pic/altmons/drowzee_sketch.pic"
+HypnoSketch::      INCBIN "pic/altmons/hypno_sketch.pic"
+KrabbySketch::      INCBIN "pic/altmons/krabby_sketch.pic"
+KinglerSketch::      INCBIN "pic/altmons/kingler_sketch.pic"
+VoltorbSketch::      INCBIN "pic/altmons/voltorb_sketch.pic"
+ElectrodeSketch::      INCBIN "pic/altmons/electrode_sketch.pic"
+ExeggcuteSketch::      INCBIN "pic/altmons/exeggcute_sketch.pic"
+ExeggutorSketch::      INCBIN "pic/altmons/exeggutor_sketch.pic"
+CuboneSketch::      INCBIN "pic/altmons/cubone_sketch.pic"
+MarowakSketch::      INCBIN "pic/altmons/marowak_sketch.pic"
+TyrogueSketch::      INCBIN "pic/altmons/tyrogue_sketch.pic"
+HitmonleeSketch::      INCBIN "pic/altmons/hitmonlee_sketch.pic"
+HitmonchanSketch::      INCBIN "pic/altmons/hitmonchan_sketch.pic"
+HitmontopSketch::      INCBIN "pic/altmons/hitmontop_sketch.pic"
+
+SECTION "bank29",ROMX,BANK[$29]
+LickitungSketch::      INCBIN "pic/altmons/lickitung_sketch.pic"
+LickilickySketch::      INCBIN "pic/altmons/lickilicky_sketch.pic"
+KoffingSketch::      INCBIN "pic/altmons/koffing_sketch.pic"
+WeezingSketch::      INCBIN "pic/altmons/weezing_sketch.pic"
+RhyhornSketch::      INCBIN "pic/altmons/rhyhorn_sketch.pic"
+RhydonSketch::      INCBIN "pic/altmons/rhydon_sketch.pic"
+RhyperiorSketch::      INCBIN "pic/altmons/rhyperior_sketch.pic"
+HappinySketch::      INCBIN "pic/altmons/happiny_sketch.pic"
+ChanseySketch::      INCBIN "pic/altmons/chansey_sketch.pic"
+BlisseySketch::      INCBIN "pic/altmons/blissey_sketch.pic"
+
 ;bank for the new hard mode functions
 SECTION "bank36",ROMX,BANK[$36]
 INCLUDE "engine/hard_mode.asm"
