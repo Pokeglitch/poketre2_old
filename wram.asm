@@ -2938,6 +2938,10 @@ wSpriteFilter::
 ;used for loading font and text box border tiles
 wWhichScreen::
 	ds 1
+	
+;used when adding a pokemon to a party
+wSavedPokemonTraits::
+	ds 1
 
 
 SECTION "Stack", WRAMX[$dfff], BANK[1]
