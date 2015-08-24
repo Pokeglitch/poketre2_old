@@ -851,3 +851,171 @@ AltSpritesTable:
 	
 	dw BlisseySketch
 	db BANK(BlisseySketch)
+	
+	dw TangelaSketch
+	db BANK(TangelaSketch)
+	
+	dw TangrowthSketch
+	db BANK(TangrowthSketch)
+	
+	dw KangaskhanSketch
+	db BANK(KangaskhanSketch)
+	
+	dw HorseaSketch
+	db BANK(HorseaSketch)
+	
+	dw SeadraSketch
+	db BANK(SeadraSketch)
+	
+	dw KingdraSketch
+	db BANK(KingdraSketch)
+	
+	dw GoldeenSketch
+	db BANK(GoldeenSketch)
+	
+	dw SeakingSketch
+	db BANK(SeakingSketch)
+	
+	dw StaryuSketch
+	db BANK(StaryuSketch)
+	
+	dw StarmieSketch
+	db BANK(StarmieSketch)
+	
+	dw MimeJrSketch
+	db BANK(MimeJrSketch)
+	
+	dw MrMimeSketch
+	db BANK(MrMimeSketch)
+	
+	dw ScytherSketch
+	db BANK(ScytherSketch)
+	
+	dw ScizorSketch
+	db BANK(ScizorSketch)
+	
+	dw SmoochumSketch
+	db BANK(SmoochumSketch)
+	
+	dw JynxSketch
+	db BANK(JynxSketch)
+	
+	dw ElekidSketch
+	db BANK(ElekidSketch)
+	
+	dw ElectabuzzSketch
+	db BANK(ElectabuzzSketch)
+	
+	dw ElectivireSketch
+	db BANK(ElectivireSketch)
+	
+	dw MagbySketch
+	db BANK(MagbySketch)
+	
+	dw MagmarSketch
+	db BANK(MagmarSketch)
+	
+	dw MagmortarSketch
+	db BANK(MagmortarSketch)
+	
+	dw PinsirSketch
+	db BANK(PinsirSketch)
+	
+	dw TaurosSketch
+	db BANK(TaurosSketch)
+	
+	dw MagikarpSketch
+	db BANK(MagikarpSketch)
+	
+	dw GyaradosSketch
+	db BANK(GyaradosSketch)
+	
+	dw LaprasSketch
+	db BANK(LaprasSketch)
+	
+	dw DittoSketch
+	db BANK(DittoSketch)
+	
+	dw EeveeSketch
+	db BANK(EeveeSketch)
+	
+	dw VaporeonSketch
+	db BANK(VaporeonSketch)
+	
+	dw JolteonSketch
+	db BANK(JolteonSketch)
+	
+	dw FlareonSketch
+	db BANK(FlareonSketch)
+	
+	dw EspeonSketch
+	db BANK(EspeonSketch)
+	
+	dw UmbreonSketch
+	db BANK(UmbreonSketch)
+	
+	dw LeafeonSketch
+	db BANK(LeafeonSketch)
+	
+	dw GlaceonSketch
+	db BANK(GlaceonSketch)
+	
+	dw SylveonSketch
+	db BANK(SylveonSketch)
+	
+	dw PorygonSketch
+	db BANK(PorygonSketch)
+	
+	dw Porygon2Sketch
+	db BANK(Porygon2Sketch)
+	
+	dw PorygonZSketch
+	db BANK(PorygonZSketch)
+	
+	dw OmanyteSketch
+	db BANK(OmanyteSketch)
+	
+	dw OmastarSketch
+	db BANK(OmastarSketch)
+	
+	dw KabutoSketch
+	db BANK(KabutoSketch)
+	
+	dw KabutopsSketch
+	db BANK(KabutopsSketch)
+	
+	dw AerodactylSketch
+	db BANK(AerodactylSketch)
+	
+	dw MunchlaxSketch
+	db BANK(MunchlaxSketch)
+	
+	dw SnorlaxSketch
+	db BANK(SnorlaxSketch)
+	
+	dw PoltergostSketch
+	db BANK(PoltergostSketch)
+	
+	dw ArticunoSketch
+	db BANK(ArticunoSketch)
+	
+	dw ZapdosSketch
+	db BANK(ZapdosSketch)
+	
+	dw MoltresSketch
+	db BANK(MoltresSketch)
+	
+	dw DratiniSketch
+	db BANK(DratiniSketch)
+	
+	dw DragonairSketch
+	db BANK(DragonairSketch)
+	
+	dw DragoniteSketch
+	db BANK(DragoniteSketch)
+	
+	dw MewtwoSketch
+	db BANK(MewtwoSketch)
+	
+	dw MewSketch
+	db BANK(MewSketch)
