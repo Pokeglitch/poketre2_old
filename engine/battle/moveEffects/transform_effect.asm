@@ -55,7 +55,7 @@ TransformEffect_: ; 3bab1 (e:7ab1)
 ; transform user into opposing Pokemon	
 ; species
 	ld a,[de]
-	ld [wOriginalTransformedSpecies],a		;store the original pokemon species
+	ld [wPlayerOriginalTransformedSpecies],a		;store the original pokemon species
 	ld a, [hl] 
 	ld [de], a
 ; type 1, type 2, catch rate, and moves	

@@ -364,7 +364,7 @@ ItemUseBall: ; d687 (3:5687)
 	ld hl,W_ENEMYBATTSTATUS3
 	bit Transformed,[hl]
 	jr z,.next15
-	ld a,[wOriginalTransformedSpecies]	;load the original species
+	ld a,[wPlayerOriginalTransformedSpecies]	;load the original species
 	ld [wEnemyMonSpecies2],a
 	jr .next16
 .next15	;$5871

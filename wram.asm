@@ -1525,11 +1525,11 @@ wMrMimeMap::
 	ds 1
 wMrMimeHP::
 	ds 2
+wMrMimeStatus::
+	ds 1
 wMrMimeDVs::
 	ds 3
 wMrMimeTraits::
-	ds 1
-wMrMimeStatus::
 	ds 1
 wMrMimeSecondaryStatus::
 	ds 1
@@ -1546,13 +1546,9 @@ wLastStandDelayedDamageCounter::
 	ds 1
 wLastStandMaxHP::
 	ds 2
+wLastStandPP::
+	ds 2
 		
-
-;contains the active cheats
-wActiveCheats::
-	ds 1
-wActiveCheats2::
-	ds 1
 		
 wAdditionalInBattleDataToClear::
 ;bytes that are used before the battle starts
@@ -2428,7 +2424,25 @@ W_DAYCARE_IN_USE:: ; da48
 	ds 1
 
 W_DAYCAREMONNAME:: ds 11 ; da49
-W_DAYCAREMONOT::   ds 11 ; da54
+W_DAYCAREMONOT::
+wDayCareMonSpDefenseEV::
+	ds 2
+wDayCareMonSecondaryStatus::
+	ds 1
+wDayCareMonLearnedTraits::
+	ds 1
+wDayCareMonHeldItem::
+	ds 1
+wDayCareMonDelayedDamage::
+	ds 2
+wDayCareMonDelayedDamageCounter::
+	ds 1
+wDayCareMonTraits::
+	ds 1
+wDayCareMonMorale::
+	ds 1
+wDayCareMonRadioDamage::
+	ds 1
 
 wDayCareMon:: box_struct wDayCareMon ; da5f
 
@@ -2496,11 +2510,34 @@ wHighScoreFlags::
 	
 ;second day care mon
 W_DAYCAREMON2NAME:: ds 11
-W_DAYCAREMON2OT::   ds 11
+W_DAYCAREMON2OT::
+wDayCareMon2SpDefenseEV::
+	ds 2
+wDayCareMon2SecondaryStatus::
+	ds 1
+wDayCareMon2LearnedTraits::
+	ds 1
+wDayCareMon2HeldItem::
+	ds 1
+wDayCareMon2DelayedDamage::
+	ds 2
+wDayCareMon2DelayedDamageCounter::
+	ds 1
+wDayCareMon2Traits::
+	ds 1
+wDayCareMon2Morale::
+	ds 1
+wDayCareMon2RadioDamage::
+	ds 1
 
 wDayCareMon2:: box_struct wDayCareMon2
 	
 	
+;contains the active cheats
+wActiveCheats::
+	ds 1
+wActiveCheats2::
+	ds 1	
 	
 ;End of Data that we care about saving
 wEndOfAdditionalData::
@@ -2569,6 +2606,10 @@ wExactDamageMultipler::
 	ds 1	
 	
 ;contains additional information about the pokemon in battle:
+wBattleMonSpDefenseEV::
+	ds 1
+wBattleMonSecondaryStatus::
+	ds 1
 wBattleMonLearnedTraits::
 	ds 1
 wBattleMonHeldItem::
@@ -2580,6 +2621,8 @@ wBattleMonDelayedDamageCounter::
 wBattleMonTraits::
 	ds 1
 wBattleMonMorale::
+	ds 1
+wBattleMonRadioDamage::
 	ds 1
 
 wBattleMonSpecialDefense::
@@ -2603,7 +2646,6 @@ wBattleMonAbility2::
 	
 wEnemyMonSpDefenseEV::
 	ds 2
-;note, the below byte is never used. just there to easily copy everything
 wEnemyMonSecondaryStatus::
 	ds 1
 wEnemyMonLearnedTraits::
@@ -2618,6 +2660,8 @@ wEnemyMonTraits::
 	ds 1
 wEnemyMonMorale::
 	ds 1
+wEnemyMonRadioDamage::
+	ds 1
 
 wEnemyMonSpecialDefense::
 	ds 2
@@ -2629,14 +2673,14 @@ wEnemyMonInvisibilityCounter::
 	ds 1
 wEnemyMonFirewall::
 	ds 1
-wEnemyMonBaseSpDef::
-	ds 1
 wEnemyMonHPSpDefDV::
 	ds 1
 wEnemyMonAbility::
 wEnemyMonAbility1::
 	ds 1
 wEnemyMonAbility2::
+	ds 1
+wEnemyMonBaseSpDef::
 	ds 1
 	
 
@@ -2898,8 +2942,22 @@ wTempLandscapeTimeCounter::
 wPreviousAttackDamage::
 	ds 2
 
+wBattleMonExp::
+	ds 11
+wEnemyMonExp::
+	ds 11
+	
+
+wBattleMonBaseStats::
+	ds 5
+	
+wBattleMonBaseExp::
+	ds 1
+	
 ;when a pokemon uses transform, this byte holds the original species
-wOriginalTransformedSpecies::
+wPlayerOriginalTransformedSpecies::
+	ds 1
+wEnemyOriginalTransformedSpecies::
 	ds 1
 
 wEndOfNewBattleBytes::

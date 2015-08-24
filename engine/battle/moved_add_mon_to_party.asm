@@ -1,251 +1,293 @@
 _AddPartyMon: ; f2e5 (3:72e5)
-	ld de, wPartyCount ; wPartyCount
-	ld a,[wMaxPartyMons]		;get the max party size
-	ld b,a		;store into b
 	ld a, [wcc49]
 	and $f
-	jr z, .start	;adding to players party
+	jr z, .playersParty	;adding to players party
+	;otherwise, its the enemy party
+	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
+	and a
+	jp nz,AddCapturedMonToEnemyParty	;if we are in battle, then add the captured mon data
+	jp AddNewMonToEnemyParty	;otherwise, add new mon data
+.playersParty
+	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
+	and a
+	jp nz,AddCapturedMonToPlayerParty	;if we are in battle, then add the captured mon data
+	jp AddNewMonToPlayerParty	;otherwise, add new mon data
+	
+
+AddNewMonToPlayerParty:
+	call TryAddMonToPlayerParty
+	ret nc		;return if we cant
+	call SetDexSeenAndOwned
+	
+	call ClearPlayerMonOT
+	ld bc,wPartyMon1DelayedDamage - wPartyMon1OT
+	add hl,bc		;skip up to delayed damage / egg walk counter
+	call SetEggWalkCounter
+	call NewPlayerTraits
+	call NewPlayerMorale
+	
+	call GoToPartyNickname
+	call StoreDefaultName	;store the default nickname
+	
+	ld a,[wPresetTraits]
+	bit PresetEgg,a	;is it an egg?
+	call z,NewPlayerNickname	;ask nickname if not
+	
+	call GoToPartyMonData
+	call NewPlayerDVs
+	call NewHPLevelStatus
+	call NewTypesMoves
+	inc hl
+	inc hl		;skip the special defense
+	call GenerateNewExp
+	call GenerateNewEnergy
+	call GenerateNewStats
+	
+	scf
+	ret
+	
+AddCapturedMonToPlayerParty:
+	call TryAddMonToPlayerParty
+	ret nc		;return if we cant
+	call SetDexSeenAndOwned
+	
+	call ClearPlayerMonOT
+	call CopyEnemySpDefEV
+	call CopyEnemySecondaryStatus
+	call CopyEnemyLearnedTraits
+	call CopyEnemyHeldItem
+	inc hl
+	inc hl
+	inc hl	;skip the delayed damage
+	call CopyEnemyTraits
+	call NewPlayerMorale
+	call CopyEnemyRadioDamage
+	call GoToPartyNickname
+	
+	call CopyEnemyNickname
+	ld a,[wActiveCheats]
+	bit IWHBYDCheat,a		;is the IWHBYD cheat on?
+	call z,NewPlayerNickname	;ask nickname if not
+	
+	call GoToPartyMonData
+	call CopyEnemyDVs
+	call CopyEnemyHPLevelStatus
+	call CopyEnemyTypesMoves
+	call CopyEnemySpecialDefense
+	call CopyEnemyExp
+	call CopyEnemyEnergy
+	call CopyEnemyStats
+	
+	scf
+	ret
+
+AddNewMonToEnemyParty:
+	call TryAddMonToEnemyParty
+	ret nc		;return if we cant
+	
+	;apply the Iron Totem
 	ld a,[wTotems]
 	bit IronTotem,a		;is the iron totem set?
 	jr z,.notIronTotem	;then dont double
 	ld a,[W_CURENEMYLVL]
 	add a		;double
 	ld [W_CURENEMYLVL],a
+	
 .notIronTotem
+	call ClearEnemyMonOT
+	ld bc,wPartyMon1LearnedTraits - wPartyMon1OT
+	add hl,bc		;skip up to learned traits
+	call NewTrainerLearnedTraits
+	call NewTrainerHeldItem
+	inc hl
+	inc hl
+	inc hl	;skip the delayed damage
+	call NewTrainerTraits
+	call NewTrainerMorale
+	
+	call GoToEnemyNickname
+	call NewTrainerNickname
+	
+	call GoToEnemyMonData
+	call GenerateRandomDVs
+	call NewHPLevelStatus
+	call NewTypesMoves
+	inc hl
+	inc hl		;skip the special defense
+	call GenerateNewExp
+	call GenerateNewEnergy
+	call GenerateNewStats
+	
+	scf
+	ret
+
+AddCapturedMonToEnemyParty:
+	call TryAddMonToEnemyParty
+	ret nc		;return if we cant
+	
+	call ClearEnemyMonOT
+	call CopyPlayerSpDefEV
+	call CopyPlayerSecondaryStatus
+	call CopyPlayerLearnedTraits
+	call CopyPlayerHeldItem
+	inc hl
+	inc hl
+	inc hl	;skip the delayed damage
+	call CopyPlayerTraits
+	call CopyPlayerMorale
+	call CopyPlayerRadioDamage
+	
+	call GoToEnemyNickname
+	call CopyPlayerNickname
+	
+	call GoToEnemyMonData
+	call CopyPlayerDVs
+	call CopyPlayerHPLevelStatus
+	call CopyPlayerTypesMoves
+	call CopyPlayerSpecialDefense
+	call CopyPlayerExp
+	call CopyPlayerEnergy
+	call CopyPlayerStats
+	
+	scf
+	ret
+	
+AddNewMonToPC:
+	call TryAddMonToPC
+	ret nc		;return if we cant
+	call SetDexSeenAndOwned
+	
+	call ClearPCMonOT
+	ld bc,wPartyMon1DelayedDamage - wPartyMon1OT
+	add hl,bc		;skip up to delayed damage / egg walk counter
+	call SetEggWalkCounter
+	call NewPlayerTraits
+	call NewPlayerMorale
+	
+	call GoToPCNickname
+	call StoreDefaultName	;store the default nickname
+	ld a,[wPresetTraits]
+	bit PresetEgg,a	;is it an egg?
+	call z,NewPlayerNickname	;ask nickname if not
+	
+	call GoToPCMonData
+	call NewPlayerDVs
+	call NewHPLevelStatus
+	call NewTypesMoves
+	inc hl
+	inc hl		;skip the special defense
+	call GenerateNewExp
+	call GenerateNewEnergy
+	call GenerateNewStats
+	
+	scf
+	ret
+
+AddCapturedMonToPC:
+	call TryAddMonToPC
+	ret nc		;return if we cant
+	call SetDexSeenAndOwned
+	
+	call ClearPCMonOT
+	call CopyEnemySpDefEV
+	call CopyEnemySecondaryStatus
+	call CopyEnemyLearnedTraits
+	call CopyEnemyHeldItem
+	inc hl
+	inc hl
+	inc hl	;skip the delayed damage
+	call CopyEnemyTraits
+	call NewPlayerMorale
+	call CopyEnemyRadioDamage
+	
+	call GoToPCNickname
+	call CopyEnemyNickname
+	ld a,[wActiveCheats]
+	bit IWHBYDCheat,a		;is the IWHBYD cheat on?
+	call z,NewPlayerNickname	;ask nickname if not
+	
+	call GoToPCMonData
+	call CopyEnemyDVs
+	call CopyEnemyHPLevelStatus
+	call CopyEnemyTypesMoves
+	call CopyEnemySpecialDefense
+	call CopyEnemyExp
+	call CopyEnemyEnergy
+	call CopyEnemyStats
+	
+	scf
+	ret
+
+;to see if the new pokemon being added is an egg that was created by two daycare pokemon
+;returns carry if true
+IsOffspringEgg:
+	ld a,[wPresetTraits]
+	bit PresetEgg,a	;is it an egg?
+	jr z,.notOffspringEgg
+	ld a,[W_CURMAP]		;get the map
+	cp DAYCAREM		;is it the daycare?
+	jr nz,.notOffspringEgg
+	scf
+	ret
+.notOffspringEgg
+	xor a		;unset the carry
+	ret
+
+	
+;to see if the pokemon can be added to the players party and add if so
+TryAddMonToPlayerParty:
+	ld de, wPartyCount ; wPartyCount
+	ld a,[wMaxPartyMons]		;get the max party size
+	ld b,a		;store into b
+	jr FinishTryAddMon
+
+;to see if the pokemon can be added to the enemy's party and add if so
+TryAddMonToEnemyParty:
 	ld de, wEnemyPartyCount ; wEnemyPartyCount
 	ld b,6	;party size for enemy
-.start
+	jr FinishTryAddMon
+	
+;to see if the pokemon can be added to the pc and add if so
+TryAddMonToPC:
+	ld de, W_NUMINBOX
+	ld b, MONS_PER_BOX
+	;fall through
+	
+;if it returns nc, then it failed
+FinishTryAddMon:
 	inc b
 	ld a, [de]
 	inc a
 	cp b	;	PARTY_LENGTH + 1
-	ret nc
+	ret nc	;return if there is no space
 	ld [de], a
 	ld [$ffe4], a
-
-;to update the "list of pokemon" at the start of the party data
 	add e
 	ld e, a
-	jr nc, .asm_f300
+	jr nc, .noCarry
 	inc d
-.asm_f300
+.noCarry
 	ld a, [wcf91]
 	ld [de], a
 	inc de
 	ld a, $ff
 	ld [de], a
 	
-;To set what used to be the Original Trainer Data
-	ld hl, wPartyMonOT ; wd273
-	ld a, [wcc49]
-	and $f
-	jr z, .notEnemyMonOT	;skip down if we are not adding to the enemy data
-	ld hl, wEnemyMonOT
-.notEnemyMonOT
-	ld a, [$ffe4]
-	dec a
-	call SkipFixedLengthTextEntries	;hl points to the OT name
-	ld b, $b
-	xor a
-.clearOTNameLoop
-	ld [hli],a
-	dec b
-	jr nz,.clearOTNameLoop	;erase the 11 OT name bytes
-	
-	;to set the morale:
-	ld bc,wPartyMon1Morale - wPartyMon2OT
-	add hl,bc		;hl points to the morale
-	
-	call DetermineNewMorale
-	ld [hld],a		;store morale and decrease hl to point to traits
-	
-	call DetermineNewTraits	;randomly set the bits for 'holo' or 'shadow' pokemon
-	ld [hl],a
-	ld [wSavedPokemonTraits],a	;also save it to the wSavedPokemonTraits for when it comes time to adjusting the DVs
-	
-	;done adding traits, add in learned traits
-	ld bc,wPartyMon1LearnedTraits - wPartyMon1Traits
-	add hl,bc		;hl = learned traits
-	
-	ld a, [wcc49]
-	and $f
-	jr nz, .trainerLearnedTraits		;skip down if its the trainers party
-	
-	;see if it is in battle or not
-	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
-	and a
-	jr z, .saveLearnedTraits	;if not in battle, then we set to 0
-	ld a,[wEnemyMonLearnedTraits]		;otherwise, copy from the enemy data	
-	jr .saveLearnedTraits
-	
-	
-.trainerLearnedTraits
-	;see if it is in battle or not
-	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
-	and a
-	jr nz, .newTrainerLearnedTraits	;if in battle, then we calculate new learned traits based on the trainer
-	ld a,[wBattleMonLearnedTraits]		;otherwise, copy from the player data	
-	jr .saveLearnedTraits	
-.newTrainerLearnedTraits
-	call DetermineTrainerLearnedTraits
-	;fall through
-	
-.saveLearnedTraits
-	ld [hli],a		;store learned traits and move to Held Item
-	
-	;held item
-	ld a, [wcc49]
-	and $f
-	jr nz, .trainerHeldItem		;skip down if its the trainers party
-	
-	;see if we are in battle or not
-	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
-	and a
-	jr z, .saveHeldItem	;if not in battle, then we set to 0
-	ld a,[wEnemyMonHeldItem]		;otherwise, copy from the enemy data	
-	jr .saveHeldItem
-	
-.trainerHeldItem
-	;see if it is in battle or not
-	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
-	and a
-	jr nz, .newTrainerHeldItem	;if in battle, then we calculate new held item based on the trainer
-	ld a,[wBattleMonHeldItem]		;otherwise, copy from the player data	
-	jr .saveHeldItem	
-.newTrainerHeldItem
-	call DetermineTrainerHeldItem
-	;fall through
-	
-.saveHeldItem
-	ld a,[hl]
-	
-	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
-	and a
-	jr z, .doneWithOTBytes	;if not in battle, then we don't copy additional data from the opposing pokemon
-	
-	;to copy secondary status
-	ld bc,wPartyMon1SecondaryStatus - wPartyMon1HeldItem
-	add hl,bc		;bc now points to secondary status
-	xor a
-	ld [hl],a		;zero the byte
-	
-	;see whose party we are adding to
-	ld a, [wcc49]
-	and $f
-	ld a,[W_ENEMYBATTSTATUS3]	;set the a value for the players party
-	ld de,wEnemyMonDelayedDamage	;set the de value for the players party
-	jr z, .notTrainerSecondaryStatus		;skip down if its not the trainers party
-	ld a,[W_PLAYERBATTSTATUS3]	;set the a value for the enemy's party
-	ld de,wBattleMonDelayedDamage	;set the de value for the enemy's party
-	
-.notTrainerSecondaryStatus
-	bit 0,a		;toxic bit set?
-	jr z,.skipToxic
-	set Toxic2,[hl]		;set toxic bit
-.skipToxic
-	bit 5,a		;delayed damage bit set?
-	jr z,.skipDelayedDamage
-	set DelayedDamage2,[hl]		;set delayed damage bit
-.skipDelayedDamage
-	
-	;to copy delayed damage info
-	inc hl
-	inc hl
-	inc hl
-	ld a,[de]
-	ld [hli],a
-	inc de
-	ld a,[de]
-	ld [hli],a
-	inc de
-	ld a,[de]
-	ld [hl],a	;copy delayed damage info
-	
-;set the party mon nickname
-.doneWithOTBytes
-	ld a, [wcc49]
-	and a
-	jr nz, .afterStoringName	;skip if enemy's party
-	
-	ld hl, wPartyMonNicks ; wPartyMonNicks
-	ld a, [$ffe4]
-	dec a
-	call SkipFixedLengthTextEntries
-	ld a,[wPresetTraits]
-	bit PresetEgg,a	;is it an egg?
-	jr z,.askNickname		;ask nickname if not
-	ld a, [wcf91]
-	ld [wd11e], a
-	push hl
-	call GetMonName
-	pop de
-	ld hl, wcd6d
-	ld bc, 11
-	call CopyData		;store the pokemons name
-	jr .afterStoringName
-.askNickname
-	ld a, $2
-	ld [wd07d], a
-	predef AskName
-	
-	
-.afterStoringName
-	ld hl, wPartyMons
-	ld a, [wcc49]
-	and $f
-	jr z, .asm_f34c
-	ld hl, wEnemyMons
-.asm_f34c
-	ld a, [$ffe4]
-	dec a
-	ld bc, wPartyMon2 - wPartyMon1
-	call AddNTimes	;hl now points to the start of the pokemons party data
-	ld e, l
-	ld d, h
-	push hl
+	;get the mon header
 	ld a, [wcf91]
 	ld [wd0b5], a
 	call GetMonHeader
-	ld hl, W_MONHEADER
-	ld a, [hli]
-	ld [de], a
-	inc de
-	pop hl
-	push hl
-	ld a, [wcc49]
-	and $f
-	jr z, .playerPokemonDVs	;skip down if player party
 	
-	;see if it is in battle or not
-	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
-	and a
-	jr nz, .newTrainerDVs	;if not in battle, then we calculate new random DVs
+	scf	;set the carry flag to show that we succeeded
+	ret
 	
-	;otherwise, we copy from the players pokemon
-	ld a,[wBattleMonDVs]
-	ld c,a
-	ld a,[wBattleMonDVs + 1]
-	ld b,a
-	ld a,[wBattleMonHPSpDefDV]
-	jr .storeDVs
+
 	
-.newTrainerDVs
-	;get three 'battle random' dvs if adding to the enemy's party
-	call BattleRandomFar2
-	ld c,a
-	call BattleRandomFar2
-	ld b,a
-	call BattleRandomFar2
-	call AdjustDVsBasedOnGender
-	jr .storeDVs
-	
-.playerPokemonDVs
+SetDexSeenAndOwned:
 	;to first set the 'pokemon owned' and 'pokemon seen' flags
 	ld a, [wcf91]
 	ld [wd11e], a
-	push de
 	predef IndexToPokedex
-	pop de
 	ld a, [wd11e]
 	dec a
 	ld c, a
@@ -262,31 +304,477 @@ _AddPartyMon: ; f2e5 (3:72e5)
 	call FlagAction
 	pop bc
 	ld hl, wPokedexSeen ; wd30a
-	call FlagAction
-	pop hl
+	jp FlagAction
+
+	
+	
+	
+;to clear the OT data
+ClearPlayerMonOT:
+	ld hl, wPartyMonOT
+	jr ClearMonOT
+
+ClearEnemyMonOT:
+	ld hl, wEnemyMonOT
+	jr ClearMonOT
+	
+ClearPCMonOT:
+	ld hl, wBoxMonOT
+	;fall through
+	
+ClearMonOT:
+	push hl
+	ld a, [$ffe4]
+	dec a
+	call SkipFixedLengthTextEntries	;hl points to the OT name
+	ld b, $b
+	xor a
+.clearOTNameLoop
+	ld [hli],a
+	dec b
+	jr nz,.clearOTNameLoop	;erase the 11 OT name bytes
+	pop hl	;set hl back to start
+	ret
+		
+	
+;to copy the special defense EV
+CopyEnemySpDefEV:
+	ld de, wEnemyMonSpDefenseEV
+	jr CopySpDefEV
+
+CopyPlayerSpDefEV:
+	ld de, wBattleMonSpDefenseEV
+	;fall through
+
+;de is where to copy from
+;hl is where to copy to
+CopySpDefEV:
+	ld a,[de]
+	ld [hli],a
+	inc de
+	ld a,[de]
+	ld [hli],a
+	ret
+	
+
+;to copy the secondary status and delayed damage
+CopyEnemySecondaryStatus:
+	ld a,[W_ENEMYBATTSTATUS3]
+	ld de,wEnemyMonDelayedDamage
+	jr FinishCopySecondaryStatus
+	
+;to copy the delayed damage
+CopyPlayerSecondaryStatus:
+	ld a,[W_PLAYERBATTSTATUS3]
+	ld de,wBattleMonDelayedDamage
+	;fall through
+
+FinishCopySecondaryStatus:
+	bit 0,a		;toxic bit set?
+	jr z,.skipToxic
+	set Toxic2,[hl]		;set toxic bit
+.skipToxic
+	bit 5,a		;delayed damage bit set?
+	jr z,.afterDelayedDamage
+	set DelayedDamage2,[hl]		;set delayed damage bit
+	
+	push hl	;store the current hl position
+	
+	;to copy delayed damage info
+	inc hl
+	inc hl
+	inc hl
+	ld a,[de]
+	ld [hli],a
+	inc de
+	ld a,[de]
+	ld [hli],a
+	inc de
+	ld a,[de]
+	ld [hl],a	;copy delayed damage info
+	
+	pop hl	;recover the previous hl position
+	;fall through
+	
+.afterDelayedDamage
+	inc hl
+	ret
+	
+	
+;To get the learned traits
+NewTrainerLearnedTraits:
+	jr FinishCopyLearnedTraits
+
+CopyEnemyLearnedTraits:
+	ld a, [wEnemyMonLearnedTraits]
+	jr FinishCopyLearnedTraits
+
+CopyPlayerLearnedTraits:
+	ld a, [wBattleMonLearnedTraits]
+	;fall through
+
+FinishCopyLearnedTraits:
+	ld [hli],a
+	ret
+	
+	
+	
+;To get the held item
+NewTrainerHeldItem:
+	jr FinishCopyHeldItem
+	
+CopyEnemyHeldItem:
+	ld a, [wEnemyMonHeldItem]
+	jr FinishCopyHeldItem
+
+CopyPlayerHeldItem:
+	ld a, [wBattleMonHeldItem]
+	;fall through
+
+FinishCopyHeldItem:
+	ld [hli],a
+	ret
+	
+GetNewMonGender:
+	xor a		;set the value to zero
+	ld hl,W_MONHGENDEREGGGROUP
+	bit 7,[hl]		;can this pokemon be female?
+	jr z,.cantBeFemale	;skip down if not
+	bit 6,[hl]		;can this pokemon be male
+	jr nz,.randomlyChooseGender	;if this pokemon can also be male, then randomly choose
+	set FemaleTrait,a	;otherwise, set the female bit
+	ret
+.cantBeFemale
+	bit 6,[hl]		;can this pokemon be male?
+	ret nz		;if so, then dont set any bits
+	set GenderlessTrait,a	;otherwise, set the genderless bit
+	ret
+.randomlyChooseGender
+	call RandomOrBattleRandom	;get a random value
+	and $1	;only keep the first bit (male or female)
+	ret
+	
+NewPlayerTraits:
+	push hl
+	call GetNewMonGender
+	
+	ld c,1		;default value to compare when checking for holo
+	call IsOffspringEgg		;is this a daycare egg?
+	jr nc,.afterParentHoloCheck		;then dont check the parents
+	
+	ld a,[wDayCareMonTraits]		;check if parent 1 is holo
+	bit HoloTrait,a		;is it holo?
+	jr z,.nextParent		;skip to next parent if not
+	
+	sla c		;otherwise, double the compare value
+	
+.nextParent
+	ld a,[wDayCareMon2Traits]		;check parent 2
+	bit HoloTrait,a		;holo?
+	jr z,.afterParentHoloCheck		;skip down if not
+	
+	sla c		;otherwise, double the compare value
+	
+.afterParentHoloCheck
+	;randomly see if it should be Holographic
+	ld b,a	;backup the gender byte
+	call Random	;get random value
+	dec a
+	ld a,b	;restore the traits byte
+	cp c		;compare the random value to the default value
+	jr nc,.finish	;if the compare value is not greater, then skip the rest of the holo check
+	
+	ld hl,wActiveCheats
+	bit LuckyCharmCheat,[hl]	;is the Lucky Charm cheat active?
+	jr nz,.setHolo	;if so, then set the bit
+
+	call Random	;otherwise, get another random value
+	cp $20		;compare to $20 (1/8 chance, 1/2000 overall)
+	ld a,b		;restore the traits byte
+	jr nc,.finish	;if its not under $20 then finish
+	;otherwise, fall through and set the bit
+	
+.setHolo
+	set HoloTrait,a
+	;fall through	
+	
+.finish
+	jr FinishCopyTraits
+
+NewTrainerTraits:
+	push hl
+	call GetNewMonGender
+	jr FinishCopyTraits
+	
+CopyEnemyTraits:
+	push hl
+	ld a, [wEnemyMonTraits]
+	bit CaughtInCurrentBattleTrait,a		;was this pokemon stolen from the player already?
+	res CaughtInCurrentBattleTrait,a		;reset the bit
+	jr nz,.afterSet		;if so, then dont set
+	set CaughtInCurrentBattleTrait,a	;otherwise, set the bit
+.afterSet
+	jr FinishCopyTraits
+
+CopyPlayerTraits:
+	push hl
+	ld a, [wBattleMonTraits]
+	set CaughtInCurrentBattleTrait,a
+	;fall through
+	
+FinishCopyTraits:
+	;check the pre-set trait bits to see if this pokemon should be forced holo or shadow
+	ld hl,wPresetTraits
+	bit PresetHolo,[hl]	;is it holo?
+	jr z,.afterHolo
+	set HoloTrait,a
+	
+.afterHolo
+	bit PresetShadow,[hl]	;is it shadow?
+	jr z,.afterShadow
+	set ShadowTrait,a
+
+.afterShadow
+	bit PresetEgg,[hl]	;egg?
+	jr z,.afterEgg
+	set EggTrait,a
+
+.afterEgg
+	bit PresetHealBall,[hl]	;heal ball?
+	jr z,.afterHealBall	;skip heal ball if not
+	set HealBallTrait,a	;otherwise, set the heal ball trait
+
+.afterHealBall
+	pop hl			;recover the location we save to
+	ld [hli],a
+	ld [wSavedPokemonTraits],a	;also save it to the wSavedPokemonTraits for when it comes time to adjusting the DVs
+	ret
+	
+
+;To get the morale
+NewTrainerMorale:
+	ld a, [W_MONHBASEMORALE]
+	jr FinishCopyMorale
+	
+NewPlayerMorale:
+	ld a,[W_ISINBATTLE]
+	cp 2		;is it trainer battle?
+	ld a, [W_MONHBASEMORALE]
+	jr nz,.afterTrainerBattle
+	
+	;if trainer battle, divide the morale by 4
+	srl a
+	srl a
+	
+.afterTrainerBattle
+	jr FinishCopyMorale
+
+CopyPlayerMorale:
+	ld a, [wBattleMonMorale]
+	;fall through
+
+FinishCopyMorale:
+	ld [hli],a
+	ret	
+	
+	
+
+CopyEnemyRadioDamage:
+	ld a, [wEnemyMonRadioDamage]
+	jr FinishCopyRadioDamage
+
+CopyPlayerRadioDamage:
+	ld a, [wBattleMonRadioDamage]
+	;fall through
+
+FinishCopyRadioDamage:
+	ld [hl],a
+	ret	
+	
+
+GoToPartyNickname:
+	ld hl, wPartyMonNicks
+	jr FinishGoToNickname
+
+GoToEnemyNickname:
+	ld hl, wEnemyMonNicks
+	jr FinishGoToNickname
+
+GoToPCNickname:
+	ld hl, wBoxMonNicks
+	;fall through
+	
+FinishGoToNickname:
+	ld a, [$ffe4]
+	dec a
+	call SkipFixedLengthTextEntries
+	ret
+	
+	
+CopyEnemyNickname:
+	ld de, wEnemyMonNick
+	jr FinishCopyNickname
+
+CopyPlayerNickname:
+	ld de, wBattleMonNick
+	;fall through
+
+FinishCopyNickname:
 	push hl
 	
-	;to set the player pokemon DVs
-	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
-	and a
-	jr nz, .copyEnemyMonDVs
-	call Random ; generate random IVs
-	ld c,a
-	call Random
-	ld b, a
-	call Random
-	jr .storeDVs
+	push hl
+	push de
+	pop hl
+	pop de
+	ld bc, 11
+	call CopyData		;copy the other pokemons name
+
+	pop hl	;recover the starting position
+	ret
+
+NewTrainerNickname:
+	ld a,[wActiveCheats]
+	bit IWHBYDCheat,a		;is the IWHBYD cheat on?
+	jr z,StoreDefaultName	;if not, then get the default name
 	
-.copyEnemyMonDVs
+	ret
+
+NewPlayerNickname:
+	ld a, $2
+	ld [wd07d], a
+	predef AskName
+	ret
+	
+StoreDefaultName:
+	ld a, [wcf91]
+	ld [wd11e], a
+	push hl
+	call GetMonName
+	pop de
+	ld hl, wcd6d
+	ld bc, 11
+	jp CopyData		;store the pokemons name
+	
+
+GoToPartyMonData:
+	ld hl, wPartyMons
+	jr FinishGoToMonData
+
+GoToEnemyMonData:
+	ld hl, wEnemyMons
+	jr FinishGoToMonData
+
+GoToPCMonData:
+	ld hl, wBoxMons
+	;fall through
+	
+FinishGoToMonData:
+	ld a, [$ffe4]
+	dec a
+	ld bc, wPartyMon2 - wPartyMon1
+	call AddNTimes	;hl now points to the start of the pokemons party data
+	;store the mon ID
+	ld a, [wcf91]
+	ld [hl], a
+	ret
+	
+
+NewPlayerDVs:
+	call IsOffspringEgg		;is this pokemon a daycare egg?
+	jr nc,GenerateRandomDVs	;if not, then get random
+
+	;otherwise, get from the parents
+	push hl
+	ld hl,00		;hl = counter from each parent
+	
+	ld a,[wDayCareMonDVs]
+	ld d,a
+	ld a,[wDayCareMon2DVs]
+	ld e,a
+	call .getDVs
+	ld b,a		;store into b
+	
+	ld a,[wDayCareMonDVs + 1]
+	ld d,a
+	ld a,[wDayCareMon2DVs + 1]
+	ld e,a
+	call .getDVs
+	ld c,a		;store into c
+	
+	ld a,[wDayCareMonHPSpDefDV]
+	ld d,a
+	ld a,[wDayCareMon2HPSpDefDV]
+	ld e,a
+	call .getDVs
+	
+	jr FinishCopyDVs
+
+;returns new DV value in a
+.getDVs
+	xor a
+	call .getRandomFromParents
+	swap a
+	swap d
+	swap e
+	call .getRandomFromParents
+	swap a
+	ret
+;will get the low nybble DV value from a random parent
+.getRandomFromParents
+	push bc
+	ld b,a		;store current DV value into b
+	ld a,h
+	cp 3
+	jr z,.getFromParent2	;if we already have 3 from parent 1, then get from parent 2
+	ld a,l
+	cp 3
+	jr z,.getFromParent2	;if we already have 3 from parent 2, then get from parent 1
+	call Random
+	cp $80
+	jr nc,.getFromParent2	;50% chance
+	;fall through	
+.getFromParent1
+	ld a,d
+	inc h
+	jr .retFromParent
+.getFromParent2
+	ld a,e
+	inc l
+	;fall through
+.retFromParent
+	and a,$0F
+	add b		;add to the current dv value
+	pop bc		;recover BC
+	ret
+	
+GenerateRandomDVs:
+	call RandomOrBattleRandom
+	ld c,a
+	call RandomOrBattleRandom
+	ld b,a
+	call RandomOrBattleRandom
+	call AdjustDVsBasedOnGender
+	jr FinishCopyDVs
+
+CopyEnemyDVs:
 	ld a,[wEnemyMonDVs]
 	ld c,a
 	ld a,[wEnemyMonDVs + 1]
 	ld b,a
-	ld a, [wEnemyMonHPSpDefDV]
-	call AdjustDVsBasedOnGender
+	ld a,[wEnemyMonHPSpDefDV]
+	jr FinishCopyDVs
+
+CopyPlayerDVs:
+	ld a,[wBattleMonDVs]
+	ld c,a
+	ld a,[wBattleMonDVs + 1]
+	ld b,a
+	ld a,[wBattleMonHPSpDefDV]
 	;fall through
+
+FinishCopyDVs:
+	push hl
 	
-.storeDVs ; f3b3
 	push bc
 	ld bc, wPartyMon1HPSpDefDV - wPartyMon1
 	add hl, bc	;hl = hp/sp def dv
@@ -296,84 +784,134 @@ _AddPartyMon: ; f2e5 (3:72e5)
 	pop bc
 	ld [hl], c
 	inc hl
-	ld [hl], b         ; write IVs
+	ld [hl], b         ; write DVs
 	
-	;done with IVs, move to HP
-	ld bc, $fff4
-	add hl, bc	;hl now points to HP
-	
-	ld a, [wcc49]
-	and $f
-	jr z, .playerHPData	;skip down if players party
-	
-	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
-	and a
-	jr z, .newHPData	;if not in battle, then we calc new value
-	
-	ld bc,wBattleMonHP
-	jr .copyHPData	;otherwise, copy from other pokemon
-	
-.playerHPData
-	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
-	and a
-	jr z, .newHPData	;if not in battle, then we calc new value
-	
-;otherwise, copy from other pokemon
-	ld bc,wEnemyMonHP
-	;fall through
-	
-.copyHPData
-	ld a, [bc]    ; copy HP
-	ld [de], a
+	pop hl	;recover the starting position
+	ret
+
+;to round the dvs up to the nearest odd value (based on gender)
+;male will increase physical
+;female will increase special
+;genderless will increase hp and speed
+AdjustDVsBasedOnGender:
+	push hl
+	ld hl,wSavedPokemonTraits	;load the saved traits
+	bit GenderlessTrait,[hl]	;is the pokemon genderless?
+	jr z,.notGenderless
+	push af
+	ld a,b
+	set 4,a		;set speed IV
+	ld b,a
+	pop af
+	set 4,a		;set HP iv
+	jr .finish
+.notGenderless
+	bit FemaleTrait,[hl]		;is the pokemon female?
+	jr z,.notFemale
+	push af
+	ld a,b
+	set 0,a		;set special attack
+	ld b,a
+	pop af
+	set 0,a		;set special defense
+	jr .finish
+.notFemale
+	push af
+	ld a,c
+	set 0,a
+	set 4,a
+	ld c,a
+	pop af
+.finish
+	pop hl
+	ret	
+
+
+CopyEnemyHPLevelStatus:
+	ld de,wEnemyMonHP
+
+CopyPlayerHPLevelStatus:
+	ld de,wBattleMonHP
+
+FinishCopyHPLevelStatus:
+	inc hl	;hl points to hp
+	ld a,[de]
+	ld [hli],a
 	inc de
-	inc bc
-	ld a, [bc]
-	ld [de], a
+	ld a,[de]
+	ld [hli],a	;HP
 	inc de
-	inc bc
+	ld a,[W_CURENEMYLVL]
+	ld [hli],a	;level
+	inc de
+	ld a,[de]
+	ld [hli],a	;status ailments
+	ret
+	
+NewHPLevelStatus:
+	inc hl		;hl pointer to HP
+	push hl
+	
+	call IsOffspringEgg		;is this a daycare egg?
+	jr nc,.notOffspring		;skip down if not
+	
 	xor a
-	ld [de], a                 ; level (?)
-	inc de
-	inc bc
-	ld a, [bc]   ; copy status ailments
-	ld [de], a
-	inc de
-	jr .copyMonTypesAndMoves
+	ld [hli],a
+	ld [hli],a		;zero the hp if so
+	jr .afterHP		;skip down
 	
-.newHPData
+.notOffspring
 	ld a, $1
 	ld c, a
 	xor a
 	ld b, a
 	call CalcStat      ; calc HP stat (set cur Hp to max HP)
-	ld a, [H_MULTIPLICAND+1]
-	ld [de], a
-	inc de
-	ld a, [H_MULTIPLICAND+2]
-	ld [de], a
-	inc de
-	xor a
-	ld [de], a         ; level (?)
-	inc de
-	ld [de], a         ; status ailments
-	inc de
-	;fall through
+	pop hl
 	
-.copyMonTypesAndMoves
-	ld hl, W_MONHTYPES
-	ld a, [hli]       ; type 1
-	ld [de], a
+	ld a, [H_MULTIPLICAND+1]
+	ld [hli], a
+	ld a, [H_MULTIPLICAND+2]
+	ld [hli], a			;HP
+.afterHP
+	ld a,[W_CURENEMYLVL]
+	ld [hli], a         ; level
+	
+	xor a
+	ld [hli], a         ; status ailments
+	ret
+
+	
+	
+CopyEnemyTypesMoves:
+	ld de,wEnemyMonMoves
+
+CopyPlayerTypesMoves:
+	ld de,wBattleMonMoves
+
+FinishCopyTypesMoves:
+	call CopyTypes
+
+	;copy all moves	
+	ld b,NUM_MOVES
+.loop
+	ld a,[de]
 	inc de
-	ld a, [hli]       ; type 2
-	ld [de], a
-	inc de				;removed 'Catch Rate'
+	ld [hli],a
+	dec b
+	jr nz,.loop
+	ret
+
+NewTypesMoves:
+	call CopyTypes
+	push hl
+	
+	push hl
+	pop de
 	
 	;to store the pokemons base moves
 	ld hl, W_MONHMOVES
-	ld a, [hli]
-	inc de
+	
 	push de
-	ld [de], a
 	ld a, [hli]
 	inc de
 	ld [de], a
@@ -383,149 +921,216 @@ _AddPartyMon: ; f2e5 (3:72e5)
 	ld a, [hli]
 	inc de
 	ld [de], a
-	push de
-	dec de
-	dec de
-	dec de
+	ld a, [hli]
+	inc de
+	ld [de], a
+	pop de
+	
 	xor a
 	ld [wHPBarMaxHP], a
 	predef WriteMonMoves	;to update the moves based on the pokemons level
-	pop de
-	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
-	and a
-	jr z, .skipCopyEnemySpecialDefense	;if not in battle, then don't copy the enemy pokemons special defense
 	
-	;see what party we are adding to
-	ld a, [wcc49]
-	and $f
-	jr z, .playersPartySpecialDefense	;skip down if player party
+	pop hl		;recover the starting pointer
+	ld bc,NUM_MOVES
+	add hl,bc	;move hl past the 'moves' section
 	
-	;otherwise, copy from the players pokemon
-	ld a,[wBattleMonSpecialDefense]
-	ld [de],a
-	inc de
-	ld a,[wBattleMonSpecialDefense + 1]
-	ld [de],a
-	jr .finishSpecialDefense
+	call IsOffspringEgg		;is it daycare egg?
+	call c,GetEggMoves		;if so, get egg moves
 	
-.playersPartySpecialDefense
-	ld a,[wEnemyMonSpecialDefense]
-	ld [de],a
-	inc de
-	ld a,[wEnemyMonSpecialDefense + 1]
-	ld [de],a
-	jr .finishSpecialDefense
+	ret
+
+GetEggMoves:
+	ret
 	
-.skipCopyEnemySpecialDefense
+CopyTypes:
+	ld a,[W_MONHTYPES]
+	ld [hli],a
+	ld a,[W_MONHTYPES + 1]
+	ld [hli],a	;types
+	inc hl	;skip the HP/Special Defence DVs (formerly Catch Rate)
+	ret
+	
+	
+CopyEnemySpecialDefense:
+	ld de,wEnemyMonUnmodifiedSpecialDefense
+	jr FinishCopySpecialDefense
+	
+CopyPlayerSpecialDefense:
+	ld de,wPlayerMonUnmodifiedSpecialDefense
+	;fall through
+
+FinishCopySpecialDefense:
+	ld a,[de]
+	ld [hli],a
 	inc de
-.finishSpecialDefense
-	inc de
+	ld a,[de]
+	ld [hli],a
+	ret
+	
+CopyEnemyExp:
+	ld de,wEnemyMonExp
+	jr FinishCopyExp
+
+CopyPlayerExp:
+	ld de,wBattleMonExp
+	;fall through
+
+FinishCopyExp:
+	push hl
 	push de
+	pop hl
+	pop de
+	ld bc, wPartyMon1DVs - wPartyMon1Exp
+	call CopyData		;copy the exp
+	push de
+	pop hl		;hl points to after the Exp
+	inc hl
+	inc hl		;skip the DVs
+	ret
+
+GenerateNewExp:	
+	push hl
 	ld a, [W_CURENEMYLVL]
 	ld d, a
 	callab CalcExperience
-	pop de
-	inc de
+	pop hl
 	ld a, [H_MULTIPLICAND] ; write experience
-	ld [de], a
-	inc de
+	ld [hli], a
 	ld a, [H_MULTIPLICAND+1]
-	ld [de], a
-	inc de
+	ld [hli], a
 	ld a, [H_MULTIPLICAND+2]
-	ld [de], a
+	ld [hli], a
+
 	xor a
-	ld b, $a
-	
-	ld a, [wcc49]
-	and $f
-	jr z, .playersEVS	;skip down if we are dealing with the players pokemon
-	
-	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
-	and a
-	jr z, .clearEVsLoop	;if not in battle, then we set to 0
-	
-	;otherwise, copy from the enemy
-	;TODO
-	jr .afterEVs
-	
-.playersEVS
-	
-	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
-	and a
-	jr z, .clearEVsLoop	;if not in battle, then we set to 0
-	
-	;otherwise, copy from the player
-	;TODO
-	jr .afterEVs
-	
+	ld b,wPartyMon1DVs - wPartyMon1HPExp
 .clearEVsLoop              ; set all EVs to 0
-	inc de
-	ld [de], a
+	ld [hli], a
 	dec b
 	jr nz, .clearEVsLoop
-	inc de
-	inc de
+	inc hl
+	inc hl		;skip the DVs
+	ret
 	
-.afterEVs
+CopyEnemyEnergy:
+	ld de, wEnemyMonPP
+	jr FinishCopyEnergy
+	
+CopyPlayerEnergy:
+	ld de, wBattleMonPP
+	;fall through
+
+FinishCopyEnergy:
+	ld b,4
+.loop
+	ld a,[de]
+	ld [hli],a
+	inc de
+	dec b
+	jr nz,.loop
+	ret
+	
+GenerateNewEnergy:
+	ld a,[W_CURENEMYLVL]
+	push hl	;store pointer
+	
+	ld d,0
+	ld e,a	;de = level
+	
+	cp 30	;compare to level 30
+	jr nc,.over30
+	
+	;multiply by 10
+	ld hl,00
+	ld b,10
+	jr .multiplyLoop
+	
+.over30
+	sub 30
+	cp 40
+	jr nc,.over70
+	
+	ld hl,300
+	ld b,5
+	jr .multiplyLoop
+	
+.over70
+	ld hl,500
+	sub 40
+	ld b,1
+	;fall through
+	
+.multiplyLoop
+	add hl,de
+	dec b
+	jr nz,.multiplyLoop
+	
+	call RandomOrBattleRandom
+	and 64	;only keep up to 64
+	ld e,a
+	add hl,de	;add to the value
+	
+	;make sure its not over 999
+	ld a,h
+	cp 4		;high byte 4?
+	jr nc,.setTo999	;set to 999 if over 3
+	cp $03	;high byte 03?
+	jr nz,.skipSettingTo999	;if lower than 03, then not 999
+	ld a,l
+	cp $E8	;low byte e8 (1000)?
+	jr c,.skipSettingTo999 ;if lower than e8, then don't set to 999	
+.setTo999
+	ld hl,999
+.skipSettingTo999	
+	push hl
+	pop bc	;bc = value
+	pop hl	;recover pointer 
+	ld [hl],b
+	inc hl
+	ld [hl],c
+	inc hl
+	ld [hl],b
+	inc hl
+	ld [hl],c
+	inc hl
+	ret
+	
+CopyEnemyStats:
+	ld de,wEnemyMonUnmodifiedLevel
+	jr FinishCopyStats
+
+CopyPlayerStats:
+	ld de,wPlayerMonUnmodifiedLevel
+	;fall through
+
+FinishCopyStats:
+	push hl
+	push de
 	pop hl
-	
-	;TODO
-	call AddPartyMon_WriteMovePP ;get the PPs for each move
-	
-	inc de
-	ld a, [W_CURENEMYLVL] ; W_CURENEMYLVL
-	ld [de], a
-	inc de
-	
-	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
-	dec a
-	jr nz, .calcFreshStats	;if we are not in battle, then calcuate the pokemon status
-	
-	;otherwise, copy from the other pokemon	
-	;see what party we are adding to
-	ld a, [wcc49]
-	and $f
-	ld hl, wEnemyMonMaxHP
-	jr z, .finishCopyStats	;skip down if player party
-	
-	;otherwise, copy from the players party
-	ld hl, wBattleMonMaxHP
-	
-.finishCopyStats
-	ld hl, wEnemyMonMaxHP ; wEnemyMonMaxHP
-	ld bc, $a
-	call CopyData          ; copy stats of cur enemy mon
-	pop hl
-	jr .done
-	
-.calcFreshStats
-	pop hl
-	ld bc, $10
-	add hl, bc
+	pop de
+	ld bc, 11
+	call CopyData		;copy the stats
+	push de
+	pop hl		;hl points to after the stats
+	ret
+
+GenerateNewStats:
+	ld a, [W_CURENEMYLVL]
+	ld [hli], a	;level
+	push hl
+	pop de
+	ld hl,W_MONHBASESTATS + 1
 	ld b, $0
-	call CalcStats         ; calculate fresh set of stats
+	jp CalcStats         ; calculate fresh set of stats
 	
-	;check if any pokemon traits have been predetermined
-.done
+SetEggWalkCounter:
 	ld hl,wPresetTraits
 	bit PresetEgg,[hl]	;is it an egg?
-	jr z,.notEgg
-	
-	;Setting the Egg properties:
-	res PresetEgg,[hl]		;reset the bit
-	ld hl,wPartyMon1HP
-	ld bc,wPartyMon2-wPartyMon1
-	ld a,[$ffe4]
-	dec a
-	call AddNTimes		;get to the pokemons HP
-	xor a
-	ld [hli],a
-	ld [hl],a		;zero the hp
-	ld hl,wPartyMon1DelayedDamage
-	ld a,[$ffe4]
-	dec a
-	call SkipFixedLengthTextEntries
+	jr nz,.setCounter	;then set the counter
+	inc hl
+	inc hl
+	inc hl	;otherwise, move to after delayed damage
+	ret
+.setCounter
 	push hl	;save the delayed damage pointer
 	ld hl,W_MONHBASESTATS
 	xor a
@@ -566,46 +1171,8 @@ _AddPartyMon: ; f2e5 (3:72e5)
 	ld [hl],b
 	inc hl
 	ld [hl],c
-	
-.notEgg
-	scf
-	ret
-	
-;to round the dvs up to the nearest odd value (based on gender)
-;male will increase physical
-;female will increase special
-;genderless will increase hp and speed
-AdjustDVsBasedOnGender:
-	push hl
-	ld hl,wSavedPokemonTraits	;load the saved traits
-	bit GenderlessTrait,[hl]	;is the pokemon genderless?
-	jr z,.notGenderless
-	push af
-	ld a,b
-	set 4,a		;set speed IV
-	ld b,a
-	pop af
-	set 4,a		;set HP iv
-	jr .finish
-.notGenderless
-	bit FemaleTrait,[hl]		;is the pokemon female?
-	jr z,.notFemale
-	push af
-	ld a,b
-	set 0,a		;set special attack
-	ld b,a
-	pop af
-	set 0,a		;set special defense
-	jr .finish
-.notFemale
-	push af
-	ld a,c
-	set 0,a
-	set 4,a
-	ld c,a
-	pop af
-.finish
-	pop hl
+	inc hl
+	inc hl	;move to after delayed damage
 	ret
 	
 
@@ -876,105 +1443,6 @@ RandomOrBattleRandom:
 	jp nz,BattleRandomFar2	;use BattleRandom if it is the enemy
 	jp Random
 	
-;To set pokemon traits when adding to players or enemy trainers party
-DetermineNewTraits:
-	push hl
-	push bc
-	ld a, [W_ISINBATTLE]
-	and a
-	jr z,.createNewTrait	;create new trait if not in battle
-	ld hl,wEnemyMonTraits	;trait for player to copy
-	ld a, [wcc49]
-	and a
-	jr z,.copyTrait	;skip down if its players turn
-	ld hl,wBattleMonTraits	;trait for enemy to copy
-.copyTrait
-	ld a,[hl]
-	set CaughtInCurrentBattleTrait,a
-	jr .finish
-.createNewTrait
-	xor a		;set the value to zero
-	ld hl,W_MONHGENDEREGGGROUP
-	bit 7,[hl]		;can this pokemon be female?
-	jr z,.cantBeFemale	;skip down if not
-	bit 6,[hl]		;can this pokemon be male
-	jr nz,.randomlyChooseGender	;if this pokemon can also be male, then randomly choose
-	set FemaleTrait,a	;otherwise, set the female bit
-	jr .afterGender
-.cantBeFemale
-	bit 6,[hl]		;can this pokemon be male?
-	jr nz,.afterGender	;if so, then dont get any bits
-	set GenderlessTrait,a	;otherwise, set the genderless bit
-	jr .afterGender
-.randomlyChooseGender
-	call RandomOrBattleRandom	;get a random value
-	and $1	;only keep the first bit (male or female)
-.afterGender
-	;check the pre-set trait bits to see if this pokemon should be forced holo or shadow
-	ld hl,wPresetTraits
-	bit PresetHolo,[hl]	;is it holo?
-	jr nz,.setHolo
-	bit PresetShadow,[hl]	;is it shadow?
-	jr nz,.setShadow
-	bit PresetEgg,[hl]	;egg?
-	jr nz,.setEgg
-	bit PresetHealBall,[hl]	;heal ball?
-	jr z,.skipHealBall	;skip heal ball if not
-	
-	set HealBallTrait,a	;otherwise, set the heal ball trait
-	res PresetHealBall,[hl]	;and reset the 'preset heal ball' trait
-	;fall through
-.skipHealBall
-	ld b,a	;store the traits byte
-	ld a, [wcc49]
-	and a
-	ld a,b	;restore the traits byte
-	jr nz,.finish	;skip down to 'caught in current battle' check if it is the enemys party (can't randomly add a holo to it)
-
-	
-	ld hl,wActiveCheats
-	;otherwise, randomly set holo
-	call Random	;get random value
-	dec a
-	ld a,b	;restore the traits byte
-	jr nz,.finish	;if it didnt return 01, then skip the rest of the holo check
-	bit LuckyCharmCheat,[hl]	;is the Lucky Charm cheat active?
-	jr nz,.setHolo	;then skip the second holo check
-	
-	call Random	;get another random value
-	cp $20		;compare to $20 (1/8 chance, 1/2000 overall)
-	ld a,b		;restore the traits byte
-	jr nc,.finish	;if its not under $20 then finish
-
-.setHolo
-	set HoloTrait,a
-	jr .finish
-.setEgg
-	set EggTrait,a
-	jr .skipHealBall	;continue randomly checking bits
-.setShadow
-	set ShadowTrait,a
-	;fall through
-.finish
-	pop bc
-	pop hl
-	ret
-	
-;if in battle: copy from trainer and divide by 4.
-;if wild battle or out of battle, pre-set value
-;depends on the trainer if enemy
-DetermineNewMorale:
-	ret
-	
-;to determine the pokemons learned traits based on the trainer
-DetermineTrainerLearnedTraits:
-	ret
-	
-;to determine the pokemons held item based upon the trainer and pokemon type
-DetermineTrainerHeldItem:
-	ret
-	
-
 FlagActionPredef:
 	call GetPredefRegisters
 
