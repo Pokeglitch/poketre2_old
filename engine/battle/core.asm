@@ -224,7 +224,7 @@ StartBattle: ; 3c11e (f:411e)
 	ld hl, wPartyFoughtCurrentEnemyFlags
 	pop bc
 	predef FlagActionPredef
-	call LoadPlayerMonData
+	callab LoadPlayerMonData
 	call LoadScreenTilesFromBuffer1
 	call SendOutMon
 	jr MainInBattleLoop
@@ -853,7 +853,7 @@ HandleEnemyMonFainted: ; 3c525 (f:4525)
 	ld a,[wPresetTraits]
 	bit PresetLastStand,a	;is the last stand bit set?
 	jr z,.notForceLastStand		;if not, then dont go into last stand
-	call LoadPlayerMonData
+	callab LoadPlayerMonData
 	call SendOutMon
 	jr .skipReplacingBattleMon
 .notForceLastStand
@@ -1149,7 +1149,7 @@ HandlePlayerMonFainted: ; 3c700 (f:4700)
 	ld a,[wPresetTraits]
 	bit PresetLastStand,a	;is the last stand bit set?
 	jr z,.notForcedLastStand		;if not, then skip down
-	call LoadPlayerMonData
+	callab LoadPlayerMonData
 	call SendOutMon		;send out the next mon (last stand)
 	jr .skipChoosingNextMon
 .notForcedLastStand
@@ -1284,7 +1284,7 @@ ChooseNextMon: ; 3c7d8 (f:47d8)
 	pop bc
 	ld hl, wPartyFoughtCurrentEnemyFlags
 	predef FlagActionPredef
-	call LoadPlayerMonData
+	callab LoadPlayerMonData
 	call GBPalWhiteOut
 	call LoadHudTilePatterns
 	call LoadScreenTilesFromBuffer1
@@ -1537,7 +1537,7 @@ EnemySendOutFirstMon: ; 3c92a (f:492a)
 .loadEnemyData
 	ld [wEnemyMonSpecies2],a
 	ld [wcf91],a
-	call LoadEnemyMonData
+	callab LoadEnemyMonData
 	ld hl,wEnemyMonHP
 	ld a,[hli]
 	ld [wcce3],a
@@ -1885,7 +1885,7 @@ SwitchPlayerMon: ; 3d1ba (f:51ba)
 	pop bc
 	ld hl, wPartyFoughtCurrentEnemyFlags
 	predef FlagActionPredef
-	call LoadPlayerMonData
+	callab LoadPlayerMonData
 	call SendOutMon
 	call SaveScreenTilesToBuffer1
 	ld a, $2
@@ -6243,7 +6243,7 @@ InitWildBattle: ; 3ef8b (f:6f8b)
 	add a		;double
 	ld [W_CURENEMYLVL],a
 .notIronTotem
-	call LoadEnemyMonData
+	callab LoadEnemyMonData
 	call DoBattleTransitionAndInitBattleVariables
 	ld a, [W_CUROPPONENT]
 	cp MAROWAK

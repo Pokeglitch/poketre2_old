@@ -1,15 +1,14 @@
 _AddPartyMon: ; f2e5 (3:72e5)
 	ld a, [wcc49]
 	and $f
+	ld a, [W_ISINBATTLE]
 	jr z, .playersParty	;adding to players party
 	;otherwise, its the enemy party
-	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
-	and a
+	and a	;in battle?
 	jp nz,AddCapturedMonToEnemyParty	;if we are in battle, then add the captured mon data
 	jp AddNewMonToEnemyParty	;otherwise, add new mon data
 .playersParty
-	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
-	and a
+	and a ;in battle?
 	jp nz,AddCapturedMonToPlayerParty	;if we are in battle, then add the captured mon data
 	jp AddNewMonToPlayerParty	;otherwise, add new mon data
 	
@@ -109,7 +108,7 @@ AddNewMonToEnemyParty:
 	call NewTrainerNickname
 	
 	call GoToEnemyMonData
-	call GenerateRandomDVs
+	call NewTrainerDVs
 	call NewHPLevelStatus
 	call NewTypesMoves
 	inc hl
@@ -323,11 +322,11 @@ ClearPCMonOT:
 	;fall through
 	
 ClearMonOT:
-	push hl
 	ld a, [$ffe4]
 	dec a
 	call SkipFixedLengthTextEntries	;hl points to the OT name
-	ld b, $b
+	push hl
+	ld b, 11
 	xor a
 .clearOTNameLoop
 	ld [hli],a
@@ -459,6 +458,7 @@ NewPlayerTraits:
 	call GetNewMonGender
 	
 	ld c,1		;default value to compare when checking for holo
+	ld b,a	;backup the gender byte
 	call IsOffspringEgg		;is this a daycare egg?
 	jr nc,.afterParentHoloCheck		;then dont check the parents
 	
@@ -477,11 +477,10 @@ NewPlayerTraits:
 	
 .afterParentHoloCheck
 	;randomly see if it should be Holographic
-	ld b,a	;backup the gender byte
 	call Random	;get random value
 	dec a
-	ld a,b	;restore the traits byte
 	cp c		;compare the random value to the default value
+	ld a,b	;restore the traits byte
 	jr nc,.finish	;if the compare value is not greater, then skip the rest of the holo check
 	
 	ld hl,wActiveCheats
@@ -747,6 +746,10 @@ NewPlayerDVs:
 	pop bc		;recover BC
 	ret
 	
+NewTrainerDVs:
+	;some trainers have preset DVs
+	;fall through
+	
 GenerateRandomDVs:
 	call RandomOrBattleRandom
 	ld c,a
@@ -913,16 +916,15 @@ NewTypesMoves:
 	
 	push de
 	ld a, [hli]
-	inc de
 	ld [de], a
-	ld a, [hli]
 	inc de
+	ld a, [hli]
 	ld [de], a
-	ld a, [hli]
 	inc de
+	ld a, [hli]
 	ld [de], a
-	ld a, [hli]
 	inc de
+	ld a, [hli]
 	ld [de], a
 	pop de
 	
@@ -931,11 +933,14 @@ NewTypesMoves:
 	predef WriteMonMoves	;to update the moves based on the pokemons level
 	
 	pop hl		;recover the starting pointer
-	ld bc,NUM_MOVES
-	add hl,bc	;move hl past the 'moves' section
+	push hl		;store it
 	
 	call IsOffspringEgg		;is it daycare egg?
 	call c,GetEggMoves		;if so, get egg moves
+	
+	pop hl		;recover the starting pointer
+	ld bc,NUM_MOVES
+	add hl,bc	;move hl past the 'moves' section
 	
 	ret
 
@@ -1065,7 +1070,7 @@ GenerateNewEnergy:
 	jr nz,.multiplyLoop
 	
 	call RandomOrBattleRandom
-	and 64	;only keep up to 64
+	and $3F	;only keep lower 6 bits
 	ld e,a
 	add hl,de	;add to the value
 	
@@ -1123,8 +1128,8 @@ GenerateNewStats:
 	jp CalcStats         ; calculate fresh set of stats
 	
 SetEggWalkCounter:
-	ld hl,wPresetTraits
-	bit PresetEgg,[hl]	;is it an egg?
+	ld a,[wPresetTraits]
+	bit PresetEgg,a	;is it an egg?
 	jr nz,.setCounter	;then set the counter
 	inc hl
 	inc hl

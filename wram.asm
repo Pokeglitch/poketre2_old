@@ -23,7 +23,7 @@ box_struct: MACRO
 \1AttackExp::  dw
 \1DefenseExp:: dw
 \1SpeedExp::   dw
-\1SpAttack::
+\1SpAttackExp::
 \1SpecialExp:: dw
 \1DVs::        ds 2
 \1PP::         ds NUM_MOVES

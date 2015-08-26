@@ -8,6 +8,7 @@ LoadPlayerMonData:
 	call LoadPlayerMonMoves
 	call LoadPlayerMonEnergy
 	call LoadPlayerMonExp
+	call LoadPlayerMonStats
 	call BackupPlayerMonUnmodifiedStats
 	
 	call LoadPlayerMonOTData
@@ -20,8 +21,8 @@ LoadPlayerMonData:
 	call LoadPlayerMonToxicStatus
 	
 	callab ApplyBurnAndParalysisPenaltiesToPlayer
-	callab ApplyPlayerPotionStatBoost
-	callab ApplyPlayerHeldItemStatBoost
+	call ApplyPlayerPotionStatBoost
+	call ApplyPlayerHeldItemStatBoost
 	callab CalcPlayerModStatsSavewD11E
 	ret
 	
@@ -41,6 +42,7 @@ LoadPlayerLastStandData:
 	call LoadPlayerLastStandMoves
 	call LoadPlayerLastStandEnergy
 	call LoadPlayerLastStandExp
+	call LoadPlayerLastStandStats
 	call BackupPlayerMonUnmodifiedStats
 	
 	ld hl,wBattleMonSpDefenseEV
@@ -60,8 +62,8 @@ LoadPlayerLastStandData:
 	call LoadLastStandToxicStatus
 	
 	callab ApplyBurnAndParalysisPenaltiesToPlayer
-	callab ApplyPlayerPotionStatBoost
-	callab ApplyPlayerHeldItemStatBoost
+	call ApplyPlayerPotionStatBoost
+	call ApplyPlayerHeldItemStatBoost
 	callab CalcPlayerModStatsSavewD11E
 	ret
 	
@@ -79,6 +81,7 @@ LoadEnemyTrainerMonData:
 	call LoadEnemyTrainerMonMoves
 	call LoadEnemyTrainerMonEnergy
 	call LoadEnemyTrainerMonExp
+	call LoadEnemyTrainerMonStats
 	call BackupEnemyMonUnmodifiedStats
 	
 	call LoadEnemyTrainerMonOTData
@@ -91,8 +94,8 @@ LoadEnemyTrainerMonData:
 	call LoadEnemyTrainerMonToxicStatus
 	
 	callab ApplyBurnAndParalysisPenaltiesToEnemy
-	callab ApplyEnemyPotionStatBoost
-	callab ApplyEnemyHeldItemStatBoost
+	call ApplyEnemyPotionStatBoost
+	call ApplyEnemyHeldItemStatBoost
 	callab CalcEnemyModStatsSavewD11E
 	ret
 		
@@ -138,6 +141,7 @@ FinishLoadWildMonData:	;used for loading rest of mr mime data
 	call LoadWildMonMoves
 	call LoadWildMonEnergy
 	call LoadWildMonExp
+	call LoadWildMonStats
 	call BackupEnemyMonUnmodifiedStats
 	
 	ld hl,wEnemyMonSpDefenseEV
@@ -156,7 +160,7 @@ FinishLoadWildMonData:	;used for loading rest of mr mime data
 	call LoadWildMonDisabledStatus
 	call LoadWildMonToxicStatus
 	
-	callab ApplyEnemyHeldItemStatBoost
+	call ApplyEnemyHeldItemStatBoost
 	callab CalcEnemyModStatsSavewD11E
 	ret
 
@@ -612,6 +616,45 @@ FinishCopyMonNickname:
 	ld bc, 11
 	jp CopyData
 
+LoadPlayerLastStandStats:
+LoadWildMonStats:
+	ret
+	
+LoadPlayerMonStats:
+	ld hl, wBattleMonLevel
+	ld bc, wBattleMonSpecialDefense
+	jr FinishLoadTrainerStats
+	
+LoadEnemyTrainerMonStats:
+	ld hl,wEnemyMonLevel
+	ld bc,wEnemyMonSpecialDefense
+	;fall through
+
+FinishLoadTrainerStats:
+	push de
+	push bc
+	
+	push hl
+	ld hl,wEnemyMon1Level - wEnemyMon1
+	add hl,de	;hl points to the Exp of the party data
+	pop de
+	
+	ld bc,wPartyMon2 - wPartyMon1Level	;size to copy
+	call CopyData
+	
+	pop bc
+	pop de
+	
+	ld hl,wEnemyMon1SpDefense - wEnemyMon1
+	add hl,de	;hl pints to special defense
+	
+	ld a,[hli]
+	ld [bc],a
+	inc bc
+	ld a,[hli]
+	ld [bc],a	;copy the special defense
+	
+	ret
 	
 BackupPlayerMonUnmodifiedStats:
 	push de
@@ -1002,7 +1045,7 @@ FinishLoadEmptyDisabledStatus:
 
 FinishLoadEnemyMonDisabledStatus:
 	ld [bc],a	;save the disabled move
-	xor a
+	and a
 	jr z,.saveDisabledMoveNumber	;then save the move number to 0
 	
 	and a,$F0
@@ -1072,21 +1115,21 @@ FinishLoadEmptyExp:
 	
 LoadPlayerMonExp:
 	ld hl,wBattleMonExp
-	push hl
 	jr FinishLoadTrainerMonExp
 	
 LoadEnemyTrainerMonExp:
 	ld hl,wEnemyMonExp
-	push hl
 	;fall through
 	
 FinishLoadTrainerMonExp:
 	push de
-	ld hl,wPartyMon1DVs - wPartyMon1Exp
+	
 	push hl
-	pop bc		;copy to bc (size to copy)
+	ld hl,wEnemyMon1Exp - wEnemyMon1
 	add hl,de	;hl points to the Exp of the party data
 	pop de
+	
+	ld bc,wPartyMon1DVs - wPartyMon1Exp	;size to copy
 	call CopyData
 	pop de
 	ret
