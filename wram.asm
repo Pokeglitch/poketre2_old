@@ -2607,7 +2607,7 @@ wExactDamageMultipler::
 	
 ;contains additional information about the pokemon in battle:
 wBattleMonSpDefenseEV::
-	ds 1
+	ds 2
 wBattleMonSecondaryStatus::
 	ds 1
 wBattleMonLearnedTraits::
@@ -2641,6 +2641,8 @@ wBattleMonAbility::
 wBattleMonAbility1::
 	ds 1
 wBattleMonAbility2::
+	ds 1
+wBattleMonBaseSpDef::
 	ds 1
 
 	
@@ -2943,14 +2945,15 @@ wPreviousAttackDamage::
 	ds 2
 
 wBattleMonExp::
-	ds 11
+	ds 13
 wEnemyMonExp::
-	ds 11
+	ds 13
 	
 
 wBattleMonBaseStats::
 	ds 5
-	
+wBattleMonUnusedCatchRate::
+	ds 1
 wBattleMonBaseExp::
 	ds 1
 	

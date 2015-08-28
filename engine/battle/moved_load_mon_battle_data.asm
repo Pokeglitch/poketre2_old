@@ -1,4 +1,7 @@
 LoadPlayerMonData:
+ 	ld hl,wPresetTraits
+ 	bit PresetLastStand,[hl]	;is the last stand bit set?
+	jp nz,LoadPlayerLastStandData	;load last stand if so
 	call LoadPlayerMonNickname
 	call LoadPlayerMonHeader
 	
@@ -456,16 +459,21 @@ LoadPlayerLastStandHPLevelStatus:
 	jr FinishStoredHPStatus
 	
 LoadPlayerHPLevelStatus:
+	push de
 	ld bc,wBattleMonHP
 	call FinishLoadTrainerHPLevelStatus
 	dec bc
 	ld a,[bc]
 	ld [hl],a		;store the level
+	pop de
 	ret
 	
 LoadEnemyTrainerHPLevelStatus:
+	push de
 	ld bc,wEnemyMonHP
-	;fall through
+	call FinishLoadTrainerHPLevelStatus
+	pop de
+	ret
 	
 FinishLoadTrainerHPLevelStatus:
 	ld hl,wEnemyMon1HP - wEnemyMon1
@@ -657,7 +665,6 @@ FinishLoadTrainerStats:
 	ret
 	
 BackupPlayerMonUnmodifiedStats:
-	push de
 	ld hl,wBattleMonSpecialDefense
 	ld de,wPlayerMonUnmodifiedSpecialDefense
 	push hl
@@ -667,7 +674,6 @@ BackupPlayerMonUnmodifiedStats:
 	jr FinishTrainerMonUnmodifiedStats
 	
 BackupEnemyMonUnmodifiedStats:
-	push de
 	ld hl,wEnemyMonSpecialDefense
 	ld de,wEnemyMonUnmodifiedSpecialDefense
 	push hl
@@ -686,7 +692,6 @@ FinishTrainerMonUnmodifiedStats:
 	inc de
 	ld a,[hl]
 	ld [de],a	;copy the calculated special defense stat and store as unmodified special defense
-	pop de
 	ret
 
 LoadPlayerMonOTData:	
@@ -1007,7 +1012,7 @@ LoadPlayerMonDisabledStatus:
 	push hl
 	ld hl,wPlayerPartyMon1DisabledMove	;start of stored disabled byte
 	ld de,wBattleMonMoves	;battle mon  move list
-	ld bc,W_ENEMYDISABLEDMOVE
+	ld bc,W_PLAYERDISABLEDMOVE
 	jr FinishLoadTrainerMonDisabledStatus
 	
 LoadEnemyTrainerMonDisabledStatus:
