@@ -2963,6 +2963,26 @@ wPlayerOriginalTransformedSpecies::
 wEnemyOriginalTransformedSpecies::
 	ds 1
 
+;bytes specific to the trainer for modifying their party
+wEnemyTrainerBaseLevel::
+	ds 1
+	
+wEnemyTrainerAddMonRoutines::
+wEnemyTrainerLevelRoutine::
+	ds 1
+wEnemyTrainerMovesRoutine::
+	ds 1
+wEnemyTrainerDVRoutine::
+	ds 1
+wEnemyTrainerLearnedTraitsRoutine::
+	ds 1
+wEnemyTrainerHeldItemRoutine::
+	ds 1
+wEnemyTrainerTraitsRoutine::
+	ds 1
+wEnemyTrainerMoraleRoutine::
+	ds 1
+	
 wEndOfNewBattleBytes::
 	ds 1
 		

@@ -35,7 +35,7 @@ AddNewMonToPlayerParty:
 	call GoToPartyMonData
 	call NewPlayerDVs
 	call NewHPLevelStatus
-	call NewTypesMoves
+	call NewPlayerMonMoves
 	inc hl
 	inc hl		;skip the special defense
 	call GenerateNewExp
@@ -110,7 +110,7 @@ AddNewMonToEnemyParty:
 	call GoToEnemyMonData
 	call NewTrainerDVs
 	call NewHPLevelStatus
-	call NewTypesMoves
+	call NewTrainerMonMoves
 	inc hl
 	inc hl		;skip the special defense
 	call GenerateNewExp
@@ -172,7 +172,7 @@ AddNewMonToPC:
 	call GoToPCMonData
 	call NewPlayerDVs
 	call NewHPLevelStatus
-	call NewTypesMoves
+	call NewPlayerMonMoves
 	inc hl
 	inc hl		;skip the special defense
 	call GenerateNewExp
@@ -401,9 +401,6 @@ FinishCopySecondaryStatus:
 	
 	
 ;To get the learned traits
-NewTrainerLearnedTraits:
-	jr FinishCopyLearnedTraits
-
 CopyEnemyLearnedTraits:
 	ld a, [wEnemyMonLearnedTraits]
 	jr FinishCopyLearnedTraits
@@ -418,10 +415,7 @@ FinishCopyLearnedTraits:
 	
 	
 	
-;To get the held item
-NewTrainerHeldItem:
-	jr FinishCopyHeldItem
-	
+;To get the held item	
 CopyEnemyHeldItem:
 	ld a, [wEnemyMonHeldItem]
 	jr FinishCopyHeldItem
@@ -499,11 +493,6 @@ FinishNewMonTraits:
 	
 .finish
 	jr FinishCopyTraits
-
-NewTrainerTraits:
-	push hl
-	call GetNewMonGender
-	jr FinishCopyTraits
 	
 CopyEnemyTraits:
 	push hl
@@ -550,11 +539,7 @@ FinishCopyTraits:
 	ret
 	
 
-;To get the morale
-NewTrainerMorale:
-	ld a, [W_MONHBASEMORALE]
-	jr FinishCopyMorale
-	
+;To get the morale	
 NewPlayerMorale:
 	ld a,[W_ISINBATTLE]
 	cp 2		;is it trainer battle?
@@ -680,9 +665,12 @@ FinishGoToMonData:
 
 NewPlayerDVs:
 	call IsOffspringEgg		;is this pokemon a daycare egg?
-	jr nc,GenerateRandomDVs	;if not, then get random
-
-	;otherwise, get from the parents
+	jr c,GetEggDVs	;if so, then get from parents
+	call GenerateRandomDVs	;otherwise, get random
+	call AdjustDVsBasedOnGender
+	jr FinishCopyDVs
+	
+GetEggDVs:
 	push hl
 	ld hl,00		;hl = counter from each parent
 	
@@ -745,19 +733,13 @@ NewPlayerDVs:
 	add b		;add to the current dv value
 	pop bc		;recover BC
 	ret
-	
-NewTrainerDVs:
-	;some trainers have preset DVs
-	;fall through
-	
+		
 GenerateRandomDVs:
 	call RandomOrBattleRandom
 	ld c,a
 	call RandomOrBattleRandom
 	ld b,a
-	call RandomOrBattleRandom
-	call AdjustDVsBasedOnGender
-	jr FinishCopyDVs
+	jp RandomOrBattleRandom
 
 CopyEnemyDVs:
 	ld a,[wEnemyMonDVs]
@@ -904,13 +886,30 @@ FinishCopyTypesMoves:
 	jr nz,.loop
 	ret
 
-NewTypesMoves:
+NewPlayerMonMoves:
 	call CopyTypes
-	push hl
+	
+	push hl		;backup the starting pointer
 	
 	push hl
-	pop de
+	pop de		;move the pointer into de
+	call NewMonMoves
 	
+	pop hl		;recover the starting pointer
+	
+	push hl		;store starting pointer
+	
+	call IsOffspringEgg		;is it daycare egg?
+	call c,GetEggMoves		;if so, get egg moves
+	
+	pop hl		;recover the starting pointer
+	ld bc,NUM_MOVES
+	add hl,bc	;move hl past the 'moves' section
+	
+	ret
+	
+;de is the pointer to the moves
+NewMonMoves:
 	;to store the pokemons base moves
 	ld hl, W_MONHMOVES
 	
@@ -931,17 +930,6 @@ NewTypesMoves:
 	xor a
 	ld [wHPBarMaxHP], a
 	predef WriteMonMoves	;to update the moves based on the pokemons level
-	
-	pop hl		;recover the starting pointer
-	push hl		;store it
-	
-	call IsOffspringEgg		;is it daycare egg?
-	call c,GetEggMoves		;if so, get egg moves
-	
-	pop hl		;recover the starting pointer
-	ld bc,NUM_MOVES
-	add hl,bc	;move hl past the 'moves' section
-	
 	ret
 
 GetEggMoves:

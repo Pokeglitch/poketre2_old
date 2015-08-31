@@ -33,6 +33,21 @@ GetTimeOfDay:
 	ld a,h		;restore the A value
 	pop hl
 	ret
+
+;to see what season it is
+;returns nz if winter
+GetSeason:
+	push hl
+	push af
+	ld a,[W_PLAYTIMEHOURS + 1]	;get the hours low byte
+	ld hl,wPokefluteTimeAdjustment
+	add [hl]		;add to a
+	bit 3,a		;is the 3rd bit set?
+	pop hl		;pop af into hl
+	ld a,h		;restore the A value
+	pop hl
+	ret
+	
 ;quick way to autosave
 AutoSaveHardModeHome::
 	callab AutoSaveHardMode

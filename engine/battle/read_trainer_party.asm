@@ -5,6 +5,8 @@ ReadTrainer: ; 39c53 (e:5c53)
 	and a
 	ret nz
 
+	call LoadNewTrainerPartyBytes		;load the routine IDs this trainer uses for its party mons
+	
 ; set [wEnemyPartyCount] to 0, [wEnemyPartyMons] to FF
 ; XXX first is total enemy pokemon?
 ; XXX second is species of first pokemon?
@@ -15,18 +17,10 @@ ReadTrainer: ; 39c53 (e:5c53)
 	ld [hl],a
 
 ; get the pointer to trainer data for this class
-	ld a,[W_CUROPPONENT]
-	sub $C9 ; convert value from pokemon to trainer
-	add a,a
 	ld hl,TrainerDataPointers
-	ld c,a
-	ld b,0
-	add hl,bc ; hl points to trainer class
-	ld a,[hli]
-	ld h,[hl]
-	ld l,a
-	ld a,[W_TRAINERNO]
+	call LoadTrainerDataInfo
 	ld b,a
+	
 ; At this point b contains the trainer number,
 ; and hl points to the trainer class.
 ; Our next task is to iterate through the trainers,
@@ -43,17 +37,18 @@ ReadTrainer: ; 39c53 (e:5c53)
 ; if the first byte of trainer data is FF,
 ; - each pokemon has a specific level
 ;      (as opposed to the whole team being of the same level)
-; - if [W_LONEATTACKNO] != 0, one pokemon on the team has a special move
 ; else the first byte is the level of every pokemon on the team
 .IterateTrainer
 	ld a,[hli]
 	cp $FF ; is the trainer special?
 	jr z,.SpecialTrainer ; if so, check for special moves
-	ld [W_CURENEMYLVL],a
+	ld [wEnemyTrainerBaseLevel],a		;store as the base level
 .LoopTrainerData
+	call NewTrainerLevels		;get the level for this pokemon
 	ld a,[hli]
 	and a ; have we reached the end of the trainer data?
 	jr z,.FinishUp
+	call SeeIfPokemonShouldEvolve		;see if the pokemon should be evolved, based on the level
 	ld [wcf91],a ; write species somewhere (XXX why?)
 	ld a,1
 	ld [wcc49],a
@@ -65,12 +60,15 @@ ReadTrainer: ; 39c53 (e:5c53)
 ; if this code is being run:
 ; - each pokemon has a specific level
 ;      (as opposed to the whole team being of the same level)
-; - if [W_LONEATTACKNO] != 0, one pokemon on the team has a special move
 	ld a,[hli]
 	and a ; have we reached the end of the trainer data?
-	jr z,.AddLoneMove
+	jr z,.FinishUp
+	ld b,a
+	call GetVaryPKLevel
+	add b		;add the base level to the vary PK level
 	ld [W_CURENEMYLVL],a
-	ld a,[hli]
+	ld a,[hli]		;get the pokemon
+	call SeeIfPokemonShouldEvolve		;see if the pokemon should be evolved, based on the level
 	ld [wcf91],a
 	ld a,1
 	ld [wcc49],a
@@ -78,69 +76,6 @@ ReadTrainer: ; 39c53 (e:5c53)
 	call AddPartyMon
 	pop hl
 	jr .SpecialTrainer
-.AddLoneMove
-; does the trainer have a single monster with a different move
-	ld a,[W_LONEATTACKNO] ; Brock is 01, Misty is 02, Erika is 04, etc
-	and a
-	jr z,.AddTeamMove
-	dec a
-	add a,a
-	ld c,a
-	ld b,0
-	ld hl,LoneMoves
-	add hl,bc
-	ld a,[hli]
-	ld d,[hl]
-	ld hl,wEnemyMon1Moves + 2
-	ld bc,wEnemyMon2 - wEnemyMon1
-	call AddNTimes
-	ld [hl],d
-	jr .FinishUp
-.AddTeamMove
-; check if our trainer's team has special moves
-
-; get trainer class number
-	ld a,[W_CUROPPONENT]
-	sub $C8
-	ld b,a
-	ld hl,TeamMoves
-
-; iterate through entries in TeamMoves, checking each for our trainer class
-.IterateTeamMoves
-	ld a,[hli]
-	cp b
-	jr z,.GiveTeamMoves ; is there a match?
-	inc hl ; if not, go to the next entry
-	inc a
-	jr nz,.IterateTeamMoves
-
-; no matches found. is this trainer champion rival?
-	ld a,b
-	cp SONY3
-	jr z,.ChampionRival
-	jr .FinishUp ; nope
-.GiveTeamMoves
-	ld a,[hl]
-	ld [wEnemyMon5Moves + 2],a
-	jr .FinishUp
-.ChampionRival ; give moves to his team
-
-; pidgeot
-	ld a,SKY_ATTACK
-	ld [wEnemyMon1Moves + 2],a
-
-; starter
-	ld a,[W_RIVALSTARTER]
-	cp STARTER3
-	ld b,MEGA_DRAIN
-	jr z,.GiveStarterMove
-	cp STARTER1
-	ld b,FIRE_BLAST
-	jr z,.GiveStarterMove
-	ld b,BLIZZARD ; must be squirtle
-.GiveStarterMove
-	ld a,b
-	ld [wEnemyMon6Moves + 2],a
 .FinishUp
 ; clear wAmountMoneyWon addresses
 	xor a       
@@ -163,4 +98,117 @@ ReadTrainer: ; 39c53 (e:5c53)
 	inc de
 	dec b
 	jr nz,.LastLoop ; repeat W_CURENEMYLVL times
+	ret
+	
+	
+;hl is the pointer to the table which holds the pointers for teach trainer
+LoadTrainerDataInfo:
+	ld a,[W_CUROPPONENT]
+	sub $C9 ; convert value from pokemon to trainer
+	add a,a
+	ld c,a
+	ld b,0
+	add hl,bc ; hl points to trainer class
+	ld a,[hli]
+	ld h,[hl]
+	ld l,a
+	ld a,[W_TRAINERNO]
+	ret
+	
+	
+;to load the routine IDs used by this trainer
+LoadNewTrainerPartyBytes:
+	ld hl,NewTrainerPartyRoutineIDsTable
+	call LoadTrainerDataInfo
+	;hl is the pointer to the table for this trainer, a is the index
+	ld bc,7		;size of each row
+	call AddNTimes	;hl will now point to the row for this specific trainer
+	
+	ld de,wEnemyTrainerAddMonRoutines
+	jp CopyData		;copy the data
+	
+NewTrainerPartyRoutineIDsTable:
+
+
+;level function, moves function, dvs function, learned traits function, held item function, traits function, morale functions
+
+
+NewWildMonLevel:
+	call GetVaryPKLevel
+	
+	;adjust for the maps min/max level
+	call AdjustVaryPKLevelForMap
+	
+	;add random value between 0-7 to the level
+	push af ;save the level
+
+	callab BattleRandom
+	ld a,[wBattleRandom]
+	and a,$07		;only keep the lower 3 bits
+	add 3			;increase by 3, so the lowest possible level is 3
+	ld b,a		;store into b
+	
+	pop af	;recover the level
+	add b	;add the random value
+	
+	ld [W_CURENEMYLVL],a	;save
+	ret
+	
+;if the level in a is less than the min for the map, then set it to the min
+;if the level in a is greater than the max, set it to the max
+AdjustVaryPkLevelForMap:
+	ret
+
+;stores the new level into W_CURENEMYLVL
+NewTrainerLevels:
+	push hl
+	ld a,[wEnemyTrainerBaseLevel]
+	ld hl,wEnemyTrainerBaseLevelRoutineTables
+	call RunTrainerRoutineFromTable
+	ld b,a	;store the level
+	ld a,[wEnemyTrainerLevelRoutine]
+	ld hl,NewTrainerLevelsTable
+	call RunTrainerRoutineFromTable
+	ld [W_CURENEMYLVL],a
+	pop hl
+	ret
+	
+;function for what to use the base level for a trainers party
+wEnemyTrainerBaseLevelRoutineTables:
+	dw TrainerBaseLevel_UseVaryPK
+	dw TrainerBaseLevel_HighestLevelInParty
+	dw TrainerBaseLevel_MaxOfBoth
+	dw TrainerBaseLevel_MinOfBoth
+	dw TrainerBaseLevel_AvgOfBoth
+	
+TrainerBaseLevel_UseVaryPK:
+	call GetVaryPKLevel
+	ret
+	
+TrainerBaseLevel_HighestLevelInParty:
+TrainerBaseLevel_MaxOfBoth:
+TrainerBaseLevel_MinOfBoth:
+TrainerBaseLevel_AvgOfBoth:
+	ret
+	
+	
+;functions to run to determine how to modify the base level based on the pokemon index in the party
+NewTrainerLevelsTable:
+	dw NewTrainerLevel_Fixed
+	dw NewTrainerLevel_ProgressiveInc
+	
+NewTrainerLevel_Fixed:
+	ld a,b
+	ret
+	
+NewTrainerLevel_ProgressiveInc
+	ld a,[wEnemyPartyCount]		;get the pokemon index (number of pokemon in party before this one is added)
+	add b
+	ret
+	
+	
+	
+	
+GetVaryPKLevel:
+	ld a,5
 	ret

@@ -6690,6 +6690,7 @@ INCLUDE "engine/battle/in_battle_potion_effects.asm"
 INCLUDE "engine/battle/moved_battle_routines.asm"
 INCLUDE "engine/battle/moved_add_mon_to_party.asm"
 INCLUDE "engine/battle/battle_hud.asm"
+INCLUDE "engine/battle/add_mon_trainer_party_routines.asm"
 
 SECTION "bank39",ROMX,BANK[$39]
 INCLUDE "engine/textbox_and_font.asm"
