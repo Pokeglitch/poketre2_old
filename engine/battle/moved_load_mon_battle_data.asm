@@ -397,7 +397,7 @@ LoadWildHPLevelStatus:
 	ld a, [wEnemyMonMaxHP+1]
 	ld [hli], a		;set hp to max hp
 	xor a
-	inc hl
+	inc hl	;skip party position
 	ld [hl], a ; init status to 0
 	ret
 	
@@ -597,6 +597,7 @@ LoadWildMonNickname:
 	ld [wd11e], a
 	call GetMonName
 	ld hl, wcd6d
+	ld de, wEnemyMonNick
 	jr FinishCopyMonNickname
 
 LoadPlayerLastStandNickname:
@@ -800,7 +801,7 @@ LoadPlayerLastStandHeldItem:
 	jr FinishEnemyHeldItem
 	
 LoadWildMonHeldItem:
-	call DetermineWildHeldItem
+;	call DetermineWildHeldItem
 	jr FinishEnemyHeldItem
 	
 LoadMrMimeHeldItem:
@@ -840,8 +841,12 @@ LoadPlayerLastStandTraits:
 	jr FinishEnemyMonTraits
 	
 LoadWildMonTraits:
-	call DetermineNewTraits2
-	jr FinishEnemyMonTraits
+	ld hl, wEnemyMonTraits
+	push hl
+	call GetNewMonGender
+	ld c,1		;default value to compare when checking for holo
+	ld b,a	;backup the gender byte
+	jp FinishNewMonTraits
 
 LoadMrMimeTraits:
 	ld a,[wMrMimeTraits]

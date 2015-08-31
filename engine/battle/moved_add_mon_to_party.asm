@@ -460,7 +460,7 @@ NewPlayerTraits:
 	ld c,1		;default value to compare when checking for holo
 	ld b,a	;backup the gender byte
 	call IsOffspringEgg		;is this a daycare egg?
-	jr nc,.afterParentHoloCheck		;then dont check the parents
+	jr nc,FinishNewMonTraits		;then dont check the parents
 	
 	ld a,[wDayCareMonTraits]		;check if parent 1 is holo
 	bit HoloTrait,a		;is it holo?
@@ -471,11 +471,11 @@ NewPlayerTraits:
 .nextParent
 	ld a,[wDayCareMon2Traits]		;check parent 2
 	bit HoloTrait,a		;holo?
-	jr z,.afterParentHoloCheck		;skip down if not
+	jr z,FinishNewMonTraits		;skip down if not
 	
 	sla c		;otherwise, double the compare value
 	
-.afterParentHoloCheck
+FinishNewMonTraits:
 	;randomly see if it should be Holographic
 	call Random	;get random value
 	dec a
