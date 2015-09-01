@@ -48,8 +48,8 @@ ReadTrainer: ; 39c53 (e:5c53)
 	ld a,[hli]
 	and a ; have we reached the end of the trainer data?
 	jr z,.FinishUp
-	call SeeIfPokemonShouldEvolve		;see if the pokemon should be evolved, based on the level
 	ld [wcf91],a ; write species somewhere (XXX why?)
+	call SeeIfPokemonShouldEvolve		;see if the pokemon should be evolved, based on the level
 	ld a,1
 	ld [wcc49],a
 	push hl
@@ -68,8 +68,8 @@ ReadTrainer: ; 39c53 (e:5c53)
 	add b		;add the base level to the vary PK level
 	ld [W_CURENEMYLVL],a
 	ld a,[hli]		;get the pokemon
-	call SeeIfPokemonShouldEvolve		;see if the pokemon should be evolved, based on the level
 	ld [wcf91],a
+	call SeeIfPokemonShouldEvolve		;see if the pokemon should be evolved, based on the level
 	ld a,1
 	ld [wcc49],a
 	push hl
@@ -212,3 +212,9 @@ NewTrainerLevel_ProgressiveInc
 GetVaryPKLevel:
 	ld a,5
 	ret
+	
+	
+SeeIfPokemonShouldEvolve:
+	ld a,[wcf91]
+	ret
+	

@@ -74,10 +74,11 @@ TryDoWildEncounter: ; 13870 (4:7870)
 	add hl, bc		;hl points to the pokemon index in the list (0-5)
 	call AdjustWildMonForTimeAndSeason
 	ld a, [hl]
-	call SeeIfPokemonShouldEvolve		;see if the pokemon should be evolved, based on the level
 	ld [wcf91], a
-	ld [wEnemyMonSpecies2], a
 	callab NewWildMonLevel		;get the vary pk level and store into W_CURENEMYLVL
+	callab SeeIfPokemonShouldEvolve		;see if the pokemon should be evolved, based on the level
+	ld a,[wcf91]
+	ld [wEnemyMonSpecies2], a
 	ld a, [wRepelRemainingSteps]
 	and a
 	jr z, .willEncounter

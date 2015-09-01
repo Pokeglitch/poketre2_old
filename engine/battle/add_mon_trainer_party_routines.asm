@@ -199,6 +199,3 @@ TrainerMorale_Base:
 	
 AdjustVaryPKLevelForMap:
 	ret
-	
-SeeIfPokemonShouldEvolve:
-	ret
