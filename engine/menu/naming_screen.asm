@@ -21,7 +21,7 @@ AskName: ; 64eb (1:64eb)
 	pop hl
 	ld a, [wCurrentMenuItem]
 	and a
-	jr nz, .asm_654c
+	ret nz	;return if we said no (original name is already saved)
 	ld a, [wUpdateSpritesEnabled]
 	push af
 	xor a
@@ -42,11 +42,11 @@ AskName: ; 64eb (1:64eb)
 	ld [wUpdateSpritesEnabled], a
 	ld a, [wcf4b]
 	cp $50
-	ret nz
-.asm_654c
+	ret z	;return if the name was empty
+;otherwise, copy the name to cd6d
 	ld d, h
 	ld e, l
-	ld hl, wcd6d
+	ld hl, wcf4b
 	ld bc, $000b
 	jp CopyData
 
@@ -196,9 +196,6 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	call LoadTextBoxTilePatterns
 	
 	pop de
-	ld hl, wcf4b
-	ld bc, $b
-	call CopyData
 	
 	call GoPAL_SET_CF1C
 	call GBPalNormal

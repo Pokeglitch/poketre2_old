@@ -64,9 +64,13 @@ AddCapturedMonToPlayerParty:
 	call GoToPartyNickname
 	
 	call CopyEnemyNickname
+	ld a,[W_ISINBATTLE]
+	dec a
+	jr z,.notTrainerBattleNickname
 	ld a,[wActiveCheats]
 	bit IWHBYDCheat,a		;is the IWHBYD cheat on?
-	call z,NewPlayerNickname	;ask nickname if not
+.notTrainerBattleNickname
+	call z,NewPlayerNickname	;ask nickname if wild battle or IWHBYD is off
 	
 	call GoToPartyMonData
 	call CopyEnemyDVs
@@ -635,9 +639,12 @@ StoreDefaultName:
 	push hl
 	call GetMonName
 	pop de
+	push de
 	ld hl, wcd6d
 	ld bc, 11
-	jp CopyData		;store the pokemons name
+	call CopyData		;store the pokemons name
+	pop hl
+	ret
 	
 
 GoToPartyMonData:

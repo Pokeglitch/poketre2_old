@@ -1,19 +1,4 @@
-;Place in Home bank
-;to run the rountine index in a from the table in hl
-RunTrainerRoutineFromTable:
-	push bc
-	ld b,0
-	ld c,a
-	add hl,bc
-	add hl,bc
-	ld a,[hli]
-	ld h,[hl]
-	ld l,a
-	pop bc
-	jp hl
 
-	
-	
 ;ffe4 holds the pokemon index in the party (starting at 1)	
 	
 	

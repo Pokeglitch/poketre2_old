@@ -4771,3 +4771,18 @@ TextPredefs::
 	add_tx_pre BookOrSculptureText                  ; 40
 	add_tx_pre ElevatorText                         ; 41
 	add_tx_pre PokemonStuffText                     ; 42
+
+
+	
+;to run the rountine index in a from the table in hl
+RunTrainerRoutineFromTable:
+	push bc
+	ld b,0
+	ld c,a
+	add hl,bc
+	add hl,bc
+	ld a,[hli]
+	ld h,[hl]
+	ld l,a
+	pop bc
+	jp hl

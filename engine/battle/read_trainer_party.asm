@@ -120,6 +120,7 @@ LoadTrainerDataInfo:
 LoadNewTrainerPartyBytes:
 	ld hl,NewTrainerPartyRoutineIDsTable
 	call LoadTrainerDataInfo
+	dec a
 	;hl is the pointer to the table for this trainer, a is the index
 	ld bc,7		;size of each row
 	call AddNTimes	;hl will now point to the row for this specific trainer
@@ -127,10 +128,104 @@ LoadNewTrainerPartyBytes:
 	ld de,wEnemyTrainerAddMonRoutines
 	jp CopyData		;copy the data
 	
-NewTrainerPartyRoutineIDsTable:
-
 
 ;level function, moves function, dvs function, learned traits function, held item function, traits function, morale functions
+NewTrainerPartyRoutineIDsTable:
+	dw YoungsterAdditionalBytesData
+	dw BugCatcherAdditionalBytesData
+	dw LassAdditionalBytesData
+	dw BusinessladyAdditionalBytesData
+	dw WitchAdditionalBytesData
+	dw SwordMasterAdditionalBytesData
+	dw PokemaniacAdditionalBytesData
+	dw MechanicAdditionalBytesData
+	dw HikerAdditionalBytesData
+	dw KindlerAdditionalBytesData
+	dw BurglarAdditionalBytesData
+	dw EngineerAdditionalBytesData
+	dw JugglerAdditionalBytesData
+	dw FishermanAdditionalBytesData
+	dw SwimmerAdditionalBytesData
+	dw GardenerAdditionalBytesData
+	dw GamblerAdditionalBytesData
+	dw BeautyAdditionalBytesData
+	dw PoliceChiefAdditionalBytesData
+	dw RockerAdditionalBytesData
+	dw JugglerAdditionalBytesData
+	dw TamerAdditionalBytesData
+	dw BirdKeeperAdditionalBytesData
+	dw BlackbeltAdditionalBytesData
+	dw RIVAL1AdditionalBytesData
+	dw ProfOakAdditionalBytesData
+	dw AshAdditionalBytesData
+	dw ScientistAdditionalBytesData
+	dw GiovanniAdditionalBytesData
+	dw PoliceAdditionalBytesData
+	dw CooltrainerMAdditionalBytesData
+	dw CooltrainerFAdditionalBytesData
+	dw ElderKrakenAdditionalBytesData
+	dw MayorRyderAdditionalBytesData
+	dw MayorCarolAdditionalBytesData
+	dw CEOMaxwellAdditionalBytesData
+	dw MayorHollyAdditionalBytesData
+	dw MayorCliffAdditionalBytesData
+	dw MayorDanteAdditionalBytesData
+	dw MayorSavanaAdditionalBytesData
+	dw GentlemanAdditionalBytesData
+	dw RIVAL2AdditionalBytesData
+	dw RIVAL3AdditionalBytesData
+	dw KingApolloAdditionalBytesData
+	dw SorcererAdditionalBytesData
+	dw ElderSkylarAdditionalBytesData
+	dw MayorCasparAdditionalBytesData
+
+YoungsterAdditionalBytesData:
+BugCatcherAdditionalBytesData:
+LassAdditionalBytesData:
+BusinessladyAdditionalBytesData:
+WitchAdditionalBytesData:
+SwordMasterAdditionalBytesData:
+PokemaniacAdditionalBytesData:
+MechanicAdditionalBytesData:
+HikerAdditionalBytesData:
+KindlerAdditionalBytesData:
+BurglarAdditionalBytesData:
+EngineerAdditionalBytesData:
+JugglerAdditionalBytesData:
+FishermanAdditionalBytesData:
+SwimmerAdditionalBytesData:
+GardenerAdditionalBytesData:
+GamblerAdditionalBytesData:
+BeautyAdditionalBytesData:
+PoliceChiefAdditionalBytesData:
+RockerAdditionalBytesData:
+TamerAdditionalBytesData:
+BirdKeeperAdditionalBytesData:
+BlackbeltAdditionalBytesData:
+RIVAL1AdditionalBytesData:
+ProfOakAdditionalBytesData:
+AshAdditionalBytesData:
+ScientistAdditionalBytesData:
+GiovanniAdditionalBytesData:
+PoliceAdditionalBytesData:
+CooltrainerMAdditionalBytesData:
+CooltrainerFAdditionalBytesData:
+ElderKrakenAdditionalBytesData:
+MayorRyderAdditionalBytesData:
+MayorCarolAdditionalBytesData:
+CEOMaxwellAdditionalBytesData:
+MayorHollyAdditionalBytesData:
+MayorCliffAdditionalBytesData:
+MayorDanteAdditionalBytesData:
+MayorSavanaAdditionalBytesData:
+GentlemanAdditionalBytesData:
+RIVAL2AdditionalBytesData:
+RIVAL3AdditionalBytesData:
+KingApolloAdditionalBytesData:
+SorcererAdditionalBytesData:
+ElderSkylarAdditionalBytesData:
+MayorCasparAdditionalBytesData:
+	db 0,0,0,0,0,0,0
 
 
 NewWildMonLevel:
@@ -163,6 +258,7 @@ AdjustVaryPkLevelForMap:
 NewTrainerLevels:
 	push hl
 	ld a,[wEnemyTrainerBaseLevel]
+	dec a
 	ld hl,wEnemyTrainerBaseLevelRoutineTables
 	call RunTrainerRoutineFromTable
 	ld b,a	;store the level
