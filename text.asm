@@ -243,17 +243,16 @@ INCLUDE "text/maps/seafoam_islands_b3f.asm"
 INCLUDE "text/maps/seafoam_islands_b4f.asm"
 
 _AIBattleWithdrawText:: ; 880be (22:40be)
-	TX_RAM W_TRAINERNAME
-	text " with-"
-	line "drew @"
+	text $48
+	line "withdrew"
+	cont "@"
 	TX_RAM wEnemyMonNick
 	text "!"
 	prompt
 
 _AIBattleUseItemText:: ; 880d5 (22:40d5)
-	TX_RAM W_TRAINERNAME
-	db $0
-	line "used @"
+	text $48
+	line " used @"
 	TX_RAM wcd6d
 	db $0
 	cont "on @"
@@ -1121,9 +1120,7 @@ _MoneyForWinningText:: ; 896dd (22:56dd)
 
 _TrainerDefeatedText:: ; 896f9 (22:56f9)
 	text $52, " defeated"
-	line "@"
-	TX_RAM W_TRAINERNAME ; 0x89706
-	text "!"
+	line $48,"!"
 	prompt
 
 _PlayerMonFaintedText:: ; 8970c (22:570c)
@@ -1151,16 +1148,13 @@ _PlayerBlackedOutText2:: ; 89748 (22:5748)
 
 _LinkBattleLostText:: ; 89772 (22:5772)
 	text $52, " lost to"
-	line "@"
-	TX_RAM W_TRAINERNAME ; 0x8977e
-	text "!"
+	line $48,"!"
 	prompt
 
 _TrainerAboutToUseText:: ; 89784 (22:5784)
-	TX_RAM W_TRAINERNAME
-	text " is"
-	line "about to use"
-	cont"@"
+	text $48
+	line "is about to use"
+	cont "@"
 	TX_RAM wEnemyMonNick
 	text "!"
 
@@ -1169,9 +1163,9 @@ _TrainerAboutToUseText:: ; 89784 (22:5784)
 	done
 
 _TrainerSentOutText:: ; 897b4 (22:57b4)
-	TX_RAM W_TRAINERNAME
-	text " sent"
-	line "out @"
+	text $48
+	line "sent out"
+	cont "@"
 	TX_RAM wEnemyMonNick
 	text "!"
 	done
@@ -1500,9 +1494,8 @@ _EnemyAppearedText:: ; 89c4f (22:5c4f)
 	prompt
 
 _TrainerWantsToFightText:: ; 89c5e (22:5c5e)
-	TX_RAM W_TRAINERNAME
-	text " wants"
-	line "to fight!"
+	text $48
+	line "wants to fight!"
 	prompt
 
 _UnveiledGhostText:: ; 89c73 (22:5c73)

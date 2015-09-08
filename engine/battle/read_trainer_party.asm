@@ -4,8 +4,6 @@ ReadTrainer: ; 39c53 (e:5c53)
 	ld a,[wLinkState]
 	and a
 	ret nz
-
-	call LoadNewTrainerPartyBytes		;load the routine IDs this trainer uses for its party mons
 	
 ; set [wEnemyPartyCount] to 0, [wEnemyPartyMons] to FF
 ; XXX first is total enemy pokemon?
@@ -18,36 +16,56 @@ ReadTrainer: ; 39c53 (e:5c53)
 
 ; get the pointer to trainer data for this class
 	ld hl,TrainerDataPointers
-	call LoadTrainerDataInfo
-	ld b,a
+	ld a,[W_CUROPPONENT]
+	sub $C9 ; convert value from pokemon to trainer
+	add a,a
+	ld c,a
+	ld b,0
+	add hl,bc ; hl points to trainer class
+	ld a,[hli]
+	ld h,[hl]
+	ld l,a
+	ld a,[W_TRAINERNO]
 	
-; At this point b contains the trainer number,
-; and hl points to the trainer class.
-; Our next task is to iterate through the trainers,
-; decrementing b each time, until we get to the right one.
-.outer
+	ld b,a	;b contains the trainer index
+	ld de,wEnemyTrainerAddMonRoutinesEnd - wEnemyTrainerAddMonRoutines		;set size that appears at the start of each trainer party header
+
+.FindTrainer
 	dec b
 	jr z,.IterateTrainer
-.inner
-	ld a,[hli]
-	and a
-	jr nz,.inner
-	jr .outer
+
+
+	add hl,de		;skip past the set size of the party header
+	ld a,[hli]		;get the number of pokemon in the party
+	add l
+	ld l,a			;increment l by the number of pokemon in the party
+	jr nc,.noCarry	;if we didn't carry, then dont increment h as well
+	inc h
+.noCarry
+	jr .FindTrainer
 
 ; if the first byte of trainer data is FF,
 ; - each pokemon has a specific level
 ;      (as opposed to the whole team being of the same level)
 ; else the first byte is the level of every pokemon on the team
 .IterateTrainer
-	ld a,[hli]
-	cp $FF ; is the trainer special?
-	jr z,.SpecialTrainer ; if so, check for special moves
-	ld [wEnemyTrainerBaseLevel],a		;store as the base level
+	;copy the party header bytes
+	push de
+	pop bc		;bc = size to copy
+	ld de,wEnemyTrainerAddMonRoutines
+	call CopyData		;copy the data (hl = where to copy from)
+
+	ld a,[hli]	;get the number of pokemon in a
+	push af		;store
 .LoopTrainerData
-	call NewTrainerLevels		;get the level for this pokemon
-	ld a,[hli]
-	and a ; have we reached the end of the trainer data?
-	jr z,.FinishUp
+	pop af
+	and a
+	jr z,.FinishUp		;if we have reached the end, then finish up
+	dec a
+	push af
+	
+	call NewTrainerLevels		;get the level for this pokemon	
+	ld a,[hli]		;get the pokemon and increment hl
 	ld [wcf91],a ; write species somewhere (XXX why?)
 	call SeeIfPokemonShouldEvolve		;see if the pokemon should be evolved, based on the level
 	ld a,1
@@ -56,27 +74,19 @@ ReadTrainer: ; 39c53 (e:5c53)
 	call AddPartyMon
 	pop hl
 	jr .LoopTrainerData
-.SpecialTrainer
-; if this code is being run:
-; - each pokemon has a specific level
-;      (as opposed to the whole team being of the same level)
-	ld a,[hli]
-	and a ; have we reached the end of the trainer data?
-	jr z,.FinishUp
-	ld b,a
-	call GetVaryPKLevel
-	add b		;add the base level to the vary PK level
-	ld [W_CURENEMYLVL],a
-	ld a,[hli]		;get the pokemon
-	ld [wcf91],a
-	call SeeIfPokemonShouldEvolve		;see if the pokemon should be evolved, based on the level
-	ld a,1
-	ld [wcc49],a
-	push hl
-	call AddPartyMon
-	pop hl
-	jr .SpecialTrainer
 .FinishUp
+	ld a,[wEnemyTrainerFirstNameID]
+	ld [wd0b5],a		;the name index
+	ld a,MALE_NAME
+	ld [wNameListType],a
+	ld a,BANK(MaleTrainerNames)
+	ld [wPredefBank],a
+	call GetName
+	ld hl,wcd6d
+	ld de,wEnemyTrainerFirstName
+	ld bc,11
+	call CopyData
+	
 ; clear wAmountMoneyWon addresses
 	xor a       
 	ld de,wAmountMoneyWon
@@ -101,131 +111,9 @@ ReadTrainer: ; 39c53 (e:5c53)
 	ret
 	
 	
-;hl is the pointer to the table which holds the pointers for teach trainer
-LoadTrainerDataInfo:
-	ld a,[W_CUROPPONENT]
-	sub $C9 ; convert value from pokemon to trainer
-	add a,a
-	ld c,a
-	ld b,0
-	add hl,bc ; hl points to trainer class
-	ld a,[hli]
-	ld h,[hl]
-	ld l,a
-	ld a,[W_TRAINERNO]
-	ret
 	
 	
-;to load the routine IDs used by this trainer
-LoadNewTrainerPartyBytes:
-	ld hl,NewTrainerPartyRoutineIDsTable
-	call LoadTrainerDataInfo
-	dec a
-	;hl is the pointer to the table for this trainer, a is the index
-	ld bc,7		;size of each row
-	call AddNTimes	;hl will now point to the row for this specific trainer
 	
-	ld de,wEnemyTrainerAddMonRoutines
-	jp CopyData		;copy the data
-	
-
-;level function, moves function, dvs function, learned traits function, held item function, traits function, morale functions
-NewTrainerPartyRoutineIDsTable:
-	dw YoungsterAdditionalBytesData
-	dw BugCatcherAdditionalBytesData
-	dw LassAdditionalBytesData
-	dw BusinessladyAdditionalBytesData
-	dw WitchAdditionalBytesData
-	dw SwordMasterAdditionalBytesData
-	dw PokemaniacAdditionalBytesData
-	dw MechanicAdditionalBytesData
-	dw HikerAdditionalBytesData
-	dw KindlerAdditionalBytesData
-	dw BurglarAdditionalBytesData
-	dw EngineerAdditionalBytesData
-	dw JugglerAdditionalBytesData
-	dw FishermanAdditionalBytesData
-	dw SwimmerAdditionalBytesData
-	dw GardenerAdditionalBytesData
-	dw GamblerAdditionalBytesData
-	dw BeautyAdditionalBytesData
-	dw PoliceChiefAdditionalBytesData
-	dw RockerAdditionalBytesData
-	dw JugglerAdditionalBytesData
-	dw TamerAdditionalBytesData
-	dw BirdKeeperAdditionalBytesData
-	dw BlackbeltAdditionalBytesData
-	dw RIVAL1AdditionalBytesData
-	dw ProfOakAdditionalBytesData
-	dw AshAdditionalBytesData
-	dw ScientistAdditionalBytesData
-	dw GiovanniAdditionalBytesData
-	dw PoliceAdditionalBytesData
-	dw CooltrainerMAdditionalBytesData
-	dw CooltrainerFAdditionalBytesData
-	dw ElderKrakenAdditionalBytesData
-	dw MayorRyderAdditionalBytesData
-	dw MayorCarolAdditionalBytesData
-	dw CEOMaxwellAdditionalBytesData
-	dw MayorHollyAdditionalBytesData
-	dw MayorCliffAdditionalBytesData
-	dw MayorDanteAdditionalBytesData
-	dw MayorSavanaAdditionalBytesData
-	dw GentlemanAdditionalBytesData
-	dw RIVAL2AdditionalBytesData
-	dw RIVAL3AdditionalBytesData
-	dw KingApolloAdditionalBytesData
-	dw SorcererAdditionalBytesData
-	dw ElderSkylarAdditionalBytesData
-	dw MayorCasparAdditionalBytesData
-
-YoungsterAdditionalBytesData:
-BugCatcherAdditionalBytesData:
-LassAdditionalBytesData:
-BusinessladyAdditionalBytesData:
-WitchAdditionalBytesData:
-SwordMasterAdditionalBytesData:
-PokemaniacAdditionalBytesData:
-MechanicAdditionalBytesData:
-HikerAdditionalBytesData:
-KindlerAdditionalBytesData:
-BurglarAdditionalBytesData:
-EngineerAdditionalBytesData:
-JugglerAdditionalBytesData:
-FishermanAdditionalBytesData:
-SwimmerAdditionalBytesData:
-GardenerAdditionalBytesData:
-GamblerAdditionalBytesData:
-BeautyAdditionalBytesData:
-PoliceChiefAdditionalBytesData:
-RockerAdditionalBytesData:
-TamerAdditionalBytesData:
-BirdKeeperAdditionalBytesData:
-BlackbeltAdditionalBytesData:
-RIVAL1AdditionalBytesData:
-ProfOakAdditionalBytesData:
-AshAdditionalBytesData:
-ScientistAdditionalBytesData:
-GiovanniAdditionalBytesData:
-PoliceAdditionalBytesData:
-CooltrainerMAdditionalBytesData:
-CooltrainerFAdditionalBytesData:
-ElderKrakenAdditionalBytesData:
-MayorRyderAdditionalBytesData:
-MayorCarolAdditionalBytesData:
-CEOMaxwellAdditionalBytesData:
-MayorHollyAdditionalBytesData:
-MayorCliffAdditionalBytesData:
-MayorDanteAdditionalBytesData:
-MayorSavanaAdditionalBytesData:
-GentlemanAdditionalBytesData:
-RIVAL2AdditionalBytesData:
-RIVAL3AdditionalBytesData:
-KingApolloAdditionalBytesData:
-SorcererAdditionalBytesData:
-ElderSkylarAdditionalBytesData:
-MayorCasparAdditionalBytesData:
-	db 0,0,0,0,0,0,0
 
 
 NewWildMonLevel:
@@ -258,7 +146,6 @@ AdjustVaryPkLevelForMap:
 NewTrainerLevels:
 	push hl
 	ld a,[wEnemyTrainerBaseLevel]
-	dec a
 	ld hl,wEnemyTrainerBaseLevelRoutineTables
 	call RunTrainerRoutineFromTable
 	ld b,a	;store the level

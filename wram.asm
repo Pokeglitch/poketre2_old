@@ -2964,10 +2964,11 @@ wEnemyOriginalTransformedSpecies::
 	ds 1
 
 ;bytes specific to the trainer for modifying their party
+wEnemyTrainerAddMonRoutines::
+wEnemyTrainerFirstNameID::
+	ds 1
 wEnemyTrainerBaseLevel::
 	ds 1
-	
-wEnemyTrainerAddMonRoutines::
 wEnemyTrainerLevelRoutine::
 	ds 1
 wEnemyTrainerMovesRoutine::
@@ -2983,8 +2984,12 @@ wEnemyTrainerTraitsRoutine::
 wEnemyTrainerMoraleRoutine::
 	ds 1
 	
+wEnemyTrainerAddMonRoutinesEnd::
+
+wEnemyTrainerFirstName::
+	ds 12
+
 wEndOfNewBattleBytes::
-	ds 1
 		
 ;Holds the pointer where the game will read/save the replay data
 ;holds which bank we can find the replay data

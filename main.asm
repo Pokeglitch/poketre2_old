@@ -6693,6 +6693,7 @@ INCLUDE "engine/battle/decrement_pp.asm"
 
 SECTION "bank39",ROMX,BANK[$39]
 INCLUDE "engine/textbox_and_font.asm"
+INCLUDE "text/trainer_first_names.asm"
 
 SECTION "bank3A",ROMX,BANK[$3A]
 BaseStats: INCLUDE "data/base_stats.asm"

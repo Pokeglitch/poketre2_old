@@ -22,18 +22,6 @@ DecrementPP: ; 68000 (1a:4000)
 	call .DecrementPP    
 	
 ; decrement PP in the party struct	
-	ld a, [W_PLAYERBATTSTATUS3]        
-	bit Transformed, a
-	ret nz               ; Return if transformed. Pokemon Red stores the "current pokemon's" PP
-	                     ; separately from the "Pokemon in your party's" PP.  This is
-	                     ; duplication -- in all cases *other* than Pokemon with Transform.
-	                     ; Normally, this means we have to go on and make the same
-	                     ; modification to the "party's pokemon" PP that we made to the
-	                     ; "current pokemon's" PP.  But, if we're dealing with a Transformed
-	                     ; Pokemon, it has separate PP for the move set that it copied from
-	                     ; its opponent, which is *not* the same as its real PP as part of your
-	                     ; party.  So we return, and don't do that part.
-
 	ld hl, wPartyMon1PP  ; PP of first move (in party)
 	ld a, [wPlayerMonNumber] ; which mon in party is active
 	ld bc, wPartyMon2 - wPartyMon1 

@@ -34,13 +34,16 @@ AddNewMonToPlayerParty:
 	
 	call GoToPartyMonData
 	call NewPlayerDVs
-	call NewHPLevelStatus
+	call NewLevelStatus	;move to level
 	call NewPlayerMonMoves
 	inc hl
 	inc hl		;skip the special defense
 	call GenerateNewExp
 	call GenerateNewEnergy
 	call GenerateNewStats
+	
+	call IsOffspringEgg		;is this a daycare egg?
+	call nc,SetCurrentHPToMax		;set current hp to max if so
 	
 	scf
 	ret
@@ -113,13 +116,14 @@ AddNewMonToEnemyParty:
 	
 	call GoToEnemyMonData
 	call NewTrainerDVs
-	call NewHPLevelStatus
+	call NewLevelStatus
 	call NewTrainerMonMoves
 	inc hl
 	inc hl		;skip the special defense
 	call GenerateNewExp
 	call GenerateNewEnergy
 	call GenerateNewStats
+	call SetCurrentHPToMax
 	
 	scf
 	ret
@@ -175,13 +179,16 @@ AddNewMonToPC:
 	
 	call GoToPCMonData
 	call NewPlayerDVs
-	call NewHPLevelStatus
+	call NewLevelStatus
 	call NewPlayerMonMoves
 	inc hl
 	inc hl		;skip the special defense
 	call GenerateNewExp
 	call GenerateNewEnergy
 	call GenerateNewStats
+	
+	call IsOffspringEgg		;is this a daycare egg?
+	call nc,SetCurrentHPToMax		;set current hp to max if so
 	
 	scf
 	ret
@@ -839,39 +846,17 @@ FinishCopyHPLevelStatus:
 	ld a,[de]
 	ld [hli],a	;status ailments
 	ret
-	
-NewHPLevelStatus:
+		
+NewLevelStatus:
 	inc hl		;hl pointer to HP
-	push hl
-	
-	call IsOffspringEgg		;is this a daycare egg?
-	jr nc,.notOffspring		;skip down if not
-	
 	xor a
 	ld [hli],a
-	ld [hli],a		;zero the hp if so
-	jr .afterHP		;skip down
-	
-.notOffspring
-	ld a, $1
-	ld c, a
-	xor a
-	ld b, a
-	call CalcStat      ; calc HP stat (set cur Hp to max HP)
-	pop hl
-	
-	ld a, [H_MULTIPLICAND+1]
-	ld [hli], a
-	ld a, [H_MULTIPLICAND+2]
-	ld [hli], a			;HP
-.afterHP
+	ld [hli],a		;set the HP to zero for now
 	ld a,[W_CURENEMYLVL]
 	ld [hli], a         ; level
-	
 	xor a
 	ld [hli], a         ; status ailments
 	ret
-
 	
 	
 CopyEnemyTypesMoves:
@@ -1121,6 +1106,28 @@ GenerateNewStats:
 	ld hl,W_MONHBASESTATS + 1
 	ld b, $0
 	jp CalcStats         ; calculate fresh set of stats
+	
+SetCurrentHPToMax:
+	push de
+	
+	ld hl, wPartyMon1MaxHP - wPartyMon2
+	add hl,de		;hl points to max hp
+	
+	push hl
+	pop bc		;bc points to max hp
+	
+	pop de
+	
+	ld hl, wPartyMon1HP - wPartyMon2
+	add hl,de		;hl points to current hp
+	
+	ld a,[bc]
+	ld [hli],a
+	inc bc
+	ld a,[bc]
+	ld [hli],a		;copy max hp to current hp
+	
+	ret
 	
 SetEggWalkCounter:
 	ld a,[wPresetTraits]

@@ -3211,6 +3211,8 @@ NamePointers:: ; 375d (0:375d)
 	dw wEnemyMonOT ; enemy's OT names list
 	dw TrainerNames
 	dw ElevatorFloorNames
+	dw MaleTrainerNames
+	dw FemaleTrainerNames
 
 GetName:: ; 376b (0:376b)
 ; arguments:

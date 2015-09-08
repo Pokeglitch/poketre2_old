@@ -524,16 +524,14 @@ _LimitedByCursedText:
 	prompt
 	
 _TrainerLastStandText:
-	TX_RAM W_TRAINERNAME
-	text " went"
-	line "into Last Stand"
-	cont "mode!"
+	text $48
+	line "went into Last"
+	cont "Stand mode!"
 	prompt
 
 _TrainerLastStandText2:
-	TX_RAM W_TRAINERNAME
-	text ": I"
-	line "won't go down"
+	text $48,":"
+	line "I won't go down"
 	cont "without a fight!"
 	prompt
 	
@@ -545,8 +543,7 @@ _IntoLastStandText:
 	prompt
 	
 _TrainerRetreatedText::
-	TX_RAM W_TRAINERNAME
-	text " "
+	text $48
 	line "retreated!"
 	prompt
 	

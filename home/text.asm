@@ -85,6 +85,8 @@ PlaceNextChar:: ; 1956 (0:1956)
 .next3 ; Check against a dictionary
 	and a
 	jp z,Char00
+	cp $48
+	jp z,Char48
 	cp $4C
 	jp z,Char4C
 	cp $4B
@@ -213,14 +215,20 @@ MonsterNameCharsCommon:: ; 1a37 (0:1a37)
 	; print “Enemy ”
 	ld a,[wEnemyMonSpecies2]
 	cp HUMAN
-	ld de,W_TRAINERNAME
-	jr z,.skipPlayingEnemyString	;dont say "Enemy" and just use the trainer name if the pokemon is Human
+	jr z,.lastStandName	;dont say "Enemy" and just use the trainer name if the pokemon is Human
 	ld de,Char5AText
 	call PlaceString
 	ld de,wEnemyMonNick ; enemy active monster name
-.skipPlayingEnemyString
 	ld h,b
 	ld l,c
+	jr FinishDTE
+.lastStandName
+	ld de,W_TRAINERNAME
+	call PlaceString
+	ld h,b
+	ld l,c
+	inc hl
+	ld de,wEnemyTrainerFirstName
 
 FinishDTE:: ; 1a4b (0:1a4b)
 	call PlaceString
@@ -230,6 +238,21 @@ FinishDTE:: ; 1a4b (0:1a4b)
 	inc de
 	jp PlaceNextChar
 
+;trainers name
+Char48::
+	push de
+	ld de,W_TRAINERNAME
+	ld a,[wEnemyTrainerFirstName]
+	cp "@"		;is the trainer first name empty?
+	jr z,.finish		;then finish
+	call PlaceString
+	ld h,b
+	ld l,c
+	inc hl
+	ld de,wEnemyTrainerFirstName
+.finish
+	jp FinishDTE
+	
 Char5CText:: ; 1a55 (0:1a55)
 	db "TM@"
 Char5DText:: ; 1a58 (0:1a58)

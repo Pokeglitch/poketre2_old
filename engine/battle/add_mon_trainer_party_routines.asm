@@ -15,7 +15,7 @@ NewTrainerMonMoves:
 	call RunTrainerRoutineFromTable
 	
 	pop hl
-	ld bc,NUM_MOVES
+	ld bc,wPartyMon1SpDefense - wPartyMon1Type
 	add hl,bc	;move hl past the 'moves' section
 	ret
 
@@ -44,10 +44,10 @@ NewTrainerDVs:
 	jp FinishCopyDVs
 
 NewTrainerDVsTable:
+	dw TrainerDVs_Random
 	dw TrainerDVs_Zero
 	dw TrainerDVs_Max
 	dw TrainerDVs_Avg
-	dw TrainerDVs_Random
 	dw TrainerDVs_RandomMaxSpeed
 	dw TrainerDVs_RandomMaxHP
 	
