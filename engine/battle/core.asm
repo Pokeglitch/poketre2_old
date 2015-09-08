@@ -2073,14 +2073,22 @@ SelectMenuItem: ; 3d2fe (f:52fe)
 .moveselected
 	pop af
 	ret nz
-	ld hl, wBattleMonPP
-	ld a, [wCurrentMenuItem]
-	ld c, a
-	ld b, $0
-	add hl, bc
-	ld a, [hl]
-	and $3f
-	jr z, .nopp
+	;get the PP required for this move
+	ld a, [wPlayerMonNumber]
+	ld [wWhichPokemon], a
+	ld a, $4
+	ld [wcc49], a
+	callab GetMaxPP
+	
+	;see if the player has enough PP to use this move
+	ld a,[wBattleMonPP]
+	and a		;is the high byte zero?
+	jr nz,.enoughPP		;if not, then there is enough PP
+	ld a,[wBattleMonPP + 1]
+	ld hl,wd11e	;hl = PP used for this move
+	cp [hl]		;if the pp required is greater than what is remaining, then say not enough PP
+	jr c, .nopp
+.enoughPP
 	ld a, [W_PLAYERDISABLEDMOVE]
 	swap a
 	and $f
@@ -2315,21 +2323,19 @@ PrintMenuItem: ; 3d4b6 (f:54b6)
 	and $3f
 	ld [wcd6d], a
 ; print TYPE/<type> and <curPP>/<maxPP>	
-	hlCoord 1, 9
-	ld de, TypeText
-	call PlaceString
-	hlCoord 7, 11
-	ld [hl], "/"
-	hlCoord 5, 9
-	ld [hl], "/"
 	hlCoord 5, 11
-	ld de, wcd6d
-	ld bc, $102
-	call PrintNumber
-	hlCoord 8, 11
 	ld de, wd11e
 	ld bc, $102
 	call PrintNumber
+	hlCoord 8, 11
+	ld [hl], "P"
+	inc hl
+	ld [hl], "P"
+	hlCoord 1, 9
+	ld de, TypeText
+	call PlaceString
+	hlCoord 5, 9
+	ld [hl], "/"
 	call GetCurrentMove 
 	hlCoord 2, 10
 	predef PrintMoveType

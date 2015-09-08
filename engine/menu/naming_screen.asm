@@ -43,7 +43,7 @@ AskName: ; 64eb (1:64eb)
 	ld a, [wcf4b]
 	cp $50
 	ret z	;return if the name was empty
-;otherwise, copy the name to cd6d
+;otherwise, copy the name from cf4b
 	ld d, h
 	ld e, l
 	ld hl, wcf4b

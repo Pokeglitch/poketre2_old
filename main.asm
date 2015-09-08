@@ -6241,8 +6241,6 @@ Plateau_Block:     INCBIN "gfx/blocksets/plateau.bst"
 
 SECTION "bank1A",ROMX,BANK[$1A]
 
-INCLUDE "engine/battle/decrement_pp.asm"
-
 Version_GFX:
 IF DEF(_RED)
 	INCBIN "gfx/red/redgreenversion.1bpp" ; 10 tiles
@@ -6691,6 +6689,7 @@ INCLUDE "engine/battle/moved_battle_routines.asm"
 INCLUDE "engine/battle/moved_add_mon_to_party.asm"
 INCLUDE "engine/battle/battle_hud.asm"
 INCLUDE "engine/battle/add_mon_trainer_party_routines.asm"
+INCLUDE "engine/battle/decrement_pp.asm"
 
 SECTION "bank39",ROMX,BANK[$39]
 INCLUDE "engine/textbox_and_font.asm"
