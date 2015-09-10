@@ -59,29 +59,36 @@ Char4E::
 	pop hl
 	add hl,bc
 	push hl
+	inc de
+	
 	ld a,[wTextCharCount]
 	and a
-	jr z,.finish		;if we aren't, then finish
+	jr z,.finish		;if we aren't, then jump down
 	
 	ld a,%11100000		;reset the value
 	ld [wTextCharCount],a		;make sure we continue to count again
+	push de		;push the pointer
 	
 .finish
-	jp Next19E8
+	jp PlaceNextChar
 
 Char4F::
 	pop hl		;recover the destination pointer
+	
 	pop hl
 	hlCoord 1, 16
 	push hl
+	inc de
 	ld a,[wTextCharCount]
 	and a
-	jr z,.finish		;if we aren't, then finish
+	jr z,.finish		;if we aren't, then jump down
 	
 	ld a,%11100000		;reset the value
 	ld [wTextCharCount],a		;make sure we continue to count again
+	push de		;push the source pointer
+	
 .finish
-	jp Next19E8
+	jp PlaceNextChar
 		
 
 Char00:: ; 19ec (0:19ec)
@@ -385,13 +392,17 @@ Char4C:: ; 1b0a (0:1b0a)
 	call Next1B18
 	hlCoord 1, 16
 	pop de
+	inc de
 	ld a,[wTextCharCount]
 	and a
 	jr z,.finish		;if we aren't, then finish
 	ld a,%11000000		;re-initialize the counter
 	ld [wTextCharCount],a
+	pop de
+	inc de
+	push de		;push the source pointer
 .finish
-	jp Next19E8
+	jp PlaceNextChar
 
 Next1B18:: ; 1b18 (0:1b18)
 	hlCoord 0, 14
@@ -462,9 +473,8 @@ CharSpace:
 	set CountingLetters,[hl]		;set the bit so we will count letters for the next word
 	ld a,%00011111
 	and [hl]		;only keep the count
-	jr z,.dontInc	;if it is zero, then dont increment hl
 	cp CharsPerRow		;is it 18?
-	jr z,.dontInc	;if it is 18 (the end of the line), then also dont increment
+	jr z,.dontInc	;if it is 18 (the end of the line), then dont increment
 	
 	inc [hl]
 	
