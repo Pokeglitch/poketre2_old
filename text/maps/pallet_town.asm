@@ -1,49 +1,33 @@
 _OakAppearsText::
-	text "OAK: Hey! Wait!"
-	line "Don't go out!@@"
+	text "OAK: Hey! Wait! Don't go out!"
+	prompt
 
 _OakWalksUpText::
-	text "OAK: It's unsafe!"
-	line "Wild #MON live"
-	cont "in tall grass!"
+	text "OAK: It's unsafe! Wild # live in tall grass!"
 
-	para "You need your own"
-	line "#MON for your"
-	cont "protection."
-	cont "I know!"
+	para "You need your own # for your protection. I know!"
 
-	para "Here, come with"
-	line "me!"
+	para "Here, come with me!"
 	done
 
 _PalletTownText2::
-	text "I'm raising"
-	line "#MON too!"
+	text "I'm raising #MON too!"
 
-	para "When they get"
-	line "strong, they can"
-	cont "protect me!"
+	para "When they get strong, they can protect me!"
 	done
 
 _PalletTownText3::
-	text "Technology is"
-	line "incredible!"
+	text "Technology is incredible!"
 
-	para "You can now store"
-	line "and recall items"
-	cont "and #MON as"
-	cont "data via PC!"
+	para "You can now store and recall items and # as data via PC!"
 	done
 
 _PalletTownText4::
-	text "OAK #MON"
-	line "RESEARCH LAB"
+	text "OAK # RESEARCH LAB"
 	done
 
 _PalletTownText5::
-	text "PALLET TOWN"
-	line "Shades of your"
-	cont "journey await!"
+	text "PALLET TOWN: Shades of your journey await!"
 	done
 
 _PalletTownText6::

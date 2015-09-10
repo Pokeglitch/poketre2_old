@@ -1163,11 +1163,9 @@ _TrainerAboutToUseText:: ; 89784 (22:5784)
 	done
 
 _TrainerSentOutText:: ; 897b4 (22:57b4)
-	text $48
-	line "sent out"
-	cont "@"
-	TX_RAM wEnemyMonNick
-	text "!"
+	text $48, " sent out "
+	ram_text wEnemyMonNick
+	db "!"
 	done
 
 _NoWillText:: ; 897c9 (22:57c9)
@@ -1323,6 +1321,12 @@ _MoveIsDisabledText:: ; 89a29 (22:5a29)
 	cont "disabled!"
 	prompt
 
+_MonUsedText:: ; 89a40 (22:5a40)
+	text $5a, " used "
+	ram_text wcf4b
+	db "!"
+	done
+	
 _MonName1Text:: ; 89a40 (22:5a40)
 	text $5a, "@@"
 
@@ -1494,8 +1498,7 @@ _EnemyAppearedText:: ; 89c4f (22:5c4f)
 	prompt
 
 _TrainerWantsToFightText:: ; 89c5e (22:5c5e)
-	text $48
-	line "wants to fight!"
+	text $48, " wants to fight!"
 	prompt
 
 _UnveiledGhostText:: ; 89c73 (22:5c73)
@@ -1510,7 +1513,10 @@ _GhostCantBeIDdText:: ; 89c9e (22:5c9e)
 	prompt
 
 _GoText:: ; 89cbc (22:5cbc)
-	text "Go! @@"
+	text "Go "
+	ram_text wBattleMonNick
+	db "!"
+	done
 
 _DoItText:: ; 89cc3 (22:5cc3)
 	text "Do it! @@"

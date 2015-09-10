@@ -1,99 +1,49 @@
 _OaksLabGaryText1:: ; 94d5b (25:4d5b)
-	text $53,": Yo"
-	line $52,"! Gramps"
-	cont "isn't around!"
-
-IF DEF(_YELLOW)
-	para "I ran here 'cos"
-	line "he said he had a"
-	cont "#MON for me."
-ENDC
+	text $53,": Yo ", $52,"! Gramps isn't around!"
 	done
 
 _OaksLabText40:: ; 94d79 (25:4d79)
-IF DEF(_YELLOW)
-	text $53,": Humph!"
-	line "I'll get a better"
-	cont "#MON than you!"
-	done
-ELSE
-	text $53,": Heh, I"
-	line "don't need to be"
-	cont "greedy like you!"
+	text $53,": Heh, I don't need to be greedy like you!"
 
-	para "Go ahead and"
-	line "choose, ", $52, "!"
+	para "Go ahead and choose, ", $52, "!"
 	done
-ENDC
 
 _OaksLabText41:: ; 94dbd (25:4dbd)
-IF DEF(_YELLOW)
-	text $53,": Heh, my"
-ELSE
-	text $53,": My"
-ENDC
-	line "#MON looks a"
-	cont "lot stronger."
+	text $53,": My # looks a lot stronger."
 	done
 
 _OaksLabText39:: ; 94ddf (25:4ddf)
-IF DEF(_YELLOW)
-	text "That's a #"
-	line "BALL. There's a"
-	cont "#MON inside!"
+	text "Those are POKé BALLs. They contain #!"
 	done
-ELSE
-	text "Those are #"
-	line "BALLs. They"
-	cont "contain #MON!"
-	done
-ENDC
-
-IF DEF(_YELLOW)
-_OaksLabPikachuText::
-	text "OAK: Go ahead,"
-	line "it's yours!"
-	done
-ENDC
 
 _OaksLabCharmanderText:: ; 94e06 (25:4e06)
-	text "So! You want the"
-	line "fire #MON,"
-	cont "CHARMANDER?"
+	text "So! You want the fire #, CHARMANDER?"
 	done
 
 _OaksLabSquirtleText:: ; 94e2f (25:4e2f)
-	text "So! You want the"
-	line "water #MON,"
-	cont "SQUIRTLE?"
+	text "So! You want the water #, SQUIRTLE?"
 	done
 
 _OaksLabBulbasaurText:: ; 94e57 (25:4e57)
-	text "So! You want the"
-	line "plant #MON,"
-	cont "BULBASAUR?"
+	text "So! You want the plant #, BULBASAUR?"
 	done
 
 _OaksLabMonEnergeticText:: ; 94e80 (25:4e80)
-	text "This #MON is"
-	line "really energetic!"
+	text "This #MON is really energetic!"
 	prompt
 
 _OaksLabReceivedMonText:: ; 94ea0 (25:4ea0)
-	text $52, " received"
-	line "a @"
+	text $52, " received a "
 	TX_RAM wcd6d
-	text "!@@"
+	text "!"
+	prompt
 
 _OaksLabLastMonText:: ; 94eb6 (25:4eb6)
-	text "That's PROF.OAK's"
-	line "last #MON!"
+	text "That's PROF.OAK's last #!"
 	done
 
 _OaksLabText_1d2f0:: ; 94ed2 (25:4ed2)
-	text "OAK: Now, ", $52, ","
-	line "which #MON do"
-	cont "you want?"
+	text "OAK: Now, ", $52, ", which # do you want?"
 	done
 
 _OaksLabText_1d2f5:: ; 94ef8 (25:4ef8)
@@ -368,41 +318,33 @@ _OaksLabReceivedText::
 ENDC
 
 _OaksLabLeavingText:: ; 95427 (25:5427)
-	text "OAK: Hey! Don't go"
-	line "away yet!"
+	text "OAK: Hey! Don't go away yet!"
 	done
 
 _OaksLabRivalPickingMonText:: ; 95444 (25:5444)
-	text $53, ": I'll take"
-	line "this one, then!"
+	text $53, ": I'll take this one, then!"
 	done
 
 _OaksLabRivalReceivedMonText:: ; 95461 (25:5461)
-	text $53, " received"
-	line "a @"
+	text $53, " received a @"
 	TX_RAM wcd6d
-	text "!@@"
+	text "!"
+	prompt
 
 _OaksLabRivalChallengeText:: ; 95477 (25:5477)
-	text $53, ": Wait"
-	line $52, "!"
-	cont "Let's check out"
-	cont "our #MON!"
+	text $53, ": Wait ", $52, "! Let's check out our #!"
 
-	para "Come on, I'll take"
-	line "you on!"
+	para "Come on, I'll take you on!"
 	done
 
 _OaksLabText_1d3be:: ; 954b6 (25:54b6)
 	text "WHAT?"
-	line "Unbelievable!"
-	cont "I picked the"
-	cont "wrong #MON!"
+	para "Unbelievable!"
+	para "I picked the wrong #!"
 	prompt
 
 _OaksLabText_1d3c3:: ; 954e4 (25:54e4)
-	text $53, ": Yeah! Am"
-	line "I great or what?"
+	text $53, ": Yeah! Am I great or what?"
 	prompt
 
 _OaksLabRivalToughenUpText:: ; 95502 (25:5502)

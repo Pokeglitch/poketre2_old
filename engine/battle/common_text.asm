@@ -149,30 +149,19 @@ IntoLastStandText:
 	
 GoText: ; 58eae (16:4eae)
 	TX_FAR _GoText
-	db $08 ; asm
-	jr PrintPlayerMon1Text
+	db "@"
 
 DoItText: ; 58eb5 (16:4eb5)
 	TX_FAR _DoItText
-	db $08 ; asm
-	jr PrintPlayerMon1Text
+	db "@"
 
 GetmText: ; 58ebc (16:4ebc)
 	TX_FAR _GetmText
-	db $08 ; asm
-	jr PrintPlayerMon1Text
+	db "@"
 
 EnemysWeakText: ; 58ec3 (16:4ec3)
 	TX_FAR _EnemysWeakText
 	db $08 ; asm
-
-PrintPlayerMon1Text:
-	ld hl, PlayerMon1Text
-	ret
-
-PlayerMon1Text: ; 58ecc (16:4ecc)
-	TX_FAR _PlayerMon1Text
-	db "@"
 
 RetreatMon: ; 58ed1 (16:4ed1)
 	ld hl, PlayerMon2Text

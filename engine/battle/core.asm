@@ -3239,9 +3239,13 @@ HandleSelfConfusionDamage: ; 3daad (f:5aad)
 	jp ApplyDamageToPlayerPokemon
 
 PrintMonName1Text: ; 3daf5 (f:5af5)
-	ld hl, MonName1Text
+	ld hl, MonUsedText
 	jp PrintText
-
+	
+MonUsedText:
+	TX_FAR _MonUsedText
+	db "@"
+	
 MonName1Text: ; 3dafb (f:5afb)
 	TX_FAR _MonName1Text
 	db $08 ; asm

@@ -82,10 +82,12 @@ ReadTrainer: ; 39c53 (e:5c53)
 	ld a,BANK(MaleTrainerNames)
 	ld [wPredefBank],a
 	call GetName
+	ld a," "
+	ld [wEnemyTrainerFirstName],a		;set the first character of first name to be a space
 	ld hl,wcd6d
-	ld de,wEnemyTrainerFirstName
+	ld de,wEnemyTrainerFirstName + 1
 	ld bc,11
-	call CopyData
+	call CopyData	;copy the name to everything after the space
 	
 ; clear wAmountMoneyWon addresses
 	xor a       

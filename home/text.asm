@@ -86,55 +86,55 @@ Char52:: ; 0x19f9 player’s name
 	pop hl		;recover the destination pointer
 	push de
 	ld de,wPlayerName
-	jr FinishDTE
+	jp FinishDTE
 
 Char53:: ; 19ff (0:19ff) ; rival’s name
 	pop hl		;recover the destination pointer
 	push de
 	ld de,W_RIVALNAME
-	jr FinishDTE
+	jp FinishDTE
 
 Char5D:: ; 1a05 (0:1a05) ; TRAINER
 	pop hl		;recover the destination pointer
 	push de
 	ld de,Char5DText
-	jr FinishDTE
+	jp FinishDTE
 
 Char5C:: ; 1a0b (0:1a0b) ; TM
 	pop hl		;recover the destination pointer
 	push de
 	ld de,Char5CText
-	jr FinishDTE
+	jp FinishDTE
 
 Char5B:: ; 1a11 (0:1a11) ; PC
 	pop hl		;recover the destination pointer
 	push de
 	ld de,Char5BText
-	jr FinishDTE
+	jp FinishDTE
 
 Char5E:: ; 1a17 (0:1a17) ; ROCKET
 	pop hl		;recover the destination pointer
 	push de
 	ld de,Char5EText
-	jr FinishDTE
+	jp FinishDTE
 
 Char54:: ; 1a1d (0:1a1d) ; POKé
 	pop hl		;recover the destination pointer
 	push de
 	ld de,Char54Text
-	jr FinishDTE
+	jp FinishDTE
 
 Char56:: ; 1a23 (0:1a23) ; ……
 	pop hl		;recover the destination pointer
 	push de
 	ld de,Char56Text
-	jr FinishDTE
+	jp FinishDTE
 
 Char4A:: ; 1a29 (0:1a29) ; PKMN
 	pop hl		;recover the destination pointer
 	push de
 	ld de,Char4AText
-	jr FinishDTE
+	jp FinishDTE
 
 Char59:: ; 1a2f (0:1a2f)
 ; depending on whose turn it is, print
@@ -166,21 +166,24 @@ MonsterNameCharsCommon:: ; 1a37 (0:1a37)
 	cp HUMAN
 	jr z,.lastStandName	;dont say "Enemy" and just use the trainer name if the pokemon is Human
 	ld de,Char5AText
-	call PlaceString
+	call PlaceInlineString
 	ld de,wEnemyMonNick ; enemy active monster name
 	ld h,b
 	ld l,c
 	jr FinishDTE
 .lastStandName
 	ld de,W_TRAINERNAME
-	call PlaceString
+	ld a,[wEnemyTrainerFirstName + 1]
+	cp "@"		;is the trainer first name empty?
+	jr z,.finish		;then finish
+	call PlaceInlineString
 	ld h,b
 	ld l,c
-	inc hl
 	ld de,wEnemyTrainerFirstName
+.finish
+	jr FinishDTE
 
-FinishDTE:: ; 1a4b (0:1a4b)
-
+PlaceInlineString:: ; 1a4b (0:1a4b)
 	ld a,[wTextCharCount]
 	bit CheckWordWrap,a		;are we checking for word wrap
 	jr z,.dontCount		;dont count if not
@@ -189,7 +192,10 @@ FinishDTE:: ; 1a4b (0:1a4b)
 	ld [wTextCharCount],a
 	
 .dontCount
-	call PlaceString
+	jp PlaceString
+	
+FinishDTE::
+	call PlaceInlineString
 	ld h,b
 	ld l,c
 	pop de
@@ -205,18 +211,31 @@ FinishDTE:: ; 1a4b (0:1a4b)
 .finish
 	jp PlaceNextChar
 
+;read from RAM
+Char47:
+	pop hl		;recover the destination pointer
+	inc de
+	ld a,[de]
+	ld c,a
+	inc de
+	ld a,[de]
+	push de		;store the new source pointer
+	ld d,a
+	ld e,c		;set de to be the ram pointer
+	jp FinishDTE
+	
+	
 ;trainers name
 Char48::
 	pop hl		;recover the destination pointer
 	push de
 	ld de,W_TRAINERNAME
-	ld a,[wEnemyTrainerFirstName]
+	ld a,[wEnemyTrainerFirstName + 1]
 	cp "@"		;is the trainer first name empty?
 	jr z,.finish		;then finish
-	call PlaceString
+	call PlaceInlineString
 	ld h,b
 	ld l,c
-	inc hl
 	ld de,wEnemyTrainerFirstName
 .finish
 	jp FinishDTE
@@ -566,6 +585,8 @@ SpecialTextChars:
 	dw Char00
 	db " "
 	dw CharSpace
+	db $47
+	dw Char47
 	db $48
 	dw Char48
 	db $49

@@ -7,6 +7,13 @@ cont   EQUS "db $55," ; Scroll to the next line.
 done   EQUS "db $57"  ; End a text box.
 prompt EQUS "db $58"  ; Prompt the player to end a text box (initiating some other event).
 
+ram_text: MACRO
+; prints the string in the textbox
+; \1: RAM address to read from
+	db $47
+	dw \1
+	ENDM
+
 page   EQUS "db $49,"     ; Start a new Pokedex page.
 dex    EQUS "db $5f, $50" ; End a Pokedex entry.
 
