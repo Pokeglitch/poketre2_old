@@ -1945,14 +1945,11 @@ _DoYouWantToNicknameText:: ; 0x8a605
 	done
 
 _YourNameIsText:: ; 8a62f (22:662f)
-	text "Right! So your"
-	line "name is ", $52, "!"
+	text "Right! So your name is ", $52, "!"
 	prompt
 
 _HisNameIsText:: ; 8a64a (22:664a)
-	text "That's right! I"
-	line "remember now! His"
-	cont "name is ", $53, "!"
+	text "That's right! I remember now! His name is ", $53, "!"
 	prompt
 
 _WillBeTradedText:: ; 8a677 (22:6677)

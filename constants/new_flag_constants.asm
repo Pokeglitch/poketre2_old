@@ -1,3 +1,11 @@
+;bits for smart string
+CheckWordWrap EQU 7
+CountingLetters EQU 6
+FirstLineBreak EQU 5
+
+CharsPerRow EQU 18
+
+
 ;bits for totems
 RoleReversalTotem	EQU 0
 LastStandTotem		EQU 1

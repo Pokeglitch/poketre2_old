@@ -1,56 +1,33 @@
 _OakSpeechText1::
-	text "Hello there!"
-	line "Welcome to the"
-	cont "world of #MON!"
-
-	para "My name is OAK!"
-	line "People call me"
-	cont "the #MON PROF!"
+	text "Hello there! Welcome to the world of #! My name is OAK! People call me the # PROF!"
 	prompt
 
-_OakSpeechText2A::
-	text "This world is"
-	line "inhabited by"
-	cont "creatures called"
-	cont "#MON!@@"
-
-_OakSpeechText2B::
-	text $51,"For some people,"
-	line "#MON are"
-	cont "pets. Others use"
-	cont "them for fights."
+_OakSpeechText2::
+	text "This world is inhabited by creatures called #!"
+	
+	para "For some people, # are pets. Others use them for fights."
 
 	para "Myself..."
 
-	para "I study #MON"
-	line "as a profession."
+	para "I study # as a profession."
 	prompt
 
 _IntroducePlayerText::
-	text "First, what is"
-	line "your name?"
+	text "First, what is your name?"
 	prompt
 
 _IntroduceRivalText::
-	text "This is my grand-"
-	line "son. He's been"
-	cont "your rival since"
-	cont "you were a baby."
+	text "This is my grandson. He's been your rival since you were a baby."
 
-	para "...Erm, what is"
-	line "his name again?"
+	para "...Erm, what is his name again?"
 	prompt
 
 _OakSpeechText3::
 	text $52,"!"
 
-	para "Your very own"
-	line "#MON legend is"
-	cont "about to unfold!"
+	para "Your very own # legend is about to unfold!"
 
-	para "A world of dreams"
-	line "and adventures"
-	cont "with #MON"
-	cont "awaits! Let's go!"
+	para "A world of dreams and adventures with # awaits! Let's go!"
+	
 	done
 

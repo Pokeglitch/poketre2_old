@@ -48,21 +48,8 @@ NPlaceChar::
 	jr nz, .loop
 	ret
 
-PlaceString:: ; 1955 (0:1955)
-	push hl
-PlaceNextChar:: ; 1956 (0:1956)
-	ld a,[de]
-
-	cp "@"
-	jr nz,.PlaceText
-	ld b,h
-	ld c,l
-	pop hl
-	ret
-
-.PlaceText
-	cp $4E
-	jr nz,.next
+Char4E::
+	pop hl		;recover the destination pointer
 	ld bc,$0028
 	ld a,[hFlags_0xFFF6]
 	bit 2,a
@@ -74,64 +61,16 @@ PlaceNextChar:: ; 1956 (0:1956)
 	push hl
 	jp Next19E8
 
-.next
-	cp $4F
-	jr nz,.next3
+Char4F::
+	pop hl		;recover the destination pointer
 	pop hl
 	hlCoord 1, 16
 	push hl
 	jp Next19E8
-
-.next3 ; Check against a dictionary
-	and a
-	jp z,Char00
-	cp $48
-	jp z,Char48
-	cp $4C
-	jp z,Char4C
-	cp $4B
-	jp z,Char4B
-	cp $51
-	jp z,Char51
-	cp $49
-	jp z,Char49
-	cp $52
-	jp z,Char52
-	cp $53
-	jp z,Char53
-	cp $54
-	jp z,Char54
-	cp $5B
-	jp z,Char5B
-	cp $5E
-	jp z,Char5E
-	cp $5C
-	jp z,Char5C
-	cp $5D
-	jp z,Char5D
-	cp $55
-	jp z,Char55
-	cp $56
-	jp z,Char56
-	cp $57
-	jp z,Char57
-	cp $58
-	jp z,Char58
-	cp $4A
-	jp z,Char4A
-	cp $5F
-	jp z,Char5F
-	cp $59
-	jp z,Char59
-	cp $5A
-	jp z,Char5A
-	ld [hli],a
-	call PrintLetterDelay
-Next19E8:: ; 19e8 (0:19e8)
-	inc de
-	jp PlaceNextChar
+		
 
 Char00:: ; 19ec (0:19ec)
+	pop hl		;recover the destination pointer
 	ld b,h
 	ld c,l
 	pop hl
@@ -144,46 +83,55 @@ Char00Text:: ; 0x19f4 “%d ERROR.”
 	db "@"
 
 Char52:: ; 0x19f9 player’s name
+	pop hl		;recover the destination pointer
 	push de
 	ld de,wPlayerName
 	jr FinishDTE
 
 Char53:: ; 19ff (0:19ff) ; rival’s name
+	pop hl		;recover the destination pointer
 	push de
 	ld de,W_RIVALNAME
 	jr FinishDTE
 
 Char5D:: ; 1a05 (0:1a05) ; TRAINER
+	pop hl		;recover the destination pointer
 	push de
 	ld de,Char5DText
 	jr FinishDTE
 
 Char5C:: ; 1a0b (0:1a0b) ; TM
+	pop hl		;recover the destination pointer
 	push de
 	ld de,Char5CText
 	jr FinishDTE
 
 Char5B:: ; 1a11 (0:1a11) ; PC
+	pop hl		;recover the destination pointer
 	push de
 	ld de,Char5BText
 	jr FinishDTE
 
 Char5E:: ; 1a17 (0:1a17) ; ROCKET
+	pop hl		;recover the destination pointer
 	push de
 	ld de,Char5EText
 	jr FinishDTE
 
 Char54:: ; 1a1d (0:1a1d) ; POKé
+	pop hl		;recover the destination pointer
 	push de
 	ld de,Char54Text
 	jr FinishDTE
 
 Char56:: ; 1a23 (0:1a23) ; ……
+	pop hl		;recover the destination pointer
 	push de
 	ld de,Char56Text
 	jr FinishDTE
 
 Char4A:: ; 1a29 (0:1a29) ; PKMN
+	pop hl		;recover the destination pointer
 	push de
 	ld de,Char4AText
 	jr FinishDTE
@@ -196,7 +144,7 @@ Char59:: ; 1a2f (0:1a2f)
 ; (like Char5A but flipped)
 	ld a,[H_WHOSETURN]
 	xor 1
-	jr MonsterNameCharsCommon
+;	jr MonsterNameCharsCommon
 
 Char5A:: ; 1a35 (0:1a35)
 ; depending on whose turn it is, print
@@ -205,6 +153,7 @@ Char5A:: ; 1a35 (0:1a35)
 ; enemy active monster’s name, prefixed with “Enemy ”
 	ld a,[H_WHOSETURN]
 MonsterNameCharsCommon:: ; 1a37 (0:1a37)
+	pop hl		;recover the destination pointer
 	push de
 	and a
 	jr nz,.Enemy
@@ -231,15 +180,34 @@ MonsterNameCharsCommon:: ; 1a37 (0:1a37)
 	ld de,wEnemyTrainerFirstName
 
 FinishDTE:: ; 1a4b (0:1a4b)
+
+	ld a,[wTextCharCount]
+	bit CheckWordWrap,a		;are we checking for word wrap
+	jr z,.dontCount		;dont count if not
+		
+	set CountingLetters,a
+	ld [wTextCharCount],a
+	
+.dontCount
 	call PlaceString
 	ld h,b
 	ld l,c
 	pop de
 	inc de
+	ld a,[wTextCharCount]
+	and a
+	jr z,.finish		;if we aren't, then finish
+	
+	set CountingLetters,a
+	ld [wTextCharCount],a		;make sure we continue to count again
+	push de		;save the starting position
+	
+.finish
 	jp PlaceNextChar
 
 ;trainers name
 Char48::
+	pop hl		;recover the destination pointer
 	push de
 	ld de,W_TRAINERNAME
 	ld a,[wEnemyTrainerFirstName]
@@ -262,7 +230,7 @@ Char5BText:: ; 1a60 (0:1a60)
 Char5EText:: ; 1a63 (0:1a63)
 	db "ROCKET@"
 Char54Text:: ; 1a6a (0:1a6a)
-	db "POKé@"
+	db "POKéMON@"
 Char56Text:: ; 1a6f (0:1a6f)
 	db "……@"
 Char5AText:: ; 1a72 (0:1a72)
@@ -271,6 +239,7 @@ Char4AText:: ; 1a79 (0:1a79)
 	db $E1,$E2,"@" ; PKMN
 
 Char55:: ; 1a7c (0:1a7c)
+	pop hl		;recover the destination pointer
 	push de
 	ld b,h
 	ld c,l
@@ -289,23 +258,29 @@ Char55Text:: ; 1a8c (0:1a8c)
 
 Char5F:: ; 1a91 (0:1a91)
 ; ends a Pokédex entry
+	pop hl		;recover the destination pointer
 	ld [hl],"."
 	pop hl
 	ret
 
 Char58:: ; 1a95 (0:1a95)
+	pop hl		;recover the destination pointer
 	ld a,[wLinkState]
 	cp LINK_STATE_BATTLING
 	jp z,Next1AA2
 	ld a,$EE
-	Coorda 18, 16
+	Coorda 18, 13
 Next1AA2:: ; 1aa2 (0:1aa2)
 	call ProtectedDelay3
 	call ManualTextScroll
 	ld a,$C4
-	Coorda 18, 16
+	Coorda 18, 13
+	jr Char57Finish
+	
 Char57:: ; 1aad (0:1aad)
 	pop hl
+Char57Finish::
+	pop de		;recover the starting position
 	ld de,Char58Text
 	dec de
 	ret
@@ -313,10 +288,14 @@ Char57:: ; 1aad (0:1aad)
 Char58Text:: ; 1ab3 (0:1ab3)
 	db "@"
 
+	
 Char51:: ; 1ab4 (0:1ab4)
+	ld a,%11000000		;re-initialize the counter
+	ld [wTextCharCount],a
+	pop hl		;recover the destination pointer
 	push de
 	ld a,$EE
-	Coorda 18, 16
+	Coorda 18, 13
 	call ProtectedDelay3
 	call ManualTextScroll
 	hlCoord 1, 13
@@ -325,13 +304,16 @@ Char51:: ; 1ab4 (0:1ab4)
 	ld c,$14
 	call DelayFrames
 	pop de
+	inc de
+	push de		;push de since we are counting again
 	hlCoord 1, 14
-	jp Next19E8
+	jp PlaceNextChar
 
 Char49:: ; 1ad5 (0:1ad5)
+	pop hl		;recover the destination pointer
 	push de
 	ld a,$EE
-	Coorda 18, 16
+	Coorda 18, 13
 	call ProtectedDelay3
 	call ManualTextScroll
 	hlCoord 1, 10
@@ -346,16 +328,20 @@ Char49:: ; 1ad5 (0:1ad5)
 	jp Next19E8
 
 Char4B:: ; 1af8 (0:1af8)
+	pop hl		;recover the destination pointer
 	ld a,$EE
-	Coorda 18, 16
+	Coorda 18, 13
 	call ProtectedDelay3
 	push de
 	call ManualTextScroll
 	pop de
 	ld a,$C4
-	Coorda 18, 16
+	Coorda 18, 13
+	push hl		;push hl again because 4c will pop it
 	;fall through
+
 Char4C:: ; 1b0a (0:1b0a)
+	pop hl		;recover the destination pointer
 	push de
 	call Next1B18
 	call Next1B18
@@ -395,6 +381,236 @@ ProtectedDelay3:: ; 1b3a (0:1b3a)
 	call Delay3
 	pop bc
 	ret
+	
+
+PrintText:: ; 3c49 (0:3c49)
+; Print text hl at (1, 14).
+	push hl
+	ld a,MESSAGE_BOX
+	ld [wTextBoxID],a
+	call DisplayTextBoxID
+	call UpdateSprites
+	call Delay3
+	ld a,%11000000
+	ld [wTextCharCount],a	;initialize wTextCharCount to indicate that we should check for word wrapping and counting letters
+	pop hl
+	call Func_3c59
+	xor a
+	ld [wTextCharCount],a		;reset wTextCharCount
+	ret
+	
+Func_3c59:: ; 3c59 (0:3c59)
+	bcCoord 1, 14
+	jp TextCommandProcessor
+	
+
+CharSpace:	
+	ld hl,wTextCharCount
+	bit CheckWordWrap,[hl]		;are we checking for word wrap
+	jr nz,.wordWrap		;jump down if so
+	pop hl		;otherwise, recover the destination and continue
+	ld a," "
+	ld [hli],a	;store the space
+	inc de		;move to next character
+	jr PlaceNextChar
+	
+.wordWrap
+	set CountingLetters,[hl]		;set the bit so we will count letters for the next word
+	ld a,%00011111
+	and [hl]		;only keep the count
+	jr z,.dontInc	;if it is zero, then dont increment hl
+	cp CharsPerRow		;is it 18?
+	jr z,.dontInc	;if it is 18 (the end of the line), then also dont increment
+	
+	inc [hl]
+	
+.dontInc
+	pop hl		;recover the destination
+	jr z,.dontPrintSpace		;if the count is zero or 18, then don't print the space
+	ld a," "
+	ld [hli],a		;otherwise, place the space
+
+.dontPrintSpace
+	inc de		;move past the space
+	push de		;save the letter starting position
+	jr PlaceNextChar
+	
+FinishCountingLetters:
+	;if we were counting letters, then see if we need to add a line break
+	ld a,%00011111
+	and [hl]		;only keep the character count
+	cp CharsPerRow + 1
+	jr c,.noLineBreak		;if it is under 19, then we do not need to add a line break, so finish counting
+	
+	bit FirstLineBreak,[hl]		;have we already added the first line break
+	jr z,.dontScrollText		;if not, then we don't scroll the text
+	
+	;scroll text
+	push hl
+	push de
+	
+	ld a,$EE		;place the cursor
+	Coorda 18, 13
+	call ProtectedDelay3
+	push de
+	call ManualTextScroll
+	pop de
+	ld a,$C4		;erase the cursor
+	Coorda 18, 13
+	
+	
+	call Next1B18
+	call Next1B18
+	pop de			;scroll the text
+	pop hl
+	;fall through
+	
+.dontScrollText
+	ld [hl],%11100000		;reset the counter and but set all other flags
+
+	;move pointer to second line
+	pop hl		;recover the destination
+	hlCoord 1, 16		;store the new destination
+	pop de		;recover the starting position
+	push de		;store the starting position again since we are still counting
+	jr PlaceNextChar	;start over
+	
+.noLineBreak
+	;if no line break, then turn off the counting letters bit
+	res CountingLetters,[hl]
+	pop hl		;recover the destination
+	pop de		;recover the start of the word
+	jr PlaceNextChar	;place the characters
+	
+	
+;to place a smart string, we have to first save the starting location
+;this will cause an infinite loop if a word is >18 characters
+PlaceString::
+	push hl
+	ld a,[wTextCharCount]
+	and a
+	jr z,PlaceNextChar		;if we are not counting characters, then don't push de
+	push de		;save the destination
+	;fall through
+PlaceNextChar:: ; 1956 (0:1956)
+	ld a,[de]
+	cp "@"
+	jr nz,.PlaceText
+
+	ld a,[wTextCharCount]
+	bit CheckWordWrap,a		;are we checking for word wrap
+	jr z,.finish		;finish if not
+		
+	bit CountingLetters,a		;are we counting letters?
+	jr z,.finish			;finish if not
+	
+	push hl			;otherwise, push the destination
+	ld hl,wTextCharCount
+	jr FinishCountingLetters	;and run the routine to finish counting letters
+
+.finish
+	ld b,h
+	ld c,l
+	pop hl		;recover the destination
+	ret
+
+.PlaceText
+	push hl
+	push de
+	ld hl,SpecialTextChars
+	ld de,3
+	call IsInArray
+	pop de
+	jr nc,.handleChar		;if the character isn't in the array, then handle the char
+	;otherwise, run the function
+	inc hl
+	ld a,[hli]
+	ld h,[hl]
+	ld l,a
+
+	ld a,[wTextCharCount]
+	bit CheckWordWrap,a		;are we checking for word wrap
+	jr z,.runCharFunction		;finish if not
+		
+	bit CountingLetters,a		;are we counting letters?
+	jr z,.runCharFunction			;finish if not
+	
+	ld hl,wTextCharCount
+	jp FinishCountingLetters	;and run the routine to finish counting letters
+
+.runCharFunction	
+	jp [hl]
+	
+.handleChar
+	ld hl,wTextCharCount
+	bit CountingLetters,[hl]
+	jr z,.placeChar		;if are not counting characters, then place char
+	
+	inc [hl]		;increment the counter
+	pop hl			;recover the destination, don't increment
+	jr Next19E8
+	
+.placeChar
+	pop hl			;recover the destination
+	ld a,[de]
+	ld [hli],a
+	call PrintLetterDelay
+	;fall through
+	
+Next19E8:
+	inc de
+	jp PlaceNextChar		
+
+SpecialTextChars:
+	db $00
+	dw Char00
+	db " "
+	dw CharSpace
+	db $48
+	dw Char48
+	db $49
+	dw Char49
+	db $4A
+	dw Char4A
+	db $4B
+	dw Char4B
+	db $4C
+	dw Char4C
+	db $4E
+	dw Char4E
+	db $4F
+	dw Char4F
+	db $51
+	dw Char51
+	db $52
+	dw Char52
+	db $53
+	dw Char53
+	db $54
+	dw Char54
+	db $55
+	dw Char55
+	db $56
+	dw Char56
+	db $57
+	dw Char57
+	db $58
+	dw Char58
+	db $59
+	dw Char59
+	db $5A
+	dw Char5A
+	db $5B
+	dw Char5B
+	db $5C
+	dw Char5C
+	db $5D
+	dw Char5D
+	db $5E
+	dw Char5E
+	db $5F
+	dw Char5F
+	db $FF	
 
 TextCommandProcessor:: ; 1b40 (0:1b40)
 	ld a,[wd358]
@@ -419,9 +635,10 @@ NextTextCommand:: ; 1b55 (0:1b55)
 .doTextCommand
 	push hl
 	cp a,$17
-	jp z,TextCommand17
+	jp z,TextCommand17	;text in another bank
 	cp a,$0e
-	jp nc,TextCommand0B ; if a != 0x17 and a >= 0xE, go to command 0xB
+	jp nc,TextCommand0B			;play sounds
+	; if a != 0x17 and a >= 0xE, go to command 0xB
 ; if a < 0xE, use a jump table
 	ld hl,TextCommandJumpTable
 	push bc
@@ -539,12 +756,12 @@ TextCommand06:: ; 1bcc (0:1bcc)
 	cp a,LINK_STATE_BATTLING
 	jp z,TextCommand0D
 	ld a,$ee ; down arrow
-	Coorda 18, 16 ; place down arrow in lower right corner of dialogue text box
+	Coorda 18, 13 ; place down arrow in lower right corner of dialogue text box
 	push bc
 	call ManualTextScroll ; blink arrow and wait for A or B to be pressed
 	pop bc
 	ld a," "
-	Coorda 18, 16 ; overwrite down arrow with blank space
+	Coorda 18, 13 ; overwrite down arrow with blank space
 	pop hl
 	jp NextTextCommand
 
@@ -553,7 +770,7 @@ TextCommand06:: ; 1bcc (0:1bcc)
 ; (no arguments)
 TextCommand07:: ; 1be7 (0:1be7)
 	ld a," "
-	Coorda 18, 16 ; place blank space in lower right corner of dialogue text box
+	Coorda 18, 13 ; place blank space in lower right corner of dialogue text box
 	call Next1B18 ; scroll up text
 	call Next1B18
 	pop hl

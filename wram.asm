@@ -3028,6 +3028,10 @@ wWhichScreen::
 ;used when adding a pokemon to a party
 wSavedPokemonTraits::
 	ds 1
+	
+;used when writing a string with word wrap
+wTextCharCount::
+	ds 1
 
 
 SECTION "Stack", WRAMX[$dfff], BANK[1]
