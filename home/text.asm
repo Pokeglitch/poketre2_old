@@ -59,6 +59,14 @@ Char4E::
 	pop hl
 	add hl,bc
 	push hl
+	ld a,[wTextCharCount]
+	and a
+	jr z,.finish		;if we aren't, then finish
+	
+	ld a,%11100000		;reset the value
+	ld [wTextCharCount],a		;make sure we continue to count again
+	
+.finish
 	jp Next19E8
 
 Char4F::
@@ -66,6 +74,13 @@ Char4F::
 	pop hl
 	hlCoord 1, 16
 	push hl
+	ld a,[wTextCharCount]
+	and a
+	jr z,.finish		;if we aren't, then finish
+	
+	ld a,%11100000		;reset the value
+	ld [wTextCharCount],a		;make sure we continue to count again
+.finish
 	jp Next19E8
 		
 
@@ -309,8 +324,6 @@ Char58Text:: ; 1ab3 (0:1ab3)
 
 	
 Char51:: ; 1ab4 (0:1ab4)
-	ld a,%11000000		;re-initialize the counter
-	ld [wTextCharCount],a
 	pop hl		;recover the destination pointer
 	push de
 	ld a,$EE
@@ -324,8 +337,14 @@ Char51:: ; 1ab4 (0:1ab4)
 	call DelayFrames
 	pop de
 	inc de
-	push de		;push de since we are counting again
 	hlCoord 1, 14
+	ld a,[wTextCharCount]
+	and a
+	jr z,.finish		;if we aren't, then finish
+	ld a,%11000000		;re-initialize the counter
+	ld [wTextCharCount],a
+	push de		;push de since we are counting again
+.finish
 	jp PlaceNextChar
 
 Char49:: ; 1ad5 (0:1ad5)
@@ -366,6 +385,12 @@ Char4C:: ; 1b0a (0:1b0a)
 	call Next1B18
 	hlCoord 1, 16
 	pop de
+	ld a,[wTextCharCount]
+	and a
+	jr z,.finish		;if we aren't, then finish
+	ld a,%11000000		;re-initialize the counter
+	ld [wTextCharCount],a
+.finish
 	jp Next19E8
 
 Next1B18:: ; 1b18 (0:1b18)

@@ -5,13 +5,15 @@ _OakAppearsText::
 _OakWalksUpText::
 	text "OAK: It's unsafe! Wild # live in tall grass!"
 
-	para "You need your own # for your protection. I know!"
+	para "You need your own # for your protection."
+	
+	para "I know!"
 
 	para "Here, come with me!"
 	done
 
 _PalletTownText2::
-	text "I'm raising #MON too!"
+	text "I'm raising # too!"
 
 	para "When they get strong, they can protect me!"
 	done
@@ -23,18 +25,21 @@ _PalletTownText3::
 	done
 
 _PalletTownText4::
-	text "OAK # RESEARCH LAB"
+	text "OAK #"
+	line "RESEARCH LAB"
 	done
 
 _PalletTownText5::
-	text "PALLET TOWN: Shades of your journey await!"
+	text "PALLET TOWN:"
+	line "Shades of your"
+	cont "journey await!"
 	done
 
 _PalletTownText6::
-	text $52,"'s house "
+	text $52,"'s house"
 	done
 
 _PalletTownText7::
-	text $53,"'s house "
+	text $53,"'s house"
 	done
 
