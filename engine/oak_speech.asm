@@ -157,7 +157,9 @@ OakSpeechText1: ; 6253 (1:6253)
 	TX_FAR _OakSpeechText1
 	db "@"
 OakSpeechText2: ; 6258 (1:6258)
-	TX_FAR _OakSpeechText2
+	TX_FAR _OakSpeechText2A
+	db $14 ; play NIDORINA cry from TextCommandSounds
+	TX_FAR _OakSpeechText2B
 	db "@"
 IntroducePlayerText: ; 6262 (1:6262)
 	TX_FAR _IntroducePlayerText

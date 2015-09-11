@@ -1,8 +1,9 @@
 FemaleTrainerList:: ; 3434 (0:3434)
 	db $c8+LASS
-	db $c8+JR__TRAINER_F
+	db $c8+BUSINESSLADY
+	db $c8+WITCH
 	db $c8+BEAUTY
-	db $c8+COOLTRAINER_F
+	db $c8+SORCERER
 	db $FF
 
 EvilTrainerList:: ; 3439 (0:3439)

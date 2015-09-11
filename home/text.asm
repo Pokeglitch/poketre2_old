@@ -166,7 +166,7 @@ Char59:: ; 1a2f (0:1a2f)
 ; (like Char5A but flipped)
 	ld a,[H_WHOSETURN]
 	xor 1
-;	jr MonsterNameCharsCommon
+	jr MonsterNameCharsCommon
 
 Char5A:: ; 1a35 (0:1a35)
 ; depending on whose turn it is, print
@@ -556,12 +556,17 @@ PlaceNextChar:: ; 1956 (0:1956)
 	jr z,.finish		;finish if not
 		
 	bit CountingLetters,a		;are we counting letters?
-	jr z,.finish			;finish if not
+	jr z,.resetCountAndFinish			;finish if not
 	
 	push hl			;otherwise, push the destination
 	ld hl,wTextCharCount
 	jr FinishCountingLetters	;and run the routine to finish counting letters
 
+.resetCountAndFinish
+	ld a,[wTextCharCount]
+	set CountingLetters,a	;turn on counting
+	ld [wTextCharCount],a
+	;fall through
 .finish
 	ld b,h
 	ld c,l

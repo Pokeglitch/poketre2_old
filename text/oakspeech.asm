@@ -2,6 +2,26 @@ _OakSpeechText1::
 	text "Hello there! Welcome to the world of #! My name is OAK! People call me the # PROF!"
 	prompt
 
+
+_OakSpeechText2A::
+	text "This world is"
+	line "inhabited by"
+	cont "creatures called"
+	cont "#!@@"
+
+_OakSpeechText2B::
+	text $51,"For some people,"
+	line "# are"
+	cont "pets. Others use"
+	cont "them for fights."
+	
+	para "Myself..."
+ 
+	para "I study #MON"
+	line "as a profession."
+
+ 	prompt
+	
 _OakSpeechText2::
 	text "This world is inhabited by creatures called #!"
 	
