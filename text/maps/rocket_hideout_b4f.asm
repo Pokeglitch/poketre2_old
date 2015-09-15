@@ -36,7 +36,7 @@ _RocketHideout4Text_4557f:: ; 8226c (20:626c)
 
 _RocketHideout4Text_45584:: ; 82283 (20:6283)
 	text "I see that you"
-	line "raise #MON"
+	line "raise #"
 	cont "with utmost care."
 
 	para "A child like you"

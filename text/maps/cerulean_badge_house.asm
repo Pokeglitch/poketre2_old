@@ -1,5 +1,5 @@
 _CeruleanHouse2Text_74e77:: ; 990c9 (26:50c9)
-	text "#MON BADGEs"
+	text "# BADGEs"
 	line "are owned only by"
 	cont "skilled trainers."
 
@@ -29,7 +29,7 @@ ENDC
 
 _CeruleanHouse2Text_74e96:: ; 99192 (26:5192)
 	text "The ATTACK of all"
-	line "#MON increases"
+	line "# increases"
 	cont "a little bit."
 
 	para "It also lets you"
@@ -42,7 +42,7 @@ ENDC
 	prompt
 
 _CeruleanHouse2Text_74e9b:: ; 991f2 (26:51f2)
-	text "#MON up to L30"
+	text "# up to L30"
 	line "will obey you."
 
 	para "Any higher, they"
@@ -55,7 +55,7 @@ _CeruleanHouse2Text_74e9b:: ; 991f2 (26:51f2)
 
 _CeruleanHouse2Text_74ea0:: ; 9925d (26:525d)
 	text "The SPEED of all"
-	line "#MON increases"
+	line "# increases"
 	cont "a little bit."
 
 	para "It also lets you"
@@ -64,7 +64,7 @@ _CeruleanHouse2Text_74ea0:: ; 9925d (26:525d)
 	prompt
 
 _CeruleanHouse2Text_74ea5:: ; 992b8 (26:52b8)
-	text "#MON up to L50"
+	text "# up to L50"
 	line "will obey you."
 
 	para "Any higher, they"
@@ -77,7 +77,7 @@ _CeruleanHouse2Text_74ea5:: ; 992b8 (26:52b8)
 
 _CeruleanHouse2Text_74eaa:: ; 9932a (26:532a)
 	text "The DEFENSE of all"
-	line "#MON increases"
+	line "# increases"
 	cont "a little bit."
 
 	para "It also lets you"
@@ -86,7 +86,7 @@ _CeruleanHouse2Text_74eaa:: ; 9932a (26:532a)
 	prompt
 
 _CeruleanHouse2Text_74eaf:: ; 99388 (26:5388)
-	text "#MON up to L70"
+	text "# up to L70"
 	line "will obey you."
 
 	para "Any higher, they"
@@ -94,13 +94,13 @@ _CeruleanHouse2Text_74eaf:: ; 99388 (26:5388)
 	prompt
 
 _CeruleanHouse2Text_74eb4:: ; 993c7 (26:53c7)
-	text "Your #MON's"
+	text "Your #'s"
 	line "SPECIAL abilities"
 	cont "increase a bit."
 	prompt
 
 _CeruleanHouse2Text_74eb9:: ; 993f5 (26:53f5)
-	text "All #MON will"
+	text "All # will"
 	line "obey you!"
 	prompt
 

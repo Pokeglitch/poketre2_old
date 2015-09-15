@@ -12,10 +12,9 @@ _DaisyOfferMapText::
 	prompt
 
 _GotMapText::
-	text $52," got a"
-	line "@"
-	TX_RAM wcf4b
-	text "!@@"
+	text $52," got a "
+	text_ram_text wcf4b
+	db "!@@"
 
 _DaisyBagFullText::
 	text "You have too much"
@@ -31,12 +30,12 @@ _DaisyUseMapText::
 _BluesHouseText2::
 IF DEF(_YELLOW)
 	text "Spending time"
-	line "with your #MON"
+	line "with your #"
 	cont "makes them more"
 	cont "friendly to you."
 	done
 ELSE
-	text "#MON are living"
+	text "# are living"
 	line "things! If they"
 	cont "get tired, give"
 	cont "them a rest!"

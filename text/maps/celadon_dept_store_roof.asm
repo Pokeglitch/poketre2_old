@@ -14,17 +14,14 @@ _CeladonMartRoofText_484f3:: ; 9cbcc (27:4bcc)
 	line "from me!@@"
 
 _CeladonMartRoofText_484f9:: ; 9cc06 (27:4c06)
-	text $52, " received"
-	line "@"
-	TX_RAM wcf4b
-	text "!@@"
+	text $52, " received "
+	ram_text wcf4b
+	db "!@@"
 
 _CeladonMartRoofText_484fe:: ; 9cc1a (27:4c1a)
-	db $0
-	para "@"
-	TX_RAM wcf4b
-	text " contains"
-	line "ICE BEAM!"
+	db $0,$51
+	ram_text wcf4b
+	db " contains ICE BEAM!"
 
 	para "It can freeze the"
 	line "target sometimes!@@"
@@ -40,16 +37,14 @@ _CeladonMartRoofText_48504:: ; 9cc5a (27:4c5a)
 	line "from me!@@"
 
 _CeladonMartRoofText_4850a:: ; 9cc91 (27:4c91)
-	text $52, " received"
-	line "@"
-	TX_RAM wcf4b
-	text "!@@"
+	text $52, " received "
+	ram_text wcf4b
+	db "!@@"
 
 _CeladonMartRoofText_4850f:: ; 9cca5 (27:4ca5)
-	db $0
-	para "@"
-	TX_RAM wcf4b
-	text " contains"
+	db $0,$51
+	ram_text wcf4b
+	db " contains"
 IF DEF(_YELLOW)
 	line "ROCK SLIDE!@@"
 ELSE
@@ -127,9 +122,8 @@ _VendingMachineText4:: ; 9ce96 (27:4e96)
 	done
 
 _VendingMachineText5:: ; 9ceaf (27:4eaf)
-	TX_RAM wcf4b
-	db $0
-	line "popped out!"
+	text_ram_text wcf4b
+	db " popped out!"
 	done
 
 _VendingMachineText6:: ; 9cec0 (27:4ec0)

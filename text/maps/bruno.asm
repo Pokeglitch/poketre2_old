@@ -4,12 +4,12 @@ _BrunoBeforeBattleText:: ; 86749 (21:6749)
 
 	para "Through rigorous"
 	line "training, people"
-	cont "and #MON can"
+	cont "and # can"
 	cont "become stronger!"
 
 	para "I've weight"
 	line "trained with"
-	cont "my #MON!"
+	cont "my #!"
 
 	para $52, "!"
 

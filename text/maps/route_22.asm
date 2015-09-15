@@ -3,7 +3,7 @@ _Route22RivalBeforeBattleText1:: ; 922cd (24:62cd)
 	line $52, "!"
 
 	para "You're going to"
-	line "#MON LEAGUE?"
+	line "# LEAGUE?"
 
 	para "Forget it! You"
 	line "probably don't"
@@ -13,12 +13,12 @@ _Route22RivalBeforeBattleText1:: ; 922cd (24:62cd)
 	line "let you through!"
 
 	para "By the way, did"
-	line "your #MON"
+	line "your #"
 	cont "get any stronger?"
 	done
 
 _Route22RivalAfterBattleText1:: ; 9236f (24:636f)
-	text "I heard #MON"
+	text "I heard #"
 	line "LEAGUE has many"
 	cont "tough trainers!"
 
@@ -40,7 +40,7 @@ _Route22RivalDefeatedText1:: ; 923f4 (24:63f4)
 _Route22Text_511bc:: ; 92410 (24:6410)
 	text $53, ": What?"
 	line "Why do I have 2"
-	cont "#MON?"
+	cont "#?"
 
 	para "You should catch"
 	cont "some more too!"
@@ -53,7 +53,7 @@ _Route22RivalBeforeBattleText2:: ; 92450 (24:6450)
 	cont "you here!"
 
 	para "So you're going to"
-	line "#MON LEAGUE?"
+	line "# LEAGUE?"
 
 	para "You collected all"
 	line "the BADGEs too?"
@@ -68,7 +68,7 @@ ELSE
 	line $52, " as a"
 	cont "warm up for"
 ENDC
-	cont "#MON LEAGUE!"
+	cont "# LEAGUE!"
 
 	para "Come on!"
 	done
@@ -76,7 +76,7 @@ ENDC
 _Route22RivalAfterBattleText2:: ; 92506 (24:6506)
 	text "That loosened me"
 	line "up! I'm ready for"
-	cont "#MON LEAGUE!"
+	cont "# LEAGUE!"
 
 	para $52, ", you need"
 	line "more practice!"
@@ -105,7 +105,7 @@ _Route22Text_511d0:: ; 925a0 (24:65a0)
 	prompt
 
 _Route22FrontGateText:: ; 92606 (24:6606)
-	text "#MON LEAGUE"
+	text "# LEAGUE"
 	line "Front Gate"
 	done
 

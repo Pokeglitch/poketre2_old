@@ -35,7 +35,7 @@ _SilphCo10Text_6231c:: ; 84f74 (21:4f74)
 	cont "BALL!"
 
 	para "It will catch any"
-	line "#MON without"
+	line "# without"
 	cont "fail!"
 
 	para "You should be"
@@ -97,7 +97,7 @@ _SilphCo10Text_62335:: ; 85131 (21:5131)
 
 	para $52, "! Never"
 	line "forget that all"
-	cont "#MON exist"
+	cont "# exist"
 	cont "for TEAM ROCKET!"
 
 	para "I must go, but I"
@@ -133,11 +133,11 @@ _SilphCo11EndBattleText2:: ; 85257 (21:5257)
 _SilphCo11AfterBattleText2:: ; 8526a (21:526a)
 	text "Watch your step,"
 	line "my BOSS likes his"
-	cont "#MON tough!"
+	cont "# tough!"
 	done
 
 _SilphCo10Text_6237b:: ; 8529a (21:529a)
 	text "The monitor has"
-	line "#MON on it!"
+	line "# on it!"
 	done
 

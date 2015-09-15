@@ -7,7 +7,7 @@ ENDC
 
 _BillsHouseText_1e865:: ; 8d267 (23:5267)
 	text "Hiya! I'm a"
-	line "#MON..."
+	line "#..."
 	cont "...No I'm not!"
 
 	para "Call me BILL!"
@@ -20,7 +20,7 @@ _BillsHouseText_1e865:: ; 8d267 (23:5267)
 	line "you, I screwed up"
 	cont "an experiment and"
 	cont "got combined with"
-	cont "a #MON!"
+	cont "a #!"
 
 	para "So, how about it?"
 	line "Help me out here!"
@@ -50,7 +50,7 @@ _BillThankYouText:: ; 8d3f5 (23:53f5)
 	cont "owe you one!"
 
 	para "So, did you come"
-	line "to see my #MON"
+	line "to see my #"
 	cont "collection?"
 	cont "You didn't?"
 	cont "That's a bummer."
@@ -61,10 +61,9 @@ _BillThankYouText:: ; 8d3f5 (23:53f5)
 	prompt
 
 _SSTicketReceivedText:: ; 8d499 (23:5499)
-	text $52, " received"
-	line "an @"
-	TX_RAM wcf4b
-	text "!@@"
+	text $52, " received an "
+	ram_text wcf4b
+	db "!@@"
 
 _SSTicketNoRoomText:: ; 8d4b0 (23:54b0)
 	text "You've got too"
@@ -90,6 +89,6 @@ _BillsHouseText_1e8da:: ; 8d57f (23:557f)
 	text "BILL: Look, bud,"
 	line "just check out"
 	cont "some of my rare"
-	cont "#MON on my PC!"
+	cont "# on my PC!"
 	done
 

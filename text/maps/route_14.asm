@@ -1,7 +1,7 @@
 _Route14BattleText1:: ; 9080d (24:480d)
 	text "You need to use"
 	line "TMs to teach good"
-	cont "moves to #MON!"
+	cont "moves to #!"
 	done
 
 _Route14EndBattleText1:: ; 9083f (24:483f)
@@ -15,13 +15,13 @@ IF DEF(_YELLOW)
 ELSE
 	text "You have some HMs"
 ENDC
-	line "right? #MON"
+	line "right? #"
 	cont "can't ever forget"
 	cont "those moves."
 	done
 
 _Route14BattleText2:: ; 9088e (24:488e)
-	text "My bird #MON"
+	text "My bird #"
 	line "should be ready"
 	cont "for battle."
 	done
@@ -49,7 +49,7 @@ _Route14EndBattleText3:: ; 90928 (24:4928)
 	prompt
 
 _Route14AfterBattleText3:: ; 90936 (24:4936)
-	text "Teach #MON"
+	text "Teach #"
 	line "moves of the same"
 	cont "element type for"
 	cont "more power."
@@ -57,7 +57,7 @@ _Route14AfterBattleText3:: ; 90936 (24:4936)
 
 _Route14BattleText4:: ; 90971 (24:4971)
 	text "Have you taught"
-	line "your bird #MON"
+	line "your bird #"
 	cont "how to FLY?"
 	done
 
@@ -67,14 +67,14 @@ _Route14EndBattleText4:: ; 9099d (24:499d)
 	prompt
 
 _Route14AfterBattleText4:: ; 909b3 (24:49b3)
-	text "Bird #MON are"
+	text "Bird # are"
 	line "my true love!"
 	done
 
 _Route14BattleText5:: ; 909d0 (24:49d0)
 	text "Have you heard of"
 	line "the legendary"
-	cont "#MON?"
+	cont "#?"
 	done
 
 _Route14EndBattleText5:: ; 909f7 (24:49f7)
@@ -84,7 +84,7 @@ _Route14EndBattleText5:: ; 909f7 (24:49f7)
 
 _Route14AfterBattleText5:: ; 90a0a (24:4a0a)
 	text "The 3 legendary"
-	line "#MON are all"
+	line "# are all"
 	cont "birds of prey."
 	done
 
@@ -131,7 +131,7 @@ _Route14EndBattleText8:: ; 90b21 (24:4b21)
 	prompt
 
 _Route14AfterBattleText8:: ; 90b2e (24:4b2e)
-	text "Raising #MON"
+	text "Raising #"
 	line "is a drag, man."
 	done
 
@@ -147,7 +147,7 @@ _Route14EndBattleText9:: ; 90b78 (24:4b78)
 
 _Route14AfterBattleText9:: ; 90b83 (24:4b83)
 	text "It's cool you"
-	line "made your #MON"
+	line "made your #"
 	cont "so strong!"
 
 	para "Might is right!"
@@ -155,7 +155,7 @@ _Route14AfterBattleText9:: ; 90b83 (24:4b83)
 	done
 
 _Route14BattleText10:: ; 90bcc (24:4bcc)
-	text "#MON fight?"
+	text "# fight?"
 	line "Cool! Rumble!"
 	done
 

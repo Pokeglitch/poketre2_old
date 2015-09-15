@@ -31,7 +31,7 @@ _RockTunnel2AfterBattleText3:: ; 86aa2 (21:6aa2)
 
 _RockTunnel2BattleText4:: ; 86acb (21:6acb)
 	text "You have a"
-	line "#DEX?"
+	line "POKéDEX?"
 	cont "I want one too!"
 	done
 
@@ -42,7 +42,7 @@ _RockTunnel2EndBattleText4:: ; 86aed (21:6aed)
 
 _RockTunnel2AfterBattleText4:: ; 86b04 (21:6b04)
 	text "When you finish"
-	line "your #DEX, can"
+	line "your POKéDEX, can"
 	cont "I have it?"
 	done
 
@@ -59,11 +59,11 @@ _RockTunnel2EndBattleText5:: ; 86b53 (21:6b53)
 _RockTunnel2AfterBattleText5:: ; 86b66 (21:6b66)
 	text "Costume players"
 	line "dress up as"
-	cont "#MON for fun."
+	cont "# for fun."
 	done
 
 _RockTunnel2BattleText6:: ; 86b91 (21:6b91)
-	text "My #MON"
+	text "My #"
 	line "techniques will"
 	cont "leave you crying!"
 	done
@@ -77,7 +77,7 @@ _RockTunnel2EndBattleText6:: ; 86bbc (21:6bbc)
 _RockTunnel2AfterBattleText6:: ; 86be0 (21:6be0)
 	text "In mountains,"
 	line "you'll often find"
-	cont "rock-type #MON."
+	cont "rock-type #."
 	done
 
 _RockTunnel2BattleText7:: ; 86c10 (21:6c10)
@@ -93,7 +93,7 @@ _RockTunnel2EndBattleText7:: ; 86c3f (21:6c3f)
 
 _RockTunnel2AfterBattleText7:: ; 86c4c (21:6c4c)
 	text "I like tiny"
-	line "#MON, big ones"
+	line "#, big ones"
 	cont "are too scary!"
 	done
 

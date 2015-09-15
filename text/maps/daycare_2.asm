@@ -12,23 +12,23 @@ ENDC
 
 _DayCareMText_56440:: ; 8c020 (23:4020)
 	text "You have no room"
-	line "for this #MON!"
+	line "for this #!"
 	done
 
 _DayCareMText_56445:: ; 8c041 (23:4041)
 	text "You only have one"
-	line "#MON with you."
+	line "# with you."
 	done
 
 _DayCareMText_5644a:: ; 8c063 (23:4063)
 	text "I can't accept a"
-	line "#MON that"
+	line "# that"
 	cont "knows an HM move."
 	done
 
 _DayCareMText_5644f:: ; 8c090 (23:4090)
 	text "Thank you! Here's"
-	line "your #MON!"
+	line "your #!"
 	prompt
 
 _DayCareMText_56454:: ; 8c0ad (23:40ad)

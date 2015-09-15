@@ -6,7 +6,7 @@ _CeladonDinerText1:: ; 9df3f (27:5f3f)
 	done
 
 _CeladonDinerText2:: ; 9df5d (27:5f5d)
-	text "My #MON are"
+	text "My # are"
 	line "weak, so I often"
 	cont "have to go to the"
 	cont "DRUG STORE."
@@ -42,10 +42,9 @@ _CeladonDinerText_491a7:: ; 9e003 (27:6003)
 	prompt
 
 _ReceivedCoinCaseText:: ; 9e07a (27:607a)
-	text $52, " received"
-	line "a @"
-	TX_RAM wcf4b
-	text "!@@"
+	text $52, " received a "
+	ram_text wcf4b
+	db "!@@"
 
 _CoinCaseNoRoomText:: ; 9e090 (27:6090)
 	text "Make room for"

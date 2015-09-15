@@ -1,6 +1,6 @@
 _TM18PreReceiveText:: ; 9c814 (27:4814)
 	text "Oh, hi! I finally"
-	line "finished #MON!"
+	line "finished #!"
 
 	para "Not done yet?"
 	line "This might be"
@@ -8,10 +8,9 @@ _TM18PreReceiveText:: ; 9c814 (27:4814)
 	prompt
 
 _ReceivedTM18Text:: ; 9c85a (27:485a)
-	text $52, " received"
-	line "@"
-	TX_RAM wcf4b
-	text "!@@"
+	text $52, " received "
+	ram_text wcf4b
+	db "!@@"
 
 _TM18ExplanationText:: ; 9c86e (27:486e)
 	text "TM18 is COUNTER!"
@@ -26,7 +25,7 @@ _TM18NoRoomText:: ; 9c8aa (27:48aa)
 	done
 
 _CeladonMart3Text2:: ; 9c8c7 (27:48c7)
-	text "Captured #MON"
+	text "Captured #"
 	line "are registered"
 	cont "with an ID No."
 	cont "and OT, the name"
@@ -54,12 +53,12 @@ _CeladonMart3Text4:: ; 9c975 (27:4975)
 
 	para "GRAVELER turned"
 	line "into a different"
-	cont "#MON!"
+	cont "#!"
 	done
 
 _CeladonMart3Text5:: ; 9c9d5 (27:49d5)
 	text "You can identify"
-	line "#MON you got"
+	line "# you got"
 	cont "in trades by"
 	cont "their ID Numbers!"
 	done
@@ -94,6 +93,6 @@ _CeladonMart3Text14:: ; 9caa4 (27:4aa4)
 
 _CeladonMart3Text15:: ; 9cab6 (27:4ab6)
 	text "Red and Blue!"
-	line "Both are #MON!"
+	line "Both are #!"
 	done
 

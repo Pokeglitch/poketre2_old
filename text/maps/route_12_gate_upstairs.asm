@@ -1,7 +1,7 @@
 _TM39PreReceiveText:: ; 8c86b (23:486b)
-	text "My #MON's"
+	text "My #'s"
 	line "ashes are stored"
-	cont "in #MON TOWER."
+	cont "in # TOWER."
 
 	para "You can have this"
 	line "TM. I don't need"
@@ -42,6 +42,6 @@ _Route12GateUpstairsText_495c4:: ; 8c986 (23:4986)
 	text "Looked into the"
 	line "binoculars."
 
-	para "It's #MON TOWER!"
+	para "It's # TOWER!"
 	done
 

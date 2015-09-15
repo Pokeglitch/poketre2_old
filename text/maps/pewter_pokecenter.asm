@@ -10,10 +10,10 @@ _PewterPokecenterText1:: ; 98704 (26:4704)
 
 IF DEF(_YELLOW)
 _PewterPokecenterText2::
-	text "#MON CENTERS"
+	text "# CENTERS"
 	line "are wonderful!"
 
-	para "They heal #MON"
+	para "They heal #"
 	line "completely."
 
 	para "Even conditions"

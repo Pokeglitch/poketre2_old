@@ -3,6 +3,6 @@ _SSAnne3Text1:: ; 80f4b (20:4f4b)
 	line "sword master!"
 
 	para "He even teaches"
-	line "CUT to #MON!"
+	line "CUT to #!"
 	done
 

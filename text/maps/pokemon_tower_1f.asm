@@ -1,7 +1,7 @@
 _PokemonTower1Text1:: ; 9947f (26:547f)
-	text "#MON TOWER was"
+	text "# TOWER was"
 	line "erected in the"
-	cont "memory of #MON"
+	cont "memory of #"
 	cont "that had died."
 	done
 

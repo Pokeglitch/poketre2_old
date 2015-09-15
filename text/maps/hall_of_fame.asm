@@ -8,15 +8,15 @@ ENDC
 	cont $52, "!"
 
 	para "This floor is the"
-	line "#MON HALL OF"
+	line "# HALL OF"
 	cont "FAME!"
 
-	para "#MON LEAGUE"
+	para "# LEAGUE"
 	line "champions are"
 	cont "honored for their"
 	cont "exploits here!"
 
-	para "Their #MON are"
+	para "Their # are"
 	line "also recorded in"
 	cont "the HALL OF FAME!"
 
@@ -27,7 +27,7 @@ ENDC
 
 	para "Congratulations,"
 	line $52, ", you and"
-	cont "your #MON are"
+	cont "your # are"
 	cont "HALL OF FAMERs!"
 	done
 

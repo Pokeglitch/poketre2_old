@@ -62,7 +62,7 @@ _VermilionCityText4:: ; a5805 (29:5805)
 	line "building on this"
 	cont "plot of land."
 
-	para "My #MON is"
+	para "My # is"
 	line "tamping the land."
 	done
 
@@ -97,7 +97,7 @@ _VermilionCityText8:: ; a5909 (29:5909)
 
 	para "ROUTE 12 may be"
 	line "blocked off by a"
-	cont "sleeping #MON."
+	cont "sleeping #."
 
 	para "Detour through"
 	line "ROCK TUNNEL to"
@@ -107,14 +107,14 @@ _VermilionCityText8:: ; a5909 (29:5909)
 	done
 
 _VermilionCityText11:: ; a5980 (29:5980)
-	text "#MON FAN CLUB"
-	line "All #MON fans"
+	text "# FAN CLUB"
+	line "All # fans"
 	cont "welcome!"
 	done
 
 _VermilionCityText12:: ; a59a6 (29:59a6)
 	text "VERMILION CITY"
-	line "#MON GYM"
+	line "# GYM"
 	cont "LEADER: LT.SURGE"
 
 	para "The Lightning "

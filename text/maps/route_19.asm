@@ -39,7 +39,7 @@ _Route19EndBattleText3:: ; 919b1 (24:59b1)
 	prompt
 
 _Route19AfterBattleText3:: ; 919be (24:59be)
-	text "I can beat #MON"
+	text "I can beat #"
 	line "at swimming!"
 	done
 
@@ -59,7 +59,7 @@ _Route19AfterBattleText4:: ; 919fe (24:59fe)
 
 _Route19BattleText5:: ; 91a1a (24:5a1a)
 	text "I tried diving"
-	line "for #MON, but"
+	line "for #, but"
 	cont "it was a no go!"
 	done
 
@@ -69,7 +69,7 @@ _Route19EndBattleText5:: ; 91a48 (24:5a48)
 
 _Route19AfterBattleText5:: ; 91a4f (24:5a4f)
 	text "You have to fish"
-	line "for sea #MON!"
+	line "for sea #!"
 	done
 
 _Route19BattleText6:: ; 91a6f (24:5a6f)

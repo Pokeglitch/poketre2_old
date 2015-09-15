@@ -27,7 +27,7 @@ _RockTunnel1EndBattleText2:: ; 8c3bb (23:43bb)
 
 _RockTunnel1AfterBattleText2:: ; 8c3e8 (23:43e8)
 	text "That sleeping"
-	line "#MON on ROUTE"
+	line "# on ROUTE"
 	cont "12 forced me to"
 	cont "take this detour."
 	done
@@ -48,7 +48,7 @@ _RockTunnel1AfterBattleText3:: ; 8c462 (23:4462)
 	done
 
 _RockTunnel1BattleText4:: ; 8c482 (23:4482)
-	text "#MON fight!"
+	text "# fight!"
 	line "Ready, go!"
 	done
 
@@ -80,12 +80,12 @@ _RockTunnel1AfterBattleText5:: ; 8c506 (23:4506)
 
 _RockTunnel1BattleText6:: ; 8c526 (23:4526)
 	text "I came this far"
-	line "for #MON!"
+	line "for #!"
 	done
 
 _RockTunnel1EndBattleText6:: ; 8c541 (23:4541)
 	text "I'm"
-	line "out of #MON!"
+	line "out of #!"
 	prompt
 
 _RockTunnel1AfterBattleText6:: ; 8c552 (23:4552)
@@ -94,7 +94,7 @@ _RockTunnel1AfterBattleText6:: ; 8c552 (23:4552)
 	done
 
 _RockTunnel1BattleText7:: ; 8c571 (23:4571)
-	text "You have #MON!"
+	text "You have #!"
 	line "Let's start!"
 	done
 

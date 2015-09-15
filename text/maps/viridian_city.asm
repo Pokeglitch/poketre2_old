@@ -1,16 +1,16 @@
 _ViridianCityText1:: ; a43cc (29:43cc)
-	text "Those # BALLs"
+	text "Those POKé BALLs"
 	line "at your waist!"
-	cont "You have #MON!"
+	cont "You have #!"
 
 	para "It's great that"
 	line "you can carry and"
-	cont "use #MON any"
+	cont "use # any"
 	cont "time, anywhere!"
 	done
 
 _ViridianCityText_19122:: ; a4437 (29:4437)
-	text "This #MON GYM"
+	text "This # GYM"
 	line "is always closed."
 
 	para "I wonder who the"
@@ -26,7 +26,7 @@ _ViridianCityText_1914d:: ; a4494 (29:4494)
 	text "You want to know"
 	line "about the 2 kinds"
 	cont "of caterpillar"
-	cont "#MON?"
+	cont "#?"
 	done
 
 _ViridianCityText_19152:: ; a44cd (29:44cd)
@@ -111,16 +111,16 @@ _ViridianCityText_1920a:: ; a46f9 (29:46f9)
 
 _ViridianCityText_1920f:: ; a4754 (29:4754)
 	text "I see you're using"
-	line "a #DEX."
+	line "a POKéDEX."
 
 	para "When you catch a"
-	line "#MON, #DEX"
+	line "#, POKéDEX"
 	cont "is automatically"
 	cont "updated."
 
 	para "What? Don't you"
 	line "know how to catch"
-	cont "#MON?"
+	cont "#?"
 
 	para "I'll show you"
 	line "how to then."
@@ -134,7 +134,7 @@ _ViridianCityText_19214:: ; a47e6 (29:47e6)
 _ViridianCityText_19219:: ; a4807 (29:4807)
 	text "First, you need"
 	line "to weaken the"
-	cont "target #MON."
+	cont "target #."
 	done
 
 _ViridianCityText8:: ; a4833 (29:4833)
@@ -146,7 +146,7 @@ _ViridianCityText8:: ; a4833 (29:4833)
 _ViridianCityText9:: ; a4860 (29:4860)
 	text "TRAINER TIPS"
 
-	para "Catch #MON"
+	para "Catch #"
 	line "and expand your"
 	cont "collection!"
 
@@ -159,19 +159,19 @@ _ViridianCityText10:: ; a48c3 (29:48c3)
 	text "TRAINER TIPS"
 
 	para "The battle moves"
-	line "of #MON are"
+	line "of # are"
 	cont "limited by their"
 	cont "POWER POINTs, PP."
 
 	para "To replenish PP,"
 	line "rest your tired"
-	cont "#MON at a"
-	cont "#MON CENTER!"
+	cont "# at a"
+	cont "# CENTER!"
 	done
 
 _ViridianCityText13:: ; a4949 (29:4949)
 	text "VIRIDIAN CITY"
-	line "#MON GYM"
+	line "# GYM"
 	done
 
 _ViridianCityText14:: ; a4961 (29:4961)

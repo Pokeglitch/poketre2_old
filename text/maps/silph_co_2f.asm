@@ -20,7 +20,7 @@ _TM36ExplanationText:: ; 824c9 (20:64c9)
 	line "SELFDESTRUCT!"
 
 	para "It's powerful, but"
-	line "the #MON that"
+	line "the # that"
 	cont "uses it faints!"
 	cont "Be careful."
 	done

@@ -38,16 +38,16 @@ _SaffronGymText_5d16e:: ; a1cdc (28:5cdc)
 
 _SaffronGymText_5d173:: ; a1d16 (28:5d16)
 	text "The MARSHBADGE"
-	line "makes #MON up"
+	line "makes # up"
 	cont "to L70 obey you!"
 
-	para "Stronger #MON"
+	para "Stronger #"
 	line "will become wild,"
 	cont "ignoring your"
 	cont "orders in battle!"
 
 	para "Just don't raise"
-	line "your #MON too"
+	line "your # too"
 	cont "much!"
 
 	para "Wait, please take"
@@ -75,13 +75,13 @@ _SaffronGymText_5d1e6:: ; a1e48 (28:5e48)
 	text "Yo! Champ in"
 	line "making!"
 
-	para "SABRINA's #MON"
+	para "SABRINA's #"
 	line "use psychic power"
 	cont "instead of force!"
 
-	para "Fighting #MON"
+	para "Fighting #"
 	line "are weak against"
-	cont "psychic #MON!"
+	cont "psychic #!"
 
 	para "They get creamed"
 	line "before they can"
@@ -130,7 +130,7 @@ _SaffronGymEndBattleText2:: ; a2002 (28:6002)
 	prompt
 
 _SaffronGymAfterBattleText2:: ; a2019 (28:6019)
-	text "Psychic #MON"
+	text "Psychic #"
 IF DEF(_YELLOW)
 	line "fear only bugs!"
 ELSE
@@ -140,11 +140,11 @@ ENDC
 	done
 
 _SaffronGymBattleText3:: ; a2042 (28:6042)
-	text "#MON take on"
+	text "# take on"
 	line "the appearance of"
 	cont "their trainers."
 
-	para "Your #MON must"
+	para "Your # must"
 	line "be tough, then!"
 	done
 
@@ -156,7 +156,7 @@ _SaffronGymEndBattleText3:: ; a2091 (28:6091)
 _SaffronGymAfterBattleText3:: ; a209d (28:609d)
 	text "I must teach"
 	line "better techniques"
-	cont "to my #MON!"
+	cont "to my #!"
 	done
 
 _SaffronGymBattleText4:: ; a20c9 (28:60c9)
@@ -178,7 +178,7 @@ _SaffronGymAfterBattleText4:: ; a2107 (28:6107)
 
 _SaffronGymBattleText5:: ; a213c (28:613c)
 	text "You and I, our"
-	line "#MON shall"
+	line "# shall"
 	cont "fight!"
 	done
 
@@ -209,7 +209,7 @@ _SaffronGymEndBattleText6:: ; a21e4 (28:61e4)
 
 _SaffronGymAfterBattleText6:: ; a21fe (28:61fe)
 	text "There used to be"
-	line "2 #MON GYMs in"
+	line "2 # GYMs in"
 	cont "SAFFRON."
 
 	para "The FIGHTING DOJO"
@@ -220,7 +220,7 @@ _SaffronGymAfterBattleText6:: ; a21fe (28:61fe)
 	done
 
 _SaffronGymBattleText7:: ; a2277 (28:6277)
-	text "SAFFRON #MON"
+	text "SAFFRON #"
 	line "GYM is famous for"
 	cont "its psychics!"
 

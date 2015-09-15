@@ -10,7 +10,7 @@ _PewterCityText1:: ; a497f (29:497f)
 
 _PewterCityText2:: ; a49e0 (29:49e0)
 	text "There aren't many"
-	line "serious #MON"
+	line "serious #"
 	cont "trainers here!"
 
 	para "They're all like"
@@ -58,7 +58,7 @@ _PewterCityText_1942c:: ; a4b38 (29:4b38)
 
 _PewterCityText_19431:: ; a4b55 (29:4b55)
 	text "I'm spraying REPEL"
-	line "to keep #MON"
+	line "to keep #"
 	cont "out of my garden!"
 	done
 
@@ -79,7 +79,7 @@ _PewterCityText_19462:: ; a4bce (29:4bce)
 _PewterCityText6:: ; a4bfe (29:4bfe)
 	text "TRAINER TIPS"
 
-	para "Any #MON that"
+	para "Any # that"
 	line "takes part in"
 	cont "battle, however"
 	cont "short, earns EXP!"
@@ -89,7 +89,7 @@ _PewterCityText7:: ; a4c4a (29:4c4a)
 	text "NOTICE!"
 
 	para "Thieves have been"
-	line "stealing #MON"
+	line "stealing #"
 	cont "fossils at MT."
 	cont "MOON! Please call"
 	cont "PEWTER POLICE"
@@ -103,11 +103,11 @@ _PewterCityText10:: ; a4cb1 (29:4cb1)
 
 _PewterCityText11:: ; a4ccb (29:4ccb)
 	text "PEWTER CITY"
-	line "#MON GYM"
+	line "# GYM"
 	cont "LEADER: BROCK"
 
 	para "The Rock Solid"
-	line "#MON Trainer!"
+	line "# Trainer!"
 	done
 
 _PewterCityText12:: ; a4d0c (29:4d0c)

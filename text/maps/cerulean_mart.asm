@@ -1,10 +1,10 @@
 _CeruleanMartText2:: ; 99012 (26:5012)
 	text "Use REPEL to keep"
 	line "bugs and weak"
-	cont "#MON away."
+	cont "# away."
 
 	para "Put your strongest"
-	line "#MON at the"
+	line "# at the"
 	cont "top of the list"
 	cont "for best results!"
 	done
@@ -14,7 +14,7 @@ _CeruleanMartText3:: ; 9907f (26:507f)
 	line "RARE CANDY?"
 
 	para "It's supposed to"
-	line "make #MON go"
+	line "make # go"
 	cont "up one level!"
 	done
 

@@ -9,11 +9,11 @@ _FuchsiaMeetingRoomText1:: ; a05a1 (28:45a1)
 _FuchsiaMeetingRoomText2:: ; a05e6 (28:45e6)
 	text "SLOWPOKE is very"
 	line "knowledgeable"
-	cont "about #MON!"
+	cont "about #!"
 
 	para "He even has some"
 	line "fossils of rare,"
-	cont "extinct #MON!"
+	cont "extinct #!"
 	done
 
 _FuchsiaMeetingRoomText3:: ; a0642 (28:4642)

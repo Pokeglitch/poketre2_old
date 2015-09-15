@@ -4,16 +4,16 @@ _PewterGymText_5c4a3:: ; 98000 (26:4000)
 	cont "in the world!"
 
 IF DEF(_YELLOW)
-	para "Some raise #MON"
+	para "Some raise #"
 	line "for fights. Some"
 	cont "see them as pets."
 
 	para "I'm in training to"
-	line "become a #MON"
+	line "become a #"
 	cont "breeder."
 
 	para "If you take your"
-	line "#MON training"
+	line "# training"
 	cont "seriously, go"
 	cont "visit the GYM in"
 	cont "CERULEAN and test"
@@ -22,7 +22,7 @@ IF DEF(_YELLOW)
 ELSE
 	para "You appear to be"
 	line "very gifted as a"
-	cont "#MON trainer!"
+	cont "# trainer!"
 
 	para "Go to the GYM in"
 	line "CERULEAN and test"
@@ -44,19 +44,19 @@ _TM34ExplanationText:: ; 980c0 (26:40c0)
 	para "A TM contains a"
 	line "technique that"
 	cont "can be taught to"
-	cont "#MON!"
+	cont "#!"
 
 	para "A TM is good only"
 	line "once! So when you"
 	cont "use one to teach"
 	cont "a new technique,"
-	cont "pick the #MON"
+	cont "pick the #"
 	cont "carefully!"
 
 	para "TM34 contains"
 	line "BIDE!"
 
-	para "Your #MON will"
+	para "Your # will"
 	line "absorb damage in"
 	cont "battle then pay"
 	cont "it back double!"
@@ -81,11 +81,11 @@ _PewterGymText_5c4bc:: ; 981c9 (26:41c9)
 _PewterGymText_5c4c1:: ; 98232 (26:4232)
 	db $0
 	para "That's an official"
-	line "#MON LEAGUE"
+	line "# LEAGUE"
 	cont "BADGE!"
 
 	para "Its bearer's"
-	line "#MON become"
+	line "# become"
 	cont "more powerful!"
 
 	para "The technique"
@@ -124,7 +124,7 @@ _PewterGymText_5c515:: ; 98351 (26:4351)
 	text "Hiya! I can tell"
 	line "you have what it"
 	cont "takes to become a"
-	cont "#MON champ!"
+	cont "# champ!"
 
 	para "I'm no trainer,"
 	line "but I can tell"
@@ -140,13 +140,13 @@ _PewterGymText_5c51a:: ; 983dc (26:43dc)
 	prompt
 
 _PewterGymText_5c51f:: ; 983fc (26:43fc)
-	text "The 1st #MON"
+	text "The 1st #"
 	line "out in a match is"
 	cont "at the top of the"
-	cont "#MON LIST!"
+	cont "# LIST!"
 
 	para "By changing the"
-	line "order of #MON,"
+	line "order of #,"
 	cont "matches could be"
 	cont "made easier!"
 	done
@@ -159,7 +159,7 @@ _PewterGymText_5c524:: ; 98476 (26:4476)
 
 _PewterGymText_5c529:: ; 9849f (26:449f)
 	text "Just as I thought!"
-	line "You're #MON"
+	line "You're #"
 	cont "champ material!"
 	done
 
@@ -175,6 +175,6 @@ _PewterGymGuyText::
 	para "Electric attacks"
 	line "are harmless to"
 	cont "BROCK's ground-"
-	cont "type #MON."
+	cont "type #."
 	done
 ENDC

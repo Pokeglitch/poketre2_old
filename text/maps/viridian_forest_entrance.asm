@@ -9,7 +9,7 @@ _ViridianForestEntranceText2:: ; 8a8ab (22:68ab)
 IF DEF(_YELLOW)
 	text "You have to roam"
 	line "far to get new"
-	cont "kinds of #MON."
+	cont "kinds of #."
 
 	para "Look for other"
 	line "types outside of"

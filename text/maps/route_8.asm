@@ -1,6 +1,6 @@
 _Route8BattleText1:: ; 8dea9 (23:5ea9)
 	text "You look good at"
-	line "#MON, but"
+	line "#, but"
 	cont "how's your chem?"
 	done
 
@@ -55,7 +55,7 @@ _Route8EndBattleText4:: ; 8dfe4 (23:5fe4)
 	prompt
 
 _Route8AfterBattleText4:: ; 8dff0 (23:5ff0)
-	text "When #MON grow"
+	text "When # grow"
 	line "up they get ugly!"
 	cont "They shouldn't"
 	cont "evolve!"
@@ -63,7 +63,7 @@ _Route8AfterBattleText4:: ; 8dff0 (23:5ff0)
 
 _Route8BattleText5:: ; 8e028 (23:6028)
 	text "School is fun, but"
-	line "so are #MON."
+	line "so are #."
 	done
 
 _Route8EndBattleText5:: ; 8e049 (23:6049)
@@ -126,7 +126,7 @@ _Route8EndBattleText8:: ; 8e181 (23:6181)
 
 _Route8AfterBattleText8:: ; 8e198 (23:6198)
 	text "Gambling and"
-	line "#MON are like"
+	line "# are like"
 	cont "eating peanuts!"
 	cont "Just can't stop!"
 	done
@@ -134,7 +134,7 @@ _Route8AfterBattleText8:: ; 8e198 (23:6198)
 _Route8BattleText9:: ; 8e1d4 (23:61d4)
 	text "What's a cute,"
 	line "round and fluffy"
-	cont "#MON?"
+	cont "#?"
 	done
 
 _Route8EndBattleText9:: ; 8e1fa (23:61fa)

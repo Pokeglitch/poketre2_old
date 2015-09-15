@@ -41,7 +41,7 @@ _VictoryRoad3EndBattleText4:: ; 81e6f (20:5e6f)
 _VictoryRoad3AfterBattleText4:: ; 81e83 (20:5e83)
 	text "All trainers here"
 	line "are headed to the"
-	cont "#MON LEAGUE!"
+	cont "# LEAGUE!"
 	cont "Be careful!"
 	done
 

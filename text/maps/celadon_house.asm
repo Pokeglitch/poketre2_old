@@ -8,7 +8,7 @@ _CeladonHouseText2:: ; 9e10a (27:610a)
 	text "CHIEF!"
 
 	para "We just shipped"
-	line "2000 #MON as"
+	line "2000 # as"
 	cont "slot prizes!"
 	done
 

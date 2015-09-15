@@ -82,11 +82,11 @@ SeaCottageName: ; 71612 (1c:5612)
 SSAnneName: ; 7161e (1c:561e)
 	db "S.S.ANNE@"
 PokemonLeagueName: ; 71627 (1c:5627)
-	db "#MON LEAGUE@"
+	db "# LEAGUE@"
 UndergroundPathName: ; 71633 (1c:5633)
 	db "UNDERGROUND PATH@"
 PokemonTowerName: ; 71644 (1c:5644)
-	db "#MON TOWER@"
+	db "# TOWER@"
 SeafoamIslandsName: ; 7164f (1c:564f)
 	db "SEAFOAM ISLANDS@"
 VictoryRoadName: ; 7165f (1c:565f)

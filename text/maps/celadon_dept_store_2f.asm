@@ -1,6 +1,6 @@
 _CeladonMart2Text3:: ; 9c76b (27:476b)
 	text "SUPER REPEL keeps"
-	line "weak #MON at"
+	line "weak # at"
 	cont "bay..."
 
 	para "Hmm, it's a more"

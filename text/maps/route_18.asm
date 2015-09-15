@@ -1,7 +1,7 @@
 _Route18BattleText1:: ; 917a1 (24:57a1)
 	text "I always check"
 	line "every grassy area"
-	cont "for new #MON."
+	cont "for new #."
 	done
 
 _Route18EndBattleText1:: ; 917d1 (24:57d1)
@@ -26,7 +26,7 @@ _Route18EndBattleText2:: ; 91816 (24:5816)
 
 _Route18AfterBattleText2:: ; 91829 (24:5829)
 	text "I also collect sea"
-	line "#MON on"
+	line "# on"
 	cont "weekends!"
 	done
 
@@ -41,7 +41,7 @@ _Route18EndBattleText3:: ; 91872 (24:5872)
 
 _Route18AfterBattleText3:: ; 91879 (24:5879)
 	text "This is my fave"
-	line "#MON hunting"
+	line "# hunting"
 	cont "area!"
 	done
 

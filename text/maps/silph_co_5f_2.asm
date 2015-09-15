@@ -27,29 +27,29 @@ _SilphCo5AfterBattleText5:: ; 84073 (21:4073)
 	done
 
 _SilphCo5Text9:: ; 840a4 (21:40a4)
-	text "It's a #MON"
+	text "It's a #"
 	line "REPORT!"
 
-	para "#MON LAB"
+	para "# LAB"
 	line "created PORYGON,"
 	cont "the first virtual"
-	cont "reality #MON."
+	cont "reality #."
 	done
 
 _SilphCo5Text10:: ; 840f2 (21:40f2)
-	text "It's a #MON"
+	text "It's a #"
 	line "REPORT!"
 
-	para "Over 160 #MON"
+	para "Over 160 #"
 	line "techniques have"
 	cont "been confirmed."
 	done
 
 _SilphCo5Text11:: ; 84134 (21:4134)
-	text "It's a #MON"
+	text "It's a #"
 	line "REPORT!"
 
-	para "4 #MON evolve"
+	para "4 # evolve"
 	line "only when traded"
 	cont "by link-cable."
 	done

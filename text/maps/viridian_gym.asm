@@ -35,7 +35,7 @@ _ViridianGymText_74ad9:: ; 95f2b (25:5f2b)
 
 	para "I will dedicate my"
 	line "life to the study"
-	cont "of #MON!"
+	cont "of #!"
 
 	para "Let us meet again"
 IF DEF(_YELLOW)
@@ -47,19 +47,19 @@ ENDC
 
 _ViridianGymText12:: ; 95fcc (25:5fcc)
 	text "The EARTHBADGE"
-	line "makes #MON of"
+	line "makes # of"
 	cont "any level obey!"
 
 	para "It is evidence of"
 	line "your mastery as a"
-	cont "#MON trainer!"
+	cont "# trainer!"
 
 	para "With it, you can"
-	line "enter the #MON"
+	line "enter the #"
 	cont "LEAGUE!"
 
 	para "It is my gift for"
-	line "your #MON"
+	line "your #"
 	cont "LEAGUE challenge!"
 	done
 
@@ -71,7 +71,7 @@ _TM27ExplanationText:: ; 96095 (25:6095)
 	db $0
 	para "TM27 is FISSURE!"
 	line "It will take out"
-	cont "#MON with just"
+	cont "# with just"
 	cont "one hit!"
 
 	para "I made it when I"
@@ -117,7 +117,7 @@ _ViridianGymAfterBattleText2:: ; 961c8 (25:61c8)
 	done
 
 _ViridianGymBattleText3:: ; 961de (25:61de)
-	text "#MON and I, we"
+	text "# and I, we"
 	line "make wonderful"
 	cont "music together!"
 	done
@@ -144,7 +144,7 @@ _ViridianGymEndBattleText4:: ; 96285 (25:6285)
 	prompt
 
 _ViridianGymAfterBattleText4:: ; 9628d (25:628d)
-	text "If my #MON"
+	text "If my #"
 	line "were as good at"
 	cont "Karate as I..."
 	done
@@ -175,13 +175,13 @@ _ViridianGymEndBattleText6:: ; 96336 (25:6336)
 	prompt
 
 _ViridianGymAfterBattleText6:: ; 9633d (25:633d)
-	text "#MON LEAGUE?"
+	text "# LEAGUE?"
 	line "You? Don't get"
 	cont "cocky!"
 	done
 
 _ViridianGymBattleText7:: ; 96360 (25:6360)
-	text "Your #MON will"
+	text "Your # will"
 	line "cower at the"
 	cont "crack of my whip!"
 	done
@@ -214,7 +214,7 @@ IF DEF(_YELLOW)
 ELSE
 	text "You can go onto"
 ENDC
-	line "#MON LEAGUE"
+	line "# LEAGUE"
 	cont "only by defeating"
 	cont "our GYM LEADER!"
 	done
@@ -234,7 +234,7 @@ _ViridianGymText_74bd4:: ; 96451 (25:6451)
 	para "I heard that the"
 	line "trainers here"
 	cont "like ground-type"
-	cont "#MON!"
+	cont "#!"
 	done
 
 _ViridianGymText_74bd9:: ; 964fb (25:64fb)

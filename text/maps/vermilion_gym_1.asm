@@ -13,7 +13,7 @@ IF DEF(_YELLOW)
 	cont "on with your puny"
 	cont "power!"
 
-	para "A #MON battle"
+	para "A # battle"
 	line "is war! I'll show"
 	cont "you, civilian!"
 
@@ -29,7 +29,7 @@ ELSE
 	cont "That's for sure!"
 
 	para "I tell you kid,"
-	line "electric #MON"
+	line "electric #"
 	cont "saved me during"
 	cont "the war!"
 

@@ -1,5 +1,5 @@
 _CeladonHotelText1:: ; 9e18a (27:618a)
-	text "#MON? No, this"
+	text "#? No, this"
 	line "is a hotel for"
 	cont "people."
 

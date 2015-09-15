@@ -3,12 +3,12 @@ _ViridianForestText1:: ; 8031d (20:431d)
 	line "some friends!"
 
 	para "They're out for"
-	line "#MON fights!"
+	line "# fights!"
 	done
 
 _ViridianForestBattleText1:: ; 80359 (20:4359)
 	text "Hey! You have"
-	line "#MON! Come on!"
+	line "#! Come on!"
 IF DEF(_YELLOW)
 	cont "Let's battle 'em!"
 ELSE
@@ -30,13 +30,13 @@ _ViridianFrstAfterBattleText1:: ; 803a2 (20:43a2)
 _ViridianForestBattleText2:: ; 803c3 (20:43c3)
 	text "Yo! You can't jam"
 	line "out if you're a"
-	cont "#MON trainer!"
+	cont "# trainer!"
 	done
 
 _ViridianForestEndBattleText2:: ; 803f2 (20:43f2)
 	text "Huh?"
 	line "I ran out of"
-	cont "#MON!"
+	cont "#!"
 	prompt
 
 _ViridianFrstAfterBattleText2:: ; 8040b (20:440b)
@@ -103,9 +103,9 @@ _ViridianForestAfterBattleTextSamurai::
 ENDC
 
 _ViridianForestText8:: ; 804c7 (20:44c7)
-	text "I ran out of #"
+	text "I ran out of POKé"
 	line "BALLs to catch"
-	cont "#MON with!"
+	cont "# with!"
 
 	para "You should carry"
 	line "extras!"
@@ -123,7 +123,7 @@ _ViridianForestText9:: ; 8050a (20:450a)
 _ViridianForestText10:: ; 80553 (20:4553)
 	text "For poison, use"
 	line "ANTIDOTE! Get it"
-	cont "at #MON MARTs!"
+	cont "at # MARTs!"
 	done
 
 _ViridianForestText11:: ; 80584 (20:4584)
@@ -131,7 +131,7 @@ _ViridianForestText11:: ; 80584 (20:4584)
 
 	para "Contact PROF.OAK"
 	line "via PC to get"
-	cont "your #DEX"
+	cont "your POKéDEX"
 	cont "evaluated!"
 	done
 
@@ -139,16 +139,16 @@ _ViridianForestText12:: ; 805c6 (20:45c6)
 	text "TRAINER TIPS"
 
 	para "No stealing of"
-	line "#MON from"
+	line "# from"
 	cont "other trainers!"
 	cont "Catch only wild"
-	cont "#MON!"
+	cont "#!"
 	done
 
 _ViridianForestText13:: ; 80613 (20:4613)
 	text "TRAINER TIPS"
 
-	para "Weaken #MON"
+	para "Weaken #"
 	line "before attempting"
 	cont "capture!"
 

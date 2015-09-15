@@ -1,7 +1,7 @@
 _FuchsiaPokecenterText1:: ; 9e387 (27:6387)
 	text "You can't win"
 	line "with just one"
-	cont "strong #MON."
+	cont "strong #."
 
 	para "It's tough, but"
 	line "you have to raise"
@@ -13,7 +13,7 @@ _FuchsiaPokecenterText3:: ; 9e3de (27:63de)
 	line "trail west of"
 	cont "VIRIDIAN CITY."
 
-	para "It goes to #MON"
+	para "It goes to #"
 	line "LEAGUE HQ."
 	cont "The HQ governs"
 	cont "all trainers."

@@ -20,20 +20,20 @@ _LavenderTownText_44146:: ; a54c0 (29:54c0)
 _LavenderTownText2:: ; a5506 (29:5506)
 	text "This town is known"
 	line "as the grave site"
-	cont "of #MON."
+	cont "of #."
 
 	para "Memorial services"
 	line "are held in"
-	cont "#MON TOWER."
+	cont "# TOWER."
 	done
 
 _LavenderTownText3:: ; a555f (29:555f)
 	text "GHOSTs appeared"
-	line "in #MON TOWER."
+	line "in # TOWER."
 
 	para "I think they're"
 	line "the spirits of"
-	cont "#MON that the"
+	cont "# that the"
 	cont "ROCKETs killed."
 	done
 
@@ -54,12 +54,12 @@ _LavenderTownText5:: ; a55e0 (29:55e0)
 
 _LavenderTownText8:: ; a561d (29:561d)
 	text "LAVENDER VOLUNTEER"
-	line "#MON HOUSE"
+	line "# HOUSE"
 	done
 
 _LavenderTownText9:: ; a563c (29:563c)
 	text "May the Souls of"
-	line "#MON Rest Easy"
-	cont "#MON TOWER"
+	line "# Rest Easy"
+	cont "# TOWER"
 	done
 

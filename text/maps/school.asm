@@ -6,7 +6,7 @@ _SchoolText1:: ; 95d15 (25:5d15)
 
 IF DEF(_YELLOW)
 _SchoolText3::
-	text "Sis says #MON"
+	text "Sis says #"
 	line "will become tame"
 	cont "if you treat them"
 	cont "nicely."

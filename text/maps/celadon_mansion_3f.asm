@@ -27,7 +27,7 @@ _GameDesignerText:: ; 9d03a (27:503a)
 	line "designer!"
 
 	para "Filling up your"
-	line "#DEX is tough,"
+	line "POKéDEX is tough,"
 	cont "but don't quit!"
 
 	para "When you finish,"
@@ -37,7 +37,7 @@ _GameDesignerText:: ; 9d03a (27:503a)
 _CompletedDexText:: ; 9d0ad (27:50ad)
 	text "Wow! Excellent!"
 	line "You completed"
-	cont "your #DEX!"
+	cont "your POKéDEX!"
 	cont "Congratulations!"
 	cont "...@@"
 

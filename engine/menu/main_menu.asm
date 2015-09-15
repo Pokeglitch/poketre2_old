@@ -411,7 +411,7 @@ Func_5e55: ; 5e55 (1:5e55)
 SaveScreenInfoText: ; 5e6a (1:5e6a)
 	db   "PLAYER"
 	next "BADGES    "
-	next "#DEX    "
+	next "POKéDEX    "
 	next "TIME@"
 
 DisplayOptionsFromMainMenu:

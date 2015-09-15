@@ -13,6 +13,13 @@ ram_text: MACRO
 	db $47
 	dw \1
 	ENDM
+	
+text_ram_text: MACRO
+; prints the string in the textbox
+; \1: RAM address to read from
+	db $00,$47
+	dw \1
+	ENDM
 
 page   EQUS "db $49,"     ; Start a new Pokedex page.
 dex    EQUS "db $5f, $50" ; End a Pokedex entry.

@@ -536,10 +536,8 @@ _TrainerLastStandText2:
 	prompt
 	
 _IntoLastStandText:
-	TX_RAM wPlayerName
-	text " went"
-	line "into Last Stand"
-	cont "mode!"
+	text_ram_text wPlayerName
+	db " went into Last Stand mode!"
 	prompt
 	
 _TrainerRetreatedText::
@@ -570,17 +568,13 @@ _ProtectedByInvincibilityPotionText::
 	prompt
 	
 _BoostedByHeldItemText::
-	text "It was boosted by"
-	line $5a, "'s"
-	cont "@"
-	TX_RAM wcf4b
-	text "."
+	text "It was boosted by ",$5a, "'s "
+	ram_text wcf4b
+	db "."
 	prompt
 	
 _LimitedByHeldItemText::
-	text "It was limited by"
-	line $59, "'s"
-	cont "@"
-	TX_RAM wcf4b
-	text "."
+	text "It was limited by ",$59, "'s "
+	ram_text wcf4b
+	db "."
 	prompt

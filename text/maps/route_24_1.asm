@@ -27,7 +27,7 @@ _Route24Text_51526:: ; 927a8 (24:67a8)
 
 	para "We're a group"
 	line "dedicated to evil"
-	cont "using #MON!"
+	cont "using #!"
 
 	para "Want to join?"
 

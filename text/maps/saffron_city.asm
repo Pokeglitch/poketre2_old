@@ -31,7 +31,7 @@ _SaffronCityText6:: ; a637e (29:637e)
 _SaffronCityText7:: ; a639e (29:639e)
 	text "With SILPH under"
 	line "control, we can"
-	cont "exploit #MON"
+	cont "exploit #"
 	cont "around the world!"
 	done
 
@@ -101,11 +101,11 @@ _SaffronCityText17:: ; a65a6 (29:65a6)
 
 _SaffronCityText18:: ; a65b5 (29:65b5)
 	text "SAFFRON CITY"
-	line "#MON GYM"
+	line "# GYM"
 	cont "LEADER: SABRINA"
 
 	para "The Master of"
-	line "Psychic #MON!"
+	line "Psychic #!"
 	done
 
 _SaffronCityText20:: ; a65f8 (29:65f8)
@@ -129,7 +129,7 @@ _SaffronCityText21:: ; a6667 (29:6667)
 
 	para "Try it on those"
 	line "hard-to-catch"
-	cont "#MON."
+	cont "#."
 	done
 
 _SaffronCityText22:: ; a66c7 (29:66c7)

@@ -92,7 +92,7 @@ _CeladonGameCornerText_48dca:: ; 9db11 (27:5b11)
 	para "CELADON GYM's"
 	line "LEADER is ERIKA!"
 	cont "She uses grass-"
-	cont "type #MON!"
+	cont "type #!"
 
 	para "She might appear"
 	line "docile, but don't"
@@ -101,7 +101,7 @@ _CeladonGameCornerText_48dca:: ; 9db11 (27:5b11)
 
 _CeladonGameCornerText_48dcf:: ; 9dbac (27:5bac)
 	text "They offer rare"
-	line "#MON that can"
+	line "# that can"
 	cont "be exchanged for"
 	cont "your coins."
 
@@ -132,7 +132,7 @@ _CeladonGameCornerText_48e31:: ; 9dc66 (27:5c66)
 _CeladonGameCornerText_48e36:: ; 9dc7f (27:5c7f)
 	text "Darn! I need more"
 	line "coins for the"
-	cont "#MON I want!"
+	cont "# I want!"
 	done
 
 _CeladonGameCornerText_48e88:: ; 9dcad (27:5cad)

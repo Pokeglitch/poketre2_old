@@ -48,19 +48,18 @@ _TM41PreText:: ; a5afd (29:5afd)
 	prompt
 
 _ReceivedTM41Text:: ; a5b5a (29:5b5a)
-	text $52, " received"
-	line "@"
-	TX_RAM wcf4b
-	text "!@@"
+	text $52, " received "
+	ram_text wcf4b
+	db "!@@"
 
 _TM41ExplanationText:: ; a5b6e (29:5b6e)
 	text "TM41 teaches"
 	line "SOFTBOILED!"
 
-	para "Only one #MON"
+	para "Only one #"
 	line "can use it!"
 
-	para "That #MON is"
+	para "That # is"
 	line "CHANSEY!"
 	done
 
@@ -116,7 +115,7 @@ _CeladonCityText11:: ; a5d18 (29:5d18)
 
 _CeladonCityText13:: ; a5d41 (29:5d41)
 	text "CELADON CITY"
-	line "#MON GYM"
+	line "# GYM"
 	cont "LEADER: ERIKA"
 
 IF DEF(_YELLOW)
@@ -141,7 +140,7 @@ _CeladonCityText16:: ; a5dbf (29:5dbf)
 	text "TRAINER TIPS"
 
 	para "GUARD SPEC."
-	line "protects #MON"
+	line "protects #"
 	cont "against SPECIAL"
 	cont "attacks such as"
 	cont "fire and water!"

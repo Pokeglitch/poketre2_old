@@ -74,7 +74,7 @@ _Route16EndBattleText5:: ; 911f5 (24:51f5)
 	prompt
 
 _Route16AfterBattleText5:: ; 91205 (24:5205)
-	text "I like my #MON"
+	text "I like my #"
 	line "ferocious! They"
 	cont "tear up enemies!"
 	done
@@ -91,11 +91,11 @@ _Route16EndBattleText6:: ; 91245 (24:5245)
 _Route16AfterBattleText6:: ; 91258 (24:5258)
 	text "I like harassing"
 	line "people with my"
-	cont "vicious #MON!"
+	cont "vicious #!"
 	done
 
 _Route16Text7:: ; 91287 (24:5287)
-	text "A sleeping #MON"
+	text "A sleeping #"
 	line "blocks the way!"
 	done
 

@@ -16,7 +16,7 @@ _BinocularsSnorlaxText::
 	text "Looked into the"
 	line "binoculars."
 
-	para "A big #MON is"
+	para "A big # is"
 	line "asleep on a road!"
 	done
 

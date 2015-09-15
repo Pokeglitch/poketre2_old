@@ -29,26 +29,22 @@ IsHatchingText:
 	prompt
 	
 HatchedIntoText:
-	text "It hatched into"
-	line "@"
-	TX_RAM wcf4b
-	text "!"
+	text "It hatched into "
+	ram_text wcf4b
+	db "!"
 	prompt
 	
 DelayedDamageOccuredText:
-	TX_RAM wcf4b
-	text " "
-	line "exploded!"
+	text_ram_text wcf4b
+	db " exploded!"
 	prompt
 	
 LastStandDelayedDamageOccuredText:
-	TX_RAM wPlayerName
-	text " "
-	line "exploded!"
+	text_ram_text wPlayerName
+	db " exploded!"
 	prompt
 	
 PokemonCF4BFaintedText:
-	TX_RAM wcf4b
-	text " "
-	line "fainted!"
+	text_ram_text wcf4b
+	db " fainted!"
 	prompt

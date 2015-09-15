@@ -8,7 +8,7 @@ _ViridianPokeCenterText1:: ; 95ba1 (25:5ba1)
 	done
 
 _ViridianPokeCenterText3:: ; 95be8 (25:5be8)
-	text "There's a #MON"
+	text "There's a #"
 	line "CENTER in every"
 	cont "town ahead."
 

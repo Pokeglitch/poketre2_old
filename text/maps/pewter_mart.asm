@@ -6,7 +6,7 @@ ELSE
 ENDC
 	line "got me to buy"
 	cont "this really weird"
-	cont "fish #MON!"
+	cont "fish #!"
 
 	para "It's totally weak"
 	line "and it cost ¥500!"
@@ -15,7 +15,7 @@ ENDC
 _PewterMartText_74cd5:: ; 9860c (26:460c)
 	text "Good things can"
 	line "happen if you"
-	cont "raise #MON"
+	cont "raise #"
 	cont "diligently, even"
 	cont "the weak ones!"
 	done

@@ -17,7 +17,7 @@ _MomHealText1::
 IF DEF(_YELLOW)
 	text "MOM: ",$52,", if"
 	line "your drive your"
-	cont "#MON too hard,"
+	cont "# too hard,"
 	cont "they'll dislike"
 	cont "you."
 
@@ -34,7 +34,7 @@ ENDC
 _MomHealText2::
 	text "MOM: Oh good!"
 	line "You and your"
-	cont "#MON are"
+	cont "# are"
 	cont "looking great!"
 	cont "Take care now!"
 	done

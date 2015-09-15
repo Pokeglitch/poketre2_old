@@ -36,7 +36,7 @@ _SSAnne10AfterBattleText2:: ; 81b68 (20:5b68)
 
 _SSAnne10BattleText3:: ; 81b99 (20:5b99)
 	text "Us sailors have"
-	line "#MON too!"
+	line "# too!"
 	done
 
 _SSAnne10EndBattleText3:: ; 81bb4 (20:5bb4)
@@ -46,7 +46,7 @@ _SSAnne10EndBattleText3:: ; 81bb4 (20:5bb4)
 
 _SSAnne10AfterBattleText3:: ; 81bc9 (20:5bc9)
 	text "We caught all our"
-	line "#MON while"
+	line "# while"
 	cont "out at sea!"
 	done
 
@@ -60,7 +60,7 @@ _SSAnne10EndBattleText4:: ; 81c12 (20:5c12)
 	prompt
 
 _SSAnne10AfterBattleText4:: ; 81c22 (20:5c22)
-	text "Sea #MON live"
+	text "Sea # live"
 	line "in deep water."
 	cont "You'll need a ROD!"
 	done
@@ -86,7 +86,7 @@ _SSAnne10BattleText6:: ; 81cc3 (20:5cc3)
 	text "Hello stranger!"
 	line "Stop and chat!"
 
-	para "All my #MON"
+	para "All my #"
 	line "are from the sea!"
 	done
 

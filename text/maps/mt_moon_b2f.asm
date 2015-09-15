@@ -63,7 +63,7 @@ _MtMoon3Text_49f8f:: ; 80a11 (20:4a11)
 _MtMoon3Text_49f94:: ; 80a37 (20:4a37)
 	text "Far away, on"
 	line "CINNABAR ISLAND,"
-	cont "there's a #MON"
+	cont "there's a #"
 	cont "LAB."
 
 	para "They do research"
@@ -95,7 +95,7 @@ _MtMoon3AfterBattleText2:: ; 80b09 (20:4b09)
 
 _MtMoon3BattleText3:: ; 80b3b (20:4b3b)
 	text "We, TEAM ROCKET,"
-	line "are #MON"
+	line "are #"
 	cont "gangsters!"
 	done
 
@@ -139,7 +139,7 @@ _MtMoon3EndBattleText5:: ; 80c39 (20:4c39)
 	prompt
 
 _MtMoon3AfterBattleText5:: ; 80c46 (20:4c46)
-	text "#MON lived"
+	text "# lived"
 	line "here long before"
 	cont "people came."
 	done

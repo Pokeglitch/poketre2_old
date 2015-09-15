@@ -2,7 +2,7 @@ _IndigoPlateauLobbyText1:: ; a13f0 (28:53f0)
 	text "Yo! Champ in"
 	line "making!"
 
-	para "At #MON LEAGUE,"
+	para "At # LEAGUE,"
 	line "you have to face"
 	cont "the ELITE FOUR in"
 	cont "succession."

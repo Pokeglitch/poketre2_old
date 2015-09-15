@@ -28,7 +28,7 @@ _Route6EndBattleText2::
 
 _Route6AfterBattleText2::
 	text "Now I understand,"
-	line "#MON isn't"
+	line "# isn't"
 	cont "about calculated"
 	cont "numbers."
 	done
@@ -89,7 +89,7 @@ _Route6EndBattleText4:: ; 8dd4e (23:5d4e)
 
 _Route6AfterBattleText4:: ; 8dd61 (23:5d61)
 	text "I should carry"
-	line "more #MON with"
+	line "more # with"
 	cont "me for safety."
 	done
 
@@ -121,7 +121,7 @@ _Route6EndBattleText6:: ; 8de10 (23:5e10)
 	prompt
 
 _Route6AfterBattleText6:: ; 8de23 (23:5e23)
-	text "Are my #MON"
+	text "Are my #"
 	line "weak? Or, am I"
 	cont "just bad?"
 	done

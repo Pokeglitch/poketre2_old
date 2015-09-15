@@ -9,7 +9,7 @@ _Route11AfterBattleText9:: ; 90017 (24:4017)
 	done
 
 _Route11BattleText10:: ; 90037 (24:4037)
-	text "My #MON should"
+	text "My # should"
 	line "be ready by now!"
 	done
 

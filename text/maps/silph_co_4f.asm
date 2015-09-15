@@ -25,13 +25,13 @@ _SilphCo4AfterBattleText2:: ; 82853 (20:6853)
 	done
 
 _SilphCo4BattleText3:: ; 82882 (20:6882)
-	text "My #MON are my"
+	text "My # are my"
 	line "loyal soldiers!"
 	done
 
 _SilphCo4EndBattleText3:: ; 828a2 (20:68a2)
 	text "Darn!"
-	line "You weak #MON!"
+	line "You weak #!"
 	prompt
 
 _SilphCo4AfterBattleText3:: ; 828b8 (20:68b8)

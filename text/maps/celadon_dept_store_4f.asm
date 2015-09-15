@@ -18,7 +18,7 @@ _CeladonMart4Text3:: ; 9cafd (27:4afd)
 	line "useful."
 
 	para "You can run from"
-	line "wild #MON by"
+	line "wild # by"
 	cont "distracting them"
 	cont "with a # DOLL!"
 	done

@@ -1,6 +1,6 @@
 _RockTunnelPokecenterText1:: ; 8c2c0 (23:42c0)
 	text "The element types"
-	line "of #MON make"
+	line "of # make"
 	cont "them stronger"
 	cont "than some types"
 	cont "and weaker than"

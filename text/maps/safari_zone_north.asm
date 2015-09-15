@@ -16,7 +16,7 @@ _SafariZoneNorthText5:: ; 85681 (21:5681)
 _SafariZoneNorthText6:: ; 85689 (21:5689)
 	text "TRAINER TIPS"
 
-	para "#MON hide in"
+	para "# hide in"
 	line "tall grass!"
 
 	para "Zigzag through"

@@ -34,7 +34,7 @@ _SilphCo6Text_1a28f:: ; 8424f (21:424f)
 	text "TEAM ROCKET is"
 	line "trying to conquer"
 	cont "the world with"
-	cont "#MON!"
+	cont "#!"
 	done
 
 _SilphCo6Text_1a294:: ; 84286 (21:4286)
@@ -45,7 +45,7 @@ _SilphCo6Text_1a294:: ; 84286 (21:4286)
 _SilphCo6Text_1a2a6:: ; 842a7 (21:42a7)
 	text "They must have"
 	line "targeted SILPH"
-	cont "for our #MON"
+	cont "for our #"
 	cont "products."
 	done
 

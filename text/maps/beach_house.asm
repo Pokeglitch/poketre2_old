@@ -55,7 +55,7 @@ _BeachHouseSign2Text1::
 
 _BeachHouseSign2Text2::
 	text "SUMMER BEACH HOUSE"
-	line "#MON welcome!"
+	line "# welcome!"
 	done
 
 _BeachHouseSign3Text1::

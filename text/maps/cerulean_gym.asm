@@ -4,23 +4,23 @@ _CeruleanGymText_5c7be:: ; 989c1 (26:49c1)
 
 IF DEF(_YELLOW)
 	para "What's your policy"
-	line "on #MON? What"
+	line "on #? What"
 	cont "is your approach?"
 ELSE
 	para "Trainers who want"
 	line "to turn pro have"
 	cont "to have a policy"
-	cont "about #MON!"
+	cont "about #!"
 
 	para "What is your"
 	line "approach when you"
-	cont "catch #MON?"
+	cont "catch #?"
 ENDC
 
 	para "My policy is an"
 	line "all-out offensive"
 	cont "with water-type"
-	cont "#MON!"
+	cont "#!"
 
 IF DEF(_YELLOW)
 	para "MISTY, the world-"
@@ -37,12 +37,12 @@ _CeruleanGymText_5c7c3:: ; 98a7b (26:4a7b)
 	line "BUBBLEBEAM!"
 
 	para "Use it on an"
-	line "aquatic #MON!"
+	line "aquatic #!"
 	done
 
 _CeruleanGymText_5c7c8:: ; 98ab0 (26:4ab0)
 	text "The CASCADEBADGE"
-	line "makes all #MON"
+	line "makes all #"
 	cont "up to L30 obey!"
 
 	para "That includes"
@@ -135,11 +135,11 @@ _CeruleanGymText_5c82a:: ; 98d0a (26:4d0a)
 
 	para "The LEADER, MISTY,"
 	line "is a pro who uses"
-	cont "water #MON!"
+	cont "water #!"
 
 	para "You can drain all"
 	line "their water with"
-	cont "plant #MON!"
+	cont "plant #!"
 
 	para "Or, zap them with"
 	line "electricity!"

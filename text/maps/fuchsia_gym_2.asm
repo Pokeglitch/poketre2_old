@@ -1,6 +1,6 @@
 _UnnamedText_7558b:: ; a0000 (28:4000)
 	text "When afflicted by"
-	line "TOXIC, #MON"
+	line "TOXIC, #"
 	cont "suffer more and"
 	cont "more as battle"
 	cont "progresses!"
@@ -13,7 +13,7 @@ _UnnamedText_75590:: ; a0069 (28:4069)
 	text "Now that you have"
 	line "the SOULBADGE,"
 	cont "the DEFENSE of"
-	cont "your #MON"
+	cont "your #"
 	cont "increases!"
 
 	para "It also lets you"
@@ -48,7 +48,7 @@ _TM06NoRoomText:: ; a0143 (28:4143)
 _FuchsiaGymBattleText1:: ; a0160 (28:4160)
 	text "Strength isn't"
 	line "the key for"
-	cont "#MON!"
+	cont "#!"
 
 	para "It's strategy!"
 

@@ -15,7 +15,7 @@ _LavenderHouse2Text_1d9dc:: ; 9a24c (26:624c)
 
 _LavenderHouse2Text_1d9e1:: ; 9a2b9 (26:62b9)
 	text "The GHOST of"
-	line "#MON TOWER is"
+	line "# TOWER is"
 	cont "gone!"
 
 	para "Someone must have"

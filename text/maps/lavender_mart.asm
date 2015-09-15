@@ -2,7 +2,7 @@ _LavenderMartText2:: ; 9a104 (26:6104)
 	text "I'm searching for"
 	line "items that raise"
 	cont "the abilities of"
-	cont "#MON during a"
+	cont "# during a"
 	cont "single battle."
 
 	para "X ATTACK, X"
@@ -17,7 +17,7 @@ _LavenderMartText2:: ; 9a104 (26:6104)
 _LavenderMart_5c953:: ; 9a1b4 (26:61b4)
 	text "You know REVIVE?"
 	line "It revives any"
-	cont "fainted #MON!"
+	cont "fainted #!"
 	done
 
 _LavenderMart_5c958:: ; 9a1e3 (26:61e3)

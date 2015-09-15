@@ -1,5 +1,5 @@
 _Route13BattleText2:: ; 903ed (24:43ed)
-	text "My bird #MON"
+	text "My bird #"
 	line "want to scrap!"
 	done
 
@@ -9,7 +9,7 @@ _Route13EndBattleText2:: ; 9040a (24:440a)
 	prompt
 
 _Route13AfterBattleText2:: ; 9041f (24:441f)
-	text "My #MON look"
+	text "My # look"
 	line "happy even though"
 	cont "they lost."
 	done
@@ -47,7 +47,7 @@ _Route13AfterBattleText4:: ; 904d3 (24:44d3)
 	done
 
 _Route13BattleText5:: ; 90503 (24:4503)
-	text "My cute #MON"
+	text "My cute #"
 	line "wish to make your"
 	cont "acquaintance."
 	done
@@ -59,7 +59,7 @@ _Route13EndBattleText5:: ; 90531 (24:4531)
 
 _Route13AfterBattleText5:: ; 90548 (24:4548)
 	text "You have to make"
-	line "#MON fight to"
+	line "# fight to"
 	cont "toughen them up!"
 	done
 
@@ -76,7 +76,7 @@ _Route13EndBattleText6:: ; 90599 (24:4599)
 _Route13AfterBattleText6:: ; 905aa (24:45aa)
 	text "CARBOS boosted"
 	line "the SPEED of my"
-	cont "#MON."
+	cont "#."
 	done
 
 _Route13BattleText7:: ; 905d0 (24:45d0)
@@ -107,12 +107,12 @@ _Route13EndBattleText8:: ; 90637 (24:4637)
 _Route13AfterBattleText8:: ; 9064e (24:464e)
 	text "I wonder which is"
 	line "stronger, male or"
-	cont "female #MON?"
+	cont "female #?"
 	done
 
 _Route13BattleText9:: ; 90680 (24:4680)
 	text "Do you want to"
-	line "#MON with me?"
+	line "# with me?"
 	done
 
 _Route13EndBattleText9:: ; 9069e (24:469e)
@@ -123,7 +123,7 @@ _Route13EndBattleText9:: ; 9069e (24:469e)
 _Route13AfterBattleText9:: ; 906b1 (24:46b1)
 	text "I don't know"
 	line "anything about"
-	cont "#MON. I just"
+	cont "#. I just"
 	cont "like cool ones!"
 	done
 
@@ -143,7 +143,7 @@ _Route13AfterBattleText10:: ; 90719 (24:4719)
 
 _Route13BattleText11:: ; 90724 (24:4724)
 	text "I always go with"
-	line "bird #MON!"
+	line "bird #!"
 	done
 
 _Route13EndBattleText11:: ; 90741 (24:4741)

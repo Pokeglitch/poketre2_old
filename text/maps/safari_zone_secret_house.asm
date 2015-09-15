@@ -23,7 +23,7 @@ _ReceivedHM03Text:: ; 85943 (21:5943)
 _HM03ExplanationText:: ; 85957 (21:5957)
 	text "HM03 is SURF!"
 
-	para "#MON will be"
+	para "# will be"
 	line "able to ferry you"
 	cont "across water!"
 

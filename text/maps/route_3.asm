@@ -20,7 +20,7 @@ _Route3EndBattleText1:: ; 8d7f9 (23:57f9)
 
 _Route3AfterBattleText1:: ; 8d80d (23:580d)
 	text "There are other"
-	line "kinds of #MON"
+	line "kinds of #"
 	cont "than those found"
 	cont "in the forest!"
 	done
@@ -38,9 +38,9 @@ _Route3EndBattleText2:: ; 8d87f (23:587f)
 
 _Route3AfterBattleText2:: ; 8d893 (23:5893)
 	text "Are you storing"
-	line "your #MON on"
+	line "your # on"
 	cont "PC? Each BOX can"
-	cont "hold 20 #MON!"
+	cont "hold 20 #!"
 	done
 
 _Route3BattleText3:: ; 8d8d0 (23:58d0)
@@ -67,16 +67,16 @@ _Route3BattleText4:: ; 8d924 (23:5924)
 _Route3EndBattleText4:: ; 8d944 (23:5944)
 	text "If I"
 IF DEF(_YELLOW)
-	line "had new #MON,"
+	line "had new #,"
 	cont "I would've won!"
 ELSE
-	line "had new #MON I"
+	line "had new # I"
 	cont "would've won!"
 ENDC
 	prompt
 
 _Route3AfterBattleText4:: ; 8d966 (23:5966)
-	text "If a #MON BOX"
+	text "If a # BOX"
 	line "on the PC gets"
 	cont "full, just switch"
 	cont "to another BOX!"
@@ -116,7 +116,7 @@ _Route3AfterBattleText6:: ; 8da3b (23:5a3b)
 
 _Route3BattleText7:: ; 8da62 (23:5a62)
 	text "You can fight my"
-	line "new #MON!"
+	line "new #!"
 	done
 
 _Route3EndBattleText7:: ; 8da7e (23:5a7e)
@@ -125,7 +125,7 @@ _Route3EndBattleText7:: ; 8da7e (23:5a7e)
 	prompt
 
 _Route3AfterBattleText7:: ; 8da91 (23:5a91)
-	text "Trained #MON"
+	text "Trained #"
 	line "are stronger than"
 	cont "the wild ones!"
 	done

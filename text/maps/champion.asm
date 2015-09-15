@@ -10,18 +10,18 @@ _GaryText_760f4:: ; 860e1 (21:60e1)
 	cont "me sharp!"
 
 	para "While working on"
-	line "#DEX, I looked"
+	line "POKéDEX, I looked"
 	cont "all over for"
-	cont "powerful #MON!"
+	cont "powerful #!"
 
 	para "Not only that, I"
 	line "assembled teams"
 	cont "that would beat"
-	cont "any #MON type!"
+	cont "any # type!"
 
 	para "And now!"
 
-	para "I'm the #MON"
+	para "I'm the #"
 	line "LEAGUE champion!"
 
 	para $52, "! Do you"
@@ -59,7 +59,7 @@ _GaryText_760fe:: ; 862b4 (21:62b4)
 	para "You did well to"
 	line "even reach me,"
 	cont $53, ", the"
-	cont "#MON genius!"
+	cont "# genius!"
 
 	para "Nice try, loser!"
 	line "Hahaha!"
@@ -71,10 +71,10 @@ _GaryText_76103:: ; 8632f (21:632f)
 
 	para "I never made any"
 	line "mistakes raising"
-	cont "my #MON..."
+	cont "my #..."
 
 	para "Darn it! You're"
-	line "the new #MON"
+	line "the new #"
 	cont "LEAGUE champion!"
 
 	para "Although I don't"
@@ -89,7 +89,7 @@ _GaryText_76120:: ; 863ca (21:63ca)
 	text "OAK: So, you won!"
 	line "Congratulations!"
 	cont "You're the new"
-	cont "#MON LEAGUE"
+	cont "# LEAGUE"
 	cont "champion!"
 
 	para "You've grown up so"
@@ -121,7 +121,7 @@ _GaryText_76125:: ; 86463 (21:6463)
 
 	para "You have forgotten"
 	line "to treat your"
-	cont "#MON with"
+	cont "# with"
 	cont "trust and love!"
 
 	para "Without them, you"
@@ -138,7 +138,7 @@ _GaryText_7612a:: ; 86567 (21:6567)
 	cont "own doing!"
 
 	para "The bond you share"
-	line "with your #MON"
+	line "with your #"
 	cont "is marvelous!"
 
 	para $52, "!"

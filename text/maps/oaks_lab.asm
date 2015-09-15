@@ -29,13 +29,13 @@ _OaksLabBulbasaurText:: ; 94e57 (25:4e57)
 	done
 
 _OaksLabMonEnergeticText:: ; 94e80 (25:4e80)
-	text "This #MON is really energetic!"
+	text "This # is really energetic!"
 	prompt
 
 _OaksLabReceivedMonText:: ; 94ea0 (25:4ea0)
 	text $52, " received a "
-	TX_RAM wcd6d
-	text "!"
+	ram_text wcd6d
+	db "!"
 	prompt
 
 _OaksLabLastMonText:: ; 94eb6 (25:4eb6)
@@ -48,8 +48,8 @@ _OaksLabText_1d2f0:: ; 94ed2 (25:4ed2)
 
 _OaksLabText_1d2f5:: ; 94ef8 (25:4ef8)
 	text "OAK: If a wild"
-	line "#MON appears,"
-	cont "your #MON can"
+	line "# appears,"
+	cont "your # can"
 	cont "fight against it!"
 
 IF DEF(_YELLOW)
@@ -67,7 +67,7 @@ IF DEF(_YELLOW)
 ELSE
 	text "OAK: ", $52, ","
 	line "raise your young"
-	cont "#MON by making"
+	cont "# by making"
 	cont "it fight!"
 	done
 ENDC
@@ -76,14 +76,14 @@ _OaksLabDeliverParcelText1:: ; 94f69 (25:4f69)
 	text "OAK: Oh, ", $52, "!"
 
 	para "How is my old"
-	line "#MON?"
+	line "#?"
 
 	para "Well, it seems to"
 	line "like you a lot."
 
 	para "You must be"
 	line "talented as a"
-	cont "#MON trainer!"
+	cont "# trainer!"
 
 	para "What? You have"
 	line "something for me?"
@@ -94,7 +94,7 @@ _OaksLabDeliverParcelText1:: ; 94f69 (25:4f69)
 _OaksLabDeliverParcelText2:: ; 9500f (25:500f)
 	db $0
 	para "Ah! This is the"
-	line "custom # BALL"
+	line "custom POKé BALL"
 	cont "I ordered!"
 IF DEF(_YELLOW)
 	cont "Thanks, ",$52,"!"
@@ -108,7 +108,7 @@ ENDC
 	done
 
 _OaksLabAroundWorldText:: ; 95045 (25:5045)
-	text "#MON around the"
+	text "# around the"
 	line "world wait for"
 	cont "you, ", $52, "!"
 	done
@@ -116,28 +116,28 @@ _OaksLabAroundWorldText:: ; 95045 (25:5045)
 _OaksLabGivePokeballsText1:: ; 9506d (25:506d)
 	text "OAK: You can't get"
 	line "detailed data on"
-	cont "#MON by just"
+	cont "# by just"
 	cont "seeing them."
 
 	para "You must catch"
 	line "them! Use these"
 	cont "to capture wild"
-	cont "#MON."
+	cont "#."
 
 	para $52, " got 5"
-	line "# BALLs!@@"
+	line "POKé BALLs!@@"
 
 _OaksLabGivePokeballsText2:: ; 950f2 (25:50f2)
 	db $0
 	para "When a wild"
-	line "#MON appears,"
+	line "# appears,"
 	cont "it's fair game."
 
 IF DEF(_YELLOW)
 	para "Just like I showed"
-	line "you, throw a #"
+	line "you, throw a POKé"
 ELSE
-	para "Just throw a #"
+	para "Just throw a POKé"
 ENDC
 	line "BALL at it and try"
 	line "to catch it!"
@@ -145,7 +145,7 @@ ENDC
 	para "This won't always"
 	line "work, though."
 
-	para "A healthy #MON"
+	para "A healthy #"
 	line "could escape. You"
 	cont "have to be lucky!"
 	done
@@ -155,14 +155,14 @@ _OaksLabPleaseVisitText:: ; 9519e (25:519e)
 	line "sometimes."
 
 	para "I want to know how"
-	line "your #DEX is"
+	line "your POKéDEX is"
 	cont "coming along."
 	done
 
 _OaksLabText_1d31d:: ; 951e9 (25:51e9)
 	text "OAK: Good to see "
 	line "you! How is your "
-	cont "#DEX coming? "
+	cont "POKéDEX coming? "
 	cont "Here, let me take"
 	cont "a look!"
 	prompt
@@ -180,9 +180,9 @@ _OaksLabText8:: ; 95268 (25:5268)
 _OaksLabText_1d340:: ; 9526b (25:526b)
 	text "PROF.OAK is the"
 	line "authority on"
-	cont "#MON!"
+	cont "#!"
 
-	para "Many #MON"
+	para "Many #"
 	line "trainers hold him"
 	cont "in high regard!"
 	done
@@ -209,9 +209,9 @@ IF DEF(_YELLOW)
 	line "you see that ball"
 	cont "on the table?"
 
-	para "It's called a #"
+	para "It's called a POKé"
 	line "BALL. It holds a"
-	cont "#MON inside."
+	cont "# inside."
 
 	para "You may have it!"
 	line "Go on, take it!"
@@ -227,16 +227,16 @@ ELSE
 	para "Here, ", $52, "!"
 
 	para "There are 3"
-	line "#MON here!"
+	line "# here!"
 
 	para "Haha!"
 
 	para "They are inside"
-	line "the # BALLs."
+	line "the POKé BALLs."
 
 	para "When I was young,"
 	line "I was a serious"
-	cont "#MON trainer!"
+	cont "# trainer!"
 
 	para "In my old age, I"
 	line "have only 3 left,"
@@ -268,12 +268,12 @@ IF DEF(_YELLOW)
 _OaksLabRivalTakesText1::
 	text $53,": No way!"
 	line $52,", I want"
-	cont "this #MON!"
+	cont "this #!"
 	prompt
 
 _OaksLabRivalTakesText2::
 	text $53," snatched"
-	line "the #MON!@@"
+	line "the #!@@"
 
 _OaksLabRivalTakesText3::
 	text "OAK: ",$53,"! What"
@@ -288,7 +288,7 @@ _OaksLabRivalTakesText4::
 _OaksLabRivalTakesText5::
 	text "OAK: But, I... Oh,"
 	line "all right then."
-	cont "That #MON is"
+	cont "That # is"
 	cont "yours."
 
 	para "I was going to"
@@ -301,7 +301,7 @@ _OaksLabRivalTakesText5::
 
 _OaksLabOakGivesText::
 	text "OAK: ",$52,", this"
-	line "is the #MON I"
+	line "is the # I"
 	cont "caught earlier."
 
 	para "You can have it."
@@ -350,7 +350,7 @@ _OaksLabText_1d3c3:: ; 954e4 (25:54e4)
 _OaksLabRivalToughenUpText:: ; 95502 (25:5502)
 	text $53, ": Okay!"
 	line "I'll make my"
-	cont "#MON fight to"
+	cont "# fight to"
 	cont "toughen it up!"
 
 	para $52, "! Gramps!"
@@ -369,7 +369,7 @@ _OaksLabPikachuDislikesPokeballsText2::
 	para "It's odd, but it"
 	line "appears that your"
 	cont "PIKACHU dislikes"
-	cont "# BALLs."
+	cont "POKé BALLs."
 
 	para "You should just"
 	line "keep it with you."
@@ -390,7 +390,7 @@ _OaksLabText21:: ; 95551 (25:5551)
 _OaksLabText22:: ; 9555d (25:555d)
 IF DEF(_YELLOW)
 	text $53,": Gramps,"
-	line "my #MON has"
+	line "my # has"
 	cont "grown stronger!"
 	cont "Check it out!"
 	done
@@ -419,11 +419,11 @@ ENDC
 _OaksLabText24:: ; 955a8 (25:55a8)
 	text "On the desk there"
 	line "is my invention,"
-	cont "#DEX!"
+	cont "POKéDEX!"
 
 	para "It automatically"
 	line "records data on"
-	cont "#MON you've"
+	cont "# you've"
 	cont "seen or caught!"
 
 	para "It's a hi-tech"
@@ -436,12 +436,12 @@ _OaksLabText25:: ; 9562a (25:562a)
 	cont "these with you!"
 
 	para $52, " got"
-	line "#DEX from OAK!@@"
+	line "POKéDEX from OAK!@@"
 
 _OaksLabText26:: ; 95664 (25:5664)
 	text "To make a complete"
 	line "guide on all the"
-	cont "#MON in the"
+	cont "# in the"
 	cont "world..."
 
 	para "That was my dream!"
@@ -458,7 +458,7 @@ _OaksLabText26:: ; 95664 (25:5664)
 
 	para "This is a great"
 	line "undertaking in"
-	cont "#MON history!"
+	cont "# history!"
 	done
 
 _OaksLabText27:: ; 95741 (25:5741)
@@ -480,20 +480,20 @@ _OaksLabText27:: ; 95741 (25:5741)
 	done
 
 _OaksLabText_1d405:: ; 957eb (25:57eb)
-	text "I study #MON as"
+	text "I study # as"
 	line "PROF.OAK's AIDE."
 	done
 
 _OaksLabText_441cc:: ; 9580c (25:580c)
-	text "#DEX comp-"
+	text "POKéDEX comp-"
 	line "letion is:"
 
 	para "@"
 	TX_NUM $ffdb, 1, 3
-	text " #MON seen"
+	text " # seen"
 	line "@"
 	TX_NUM $ffdc, 1, 3
-	text " #MON owned"
+	text " # owned"
 
 	para "PROF.OAK's"
 	line "Rating:"
@@ -502,7 +502,7 @@ _OaksLabText_441cc:: ; 9580c (25:580c)
 _OaksLabText_44201:: ; 95858 (25:5858)
 	text "You still have"
 	line "lots to do."
-	cont "Look for #MON"
+	cont "Look for #"
 	cont "in grassy areas!"
 	done
 
@@ -515,7 +515,7 @@ _OaksLabText_44206:: ; 95893 (25:5893)
 
 _OaksLabText_4420b:: ; 958cc (25:58cc)
 	text "You still need"
-	line "more #MON!"
+	line "more #!"
 	cont "Try to catch"
 	cont "other species!"
 	done
@@ -554,7 +554,7 @@ ENDC
 _OaksLabText_44224:: ; 959d9 (25:59d9)
 	text "Very good!"
 	line "Go fish for some"
-	cont "marine #MON!"
+	cont "marine #!"
 	done
 
 _OaksLabText_44229:: ; 95a03 (25:5a03)
@@ -579,7 +579,7 @@ _OaksLabText_44233:: ; 95a60 (25:5a60)
 _OaksLabText_44238:: ; 95aa8 (25:5aa8)
 	text "You even have the"
 	line "evolved forms of"
-	cont "#MON! Super!"
+	cont "#! Super!"
 	done
 
 _OaksLabText_4423d:: ; 95ad9 (25:5ad9)
@@ -602,7 +602,7 @@ _OaksLabText_44247:: ; 95b39 (25:5b39)
 	done
 
 _OaksLabText_4424c:: ; 95b6f (25:5b6f)
-	text "Your #DEX is"
+	text "Your POKéDEX is"
 IF DEF(_YELLOW)
 	line "fully complete!"
 ELSE

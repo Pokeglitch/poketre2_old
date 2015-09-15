@@ -1,17 +1,17 @@
 _Route4Text1:: ; 8db1e (23:5b1e)
 	text "Ouch! I tripped"
 	line "over a rocky"
-	cont "#MON, GEODUDE!"
+	cont "#, GEODUDE!"
 	done
 
 _Route4BattleText1:: ; 8db4b (23:5b4b)
 	text "I came to get my"
-	line "mushroom #MON!"
+	line "mushroom #!"
 	done
 
 _Route4EndBattleText1:: ; 8db6c (23:5b6c)
 	text "Oh! My cute"
-	line "mushroom #MON!"
+	line "mushroom #!"
 	prompt
 
 _Route4AfterBattleText1:: ; 8db88 (23:5b88)

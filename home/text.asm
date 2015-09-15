@@ -279,24 +279,6 @@ Char5AText:: ; 1a72 (0:1a72)
 Char4AText:: ; 1a79 (0:1a79)
 	db $E1,$E2,"@" ; PKMN
 
-Char55:: ; 1a7c (0:1a7c)
-	pop hl		;recover the destination pointer
-	push de
-	ld b,h
-	ld c,l
-	ld hl,Char55Text
-	call TextCommandProcessor
-	ld h,b
-	ld l,c
-	pop de
-	inc de
-	jp PlaceNextChar
-
-Char55Text:: ; 1a8c (0:1a8c)
-; equivalent to Char4B
-	TX_FAR _Char55Text
-	db "@"
-
 Char5F:: ; 1a91 (0:1a91)
 ; ends a Pokédex entry
 	pop hl		;recover the destination pointer
@@ -321,13 +303,11 @@ Next1AA2:: ; 1aa2 (0:1aa2)
 Char57:: ; 1aad (0:1aad)
 	pop hl
 Char57Finish::
-	pop de		;recover the starting position
 	ld de,Char58Text
-	dec de
-	ret
+	jp PlaceNextChar
 
 Char58Text:: ; 1ab3 (0:1ab3)
-	db "@"
+	db "@@"
 
 	
 Char51:: ; 1ab4 (0:1ab4)
@@ -372,6 +352,8 @@ Char49:: ; 1ad5 (0:1ad5)
 	push hl
 	jp Next19E8
 
+
+Char55::
 Char4B:: ; 1af8 (0:1af8)
 	pop hl		;recover the destination pointer
 	ld a,$EE
@@ -398,8 +380,6 @@ Char4C:: ; 1b0a (0:1b0a)
 	jr z,.finish		;if we aren't, then finish
 	ld a,%11000000		;re-initialize the counter
 	ld [wTextCharCount],a
-	pop de
-	inc de
 	push de		;push the source pointer
 .finish
 	jp PlaceNextChar

@@ -9,7 +9,7 @@ _Route20EndBattleText1:: ; 91c85 (24:5c85)
 
 _Route20AfterBattleText1:: ; 91c8e (24:5c8e)
 	text "I wish I could"
-	line "ride my #MON."
+	line "ride my #."
 	done
 
 _Route20BattleText2:: ; 91cac (24:5cac)
@@ -68,12 +68,12 @@ _Route20EndBattleText5:: ; 91dac (24:5dac)
 _Route20AfterBattleText5:: ; 91db4 (24:5db4)
 	text "I should've been"
 	line "buffing up my"
-	cont "#MON, not me!"
+	cont "#, not me!"
 	done
 
 _Route20BattleText6:: ; 91de1 (24:5de1)
 	text "Why are you"
-	line "riding a #MON?"
+	line "riding a #?"
 	cont "Can't you swim?"
 	done
 
@@ -83,13 +83,13 @@ _Route20EndBattleText6:: ; 91e0c (24:5e0c)
 	prompt
 
 _Route20AfterBattleText6:: ; 91e1e (24:5e1e)
-	text "Riding a #MON"
+	text "Riding a #"
 	line "sure looks fun!"
 	done
 
 _Route20BattleText7:: ; 91e3d (24:5e3d)
 	text "I rode my bird"
-	line "#MON here!"
+	line "# here!"
 	done
 
 _Route20EndBattleText7:: ; 91e58 (24:5e58)
@@ -129,7 +129,7 @@ _Route20EndBattleText9:: ; 91f06 (24:5f06)
 	prompt
 
 _Route20AfterBattleText9:: ; 91f1b (24:5f1b)
-	text "#MON have"
+	text "# have"
 	line "taken over an"
 	cont "abandoned mansion"
 	cont "on CINNABAR!"
@@ -138,7 +138,7 @@ _Route20AfterBattleText9:: ; 91f1b (24:5f1b)
 _Route20BattleText10:: ; 91f53 (24:5f53)
 	text "CINNABAR, in the"
 	line "west, has a LAB"
-	cont "for #MON."
+	cont "for #."
 	done
 
 _Route20EndBattleText10:: ; 91f7f (24:5f7f)

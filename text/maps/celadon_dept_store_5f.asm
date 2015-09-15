@@ -1,5 +1,5 @@
 _CeladonMart5Text1:: ; 9ddff (27:5dff)
-	text "#MON ability"
+	text "# ability"
 	line "enhancers can be"
 	cont "bought only here."
 
@@ -13,7 +13,7 @@ _CeladonMart5Text1:: ; 9ddff (27:5dff)
 
 _CeladonMart5Text2:: ; 9de79 (27:5e79)
 	text "I'm here for"
-	line "#MON ability"
+	line "# ability"
 	cont "enhancers."
 
 	para "PROTEIN increases"

@@ -22,7 +22,7 @@ IF DEF(_YELLOW)
 PikachuFanPrintText::
 	text "Our CHAIRMAN's new"
 	line "hobby is taking"
-	cont "#MON photos."
+	cont "# photos."
 
 	para "He gave me a nice"
 	line "PRINT of my cute"
@@ -69,20 +69,20 @@ FanClubSeelText::
 
 FanClubMeetChairText::
 	text "I chair the"
-	line "#MON Fan Club!"
+	line "# Fan Club!"
 
 IF DEF(_YELLOW)
 	para "I have more than"
-	line "100 #MON. I"
+	line "100 #. I"
 	cont "love them all!"
 ELSE
 	para "I have collected"
-	line "over 100 #MON!"
+	line "over 100 #!"
 ENDC
 
 	para "I'm very fussy"
 	line "when it comes to"
-	cont "#MON!"
+	cont "#!"
 
 	para "So..."
 
@@ -93,7 +93,7 @@ ELSE
 	para "Did you come"
 	line "visit to hear"
 ENDC
-	cont "about my #MON?"
+	cont "about my #?"
 	done
 
 FanClubChairStoryText::
@@ -159,7 +159,7 @@ FanClubChairFinalText::
 
 	para "Did you come see"
 	line "me about my"
-	cont "#MON again?"
+	cont "# again?"
 
 	para "No? Too bad!"
 	done
@@ -173,7 +173,7 @@ IF DEF(_YELLOW)
 FanClubChairPrintText1::
 	text "Hi there, ",$52,"!"
 	line "Have you seen my"
-	cont "#MON photos?"
+	cont "# photos?"
 
 	para "I have them framed"
 	line "up on that wall."
@@ -182,7 +182,7 @@ FanClubChairPrintText1::
 
 	para "Would you like me"
 	line "to take a photo"
-	cont "of your #MON?"
+	cont "of your #?"
 	done
 
 FanClubChairPrintText2::
@@ -207,7 +207,7 @@ ELSE
 	text "Our Chairman is"
 ENDC
 	line "very vocal about"
-	cont "#MON."
+	cont "#."
 	done
 
 _FanClubText7:: ; 9a970 (26:6970)

@@ -12,7 +12,7 @@ _Route10EndBattleText1:: ; 8e67a (23:667a)
 
 _Route10AfterBattleText1:: ; 8e690 (23:6690)
 	text "I have more rare"
-	line "#MON at home!"
+	line "# at home!"
 	done
 
 _Route10BattleText2:: ; 8e6b0 (23:66b0)
@@ -38,12 +38,12 @@ IF DEF(_YELLOW)
 ELSE
 	text "Hi kid, want to"
 ENDC
-	line "see my #MON?"
+	line "see my #?"
 	done
 
 _Route10EndBattleText3:: ; 8e73a (23:673a)
 	text "Oh no!"
-	line "My #MON!"
+	line "My #!"
 	prompt
 
 _Route10AfterBattleText3:: ; 8e74b (23:674b)
@@ -53,7 +53,7 @@ _Route10AfterBattleText3:: ; 8e74b (23:674b)
 
 _Route10BattleText4:: ; 8e76c (23:676c)
 	text "I've been to a"
-	line "#MON GYM a few"
+	line "# GYM a few"
 	cont "times. But, I"
 	cont "lost each time."
 	done
@@ -96,7 +96,7 @@ _Route10EndBattleText6:: ; 8e872 (23:6872)
 	prompt
 
 _Route10AfterBattleText6:: ; 8e884 (23:6884)
-	text "The #MON here"
+	text "The # here"
 	line "are so chunky!"
 	cont "There should be a"
 	cont "pink one with a"

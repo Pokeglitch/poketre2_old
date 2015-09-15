@@ -1,6 +1,6 @@
 _CopycatsHouse2FText_5ccd4:: ; a15ad (28:55ad)
 	text $52, ": Hi! Do"
-	line "you like #MON?"
+	line "you like #?"
 
 	para $52, ": Uh no, I"
 	line "just asked you."
@@ -38,7 +38,7 @@ _TM31ExplanationText1:: ; a1689 (28:5689)
 	line "favorite, MIMIC!"
 
 	para "Use it on a good"
-	line "#MON!@@"
+	line "#!@@"
 
 _TM31ExplanationText2:: ; a16c5 (28:56c5)
 	text $52, ": Hi!"
@@ -69,7 +69,7 @@ _CopycatsHouse2FText2:: ; a1749 (28:5749)
 
 _CopycatsHouse2FText3:: ; a1792 (28:5792)
 	text "This is a rare"
-	line "#MON! Huh?"
+	line "#! Huh?"
 	cont "It's only a doll!"
 	done
 
@@ -87,7 +87,7 @@ _CopycatsHouse2FText_5cd17:: ; a17ef (28:57ef)
 	para "Skill: Mimicry!"
 	line "Hobby: Collecting"
 	cont "dolls!"
-	cont "Favorite #MON:"
+	cont "Favorite #:"
 	cont "CLEFAIRY!"
 	done
 

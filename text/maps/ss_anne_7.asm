@@ -25,7 +25,7 @@ _ReceivingHM01Text:: ; 81347 (20:5347)
 	line "have this!"
 
 	para "Teach it to your"
-	line "#MON and you"
+	line "# and you"
 	cont "can see it CUT"
 IF DEF(_YELLOW)
 	cont "anytime!"

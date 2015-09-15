@@ -7,19 +7,19 @@ _VermilionGymText_5cb72:: ; 9c000 (27:4000)
 
 	para "But, it's useless"
 	line "against ground-"
-	cont "type #MON!"
+	cont "type #!"
 	done
 
 _VermilionGymText_5cb77:: ; 9c069 (27:4069)
 	text "The THUNDERBADGE"
 	line "cranks up your"
-	cont "#MON's SPEED!"
+	cont "#'s SPEED!"
 
 	para "It also lets your"
 IF DEF(_YELLOW)
-	line "#MON FLY any-"
+	line "# FLY any-"
 ELSE
-	line "#MON FLY any"
+	line "# FLY any"
 ENDC
 	cont "time, kid!"
 
@@ -39,7 +39,7 @@ _TM24ExplanationText:: ; 9c0f5 (27:40f5)
 	line "THUNDERBOLT!"
 
 	para "Teach it to an"
-	line "electric #MON!"
+	line "electric #!"
 	done
 
 _TM24NoRoomText:: ; 9c130 (27:4130)
@@ -126,10 +126,10 @@ _VermilionGymText_5cbf4:: ; 9c32b (27:432b)
 	cont "American!"
 
 	para "He's an expert on"
-	line "electric #MON!"
+	line "electric #!"
 
 	para "Birds and water"
-	line "#MON are at"
+	line "# are at"
 	cont "risk! Beware of"
 	cont "paralysis too!"
 

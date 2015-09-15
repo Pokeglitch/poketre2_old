@@ -2,7 +2,7 @@ _CeladonMansion1Text1:: ; 9ceee (27:4eee)
 	text "MEOWTH: Meow!@@"
 
 _CeladonMansion1Text2:: ; 9cefe (27:4efe)
-	text "My dear #MON"
+	text "My dear #"
 	line "keep me company."
 
 	para "MEOWTH even brings"

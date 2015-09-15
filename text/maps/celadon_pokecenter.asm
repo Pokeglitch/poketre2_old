@@ -1,6 +1,6 @@
 _CeladonPokecenterText2:: ; 9d226 (27:5226)
-	text "# FLUTE awakens"
-	line "#MON with a"
+	text "POKé FLUTE awakens"
+	line "# with a"
 	cont "sound that only"
 	cont "they can hear!"
 	done

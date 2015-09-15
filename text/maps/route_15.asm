@@ -1,6 +1,6 @@
 _Route15BattleText1:: ; 90c3e (24:4c3e)
 	text "Let me try out the"
-	line "#MON I just"
+	line "# I just"
 	cont "got in a trade!"
 	done
 
@@ -12,7 +12,7 @@ _Route15EndBattleText1:: ; 90c6e (24:4c6e)
 _Route15AfterBattleText1:: ; 90c80 (24:4c80)
 	text "You can't change"
 	line "the nickname of"
-	cont "any #MON you"
+	cont "any # you"
 	cont "get in a trade."
 
 	para "Only the Original"
@@ -39,7 +39,7 @@ _Route15AfterBattleText2:: ; 90d16 (24:4d16)
 _Route15BattleText3:: ; 90d48 (24:4d48)
 	text "When I whistle, I"
 	line "can summon bird"
-	cont "#MON!"
+	cont "#!"
 	done
 
 _Route15EndBattleText3:: ; 90d71 (24:4d71)
@@ -86,7 +86,7 @@ _Route15AfterBattleText5:: ; 90e67 (24:4e67)
 	done
 
 _Route15BattleText6:: ; 90e86 (24:4e86)
-	text "I raise #MON"
+	text "I raise #"
 	line "because I live"
 	cont "alone!"
 	done
@@ -99,7 +99,7 @@ _Route15EndBattleText6:: ; 90eaa (24:4eaa)
 _Route15AfterBattleText6:: ; 90ec1 (24:4ec1)
 	text "I just like going"
 	line "home to be with"
-	cont "my #MON!"
+	cont "my #!"
 	done
 
 _Route15BattleText7:: ; 90eed (24:4eed)
@@ -137,7 +137,7 @@ _Route15AfterBattleText8:: ; 90fa0 (24:4fa0)
 
 _Route15BattleText9:: ; 90fc4 (24:4fc4)
 	text "What's cool?"
-	line "Trading #MON!"
+	line "Trading #!"
 	done
 
 _Route15EndBattleText9:: ; 90fdf (24:4fdf)
@@ -146,13 +146,13 @@ _Route15EndBattleText9:: ; 90fdf (24:4fdf)
 	prompt
 
 _Route15AfterBattleText9:: ; 90fee (24:4fee)
-	text "I trade #MON"
+	text "I trade #"
 	line "with my friends!"
 	done
 
 _Route15BattleText10:: ; 9100d (24:500d)
 	text "Want to play with"
-	line "my #MON?"
+	line "my #?"
 	done
 
 _Route15EndBattleText10:: ; 91029 (24:5029)

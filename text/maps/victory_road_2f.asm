@@ -65,7 +65,7 @@ _VictoryRoad2AfterBattleText4:: ; 8d1dd (23:51dd)
 	text "I can beat you"
 	line "when it comes to"
 	cont "knowledge about"
-	cont "#MON!"
+	cont "#!"
 	done
 
 _VictoryRoad2BattleText5:: ; 8d214 (23:5214)

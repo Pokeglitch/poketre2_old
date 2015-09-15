@@ -6,12 +6,12 @@ _PewterHouse1Text2:: ; 984e1 (26:44e1)
 	done
 
 _PewterHouse1Text3:: ; 984ef (26:44ef)
-	text "Our #MON's an"
+	text "Our #'s an"
 	line "outsider, so it's"
 	cont "hard to handle."
 
 	para "An outsider is a"
-	line "#MON that you"
+	line "# that you"
 	cont "get in a trade."
 
 	para "It grows fast, but"

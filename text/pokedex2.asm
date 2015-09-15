@@ -47,7 +47,7 @@ _UmbreonDexEntry::
 	
 _Porygon2DexEntry::
 	text "This manmade"
-	next "#MON evolved"
+	next "# evolved"
 	next "from the latest"
 	page "technology. It"
 	next "may have unprog-"
@@ -183,7 +183,7 @@ _MissingnoDexEntry::
 _PoltergostDexEntry::
 	text "Considered by many"
 	next "to be the most"
-	next "terrifying #MON"
+	next "terrifying #"
 	page "discovered. Even"
 	next "great pokemon are"
 	next "scared stiff"
@@ -192,8 +192,8 @@ _PoltergostDexEntry::
 _HumanDexEntry::
 	text "Due to its poor"
 	next "stature in battle,"
-	next "this #MON is"
+	next "this # is"
 	page "known to use other"
-	next "#MON to do its"
+	next "# to do its"
 	next "bidding"
 	dex

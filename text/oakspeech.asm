@@ -7,7 +7,8 @@ _OakSpeechText2A::
 	text "This world is"
 	line "inhabited by"
 	cont "creatures called"
-	cont "#!@@"
+	cont "#!"
+	done
 
 _OakSpeechText2B::
 	text $51,"For some people,"
@@ -17,7 +18,7 @@ _OakSpeechText2B::
 	
 	para "Myself..."
  
-	para "I study #MON"
+	para "I study #"
 	line "as a profession."
 
  	prompt
