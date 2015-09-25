@@ -16,7 +16,7 @@ ReadTrainer: ; 39c53 (e:5c53)
 
 ; get the pointer to trainer data for this class
 	ld hl,TrainerDataPointers
-	ld a,[W_CUROPPONENT]
+	ld a,[wCurOpponent]
 	sub $C9 ; convert value from pokemon to trainer
 	add a,a
 	ld c,a
@@ -25,7 +25,7 @@ ReadTrainer: ; 39c53 (e:5c53)
 	ld a,[hli]
 	ld h,[hl]
 	ld l,a
-	ld a,[W_TRAINERNO]
+	ld a,[wTrainerNo]
 	
 	ld b,a	;b contains the trainer index
 	ld de,wEnemyTrainerAddMonRoutinesEnd - wEnemyTrainerAddMonRoutines		;set size that appears at the start of each trainer party header
@@ -68,8 +68,8 @@ ReadTrainer: ; 39c53 (e:5c53)
 	ld a,[hli]		;get the pokemon and increment hl
 	ld [wcf91],a ; write species somewhere (XXX why?)
 	call SeeIfPokemonShouldEvolve		;see if the pokemon should be evolved, based on the level
-	ld a,1
-	ld [wcc49],a
+	ld a,ENEMY_PARTY_DATA
+	ld [wMonDataLocation],a
 	push hl
 	call AddPartyMon
 	pop hl
@@ -103,18 +103,18 @@ ReadTrainer: ; 39c53 (e:5c53)
 	call CopyData	;copy the name to everything after the space
 	
 ; clear wAmountMoneyWon addresses
-	xor a       
+	xor a
 	ld de,wAmountMoneyWon
 	ld [de],a
 	inc de
 	ld [de],a
 	inc de
 	ld [de],a
-	ld a,[W_CURENEMYLVL]
+	ld a,[wCurEnemyLVL]
 	ld b,a
 .LastLoop
 ; update wAmountMoneyWon addresses (money to win) based on enemy's level
-	ld hl,wd047
+	ld hl,wTrainerBaseMoney + 1
 	ld c,2 ; wAmountMoneyWon is a 3-byte number
 	push bc
 	predef AddBCDPredef
@@ -124,8 +124,6 @@ ReadTrainer: ; 39c53 (e:5c53)
 	dec b
 	jr nz,.LastLoop ; repeat W_CURENEMYLVL times
 	ret
-	
-	
 	
 	
 	

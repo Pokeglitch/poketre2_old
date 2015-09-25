@@ -11,6 +11,7 @@ move: macro
 endm
 
 	move POUND,         NO_ADDITIONAL_EFFECT,         40,  FIGHTING,  100,  5	
+MoveEnd:
 	move KARATE_CHOP,   NO_ADDITIONAL_EFFECT,         50,  FIGHTING,  100,  15	
 	move STARBURST,     RADIOACTIVATE_EFFECT,        100,  COSMIC,    100,  30	
 	move COMET_PUNCH,   TWO_TO_FIVE_ATTACKS_EFFECT,   18,  COSMIC,     85,  25	

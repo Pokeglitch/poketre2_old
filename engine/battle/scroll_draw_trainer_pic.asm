@@ -2,10 +2,10 @@ _ScrollTrainerPicAfterBattle: ; 396d3 (e:56d3)
 ; Load the enemy trainer's pic and scrolls it into
 ; the screen from the right.
 	xor a
-	ld b, $1
-	call GoPAL_SET
+	ld b, SET_PAL_BATTLE
+	call RunPaletteCommand
 	callab _LoadTrainerPic
-	hlCoord 19, 0
+	coord hl, 19, 0
 	ld c, $0
 .scrollLoop
 	inc c

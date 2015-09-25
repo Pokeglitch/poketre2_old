@@ -15,7 +15,7 @@ POKEDEX_TEXT EQU $2b
 MOVE_NAMES   EQU $2c
 
 INCLUDE "macros.asm"
-
+INCLUDE "hram.asm"
 
 
 SECTION "Text 1", ROMX, BANK[TEXT_1]
@@ -94,19 +94,19 @@ _OaksAideHiText:: ; 80143 (20:4143)
 	cont "AIDE!"
 
 	para "If you caught @"
-	TX_NUM $ffdb, 1, 3
+	TX_NUM hOaksAideRequirement, 1, 3
 	db $0
 	line "kinds of #,"
 	cont "I'm supposed to"
 	cont "give you an"
 	cont "@"
-	TX_RAM wcc5b
+	TX_RAM wOaksAideRewardItemName
 	text "!"
 
 	para "So, ", $52, "! Have"
 	line "you caught at"
 	cont "least @"
-	TX_NUM $ffdb, 1, 3
+	TX_NUM hOaksAideRequirement, 1, 3
 	text " kinds of"
 	cont "#?"
 	done
@@ -115,16 +115,16 @@ _OaksAideUhOhText:: ; 801e4 (20:41e4)
 	text "Let's see..."
 	line "Uh-oh! You have"
 	cont "caught only @"
-	TX_NUM $ffdd, 1, 3
+	TX_NUM hOaksAideNumMonsOwned, 1, 3
 	db $0
 	cont "kinds of #!"
 
 	para "You need @"
-	TX_NUM $ffdb, 1, 3
+	TX_NUM hOaksAideRequirement, 1, 3
 	text " kinds"
 	line "if you want the"
 	cont "@"
-	TX_RAM wcc5b
+	TX_RAM wOaksAideRewardItemName
 	text "."
 	done
 
@@ -132,18 +132,18 @@ _OaksAideComeBackText:: ; 80250 (20:4250)
 	text "Oh. I see."
 
 	para "When you get @"
-	TX_NUM $ffdb, 1, 3
+	TX_NUM hOaksAideRequirement, 1, 3
 	db $0
 	line "kinds, come back"
 	cont "for @"
-	TX_RAM wcc5b
+	TX_RAM wOaksAideRewardItemName
 	text "."
 	done
 
 _OaksAideHereYouGoText:: ; 8028c (20:428c)
 	text "Great! You have"
 	line "caught @"
-	TX_NUM $ffdd, 1, 3
+	TX_NUM hOaksAideNumMonsOwned, 1, 3
 	text " kinds "
 	cont "of #!"
 	cont "Congratulations!"
@@ -154,7 +154,7 @@ _OaksAideHereYouGoText:: ; 8028c (20:428c)
 _OaksAideGotItemText:: ; 802d9 (20:42d9)
 	text $52, " got the"
 	line "@"
-	TX_RAM wcc5b
+	TX_RAM wOaksAideRewardItemName
 	text "!@@"
 
 _OaksAideNoRoomText:: ; 802ec (20:42ec)
@@ -162,7 +162,7 @@ _OaksAideNoRoomText:: ; 802ec (20:42ec)
 	line "don't have any"
 	cont "room for the"
 	cont "@"
-	TX_RAM wcc5b
+	TX_RAM wOaksAideRewardItemName
 	text "."
 	done
 
@@ -264,7 +264,7 @@ _TradeWentToText:: ; 880ef (22:40ef)
 	TX_RAM wcf4b
 	text " went"
 	line "to @"
-	TX_RAM W_GRASSRATE
+	TX_RAM wGrassRate
 	text "."
 	done
 
@@ -276,7 +276,7 @@ _TradeForText:: ; 88103 (22:4103)
 	done
 
 _TradeSendsText:: ; 88112 (22:4112)
-	TX_RAM W_GRASSRATE
+	TX_RAM wGrassRate
 	text " sends"
 	line "@"
 	TX_RAM wcd6d
@@ -284,7 +284,7 @@ _TradeSendsText:: ; 88112 (22:4112)
 	done
 
 _TradeWavesFarewellText:: ; 88124 (22:4124)
-	TX_RAM W_GRASSRATE
+	TX_RAM wGrassRate
 	text " waves"
 	line "farewell as"
 	done
@@ -303,7 +303,7 @@ _TradeTakeCareText:: ; 88150 (22:4150)
 	done
 
 _TradeWillTradeText:: ; 8816a (22:416a)
-	TX_RAM W_GRASSRATE
+	TX_RAM wGrassRate
 	text " will"
 	line "trade @"
 	TX_RAM wcd6d
@@ -362,10 +362,10 @@ _YeahText:: ; 88236 (22:4236)
 
 _DexSeenOwnedText:: ; 8823e (22:423e)
 	text "POKéDEX   Seen:@"
-	TX_NUM wcc5b, 1, 3
+	TX_NUM wDexRatingNumMonsSeen, 1, 3
 	db $0
 	line "         Owned:@"
-	TX_NUM wcc5c, 1, 3
+	TX_NUM wDexRatingNumMonsOwned, 1, 3
 	db "@"
 
 _DexRatingText:: ; 88267 (22:4267)
@@ -1014,13 +1014,13 @@ _HiddenItemBagFullText:: ; 894e1 (22:54e1)
 _FoundHiddenCoinsText:: ; 8950b (22:550b)
 	text $52, " found"
 	line "@"
-	TX_BCD $ffa0, $c2
+	TX_BCD hCoins, $c2
 	text " coins!@@"
 
 _FoundHiddenCoins2Text:: ; 89523 (22:5523)
 	text $52, " found"
 	line "@"
-	TX_BCD $ffa0, $c2
+	TX_BCD hCoins, $c2
 	text " coins!@@"
 
 _DroppedHiddenCoinsText:: ; 8953b (22:553b)
@@ -1465,7 +1465,7 @@ _BoostedText:: ; 89be1 (22:5be1)
 	text "a boosted"
 	cont "@@"
 _ExpPointsText:: ; 89bee (22:5bee)
-	TX_NUM wcf4b, 2, 4
+	TX_NUM wExpAmountGained, 2, 4
 	text " EXP. Points!"
 	prompt
 
@@ -1473,7 +1473,7 @@ _GrewLevelText:: ; 89c01 (22:5c01)
 	TX_RAM wcd6d
 	text " grew"
 	line "to level @"
-	TX_NUM W_CURENEMYLVL, 1, 3
+	TX_NUM wCurEnemyLVL, 1, 3
 	text "!@@"
 
 _WildMonAppearedText:: ; 89c1d (22:5c1d)
@@ -1671,7 +1671,7 @@ _RareCandyText:: ; 89ee2 (22:5ee2)
 	TX_RAM wcd6d
 	text " grew"
 	line "to level @"
-	TX_NUM W_CURENEMYLVL, $1,$3
+	TX_NUM wCurEnemyLVL, $1,$3
 	text "!@@"
 
 _TurnedOnPC1Text:: ; 89efe (22:5efe)
@@ -1804,7 +1804,7 @@ _MonWasStoredText:: ; 0x8a159
 	TX_RAM wcf4b
 	text " was"
 	line "stored in Box @"
-	TX_RAM wWhichTrade
+	TX_RAM wBoxNumString
 	text "."
 	prompt
 
@@ -2072,7 +2072,7 @@ _ColosseumVersionText::
 ENDC
 
 _Char00Text:: ; 8a696 (22:6696)
-	TX_NUM $FF8C,1,2
+	TX_NUM hSpriteIndexOrTextID,1,2
 	text " ERROR."
 	done
 
@@ -2476,11 +2476,11 @@ _DreamWasEatenText:: ; 94aec (25:4aec)
 	line "dream was eaten!"
 	prompt
 
-_BattleCenterMText1:: ; 94b01 (25:4b01)
+_TradeCenterText1:: ; 94b01 (25:4b01)
 	text "!"
 	done
 
-_TradeCenterMText1:: ; 94b04 (25:4b04)
+_ColosseumText1:: ; 94b04 (25:4b04)
 	text "!"
 	done
 
@@ -2617,7 +2617,7 @@ _PokemartTellBuyPriceText:: ; a2619 (28:6619)
 	text "?"
 	line "That will be"
 	cont "¥@"
-	TX_BCD $ff9f, $c3
+	TX_BCD hMoney, $c3
 	text ". OK?"
 	done
 
@@ -2644,7 +2644,7 @@ _PokemonSellingGreetingText:: ; a2690 (28:6690)
 _PokemartTellSellPriceText:: ; a26ae (28:66ae)
 	text "I can pay you"
 	line "¥@"
-	TX_BCD $ff9f, $c3
+	TX_BCD hMoney, $c3
 	text " for that."
 	done
 
@@ -2668,7 +2668,7 @@ _PokemartAnythingElseText:: ; a2719 (28:6719)
 	done
 
 _LearnedMove1Text:: ; a273b (28:673b)
-	TX_RAM wd036
+	TX_RAM wLearnMoveMonName
 	text " learned"
 	line "@"
 	TX_RAM wcf4b
@@ -2687,7 +2687,7 @@ _AbandonLearningText:: ; a2771 (28:6771)
 	done
 
 _DidNotLearnText:: ; a278a (28:678a)
-	TX_RAM wd036
+	TX_RAM wLearnMoveMonName
 	db $0
 	line "did not learn"
 	cont "@"
@@ -2696,7 +2696,7 @@ _DidNotLearnText:: ; a278a (28:678a)
 	prompt
 
 _TryingToLearnText:: ; a27a4 (28:67a4)
-	TX_RAM wd036
+	TX_RAM wLearnMoveMonName
 	text " is"
 	line "trying to learn"
 	cont "@"
@@ -2704,7 +2704,7 @@ _TryingToLearnText:: ; a27a4 (28:67a4)
 	text "!"
 
 	para "But, @"
-	TX_RAM wd036
+	TX_RAM wLearnMoveMonName
 	db $0
 	line "can't learn more"
 	cont "than 4 moves!"
@@ -2725,7 +2725,7 @@ _PoofText:: ; a2827 (28:6827)
 _ForgotAndText:: ; a2830 (28:6830)
 	db $0
 	para "@"
-	TX_RAM wd036
+	TX_RAM wLearnMoveMonName
 	text " forgot"
 	line "@"
 	TX_RAM wcd6d

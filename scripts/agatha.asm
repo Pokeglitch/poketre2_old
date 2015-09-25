@@ -3,9 +3,9 @@ AgathaScript: ; 7642d (1d:642d)
 	call EnableAutoTextBoxDrawing
 	ld hl, AgathaTrainerHeaders
 	ld de, AgathaScriptPointers
-	ld a, [W_AGATHACURSCRIPT]
+	ld a, [wAgathaCurScript]
 	call ExecuteCurMapScriptInTable
-	ld [W_AGATHACURSCRIPT], a
+	ld [wAgathaCurScript], a
 	ret
 
 AgathaScript_76443: ; 76443 (1d:6443)
@@ -13,8 +13,7 @@ AgathaScript_76443: ; 76443 (1d:6443)
 	bit 5, [hl]
 	res 5, [hl]
 	ret z
-	ld a, [wd865]
-	bit 1, a
+	CheckEvent EVENT_BEAT_AGATHAS_ROOM_TRAINER_0
 	jr z, .asm_76457
 	ld a, $e
 	jp AgathaScript_76459
@@ -22,13 +21,13 @@ AgathaScript_76443: ; 76443 (1d:6443)
 	ld a, $3b
 
 AgathaScript_76459: ; 76459 (1d:6459)
-	ld [wd09f], a
-	ld bc, $2
+	ld [wNewTileBlockID], a
+	lb bc, 0, 2
 	predef_jump ReplaceTileBlock
 
 AgathaScript_76464: ; 76464 (1d:6464)
 	xor a
-	ld [W_AGATHACURSCRIPT], a
+	ld [wAgathaCurScript], a
 	ret
 
 AgathaScriptPointers: ; 76469 (1d:6469)
@@ -40,7 +39,8 @@ AgathaScriptPointers: ; 76469 (1d:6469)
 
 AgathaScript4: ; 76473 (1d:6473)
 	ret
-asm_76474: ; 76474 (1d:6474)
+
+AgathaScript_76474: ; 76474 (1d:6474)
 	ld hl, wSimulatedJoypadStatesEnd
 	ld a, D_UP
 	ld [hli], a
@@ -53,8 +53,8 @@ asm_76474: ; 76474 (1d:6474)
 	ld [wSimulatedJoypadStatesIndex], a
 	call StartSimulatingJoypadStates
 	ld a, $3
-	ld [W_AGATHACURSCRIPT], a
-	ld [W_CURMAPSCRIPT], a
+	ld [wAgathaCurScript], a
+	ld [wCurMapScript], a
 	ret
 
 AgathaScript0: ; 76490 (1d:6490)
@@ -66,16 +66,14 @@ AgathaScript0: ; 76490 (1d:6490)
 	ld [hJoyHeld], a
 	ld [wSimulatedJoypadStatesEnd], a
 	ld [wSimulatedJoypadStatesIndex], a
-	ld a, [wWhichTrade] ; wWhichTrade
+	ld a, [wCoordIndex]
 	cp $3
 	jr c, .asm_764b4
-	ld hl, wd865
-	bit 6, [hl]
-	set 6, [hl]
-	jr z, asm_76474
+	CheckAndSetEvent EVENT_AUTOWALKED_INTO_AGATHAS_ROOM
+	jr z, AgathaScript_76474
 .asm_764b4
 	ld a, $2
-	ld [H_DOWNARROWBLINKCNT2], a ; $ff8c
+	ld [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	ld a, D_UP
 	ld [wSimulatedJoypadStatesEnd], a
@@ -83,8 +81,8 @@ AgathaScript0: ; 76490 (1d:6490)
 	ld [wSimulatedJoypadStatesIndex], a
 	call StartSimulatingJoypadStates
 	ld a, $3
-	ld [W_AGATHACURSCRIPT], a
-	ld [W_CURMAPSCRIPT], a
+	ld [wAgathaCurScript], a
+	ld [wCurMapScript], a
 	ret
 
 CoordsData_764d1: ; 764d1 (1d:64d1)
@@ -101,40 +99,40 @@ AgathaScript3: ; 764da (1d:64da)
 	call Delay3
 	xor a
 	ld [wJoyIgnore], a
-	ld [W_AGATHACURSCRIPT], a
-	ld [W_CURMAPSCRIPT], a
+	ld [wAgathaCurScript], a
+	ld [wCurMapScript], a
 	ret
 
 AgathaScript2: ; 764ed (1d:64ed)
 	call EndTrainerBattle
-	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
+	ld a, [wIsInBattle]
 	cp $ff
 	jp z, AgathaScript_76464
 	ld a, $1
-	ld [H_DOWNARROWBLINKCNT2], a ; $ff8c
+	ld [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	ld a, $1
-	ld [W_GARYCURSCRIPT], a
+	ld [wGaryCurScript], a
 	ret
 
 AgathaTextPointers: ; 76505 (1d:6505)
 	dw AgathaText1
-	dw AgathaText2
+	dw AgathaDontRunAwayText
 
 AgathaTrainerHeaders: ; 76509 (1d:6509)
 AgathaTrainerHeader0: ; 76509 (1d:6509)
-	db $1 ; flag's bit
+	dbEventFlagBit EVENT_BEAT_AGATHAS_ROOM_TRAINER_0
 	db ($0 << 4) ; trainer's view range
-	dw wd865 ; flag's byte
-	dw AgathaBeforeBattleText ; 0x6520 TextBeforeBattle
-	dw AgathaAfterBattleText ; 0x652a TextAfterBattle
-	dw AgathaEndBattleText ; 0x6525 TextEndBattle
-	dw AgathaEndBattleText ; 0x6525 TextEndBattle
+	dwEventFlagAddress EVENT_BEAT_AGATHAS_ROOM_TRAINER_0
+	dw AgathaBeforeBattleText ; TextBeforeBattle
+	dw AgathaAfterBattleText ; TextAfterBattle
+	dw AgathaEndBattleText ; TextEndBattle
+	dw AgathaEndBattleText ; TextEndBattle
 
 	db $ff
 
 AgathaText1: ; 76516 (1d:6516)
-	db $08 ; asm
+	TX_ASM
 	ld hl, AgathaTrainerHeader0
 	call TalkToTrainer
 	jp TextScriptEnd
@@ -151,6 +149,6 @@ AgathaAfterBattleText: ; 7652a (1d:652a)
 	TX_FAR _AgathaAfterBattleText
 	db "@"
 
-AgathaText2: ; 7652f (1d:652f)
-	TX_FAR _AgathaText2
+AgathaDontRunAwayText: ; 7652f (1d:652f)
+	TX_FAR _AgathaDontRunAwayText
 	db "@"

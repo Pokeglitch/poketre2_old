@@ -45,7 +45,6 @@ PP_UP         EQU $4F
 MAX_ELIXER    EQU $53
 
 
-
 const_value = 1
 
 	const MASTER_BALL   ; $01

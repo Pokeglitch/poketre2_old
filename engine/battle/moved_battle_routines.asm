@@ -5,7 +5,7 @@ LoadMonBackPic: ; 3f103 (f:7103)
 	cp HUMAN	;is it human?
 	jp z,LoadPlayerBackPic	;then load the trainer back pic
 	ld [wcf91], a
-	hlCoord 1, 5
+	coord hl, 1, 5
 	ld b, $7
 	ld c, $8
 	call ClearScreenArea
@@ -86,7 +86,7 @@ LoadPlayerBackPic: ; 3ec92 (f:6c92)
 	ld [$0], a
 	ld a, $31
 	ld [$ffe1], a
-	hlCoord 1, 5
+	coord hl, 1, 5
 	predef_jump Func_3f0c6
 
 ; does nothing since no stats are ever selected (barring glitches)
@@ -102,7 +102,7 @@ SlidePlayerAndEnemySilhouettesOnScreen: ; 3c04c (f:404c)
 	ld a, MESSAGE_BOX ; the usual text box at the bottom of the screen
 	ld [wTextBoxID], a
 	call DisplayTextBoxID
-	hlCoord 1, 5
+	coord hl, 1, 5
 	ld bc, $307
 	call ClearScreenArea
 	call DisableLCD
@@ -177,7 +177,7 @@ SlidePlayerAndEnemySilhouettesOnScreen: ; 3c04c (f:404c)
 	ld [H_AUTOBGTRANSFERENABLED], a
 	ld a, $31
 	ld [$ffe1], a
-	hlCoord 1, 5
+	coord hl, 1, 5
 	predef Func_3f0c6
 	xor a
 	ld [hWY], a
@@ -226,10 +226,10 @@ SetScrollXForSlidingPlayerBodyLeft: ; 3c110 (f:4110)
 	
 ; show 2 stages of the player getting smaller before disappearing
 AnimateRetreatingPlayerMon: ; 3ccfa (f:4cfa)
-	hlCoord 1, 5
+	coord hl, 1, 5
 	ld bc, $707
 	call ClearScreenArea
-	hlCoord 3, 7
+	coord hl, 3, 7
 	ld bc, $505
 	xor a
 	ld [wcd6c], a
@@ -238,7 +238,7 @@ AnimateRetreatingPlayerMon: ; 3ccfa (f:4cfa)
 	ld c, $4
 	call DelayFrames
 	call .clearScreenArea
-	hlCoord 4, 9
+	coord hl, 4, 9
 	ld bc, $303
 	ld a, $1
 	ld [wcd6c], a
@@ -250,6 +250,6 @@ AnimateRetreatingPlayerMon: ; 3ccfa (f:4cfa)
 	ld a, $4c
 	Coorda 5, 11
 .clearScreenArea
-	hlCoord 1, 5
+	coord hl, 1, 5
 	ld bc, $707
 	jp ClearScreenArea

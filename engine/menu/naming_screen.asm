@@ -2,19 +2,19 @@ AskName: ; 64eb (1:64eb)
 	call SaveScreenTilesToBuffer1
 	call GetPredefRegisters
 	push hl
-	ld a, [W_ISINBATTLE]
+	ld a, [wIsInBattle]
 	dec a
-	ld hl, wTileMap
-	ld b, $4
-	ld c, $b
+	coord hl, 0, 0
+	ld b, 4
+	ld c, 11
 	call z, ClearScreenArea ; only if in wild batle
 	ld a, [wcf91]
 	ld [wd11e], a
 	call GetMonName
 	ld hl, DoYouWantToNicknameText
 	call PrintText
-	hlCoord 14, 7
-	ld bc, $80f
+	coord hl, 14, 7
+	lb bc, 8, 15
 	ld a, TWO_OPTION_MENU
 	ld [wTextBoxID], a
 	call DisplayTextBoxID
@@ -27,15 +27,15 @@ AskName: ; 64eb (1:64eb)
 	xor a
 	ld [wUpdateSpritesEnabled], a
 	push hl
-	ld a, $2
-	ld [wd07d], a
+	ld a, NAME_MON_SCREEN
+	ld [wNamingScreenType], a
 	call DisplayNamingScreen
-	ld a, [W_ISINBATTLE]
+	ld a, [wIsInBattle]
 	and a
-	jr nz, .asm_653e
+	jr nz, .inBattle
 	call GBPalWhiteOutWithDelay3		;whiteout the palette
 	call ReloadMapSpriteTilePatterns
-.asm_653e
+.inBattle
 	call LoadScreenTilesFromBuffer1
 	pop hl
 	pop af
@@ -54,31 +54,31 @@ DoYouWantToNicknameText: ; 0x6557
 	TX_FAR _DoYouWantToNicknameText
 	db "@"
 
-Func_655c: ; 655c (1:655c)
-	ld hl, wHPBarMaxHP
+DisplayNameRaterScreen: ; 655c (1:655c)
+	ld hl, wBuffer
 	xor a
 	ld [wUpdateSpritesEnabled], a
-	ld a, $2
-	ld [wd07d], a
+	ld a, NAME_MON_SCREEN
+	ld [wNamingScreenType], a
 	call DisplayNamingScreen
 	call GBPalWhiteOutWithDelay3
 	call RestoreScreenTilesAndReloadTilePatterns
 	call LoadGBPal
 	ld a, [wcf4b]
-	cp $50
-	jr z, .asm_6594
+	cp "@"
+	jr z, .playerCancelled
 	ld hl, wPartyMonNicks
-	ld bc, $b
+	ld bc, NAME_LENGTH
 	ld a, [wWhichPokemon]
 	call AddNTimes
 	ld e, l
 	ld d, h
-	ld hl, wHPBarMaxHP
-	ld bc, $b
+	ld hl, wBuffer
+	ld bc, NAME_LENGTH
 	call CopyData
 	and a
 	ret
-.asm_6594
+.playerCancelled
 	scf
 	ret
 
@@ -102,17 +102,17 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	ld b, $8
 	call GoPAL_SET
 	
-	hlCoord 2,9
+	coord hl, 2,9
 	ld bc,$50e
 	call TextBoxBorder
-	hlCoord 2,2
+	coord hl, 2,2
 	ld bc,$50e
 	call TextBoxBorderAndAdjust
 	
 	ld a, [wd07d]
 	cp 2	;nickname screen?
 	jr c,.afterClearingSpriteArea		;skip if not
-	hlCoord 14,4
+	coord hl, 14,4
 	ld a,$D9
 	ld [hli],a
 	inc a
@@ -138,21 +138,21 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	ld a, $50
 	ld [wcf4b], a
 	xor a
-	ld hl, wHPBarMaxHP + 1
+	ld hl, wNamingScreenSubmitName
 	ld [hli], a
 	ld [hli], a
-	ld [wPartyMonAnimCounter], a
-.asm_65ed
+	ld [wAnimCounter], a
+.selectReturnPoint
 	call PrintAlphabet
 	call GBPalNormal
-.asm_65f3
-	ld a, [wHPBarMaxHP + 1]
+.ABStartReturnPoint
+	ld a, [wNamingScreenSubmitName]
 	and a
-	jr nz, .asm_662d
-	call Func_680e
-.asm_65fc
+	jr nz, .submitNickname
+	call PrintNicknameAndUnderscores
+.dPadReturnPoint
 	call PlaceKeyboardCursor
-.asm_65ff
+.inputLoop
 	ld a, [wCurrentMenuItem]
 	push af
 	callba AnimatePartyMon_ForceSpeed1
@@ -161,17 +161,17 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	call JoypadLowSensitivity
 	ld a, [hJoyPressed]
 	and a
-	jr z, .asm_65ff
-	ld hl, .unknownPointerTable_665e
-.asm_661a
+	jr z, .inputLoop
+	ld hl, .namingScreenButtonFunctions
+.checkForPressedButton
 	sla a
-	jr c, .asm_6624
+	jr c, .foundPressedButton
 	inc hl
 	inc hl
 	inc hl
 	inc hl
-	jr .asm_661a
-.asm_6624
+	jr .checkForPressedButton
+.foundPressedButton
 	ld a, [hli]
 	ld e, a
 	ld a, [hli]
@@ -181,14 +181,13 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	ld l, a
 	push de
 	jp [hl]
-.asm_662d
+.submitNickname
 	callab CheatCodeCheck
-	jr c,.asm_65ff		;start over if we entered a cheat code
+	jr c,.inputLoop		;start over if we entered a cheat code
 	call GBPalWhiteOutWithDelay3
 	ld a,$DD
 	call ClearScreenAltTile
 	call ClearSprites
-	
 	
 	pop af
 	ld [wWhichScreen],a		;restore the previous screen id
@@ -200,57 +199,55 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	call GoPAL_SET_CF1C
 	call GBPalNormal
 	xor a
-	ld [W_SUBANIMTRANSFORM], a
+	ld [wAnimCounter], a
 	ld hl, wd730
 	res 6, [hl]
-	ld a, [W_ISINBATTLE]
+	ld a, [wIsInBattle]
 	and a
 	jp z, LoadTextBoxTilePatterns
-	ld hl, LoadHudTilePatterns
-	ld b, BANK(LoadHudTilePatterns)
-	jp Bankswitch
+	jpab LoadHudTilePatterns
 
-.unknownPointerTable_665e: ; 665e (1:665e)
-	dw .asm_65fc
-	dw .asm_673e
-	dw .asm_65fc
-	dw .asm_672c
-	dw .asm_65fc
-	dw .asm_6718
-	dw .asm_65fc
-	dw .asm_6702
-	dw .asm_65f3
-	dw .asm_668c
-	dw .asm_65ed
-	dw .asm_6683
-	dw .asm_65f3
-	dw .deleteLetter
-	dw .asm_65f3
-	dw .asm_6692
+.namingScreenButtonFunctions
+	dw .dPadReturnPoint
+	dw .pressedDown
+	dw .dPadReturnPoint
+	dw .pressedUp
+	dw .dPadReturnPoint
+	dw .pressedLeft
+	dw .dPadReturnPoint
+	dw .pressedRight
+	dw .ABStartReturnPoint
+	dw .pressedStart
+	dw .selectReturnPoint
+	dw .pressedSelect
+	dw .ABStartReturnPoint
+	dw .pressedB
+	dw .ABStartReturnPoint
+	dw .pressedA
 
-.asm_667e
+.pressedA_changedCase
 	pop de
-	ld de, .asm_65ed ; $65ed
+	ld de, .selectReturnPoint
 	push de
-.asm_6683
+.pressedSelect
 	call AnimateCaps
-	ld a, [wHPBarOldHP]
+	ld a, [wAlphabetCase]
 	xor $1
-	ld [wHPBarOldHP], a
+	ld [wAlphabetCase], a
 	ret
-.asm_668c
+.pressedStart
 	ld a, [wd07d]
 	cp $2
 	jr nc, .skipCheckingLength
-	ld a, [wHPBarMaxHP]
+	ld a, [wNamingScreenNameLength]
 	and a
 	ret z		;return if players name is empty
 .skipCheckingLength
 	call AnimateEnter
-	ld a, $1
-	ld [wHPBarMaxHP + 1], a
+	ld a, 1
+	ld [wNamingScreenSubmitName], a
 	ret
-.asm_6692		; a pressed
+.pressedA		; a pressed
 	ld a, [wCurrentMenuItem]
 	cp $9A
 	jr z,.deleteLetter		;delete letter
@@ -264,27 +261,27 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	jr z, .asm_668c		;finish
 	cp $9F
 	jr z, .asm_668c		;finish
-	ld [wHPBarNewHP], a
+	ld [wNamingScreenLetter], a
 	call CalcStringLength
-	ld a, [wHPBarMaxHP]
+	ld a, [wNamingScreenNameLength]
 	cp 10 ; max length of pokemon nicknames
 	ret nc
-	ld a, [wHPBarNewHP]
+	ld a, [wNamingScreenLetter]
 	ld [hli], a
 	ld [hl], $50
 	call AnimateTilePress
 	call PlayButtonPressSound
 	ret
-.deleteLetter
-	ld a, [wHPBarMaxHP]
+.pressedB
+	ld a, [wNamingScreenNameLength]
 	and a
 	ret z
 	call AnimateBackspace
 	call CalcStringLength
 	dec hl
-	ld [hl], $50
+	ld [hl], "@"
 	ret
-.asm_6702	;right pressed
+.pressedRight	;right pressed
 	ld a, [wCurrentMenuItem]
 	cp " "
 	ret z		;dont move right if on spacebar
@@ -301,7 +298,7 @@ DisplayNamingScreen: ; 6596 (1:6596)
 .wrapAroundRight
 	ld a, 0
 	jr .asm_6755
-.asm_6718	;left pressed
+.pressedLeft	;left pressed
 	ld a, [wCurrentMenuItem]
 	cp " "
 	ret z		;dont move left if on spacebar
@@ -325,7 +322,7 @@ DisplayNamingScreen: ; 6596 (1:6596)
 .wrapAroundLeft
 	ld a, 11
 	jr .asm_6755
-.asm_672c		;up pressed
+.pressedUp		;up pressed
 	ld a,[wTopMenuItemY]
 	and a
 	jr z,.wrapAroundUp
@@ -336,7 +333,7 @@ DisplayNamingScreen: ; 6596 (1:6596)
 .saveToY
 	ld [wTopMenuItemY], a
 	ret
-.asm_673e		;down pressed
+.pressedDown		;down pressed
 	ld a, [wCurrentMenuItem]
 	cp " "	;are we at space bar?
 	jr z,.wrapAroundDown
@@ -348,37 +345,37 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	ld a,0
 	jr .saveToY
 
-.asm_6755
+.done
 	ld [wTopMenuItemX], a
 	ret
 
 PrintAlphabet: ; 676f (1:676f)
 	xor a
-	ld [H_AUTOBGTRANSFERENABLED], a ; $ffba
-	ld a, [wHPBarOldHP]
+	ld [H_AUTOBGTRANSFERENABLED], a
+	ld a, [wAlphabetCase]
 	and a
 	ld de, LowerCaseAlphabet ; $679e
-	jr nz, .asm_677e
+	jr nz, .lowercase
 	ld de, UpperCaseAlphabet ; $67d6
-.asm_677e
-	hlCoord 4, 10
+.lowercase
+	coord hl, 4, 10
 	ld bc, $50c
-.asm_6784
+.outerLoop
 	push bc
-.asm_6785
+.innerLoop
 	ld a, [de]
 	ld [hli], a
 	inc de
 	dec c
-	jr nz, .asm_6785
+	jr nz, .innerLoop
 	ld bc, 8
 	add hl, bc
 	pop bc
 	dec b
-	jr nz, .asm_6784
+	jr nz, .outerLoop
 	call PlaceString
 	ld a, $1
-	ld [H_AUTOBGTRANSFERENABLED], a ; $ffba
+	ld [H_AUTOBGTRANSFERENABLED], a
 	jp Delay3
 
 LowerCaseAlphabet: ; 679e (1:679e)
@@ -406,7 +403,7 @@ PlaceKeyboardCursor:
 	jr .finish
 	
 .notSpace
-	hlCoord 4, 10		;top left of keyboard
+	coord hl, 4, 10		;top left of keyboard
 	ld de,20		;one line
 .loop
 	and a
@@ -529,7 +526,6 @@ LoadSecondTextBoxBorderTiles:
 	ld c,14
 	ld b, BANK(PCTextBox2Graphics)
 	jp CopyVideoData
-
 	
 AnimateTilePress:
 	ld a,[wCurrentMenuItem]
@@ -667,13 +663,13 @@ GetOffsetInBCDE:
 	pop de	
 	ret
 	
-Func_680e: ; 680e (1:680e)
+PrintNicknameAndUnderscores: ; 680e (1:680e)
 	call CalcStringLength
 	ld a, c
-	ld [wHPBarMaxHP], a
-	hlCoord 5, 7
-	ld a, [wd07d]
-	cp 2	;nickname screen?
+	ld [wNamingScreenNameLength], a
+	coord hl, 5, 7
+	ld a, [wNamingScreenType]
+	cp NAME_MON_SCREEN	;nickname screen?
 	jr nc,.dontAdjust		;dont adjust the line if so
 	ld de,-20
 	add hl,de		;move up a line if not pokemon screen
@@ -696,10 +692,10 @@ Func_680e: ; 680e (1:680e)
 	pop af
 	ld c,a
 	ld b,0
-	hlCoord 5, 7
+	coord hl, 5, 7
 	add hl,bc		;hl is where to copy to
-	ld a, [wd07d]
-	cp 2	;nickname screen?
+	ld a, [wNamingScreenType]
+	cp NAME_MON_SCREEN	;nickname screen?
 	jr nc,.dontAdjust2		;dont adjust the line if so
 	ld de,-20
 	add hl,de		;move up a line if not pokemon screen
@@ -719,34 +715,18 @@ Func_680e: ; 680e (1:680e)
 .finish
 	pop af
 	ret
-	
-	ret
-
-Func_6871: ; 6871 (1:6871)
-	push de
-	call CalcStringLength
-	dec hl
-	ld a, [hl]
-	pop hl
-	ld de, $2
-	call IsInArray
-	ret nc
-	inc hl
-	ld a, [hl]
-	ld [wHPBarNewHP], a
-	ret
 
 ; calculates the length of the string at wcf4b and stores it in c
 CalcStringLength: ; 68eb (1:68eb)
 	ld hl, wcf4b
 	ld c, $0
-.asm_68f0
+.loop
 	ld a, [hl]
-	cp $50
+	cp "@"
 	ret z
 	inc hl
 	inc c
-	jr .asm_68f0
+	jr .loop
 
 ;to copy over the black text tiles (text pointer in hl) for the corresponding letter into the vram at de
 CopyLetterTilesToVRAM:
@@ -799,9 +779,9 @@ PrintNamingText: ; 68f8 (1:68f8)
 	ld de,vFont + $490
 	call CopyLetterTilesToVRAM
 	
-	hlCoord 3,5
-	ld a, [wd07d]
-	cp 2	;nickname screen?
+	coord hl, 3,5
+	ld a, [wNamingScreenType]
+	cp NAME_MON_SCREEN	;nickname screen?
 	jr nc,.dontAdjust		;dont adjust the line if so
 	ld de,-20
 	add hl,de		;move up a line if not pokemon screen
@@ -829,7 +809,7 @@ PrintNamingText: ; 68f8 (1:68f8)
 	call CopyLetterTilesToVRAM
 	
 	ld a,$70
-	hlCoord 3,4
+	coord hl, 3,4
 	ld de,wcd6d
 .loop2
 	push af

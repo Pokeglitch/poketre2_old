@@ -1,16 +1,16 @@
 TransformEffect_: ; 3bab1 (e:7ab1)
 	ld hl, wBattleMonSpecies
 	ld de, wEnemyMonSpecies
-	ld bc, W_ENEMYBATTSTATUS3
-	ld a, [W_ENEMYBATTSTATUS1]
+	ld bc, wEnemyBattleStatus3
+	ld a, [wEnemyBattleStatus1]
 	ld a, [H_WHOSETURN]
 	and a
 	jr nz, .hitTest
 	ld hl, wEnemyMonSpecies
 	ld de, wBattleMonSpecies
-	ld bc, W_PLAYERBATTSTATUS3
+	ld bc, wPlayerBattleStatus3
 	ld [wPlayerMoveListIndex], a
-	ld a, [W_PLAYERBATTSTATUS1]
+	ld a, [wPlayerBattleStatus1]
 .hitTest
 	bit Invulnerable, a ; is mon invulnerable to typical attacks? (fly/dig)
 	jp nz, .failed
@@ -20,19 +20,19 @@ TransformEffect_: ; 3bab1 (e:7ab1)
 	push hl
 	push de
 	push bc
-	ld hl, W_PLAYERBATTSTATUS2
+	ld hl, wPlayerBattleStatus2
 	ld a, [H_WHOSETURN]
 	and a
 	jr z, .transformEffect
-	ld hl, W_ENEMYBATTSTATUS2
+	ld hl, wEnemyBattleStatus2
 .transformEffect
 ; animation(s) played are different if target has Substitute up
-	bit HasSubstituteUp, [hl] 
+	bit HasSubstituteUp, [hl]
 	push af
-	ld hl, Func_79747
-	ld b, BANK(Func_79747)
+	ld hl, HideSubstituteShowMonAnim
+	ld b, BANK(HideSubstituteShowMonAnim)
 	call nz, Bankswitch
-	ld a, [W_OPTIONS]
+	ld a, [wOptions]
 	add a
 	ld hl, PlayCurrentMoveAnimation
 	ld b, BANK(PlayCurrentMoveAnimation)
@@ -41,8 +41,8 @@ TransformEffect_: ; 3bab1 (e:7ab1)
 	ld b, BANK(AnimationTransformMon)
 .gotAnimToPlay
 	call Bankswitch
-	ld hl, Func_79771
-	ld b, BANK(Func_79771)
+	ld hl, ReshowSubstituteAnim
+	ld b, BANK(ReshowSubstituteAnim)
 	pop af
 	call nz, Bankswitch
 	pop bc
@@ -52,15 +52,15 @@ TransformEffect_: ; 3bab1 (e:7ab1)
 	pop de
 	pop hl
 	push hl
-; transform user into opposing Pokemon	
+; transform user into opposing Pokemon
 ; species
 	ld a,[de]
 	ld [wPlayerOriginalTransformedSpecies],a		;store the original pokemon species
 	ld a, [hl] 
 	ld [de], a
-; type 1, type 2, catch rate, and moves	
+; type 1, type 2, catch rate, and moves
 	ld bc, $5
-	add hl, bc 
+	add hl, bc
 	inc de
 	inc de
 	inc de
@@ -76,10 +76,10 @@ TransformEffect_: ; 3bab1 (e:7ab1)
 	ld a,[wEnemyMonHPSpDefDV]
 	ld [wccea], a		;store sp def/hp ivs
 	ld a, [de]
-	ld [wcceb], a
+	ld [wTransformedEnemyMonOriginalDVs], a
 	inc de
 	ld a, [de]
-	ld [wccec], a
+	ld [wTransformedEnemyMonOriginalDVs + 1], a
 	dec de
 .next
 ; DVs
@@ -89,7 +89,7 @@ TransformEffect_: ; 3bab1 (e:7ab1)
 	ld a, [hli]
 	ld [de], a
 	inc de
-; Attack, Defense, Speed, and Special stats	
+; Attack, Defense, Speed, and Special stats
 	inc hl
 	inc hl
 	inc hl
@@ -98,7 +98,7 @@ TransformEffect_: ; 3bab1 (e:7ab1)
 	inc de
 	ld bc, $8
 	call CopyData
-	ld bc, wBattleMonMoves - wBattleMonPP 
+	ld bc, wBattleMonMoves - wBattleMonPP
 	add hl, bc ; ld hl, wBattleMonMoves
 	ld b, NUM_MOVES
 .copyPPLoop

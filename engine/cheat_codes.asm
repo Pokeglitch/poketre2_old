@@ -34,7 +34,7 @@ CheatCodeCheck:
 	jr .resetCheatCodeByteLoop
 .clearName
 	ld [hl],a		;save the byte
-	hlCoord 5, 7
+	coord hl, 5, 7
 	ld a, [wd07d]
 	cp 2	;nickname screen?
 	jr nc,.dontAdjust		;dont adjust the line if so

@@ -1,40 +1,40 @@
 MainMenu: ; 5af2 (1:5af2)
 ; Check save file
-	call Func_5bff
+	call InitOptions
 	xor a
-	ld [wd08a],a
+	ld [wOptionsInitialized],a
 	inc a
 	ld [wd088],a
 
-.next0
+.mainMenuLoop
 	ld c,20
 	call DelayFrames
 	xor a ; LINK_STATE_NONE
 	ld [wLinkState],a
-	ld hl,wcc2b
+	ld hl,wPartyAndBillsPCSavedMenuItem
 	ld [hli],a
 	ld [hli],a
 	ld [hli],a
 	ld [hl],a
-	ld [W_ANIMATIONID],a
+	ld [wDefaultMap],a
 	ld hl,wd72e
 	res 6,[hl]
 	call ClearScreen
-	call GoPAL_SET_CF1C
+	call RunDefaultPaletteCommand
 	call LoadTextBoxTilePatterns
 	call LoadFontTilePatterns
 	ld hl,wd730
 	set 6,[hl]
-	hlCoord 0, 0
+	coord hl, 0, 0
 	ld b,6
 	ld c,13
 	call TextBoxBorder
-	hlCoord 2, 2
+	coord hl, 2, 2
 	ld de,ContinueText
 	call PlaceString
 	ld hl,wd730
 	res 6,[hl]
-	call UpdateSprites ; OAM?
+	call UpdateSprites
 	xor a
 	ld [wCurrentMenuItem],a
 	ld [wLastMenuItem],a
@@ -43,13 +43,13 @@ MainMenu: ; 5af2 (1:5af2)
 	ld [wTopMenuItemX],a
 	inc a
 	ld [wTopMenuItemY],a
-	ld a,$B
+	ld a,A_BUTTON | B_BUTTON | START
 	ld [wMenuWatchedKeys],a
 	ld a,2
 	ld [wMaxMenuItem],a
 	call HandleMenuInput
-	bit 1,a
-	jp nz,LoadTitlescreenGraphics ; load title screen (gfx and arrangement)
+	bit 1,a ; pressed B?
+	jp nz,DisplayTitleScreen ; if so, go back to the title screen
 	ld c,20
 	call DelayFrames
 	ld a,[wCurrentMenuItem]
@@ -80,7 +80,7 @@ MainMenu: ; 5af2 (1:5af2)
 	call ContinueGame
 	ld hl,wd126
 	set 5,[hl]
-.next6
+.inputLoop
 	xor a
 	ld [hJoyPressed],a
 	ld [hJoyReleased],a
@@ -88,21 +88,21 @@ MainMenu: ; 5af2 (1:5af2)
 	call Joypad
 	ld a,[hJoyHeld]
 	bit 0,a
-	jr nz,.next5
+	jr nz,.pressedA
 	bit 1,a
 	jp nz,NewGame	;instead of going back, run a new game
-	jr .next6
-.next5
+	jr .inputLoop
+.pressedA
 	call GBPalWhiteOutWithDelay3
 	call ClearScreen
-	ld a,4
-	ld [wd52a],a
+	ld a,PLAYER_DIR_DOWN
+	ld [wPlayerDirection],a
 	ld c,10
 	call DelayFrames
-	ld a,[wd5a2]
+	ld a,[wNumHoFTeams]
 	and a
 	jp z,SpecialEnterMap
-	ld a,[W_CURMAP] ; map ID
+	ld a,[wCurMap] ; map ID
 	cp a,HALL_OF_FAME
 	jp nz,SpecialEnterMap
 	xor a
@@ -111,17 +111,17 @@ MainMenu: ; 5af2 (1:5af2)
 	set 2,[hl] ; fly warp or dungeon warp
 	call SpecialWarpIn
 	jp SpecialEnterMap
-Func_5bff: ; 5bff (1:5bff)
+InitOptions: ; 5bff (1:5bff)
 	ld a,3
-	ld [W_OPTIONS],a
+	ld [wOptions],a
 SetDefaultSkipOptions:
 	ld a,1
-	ld [wd358],a
+	ld [wLetterPrintingDelayFlags],a
 	ret
 
 LinkMenu: ; 5c0a (1:5c0a)
 	xor a
-	ld [wd358], a
+	ld [wLetterPrintingDelayFlags], a
 	ld hl, wd72e
 	set 6, [hl]
 	ld hl, TextTerminator_6b20
@@ -129,16 +129,16 @@ LinkMenu: ; 5c0a (1:5c0a)
 	call SaveScreenTilesToBuffer1
 	ld hl, WhereWouldYouLikeText
 	call PrintText
-	hlCoord 5, 5
+	coord hl, 5, 5
 	ld b, $6
 	ld c, $d
 	call TextBoxBorder
 	call UpdateSprites
-	hlCoord 7, 7
-	ld de, TradeCenterText
+	coord hl, 7, 7
+	ld de, CableClubOptionsText
 	call PlaceString
 	xor a
-	ld [wcd37], a
+	ld [wUnusedCD37], a
 	ld [wd72d], a
 	ld hl, wTopMenuItemY
 	ld a, $7
@@ -151,7 +151,8 @@ LinkMenu: ; 5c0a (1:5c0a)
 	ld a, $2
 	ld [hli], a
 	inc a
-	ld [hli], a
+	; ld a, A_BUTTON | B_BUTTON
+	ld [hli], a ; wMenuWatchedKeys
 	xor a
 	ld [hl], a
 .waitForInputLoop
@@ -199,7 +200,7 @@ LinkMenu: ; 5c0a (1:5c0a)
 	ld a, b
 	ld [wLinkMenuSelectionSendBuffer], a
 	and $3
-	ld [wCurrentMenuItem], a ; wCurrentMenuItem
+	ld [wCurrentMenuItem], a
 .doneChoosingMenuSelection
 	ld a, [hSerialConnectionStatus]
 	cp USING_INTERNAL_CLOCK
@@ -245,28 +246,28 @@ LinkMenu: ; 5c0a (1:5c0a)
 	ld [wWalkBikeSurfState], a ; start walking
 	ld a, [wCurrentMenuItem]
 	and a
-	ld a, TRADE_CENTER
+	ld a, COLOSSEUM
 	jr nz, .next
-	ld a, BATTLE_CENTER
+	ld a, TRADE_CENTER
 .next
 	ld [wd72d], a
 	ld hl, PleaseWaitText
 	call PrintText
-	ld c, $32
+	ld c, 50
 	call DelayFrames
 	ld hl, wd732
 	res 1, [hl]
-	ld a, [W_ANIMATIONID]
+	ld a, [wDefaultMap]
 	ld [wDestinationMap], a
 	call SpecialWarpIn
-	ld c, $14
+	ld c, 20
 	call DelayFrames
 	xor a
 	ld [wMenuJoypadPollCount], a
 	ld [wSerialExchangeNybbleSendData], a
 	inc a ; LINK_STATE_IN_CABLE_CLUB
 	ld [wLinkState], a
-	ld [wcc47], a
+	ld [wEnteringCableClub], a
 	jr SpecialEnterMap
 .choseCancel
 	xor a
@@ -296,7 +297,7 @@ NewGame: ; 5d52 (1:5d52)
 	ld hl, wd732
 	res 1, [hl]
 	call OakSpeech
-	ld c, $14
+	ld c, 20
 	call DelayFrames
 
 ; enter map after using a special warp or loading the game from the main menu
@@ -311,7 +312,7 @@ SpecialEnterMap: ; 5d5f (1:5d5f)
 	call ResetPlayerSpriteData
 	ld c, 20
 	call DelayFrames
-	ld a, [wcc47]
+	ld a, [wEnteringCableClub]
 	and a
 	ret nz
 	jp EnterMap
@@ -323,89 +324,89 @@ NewGameText: ; 5d87 (1:5d87)
 	db "NORMAL GAME", $4e
 	db "OPTION@"
 
-TradeCenterText: ; 5d97 (1:5d97)
+CableClubOptionsText: ; 5d97 (1:5d97)
 	db "TRADE CENTER", $4e
 	db "COLOSSEUM",    $4e
 	db "CANCEL@"
 
-ContinueGame: ; 5db5 (1:5db5)	
+ContinueGame: ; 5db5 (1:5db5)
 	xor a
-	ld [H_AUTOBGTRANSFERENABLED], a ; $ffba
-	hlCoord 4, 7
-	ld b, $8
-	ld c, $e
+	ld [H_AUTOBGTRANSFERENABLED], a
+	coord hl, 4, 7
+	ld b, 8
+	ld c, 14
 	call TextBoxBorder
-	hlCoord 5, 9
+	coord hl, 5, 9
 	ld de, SaveScreenInfoText
 	call PlaceString
-	hlCoord 12, 9
-	ld de, wPlayerName ; wd158
+	coord hl, 12, 9
+	ld de, wPlayerName
 	call PlaceString
-	hlCoord 17, 11
-	call Func_5e2f
-	hlCoord 16, 13
-	call Func_5e42
-	hlCoord 13, 15
-	call Func_5e55
-	ld a, $1
-	ld [H_AUTOBGTRANSFERENABLED], a ; $ffba
-	ld c, $1e
+	coord hl, 17, 11
+	call PrintNumBadges
+	coord hl, 16, 13
+	call PrintNumOwnedMons
+	coord hl, 13, 15
+	call PrintPlayTime
+	ld a, 1
+	ld [H_AUTOBGTRANSFERENABLED], a
+	ld c, 30
 	jp DelayFrames
 
 PrintSaveScreenText: ; 5def (1:5def)
 	xor a
 	ld [H_AUTOBGTRANSFERENABLED], a
-	ld hl, wTileMap + $4
+	coord hl, 4, 0
 	ld b, $8
 	ld c, $e
 	call TextBoxBorder
 	call LoadTextBoxTilePatterns
 	call UpdateSprites
-	ld hl, wTileMap + $2d
+	coord hl, 5, 2
 	ld de, SaveScreenInfoText
 	call PlaceString
-	ld hl, wTileMap + $34
+	coord hl, 12, 2
 	ld de, wPlayerName
 	call PlaceString
-	ld hl, wTileMap + $61
-	call Func_5e2f
-	ld hl, wTileMap + $88
-	call Func_5e42
-	ld hl, wTileMap + $ad
-	call Func_5e55
+	coord hl, 17, 4
+	call PrintNumBadges
+	coord hl, 16, 6
+	call PrintNumOwnedMons
+	coord hl, 13, 8
+	call PrintPlayTime
 	ld a, $1
 	ld [H_AUTOBGTRANSFERENABLED], a
-	ld c, $1e
+	ld c, 30
 	jp DelayFrames
 
-Func_5e2f: ; 5e2f (1:5e2f)
+PrintNumBadges: ; 5e2f (1:5e2f)
 	push hl
-	ld hl, W_OBTAINEDBADGES
+	ld hl, wObtainedBadges
 	ld b, $1
 	call CountSetBits
 	pop hl
-	ld de, wd11e
-	ld bc, $102
+	ld de, wNumSetBits
+	lb bc, 1, 2
 	jp PrintNumber
 
-Func_5e42: ; 5e42 (1:5e42)
+PrintNumOwnedMons: ; 5e42 (1:5e42)
 	push hl
 	ld hl, wPokedexOwned ; wPokedexOwned
 	ld b, 23
 	call CountSetBits
 	pop hl
-	ld de, wd11e
-	ld bc, $103
+	ld de, wNumSetBits
+	lb bc, 1, 3
 	jp PrintNumber
 
-Func_5e55: ; 5e55 (1:5e55)
-	ld de, W_PLAYTIMEHOURS + 1
-	ld bc, $103
+PrintPlayTime: ; 5e55 (1:5e55)
+	ld de, wPlayTimeHours + 1
+	lb bc, 1, 3
 	call PrintNumber
 	ld [hl], $6d
 	inc hl
-	ld de, W_PLAYTIMEMINUTES + 1
-	ld bc, $8102
+	ld de, wPlayTimeMinutes + 1
+	lb bc, LEADING_ZEROES | 1, 2
 	jp PrintNumber
 
 SaveScreenInfoText: ; 5e6a (1:5e6a)
@@ -419,24 +420,24 @@ DisplayOptionsFromMainMenu:
 	ld c,20
 	call DelayFrames
 DisplayOptionMenu: ; 5e8a (1:5e8a)
-	hlCoord 1, 1
+	coord hl, 1, 1
 	ld de,TextSpeedOptionText
 	call PlaceString
-	hlCoord 1, 5
+	coord hl, 1, 5
 	ld de,BattleAnimationOptionText
 	call PlaceString
-	hlCoord 1, 9
+	coord hl, 1, 9
 	ld de,BattleStyleOptionText
 	call PlaceString
-	hlCoord 1, 13
+	coord hl, 1, 13
 	ld de,BattleTextOptionText
 	call PlaceString
 	xor a
 	ld [wCurrentMenuItem],a
 	ld [wLastMenuItem],a
 	inc a
-	ld [wd358],a
-	ld [wTrainerScreenY],a
+	ld [wLetterPrintingDelayFlags],a
+	ld [wUnusedCD40],a
 	ld a,3 ; text speed cursor Y coordinate
 	ld [wTopMenuItemY],a
 	call SetCursorPositionsFromOptions
@@ -450,15 +451,15 @@ DisplayOptionMenu: ; 5e8a (1:5e8a)
 	call JoypadLowSensitivity
 	ld a,[hJoy5]
 	ld b,a
-	and a,%11111010 ; any key besides select or a pressed?
+	and a,A_BUTTON | B_BUTTON | START | D_RIGHT | D_LEFT | D_UP | D_DOWN ; any key besides select pressed?
 	jr z,.getJoypadStateLoop
 	bit 1,b ; B button pressed?
 	jr nz,.exitMenu
 	bit 3,b ; Start button pressed?
 	jr z,.checkDirectionKeys
 .exitMenu
-	ld a,(SFX_02_40 - SFX_Headers_02) / 3
-	call PlaySound ; play sound
+	ld a,SFX_PRESS_AB
+	call PlaySound
 	ret
 .eraseOldMenuCursor
 	ld [wTopMenuItemX],a
@@ -617,16 +618,16 @@ SetCursorPositionsFromOptions: ; 604c (1:604c)
 	ld d,a
 	call BattleSpeedXCoord
 	push af
-	hlCoord 0, 3
+	coord hl, 0, 3
 	call .placeUnfilledRightArrow
 	call BattleAnimationXCoord
-	hlCoord 0, 7
+	coord hl, 0, 7
 	call .placeUnfilledRightArrow
 	call BattleStyleXCoord
-	hlCoord 0, 11
+	coord hl, 0, 11
 	call .placeUnfilledRightArrow
 	call BattleTextXCoord
-	hlCoord 0, 15
+	coord hl, 0, 15
 	call .placeUnfilledRightArrow
 	pop af	;load the speed coord
 	ret

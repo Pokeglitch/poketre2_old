@@ -1,8 +1,8 @@
 PrintBeginningBattleText: ; 58d99 (16:4d99)
-	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
+	ld a, [wIsInBattle]
 	dec a
 	jr nz, .trainerBattle
-	ld a, [W_CURMAP] ; W_CURMAP
+	ld a, [wCurMap]
 	cp POKEMONTOWER_3
 	jr c, .notPokemonTower
 	cp LAVENDER_HOUSE_1
@@ -11,7 +11,7 @@ PrintBeginningBattleText: ; 58d99 (16:4d99)
 	ld a, [wEnemyMonSpecies2]
 	call PlayCry
 	ld hl, WildMonAppearedText
-	ld a, [W_MOVEMISSED] ; W_MOVEMISSED
+	ld a, [wMoveMissed]
 	and a
 	jr z, .notFishing
 	ld hl, HookedMonAttackedText
@@ -19,7 +19,7 @@ PrintBeginningBattleText: ; 58d99 (16:4d99)
 	jr .wildBattle
 .trainerBattle
 	call .playSFX
-	ld c, $14
+	ld c, 20
 	call DelayFrames
 	ld hl, TrainerWantsToFightText
 .wildBattle
@@ -61,10 +61,10 @@ PrintBeginningBattleText: ; 58d99 (16:4d99)
 
 .playSFX
 	xor a
-	ld [wc0f1], a
+	ld [wFrequencyModifier], a
 	ld a, $80
-	ld [wc0f2], a
-	ld a, (SFX_08_77 - SFX_Headers_08) / 3
+	ld [wTempoModifier], a
+	ld a, SFX_SILPH_SCOPE
 	call PlaySound
 	jp WaitForSoundToFinish
 .done
@@ -110,10 +110,10 @@ PrintSendOutMonMessage: ; 58e59 (16:4e59)
 	ld [H_MULTIPLICAND], a
 	ld hl, wEnemyMonHP
 	ld a, [hli]
-	ld [wcce3], a
+	ld [wLastSwitchInEnemyMonHP], a
 	ld [H_MULTIPLICAND + 1], a
 	ld a, [hl]
-	ld [wcce4], a
+	ld [wLastSwitchInEnemyMonHP + 1], a
 	ld [H_MULTIPLICAND + 2], a
 	ld a, 25
 	ld [H_MULTIPLIER], a
@@ -126,7 +126,7 @@ PrintSendOutMonMessage: ; 58e59 (16:4e59)
 	srl a
 	rr b
 	ld a, b
-	ld b, $4
+	ld b, 4
 	ld [H_DIVISOR], a ; enemy mon max HP divided by 4
 	call Divide
 	ld a, [H_QUOTIENT + 3] ; a = (enemy mon current HP * 25) / (enemy max HP / 4); this approximates the current percentage of max HP
@@ -161,7 +161,7 @@ GetmText: ; 58ebc (16:4ebc)
 
 EnemysWeakText: ; 58ec3 (16:4ec3)
 	TX_FAR _EnemysWeakText
-	db $08 ; asm
+	TX_ASM
 
 RetreatMon: ; 58ed1 (16:4ed1)
 	ld hl, PlayerMon2Text
@@ -169,23 +169,23 @@ RetreatMon: ; 58ed1 (16:4ed1)
 
 PlayerMon2Text: ; 58ed7 (16:4ed7)
 	TX_FAR _PlayerMon2Text
-	db $08 ; asm
+	TX_ASM
 	push de
 	push bc
 	ld hl, wEnemyMonHP + 1
-	ld de, wcce4
+	ld de, wLastSwitchInEnemyMonHP + 1
 	ld b, [hl]
 	dec hl
 	ld a, [de]
 	sub b
-	ld [$ff98], a
+	ld [H_MULTIPLICAND + 2], a
 	dec de
 	ld b, [hl]
 	ld a, [de]
 	sbc b
-	ld [$ff97], a
-	ld a, $19
-	ld [H_POWEROFTEN], a
+	ld [H_MULTIPLICAND + 1], a
+	ld a, 25
+	ld [H_MULTIPLIER], a
 	call Multiply
 	ld hl, wEnemyMonMaxHP
 	ld a, [hli]
@@ -195,37 +195,42 @@ PlayerMon2Text: ; 58ed7 (16:4ed7)
 	srl a
 	rr b
 	ld a, b
-	ld b, $4
-	ld [H_POWEROFTEN], a
+	ld b, 4
+	ld [H_DIVISOR], a
 	call Divide
 	pop bc
 	pop de
-	ld a, [$ff98]
-	ld hl, EnoughText
+	ld a, [H_QUOTIENT + 3] ; a = ((LastSwitchInEnemyMonHP - CurrentEnemyMonHP) / 25) / (EnemyMonMaxHP / 4)
+; Assuming that the enemy mon hasn't gained HP since the last switch in,
+; a approximates the percentage that the enemy mon's total HP has decreased
+; since the last switch in.
+; If the enemy mon has gained HP, then a is garbage due to wrap-around and
+; can fall in any of the ranges below.
+	ld hl, EnoughText ; HP stayed the same
 	and a
 	ret z
-	ld hl, ComeBackText
-	cp $1e
+	ld hl, ComeBackText ; HP went down 1% - 29%
+	cp 30
 	ret c
-	ld hl, OKExclamationText
-	cp $46
+	ld hl, OKExclamationText ; HP went down 30% - 69%
+	cp 70
 	ret c
-	ld hl, GoodText
+	ld hl, GoodText ; HP went down 70% or more
 	ret
 
 EnoughText: ; 58f25 (16:4f25)
 	TX_FAR _EnoughText
-	db $08 ; asm
+	TX_ASM
 	jr PrintComeBackText
 
 OKExclamationText: ; 58f2c (16:4f2c)
 	TX_FAR _OKExclamationText
-	db $08 ; asm
+	TX_ASM
 	jr PrintComeBackText
 
 GoodText: ; 58f33 (16:4f33)
 	TX_FAR _GoodText
-	db $08 ; asm
+	TX_ASM
 	jr PrintComeBackText
 
 PrintComeBackText: ; 58f3a (16:4f3a)

@@ -1,16 +1,16 @@
 RecoilEffect_: ; 1392c (4:792c)
 	ld a, [H_WHOSETURN]
 	and a
-	ld a, [W_PLAYERMOVENUM]
+	ld a, [wPlayerMoveNum]
 	ld hl, wBattleMonMaxHP
 	jr z, .recoilEffect
-	ld a, [W_ENEMYMOVENUM]
+	ld a, [wEnemyMoveNum]
 	ld hl, wEnemyMonMaxHP
 .recoilEffect
 	ld d, a
-	ld a, [W_DAMAGE]
+	ld a, [wDamage]
 	ld b, a
-	ld a, [W_DAMAGE + 1]
+	ld a, [wDamage + 1]
 	ld c, a
 	srl b
 	rr c
@@ -46,19 +46,19 @@ RecoilEffect_: ; 1392c (4:792c)
 	ld [wHPBarNewHP+1], a
 	jr nc, .getHPBarCoords
 ; if recoil damage is higher than the Pokemon's HP, set its HP to 0
-	xor a 
+	xor a
 	ld [hli], a
 	ld [hl], a
 	ld hl, wHPBarNewHP
 	ld [hli], a
 	ld [hl], a
 .getHPBarCoords
-	hlCoord 10, 9
+	coord hl, 10, 9
 	ld a, [H_WHOSETURN]
 	and a
 	ld a, $1
 	jr z, .updateHPBar
-	hlCoord 2, 2
+	coord hl, 2, 2
 	xor a
 .updateHPBar
 	ld [wHPBarType], a

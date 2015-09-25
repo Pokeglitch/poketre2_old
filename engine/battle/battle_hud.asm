@@ -1,14 +1,14 @@
 _DrawPlayerHUDAndHPBar: ; 3cd60 (f:4d60)
 	xor a
 	ld [H_AUTOBGTRANSFERENABLED], a
-	hlCoord 9, 7
+	coord hl, 9, 7
 	ld bc, $50b
 	call ClearScreenArea
 	callab PlacePlayerHUDTiles
-	hlCoord 18, 9
+	coord hl, 18, 9
 	ld [hl], $73
 	ld de, wBattleMonNick
-	hlCoord 10, 7
+	coord hl, 10, 7
 	call CenterMonName
 	call PlaceString
 	ld hl, wBattleMonSpecies
@@ -19,7 +19,7 @@ _DrawPlayerHUDAndHPBar: ; 3cd60 (f:4d60)
 	ld de, wLoadedMonLevel
 	ld bc, $b
 	call CopyData
-	hlCoord 14, 8
+	coord hl, 14, 8
 	push hl
 	inc hl
 	ld de, wLoadedMonStatus
@@ -30,7 +30,7 @@ _DrawPlayerHUDAndHPBar: ; 3cd60 (f:4d60)
 .asm_3cdae
 	ld a, [wLoadedMonSpecies]
 	ld [wcf91], a
-	hlCoord 10, 9
+	coord hl, 10, 9
 	predef DrawHP
 	ld a, $1
 	ld [H_AUTOBGTRANSFERENABLED], a
@@ -67,10 +67,10 @@ _DrawEnemyHUDAndHPBar: ; 3cdec (f:4dec)
 	call ClearScreenArea
 	callab PlaceEnemyHUDTiles
 	ld de, wEnemyMonNick
-	hlCoord 1, 0
+	coord hl, 1, 0
 	call CenterMonName
 	call PlaceString
-	hlCoord 4, 1
+	coord hl, 4, 1
 	push hl
 	inc hl
 	ld de, wEnemyMonStatus
@@ -143,7 +143,7 @@ _DrawEnemyHUDAndHPBar: ; 3cdec (f:4dec)
 .drawHPBar
 	xor a
 	ld [wHPBarType], a
-	hlCoord 2, 2
+	coord hl, 2, 2
 	call DrawHPBar
 	ld a, $1
 	ld [H_AUTOBGTRANSFERENABLED], a
@@ -223,12 +223,12 @@ _DisplayBattleMenu: ; 3ceb3 (f:4eb3)
 	ld bc, $b
 	call CopyData
 ; the following simulates the keystrokes by drawing menus on screen
-	hlCoord 9, 14
+	coord hl, 9, 14
 	ld [hl], "▶"
 	ld c, $50
 	call DelayFrames
 	ld [hl], $7f
-	hlCoord 9, 16
+	coord hl, 9, 16
 	ld [hl], "▶"
 	ld c, $32
 	call DelayFrames
@@ -260,7 +260,7 @@ _DisplayBattleMenu: ; 3ceb3 (f:4eb3)
 .safariLeftColumn
 	Coorda 13, 14
 	Coorda 13, 16
-	hlCoord 7, 14
+	coord hl, 7, 14
 	ld de, W_NUMSAFARIBALLS
 	ld bc, $102
 	call PrintNumber
@@ -293,7 +293,7 @@ _DisplayBattleMenu: ; 3ceb3 (f:4eb3)
 .safariRightColumn
 	Coorda 1, 14 ; clear upper cursor position in left column
 	Coorda 1, 16 ; clear lower cursor position in left column
-	hlCoord 7, 14
+	coord hl, 7, 14
 	ld de, W_NUMSAFARIBALLS
 	ld bc, $102
 	call PrintNumber
@@ -514,7 +514,7 @@ PartyMenuOrRockOrRun:
 	call GBPalNormal
 	jp _DisplayBattleMenu
 .partyMonDeselected
-	hlCoord 11, 11
+	coord hl, 11, 11
 	ld bc, $81
 	ld a, $7f
 	call FillMemory

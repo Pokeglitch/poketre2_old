@@ -14,7 +14,7 @@ DecrementPP: ; 68000 (1a:4000)
 	                     ; W_PLAYERBATTSTATUS2 status flags later
 	and a, (1 << StoringEnergy) | (1 << ThrashingAbout) | (1 << AttackingMultipleTimes)
 	ret nz               ; if any of these statuses are true, don't decrement PP
-	bit UsingRage, [hl]         
+	bit UsingRage, [hl]
 	ret nz               ; don't decrement PP either if Pokemon is using Rage
 	ld hl, wBattleMonPP  ; PP of first move (in battle)
 	
@@ -24,7 +24,7 @@ DecrementPP: ; 68000 (1a:4000)
 ; decrement PP in the party struct	
 	ld hl, wPartyMon1PP  ; PP of first move (in party)
 	ld a, [wPlayerMonNumber] ; which mon in party is active
-	ld bc, wPartyMon2 - wPartyMon1 
+	ld bc, wPartyMon2 - wPartyMon1
 	call AddNTimes       ; calculate address of the mon to modify
 .DecrementPP	
 	

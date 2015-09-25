@@ -1,7 +1,7 @@
 Route6GateScript: ; 1e03d (7:603d)
 	call EnableAutoTextBoxDrawing
 	ld hl, Route6GateScriptPointers
-	ld a, [W_ROUTE6GATECURSCRIPT]
+	ld a, [wRoute6GateCurScript]
 	call CallFunctionInTable
 	ret
 
@@ -16,26 +16,26 @@ Route6GateScript0: ; 1e04e (7:604e)
 	ld hl, CoordsData_1e08c
 	call ArePlayerCoordsInArray
 	ret nc
-	ld a, $1
-	ld [wd528], a
+	ld a, PLAYER_DIR_RIGHT
+	ld [wPlayerMovingDirection], a
 	xor a
 	ld [hJoyHeld], a
 	callba RemoveGuardDrink
 	ld a, [$ffdb]
 	and a
-	jr nz, .asm_1e080 ; 0x1e06e $10
+	jr nz, .asm_1e080
 	ld a, $2
-	ld [$ff8c], a
+	ld [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	call Route6GateScript_1e0a1
 	ld a, $1
-	ld [W_ROUTE6GATECURSCRIPT], a
+	ld [wRoute6GateCurScript], a
 	ret
 .asm_1e080
 	ld hl, wd728
 	set 6, [hl]
 	ld a, $3
-	ld [$ff8c], a
+	ld [hSpriteIndexOrTextID], a
 	jp DisplayTextID
 
 CoordsData_1e08c: ; 1e08c (7:608c)
@@ -49,7 +49,7 @@ Route6GateScript1: ; 1e091 (7:6091)
 	call Delay3
 	xor a
 	ld [wJoyIgnore], a
-	ld [W_ROUTE6GATECURSCRIPT], a
+	ld [wRoute6GateCurScript], a
 	ret
 
 Route6GateScript_1e0a1: ; 1e0a1 (7:60a1)

@@ -3,9 +3,9 @@ BrunoScript: ; 762d6 (1d:62d6)
 	call EnableAutoTextBoxDrawing
 	ld hl, BrunoTrainerHeaders
 	ld de, BrunoScriptPointers
-	ld a, [W_BRUNOCURSCRIPT]
+	ld a, [wBrunoCurScript]
 	call ExecuteCurMapScriptInTable
-	ld [W_BRUNOCURSCRIPT], a
+	ld [wBrunoCurScript], a
 	ret
 
 BrunoScript_762ec: ; 762ec (1d:62ec)
@@ -13,8 +13,7 @@ BrunoScript_762ec: ; 762ec (1d:62ec)
 	bit 5, [hl]
 	res 5, [hl]
 	ret z
-	ld a, [wd864]
-	bit 1, a
+	CheckEvent EVENT_BEAT_BRUNOS_ROOM_TRAINER_0
 	jr z, .asm_76300
 	ld a, $5
 	jp BrunoScript_76302
@@ -22,13 +21,13 @@ BrunoScript_762ec: ; 762ec (1d:62ec)
 	ld a, $24
 
 BrunoScript_76302: ; 76302 (1d:6302)
-	ld [wd09f], a
-	ld bc, $2
+	ld [wNewTileBlockID], a
+	lb bc, 0, 2
 	predef_jump ReplaceTileBlock
 
 BrunoScript_7630d: ; 7630d (1d:630d)
 	xor a
-	ld [W_BRUNOCURSCRIPT], a
+	ld [wBrunoCurScript], a
 	ret
 
 BrunoScriptPointers: ; 76312 (1d:6312)
@@ -40,7 +39,8 @@ BrunoScriptPointers: ; 76312 (1d:6312)
 
 BrunoScript4: ; 7631c (1d:631c)
 	ret
-asm_7631d: ; 7631d (1d:631d)
+
+BrunoScript_7631d: ; 7631d (1d:631d)
 	ld hl, wSimulatedJoypadStatesEnd
 	ld a, D_UP
 	ld [hli], a
@@ -53,8 +53,8 @@ asm_7631d: ; 7631d (1d:631d)
 	ld [wSimulatedJoypadStatesIndex], a
 	call StartSimulatingJoypadStates
 	ld a, $3
-	ld [W_BRUNOCURSCRIPT], a
-	ld [W_CURMAPSCRIPT], a
+	ld [wBrunoCurScript], a
+	ld [wCurMapScript], a
 	ret
 
 BrunoScript0: ; 76339 (1d:6339)
@@ -66,16 +66,14 @@ BrunoScript0: ; 76339 (1d:6339)
 	ld [hJoyHeld], a
 	ld [wSimulatedJoypadStatesEnd], a
 	ld [wSimulatedJoypadStatesIndex], a
-	ld a, [wWhichTrade] ; wWhichTrade
+	ld a, [wCoordIndex]
 	cp $3
 	jr c, .asm_7635d
-	ld hl, wd864
-	bit 6, [hl]
-	set 6, [hl]
-	jr z, asm_7631d
+	CheckAndSetEvent EVENT_AUTOWALKED_INTO_BRUNOS_ROOM
+	jr z, BrunoScript_7631d
 .asm_7635d
 	ld a, $2
-	ld [H_DOWNARROWBLINKCNT2], a ; $ff8c
+	ld [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	ld a, D_UP
 	ld [wSimulatedJoypadStatesEnd], a
@@ -83,8 +81,8 @@ BrunoScript0: ; 76339 (1d:6339)
 	ld [wSimulatedJoypadStatesIndex], a
 	call StartSimulatingJoypadStates
 	ld a, $3
-	ld [W_BRUNOCURSCRIPT], a
-	ld [W_CURMAPSCRIPT], a
+	ld [wBrunoCurScript], a
+	ld [wCurMapScript], a
 	ret
 
 CoordsData_7637a: ; 7637a (1d:637a)
@@ -101,37 +99,37 @@ BrunoScript3: ; 76383 (1d:6383)
 	call Delay3
 	xor a
 	ld [wJoyIgnore], a
-	ld [W_BRUNOCURSCRIPT], a
-	ld [W_CURMAPSCRIPT], a
+	ld [wBrunoCurScript], a
+	ld [wCurMapScript], a
 	ret
 
 BrunoScript2: ; 76396 (1d:6396)
 	call EndTrainerBattle
-	ld a, [W_ISINBATTLE] ; W_ISINBATTLE
+	ld a, [wIsInBattle]
 	cp $ff
 	jp z, BrunoScript_7630d
 	ld a, $1
-	ld [H_DOWNARROWBLINKCNT2], a ; $ff8c
+	ld [hSpriteIndexOrTextID], a
 	jp DisplayTextID
 
 BrunoTextPointers: ; 763a8 (1d:63a8)
 	dw BrunoText1
-	dw BrunoText2
+	dw BrunoDontRunAwayText
 
 BrunoTrainerHeaders: ; 763ac (1d:63ac)
 BrunoTrainerHeader0: ; 763ac (1d:63ac)
-	db $1 ; flag's bit
+	dbEventFlagBit EVENT_BEAT_BRUNOS_ROOM_TRAINER_0
 	db ($0 << 4) ; trainer's view range
-	dw wd864 ; flag's byte
-	dw BrunoBeforeBattleText ; 0x63c3 TextBeforeBattle
-	dw BrunoAfterBattleText ; 0x63cd TextAfterBattle
-	dw BrunoEndBattleText ; 0x63c8 TextEndBattle
-	dw BrunoEndBattleText ; 0x63c8 TextEndBattle
+	dwEventFlagAddress EVENT_BEAT_BRUNOS_ROOM_TRAINER_0
+	dw BrunoBeforeBattleText ; TextBeforeBattle
+	dw BrunoAfterBattleText ; TextAfterBattle
+	dw BrunoEndBattleText ; TextEndBattle
+	dw BrunoEndBattleText ; TextEndBattle
 
 	db $ff
 
 BrunoText1: ; 763b9 (1d:63b9)
-	db $08 ; asm
+	TX_ASM
 	ld hl, BrunoTrainerHeader0
 	call TalkToTrainer
 	jp TextScriptEnd
@@ -148,6 +146,6 @@ BrunoAfterBattleText: ; 763cd (1d:63cd)
 	TX_FAR _BrunoAfterBattleText
 	db "@"
 
-BrunoText2: ; 763d2 (1d:63d2)
-	TX_FAR _UnnamedText_763d2
+BrunoDontRunAwayText: ; 763d2 (1d:63d2)
+	TX_FAR _BrunoDontRunAwayText
 	db "@"

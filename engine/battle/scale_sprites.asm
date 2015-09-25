@@ -2,12 +2,12 @@
 ; assumes that input sprite chunks are 4x4 tiles, and the rightmost and bottommost 4 pixels will be ignored
 ; resulting in a 7*7 tile output sprite chunk
 ScaleSpriteByTwo: ; 2fe40 (b:7e40)
-	ld de, S_SPRITEBUFFER1 + (4*4*8) - 5          ; last byte of input data, last 4 rows already skipped
-	ld hl, S_SPRITEBUFFER0 + SPRITEBUFFERSIZE - 1 ; end of destination buffer
+	ld de, sSpriteBuffer1 + (4*4*8) - 5          ; last byte of input data, last 4 rows already skipped
+	ld hl, sSpriteBuffer0 + SPRITEBUFFERSIZE - 1 ; end of destination buffer
 	call ScaleLastSpriteColumnByTwo               ; last tile column is special case
 	call ScaleFirstThreeSpriteColumnsByTwo        ; scale first 3 tile columns
-	ld de, S_SPRITEBUFFER2 + (4*4*8) - 5          ; last byte of input data, last 4 rows already skipped
-	ld hl, S_SPRITEBUFFER1 + SPRITEBUFFERSIZE - 1 ; end of destination buffer
+	ld de, sSpriteBuffer2 + (4*4*8) - 5          ; last byte of input data, last 4 rows already skipped
+	ld hl, sSpriteBuffer1 + SPRITEBUFFERSIZE - 1 ; end of destination buffer
 	call ScaleLastSpriteColumnByTwo               ; last tile column is special case
 
 ScaleFirstThreeSpriteColumnsByTwo: ; 2fe55 (b:7e55)
@@ -41,16 +41,16 @@ ScaleFirstThreeSpriteColumnsByTwo: ; 2fe55 (b:7e55)
 
 ScaleLastSpriteColumnByTwo: ; 2fe7d (b:7e7d)
 	ld a, 4*8 - 4 ; $1c, 4 tiles minus 4 unused rows
-	ld [H_SPRITEINTERLACECOUNTER], a ; $ff8b
-	ld bc, -1 ; $ffff
+	ld [H_SPRITEINTERLACECOUNTER], a
+	ld bc, -1
 .columnInnerLoop
 	ld a, [de]
 	dec de
 	swap a                    ; only high nybble contains information
 	call ScalePixelsByTwo
-	ld a, [H_SPRITEINTERLACECOUNTER] ; $ff8b
+	ld a, [H_SPRITEINTERLACECOUNTER]
 	dec a
-	ld [H_SPRITEINTERLACECOUNTER], a ; $ff8b
+	ld [H_SPRITEINTERLACECOUNTER], a
 	jr nz, .columnInnerLoop
 	dec de                    ; skip last 4 rows of new column
 	dec de

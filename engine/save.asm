@@ -67,13 +67,13 @@ LoadSAV: ; 735e8 (1c:75e8)
 	set 6, [hl]
 	ld hl, FileDataDestroyedText
 	call PrintText
-	ld c, $64
+	ld c, 100
 	call DelayFrames
 	pop hl
 	res 6, [hl]
 	ld a, $1 ; bad checksum
 .goodsum
-	ld [wd088], a ; checksum flag
+	ld [wSaveFileStatus], a
 	ret
 
 	
@@ -183,6 +183,7 @@ LoadSAVCheckSum: ; 73623 (1c:7623)
 	
 	ld de, wAdditionalData
 	ld bc, wEndOfAdditionalData - wAdditionalData
+	
 	call CopyData
 
 	ld a,[hl]	;load the tileset type
@@ -332,7 +333,7 @@ SaveSAV: ;$770a
 	call SaveSAVConfirm
 	and a   ;|0 = Yes|1 = No|
 	ret nz
-	ld a,[wd088]
+	ld a,[wSaveFileStatus]
 	dec a
 	jr z,.save
 	ld hl,wAutosaveBits
@@ -348,20 +349,20 @@ SaveSAV: ;$770a
 	xor a
 	ld [wAutosaveBits],a	;reset the bit announcing we should finish autosaving or backup
 	
-	hlCoord 1, 13
+	coord hl, 1, 13
 	ld bc,$0412
 	call ClearScreenArea ; clear area 4x12 starting at 13,1
-	hlCoord 1, 14
+	coord hl, 1, 14
 	ld de,NowSavingString
 	call PlaceString
-	ld c,$78
+	ld c,120
 	call DelayFrames
 	ld hl,GameSavedText
 	call PrintText
-	ld a, (SFX_02_5d - SFX_Headers_02) / 3 ;sound for saved game
+	ld a, SFX_SAVE
 	call PlaySoundWaitForCurrent
 	call WaitForSoundToFinish
-	ld c,$1e
+	ld c,30
 	jp DelayFrames
 
 NowSavingString:
@@ -369,8 +370,8 @@ NowSavingString:
 
 SaveSAVConfirm: ; 73768 (1c:7768)
 	call PrintText
-	hlCoord 0, 7
-	ld bc,$0801
+	coord hl, 0, 7
+	lb bc, 8, 1
 	ld a,TWO_OPTION_MENU
 	ld [wTextBoxID],a
 	call DisplayTextBoxID ; yes/no menu
@@ -815,7 +816,7 @@ AutoSaveHardMode:
 	
 SaveSAVtoSRAM: ; 73848 (1c:7848)
 	ld a, $2
-	ld [wd088], a
+	ld [wSaveFileStatus], a
 	call SaveSAVtoSRAM0
 	call IsHardMode	;hard mode?
 	ret z		;return if not
@@ -829,7 +830,7 @@ SaveSAVtoSRAM: ; 73848 (1c:7848)
 
 SAVCheckSum: ; 73856 (1c:7856)
 ;Check Sum (result[1 byte] is complemented)
-	ld d, $0
+	ld d, 0
 .loop
 	ld a, [hli]
 	add d
@@ -964,7 +965,7 @@ Func_73863: ; 73863 (1c:7863)
 	inc de
 	pop bc
 	dec b
-	jr nz, .asm_7386b
+	jr nz, .loop
 	ret
 
 ;get the pointer to the start of the box data
@@ -974,7 +975,7 @@ Func_7387b: ; 7387b (1c:787b)
 	ld a, [wd5a0]
 	and $7f
 	ld e, a
-	ld d, $0
+	ld d, 0
 	add hl, de
 	add hl, de
 	ld a, [hli]
@@ -985,7 +986,7 @@ Func_7387b: ; 7387b (1c:787b)
 	ret
 	
 ;starting locations for each PC box
-PointerTable_73895: ; 73895 (1c:7895)
+BoxSRAMPointerTable: ; 73895 (1c:7895)
 	dw $A000
 	dw $A2A0
 	dw $A540
@@ -1004,30 +1005,30 @@ ChangeBox:: ; 738a1 (1c:78a1)
 	ld a, [wCurrentMenuItem]
 	and a
 	ret nz ; return if No was chosen
-	ld hl, wd5a0
+	ld hl, wCurrentBoxNum
 	bit 7, [hl]
-	call z, Func_73a29	;new game? (maybe)
-	call Func_7393f
+	call z, EmptyAllSRAMBoxes	;new game? (maybe)
+	call DisplayChangeBoxMenu
 	call UpdateSprites
 	ld hl, hFlags_0xFFF6
 	set 1, [hl]
 	call HandleMenuInput
 	ld hl, hFlags_0xFFF6
 	res 1, [hl]
-	bit 1, a
+	bit 1, a ; pressed b
 	ret nz
-	call Func_7387b
+	call GetBoxSRAMLocation
 	ld e, l
 	ld d, h
-	ld hl, W_NUMINBOX
-	call Func_7390e
+	ld hl, wBoxDataStart
+	call CopyBoxToOrFromSRAM ; copy old box from WRAM to SRAM
 	ld a, [wCurrentMenuItem]
 	set 7, a
-	ld [wd5a0], a
-	call Func_7387b
-	ld de, W_NUMINBOX
-	call Func_7390e
-	ld hl, W_MAPTEXTPTR
+	ld [wCurrentBoxNum], a
+	call GetBoxSRAMLocation
+	ld de, wBoxDataStart
+	call CopyBoxToOrFromSRAM ; copy new box from SRAM to WRAM
+	ld hl, wMapTextPtr
 	ld de, wChangeBoxSavedMapTextPointer
 	ld a, [hli]
 	ld [de], a
@@ -1038,7 +1039,7 @@ ChangeBox:: ; 738a1 (1c:78a1)
 	call SaveSAVtoSRAM
 	ld hl, wChangeBoxSavedMapTextPointer
 	call SetMapTextPointer
-	ld a, (SFX_02_5d - SFX_Headers_02) / 3
+	ld a, SFX_SAVE
 	call PlaySoundWaitForCurrent
 	call WaitForSoundToFinish
 	ret
@@ -1047,8 +1048,8 @@ WhenYouChangeBoxText: ; 73909 (1c:7909)
 	TX_FAR _WhenYouChangeBoxText
 	db "@"
 
-;copy the current box to the given location in the given bank (in b)
-Func_7390e: ; 7390e (1c:790e)
+CopyBoxToOrFromSRAM: ; 7390e (1c:790e)
+; copy an entire box from hl to de with b as the SRAM bank
 	push hl
 	ld a, SRAM_ENABLE
 	ld [MBC1SRamEnable], a
@@ -1056,9 +1057,11 @@ Func_7390e: ; 7390e (1c:790e)
 	ld [MBC1SRamBankingMode], a
 	ld a, b
 	ld [MBC1SRamBank], a
-	ld bc, wBoxMonNicksEnd - W_NUMINBOX	;size of data to copy
+	ld bc, wBoxDataEnd - wBoxDataStart
 	call CopyData
 	pop hl
+
+; mark the memory that the box was copied from as am empty box
 	xor a
 	ld [hli], a
 	dec a
@@ -1067,68 +1070,68 @@ Func_7390e: ; 7390e (1c:790e)
 	ld bc, $1a40	;was $1a4c
 	call SAVCheckSum
 	ld [$ba40], a	;was $ba4c
-	call Func_73863
+	call CalcIndividualBoxCheckSums
 	xor a
 	ld [MBC1SRamBankingMode], a
 	ld [MBC1SRamEnable], a
 	ret
 
-Func_7393f: ; 7393f (1c:793f)
+DisplayChangeBoxMenu: ; 7393f (1c:793f)
 	xor a
 	ld [H_AUTOBGTRANSFERENABLED], a ; $ffba
-	ld a, $3
+	ld a, A_BUTTON | B_BUTTON
 	ld [wMenuWatchedKeys], a ; wMenuWatchedKeys
 	ld a, 9		;number of boxes (starting at 0)
 	ld [wMaxMenuItem], a ; wMaxMenuItem
-	ld a, $1
+	ld a, 1
 	ld [wTopMenuItemY], a ; wTopMenuItemY
-	ld a, $c
+	ld a, 12
 	ld [wTopMenuItemX], a ; wTopMenuItemX
 	xor a
-	ld [wcc37], a
-	ld a, [wd5a0]
+	ld [wMenuWatchMovingOutOfBounds], a
+	ld a, [wCurrentBoxNum]
 	and $7f
-	ld [wCurrentMenuItem], a ; wCurrentMenuItem
-	ld [wLastMenuItem], a ; wLastMenuItem
-	ld hl, wTileMap
-	ld b, $2
-	ld c, $9
+	ld [wCurrentMenuItem], a
+	ld [wLastMenuItem], a
+	coord hl, 0, 0
+	ld b, 2
+	ld c, 9
 	call TextBoxBorder
 	ld hl, ChooseABoxText
 	call PrintText
-	hlCoord 11, 0
-	ld b, $c
-	ld c, $7
+	coord hl, 11, 0
+	ld b, 12
+	ld c, 7
 	call TextBoxBorder
 	ld hl, hFlags_0xFFF6
 	set 2, [hl]
-	ld de, BoxNames ; $79d9
-	hlCoord 13, 1
+	ld de, BoxNames
+	coord hl, 13, 1
 	call PlaceString
 	ld hl, hFlags_0xFFF6
 	res 2, [hl]
-	ld a, [wd5a0]
+	ld a, [wCurrentBoxNum]
 	and $7f
 	cp 9
-	jr c, .asm_739a6
+	jr c, .singleDigitBoxNum
 	sub 9
-	hlCoord 8, 2
+	coord hl, 8, 2
 	ld [hl], "1"
 	add "0"
-	jr .asm_739a8
-.asm_739a6
+	jr .next
+.singleDigitBoxNum
 	add "1"
-.asm_739a8
+.next
 	Coorda 9, 2
-	hlCoord 1, 2
+	coord hl, 1, 2
 	ld de, BoxNoText
 	call PlaceString
-	call Func_73a84
-	hlCoord 18, 1
-	ld de, wWhichTrade ; wWhichTrade
-	ld bc, $14
+	call GetMonCountsForAllBoxes
+	coord hl, 18, 1
+	ld de, wBoxMonCounts
+	ld bc, SCREEN_WIDTH
 	ld a, 10	;only care about 10 boxes
-.asm_739c2
+.loop
 	push af
 	
 	push hl
@@ -1140,14 +1143,13 @@ Func_7393f: ; 7393f (1c:793f)
 	pop bc
 	pop de
 	pop hl
-	
 	add hl, bc
 	inc de
 	pop af
 	dec a
-	jr nz, .asm_739c2
-	ld a, $1
-	ld [H_AUTOBGTRANSFERENABLED], a ; $ffba
+	jr nz, .loop
+	ld a, 1
+	ld [H_AUTOBGTRANSFERENABLED], a
 	ret
 
 ChooseABoxText: ; 739d4 (1c:79d4)
@@ -1169,60 +1171,59 @@ BoxNames: ; 739d9 (1c:79d9)
 BoxNoText: ; 73a21 (1c:7a21)
 	db "BOX No.@"
 
-;to zero the number of pokemon in each box for the given mode
-Func_73a29: ; 73a29 (1c:7a29)
+EmptyAllSRAMBoxes: ; 73a29 (1c:7a29)
+; marks all boxes in SRAM as empty (initialisation for the first time the
+; player changes the box)
 	ld a, SRAM_ENABLE
 	ld [MBC1SRamEnable], a
 	ld a, $1
 	ld [MBC1SRamBankingMode], a
 	call GetPCBank
 	ld [MBC1SRamBank], a
-	call Func_73a4b
+	call EmptySRAMBoxesInBank
 	xor a
 	ld [MBC1SRamBankingMode], a
 	ld [MBC1SRamEnable], a
 	ret
 
 ;to zero the number of pokemon in each PC box in the given bank
-Func_73a4b: ; 73a4b (1c:7a4b)
+EmptySRAMBoxesInBank: ; 73a4b (1c:7a4b)
 	ld hl, $a000
-	call Func_73a7f
+	call EmptySRAMBox
 	ld hl, $A2A0
-	call Func_73a7f
+	call EmptySRAMBox
 	ld hl, $A540
-	call Func_73a7f
+	call EmptySRAMBox
 	ld hl, $A7E0
-	call Func_73a7f
+	call EmptySRAMBox
 	ld hl, $AA80
-	call Func_73a7f
+	call EmptySRAMBox
 	ld hl, $AD20
-	call Func_73a7f
+	call EmptySRAMBox
 	ld hl, $AFC0
-	call Func_73a7f
+	call EmptySRAMBox
 	ld hl, $B260
-	call Func_73a7f
+	call EmptySRAMBox
 	ld hl, $B500
-	call Func_73a7f
+	call EmptySRAMBox
 	ld hl, $B7A0
-	call Func_73a7f
+	call EmptySRAMBox
 	ld hl, $a000
 	ld bc, $1a40	; was $1a4c
 	call SAVCheckSum
 	ld [$ba40], a	; was $ba4c
-	call Func_73863
+	call CalcIndividualBoxCheckSums
 	ret
 
-;set the number of Pokemon in the box to 0
-Func_73a7f: ; 73a7f (1c:7a7f)
+EmptySRAMBox: ; 73a7f (1c:7a7f)
 	xor a
 	ld [hli], a
 	dec a
 	ld [hl], a
 	ret
 
-;count the number of pokemon in each box
-Func_73a84: ; 73a84 (1c:7a84)
-	ld hl, wWhichTrade ; wWhichTrade
+GetMonCountsForAllBoxes: ; 73a84 (1c:7a84)
+	ld hl, wBoxMonCounts
 	push hl
 	ld a, SRAM_ENABLE
 	ld [MBC1SRamEnable], a
@@ -1230,22 +1231,24 @@ Func_73a84: ; 73a84 (1c:7a84)
 	ld [MBC1SRamBankingMode], a
 	call GetPCBank
 	ld [MBC1SRamBank], a
-	call Func_73ab8
+	call GetMonCountsForBoxesInBank
 	xor a
 	ld [MBC1SRamBankingMode], a
 	ld [MBC1SRamEnable], a
 	pop hl
-	ld a, [wd5a0]
+
+; copy the count for the current box from WRAM
+	ld a, [wCurrentBoxNum]
 	and $7f
 	ld c, a
-	ld b, $0
+	ld b, 0
 	add hl, bc
-	ld a, [W_NUMINBOX] ; wda80
+	ld a, [wNumInBox]
 	ld [hl], a
 	ret
 
 ;get the number of pokemon in each box in the current bank
-Func_73ab8: ; 73ab8 (1c:7ab8)
+GetMonCountsForBoxesInBank: ; 73ab8 (1c:7ab8)
 	ld a, [$a000]
 	ld [hli], a
 	ld a, [$A2A0]

@@ -2,24 +2,24 @@
 ; unused slots are filled with 0, all used slots may be chosen with equal probability
 AIEnemyTrainerChooseMoves: ; 39719 (e:5719)
 	ld a, $a
-	ld hl, wHPBarMaxHP  ; init temporary move selection array. Only the moves with the lowest numbers are chosen in the end
+	ld hl, wBuffer ; init temporary move selection array. Only the moves with the lowest numbers are chosen in the end
 	ld [hli], a   ; move 1
 	ld [hli], a   ; move 2
 	ld [hli], a   ; move 3
 	ld [hl], a    ; move 4
-	ld a, [W_ENEMYDISABLEDMOVE] ; forbid disabled move (if any)
+	ld a, [wEnemyDisabledMove] ; forbid disabled move (if any)
 	swap a
 	and $f
 	jr z, .noMoveDisabled
-	ld hl, wHPBarMaxHP
+	ld hl, wBuffer
 	dec a
 	ld c, a
 	ld b, $0
 	add hl, bc    ; advance pointer to forbidden move
 	ld [hl], $50  ; forbid (highly discourage) disabled move
 .noMoveDisabled
-	ld hl, TrainerClassMoveChoiceModifications ; 589B
-	ld a, [W_TRAINERCLASS]
+	ld hl, TrainerClassMoveChoiceModifications
+	ld a, [wTrainerClass]
 	ld b, a
 .loopTrainerClasses
 	dec b
@@ -40,11 +40,11 @@ AIEnemyTrainerChooseMoves: ; 39719 (e:5719)
 	and a
 	jr z, .loopFindMinimumEntries
 	push hl
-	ld hl, AIMoveChoiceModificationFunctionPointers ; $57a3
+	ld hl, AIMoveChoiceModificationFunctionPointers
 	dec a
 	add a
 	ld c, a
-	ld b, $0
+	ld b, 0
 	add hl, bc    ; skip to pointer
 	ld a, [hli]   ; read pointer into hl
 	ld h, [hl]
@@ -53,9 +53,9 @@ AIEnemyTrainerChooseMoves: ; 39719 (e:5719)
 	push de
 	jp [hl]       ; execute modification function
 .loopFindMinimumEntries ; all entries will be decremented sequentially until one of them is zero
-	ld hl, wHPBarMaxHP  ; temp move selection array
+	ld hl, wBuffer  ; temp move selection array
 	ld de, wEnemyMonMoves  ; enemy moves
-	ld c, $4
+	ld c, NUM_MOVES
 .loopDecrementEntries
 	ld a, [de]
 	inc de
@@ -73,15 +73,15 @@ AIEnemyTrainerChooseMoves: ; 39719 (e:5719)
 	inc [hl]
 	dec hl
 	inc a
-	cp $5
+	cp NUM_MOVES + 1
 	jr nz, .loopUndoPartialIteration
-	ld hl, wHPBarMaxHP  ; temp move selection array
+	ld hl, wBuffer  ; temp move selection array
 	ld de, wEnemyMonMoves  ; enemy moves
-	ld c, $4
+	ld c, NUM_MOVES
 .filterMinimalEntries ; all minimal entries now have value 1. All other slots will be disabled (move set to 0)
 	ld a, [de]
 	and a
-	jr nz, .moveExisting ; 0x3978a $1
+	jr nz, .moveExisting
 	ld [hl], a
 .moveExisting
 	ld a, [hl]
@@ -97,7 +97,7 @@ AIEnemyTrainerChooseMoves: ; 39719 (e:5719)
 	inc de
 	dec c
 	jr nz, .filterMinimalEntries
-	ld hl, wHPBarMaxHP    ; use created temporary array as move set
+	ld hl, wBuffer    ; use created temporary array as move set
 	ret
 .useOriginalMoveSet
 	ld hl, wEnemyMonMoves    ; use original move set
@@ -126,10 +126,10 @@ AIMoveChoiceModification1: ; 397ab (e:57ab)
 	ret z ; no more moves in move set
 	inc de
 	call ReadMove
-	ld a, [W_ENEMYMOVEPOWER]
+	ld a, [wEnemyMovePower]
 	and a
 	jr nz, .nextMove
-	ld a, [W_ENEMYMOVEEFFECT]
+	ld a, [wEnemyMoveEffect]
 	push hl
 	push de
 	push bc
@@ -145,7 +145,7 @@ AIMoveChoiceModification1: ; 397ab (e:57ab)
 	ld [hl], a
 	jr .nextMove
 
-StatusAilmentMoveEffects ; 57e2
+StatusAilmentMoveEffects: ; 57e2
 	db $01 ; unused sleep effect
 	db SLEEP_EFFECT
 	db POISON_EFFECT
@@ -157,7 +157,7 @@ StatusAilmentMoveEffects ; 57e2
 ; that fall in-bewteen
 AIMoveChoiceModification2: ; 397e7 (e:57e7)
 	ld a, [wAILayer2Encouragement]
-	cp $1 
+	cp $1
 	ret nz
 	ld hl, wBuffer - 1 ; temp move selection array (-1 byte offset)
 	ld de, wEnemyMonMoves ; enemy moves
@@ -171,7 +171,7 @@ AIMoveChoiceModification2: ; 397e7 (e:57e7)
 	ret z ; no more moves in move set
 	inc de
 	call ReadMove
-	ld a, [W_ENEMYMOVEEFFECT]
+	ld a, [wEnemyMoveEffect]
 	cp ATTACK_UP1_EFFECT
 	jr c, .nextMove
 	cp BIDE_EFFECT
@@ -191,7 +191,7 @@ AIMoveChoiceModification2: ; 397e7 (e:57e7)
 AIMoveChoiceModification3: ; 39817 (e:5817)
 	ld hl, wBuffer - 1 ; temp move selection array (-1 byte offset)
 	ld de, wEnemyMonMoves ; enemy moves
-	ld b, $5
+	ld b, NUM_MOVES + 1
 .nextMove
 	dec b
 	ret z ; processed all 4 moves
@@ -208,7 +208,7 @@ AIMoveChoiceModification3: ; 39817 (e:5817)
 	pop de
 	pop bc
 	pop hl
-	ld a, [wd11e]
+	ld a, [wTypeEffectiveness]
 	cp $10
 	jr z, .nextMove
 	jr c, .notEffectiveMove
@@ -218,7 +218,7 @@ AIMoveChoiceModification3: ; 39817 (e:5817)
 	push hl
 	push de
 	push bc
-	ld a, [W_ENEMYMOVETYPE]
+	ld a, [wEnemyMoveType]
 	ld d, a
 	ld hl, wEnemyMonMoves  ; enemy moves
 	ld b, NUM_MOVES + 1
@@ -230,17 +230,17 @@ AIMoveChoiceModification3: ; 39817 (e:5817)
 	and a
 	jr z, .done
 	call ReadMove
-	ld a, [W_ENEMYMOVEEFFECT]
+	ld a, [wEnemyMoveEffect]
 	cp SUPER_FANG_EFFECT
 	jr z, .betterMoveFound ; Super Fang is considered to be a better move
 	cp SPECIAL_DAMAGE_EFFECT
 	jr z, .betterMoveFound ; any special damage moves are considered to be better moves
 	cp FLY_EFFECT
 	jr z, .betterMoveFound ; Fly is considered to be a better move
-	ld a, [W_ENEMYMOVETYPE]
+	ld a, [wEnemyMoveType]
 	cp d
 	jr z, .loopMoves
-	ld a, [W_ENEMYMOVEPOWER]
+	ld a, [wEnemyMovePower]
 	and a
 	jr nz, .betterMoveFound ; damaging moves of a different type are considered to be better moves
 	jr .loopMoves
@@ -264,9 +264,9 @@ ReadMove: ; 39884 (e:5884)
 	push bc
 	dec a
 	ld hl,Moves
-	ld bc,6
+	ld bc,MoveEnd - Moves
 	call AddNTimes
-	ld de,W_ENEMYMOVENUM
+	ld de,wEnemyMoveNum
 	call CopyData
 	pop bc
 	pop de
@@ -325,8 +325,8 @@ TrainerClassMoveChoiceModifications: ; 3989b (e:589b)
 	db 1,3,0  ; LANCE
 
 INCLUDE "engine/battle/trainer_pic_money_pointers.asm"
-	
-INCLUDE "text/trainer_names.asm"	
+
+INCLUDE "text/trainer_names.asm"
 
 INCLUDE "engine/battle/bank_e_misc.asm"
 
@@ -337,15 +337,14 @@ INCLUDE "data/trainer_moves.asm"
 INCLUDE "data/trainer_parties.asm"
 
 TrainerAI: ; 3a52e (e:652e)
-;XXX called at 34964, 3c342, 3c398
 	and a
-	ld a,[W_ISINBATTLE]
+	ld a,[wIsInBattle]
 	dec a
 	ret z ; if not a trainer, we're done here
 	ld a,[wLinkState]
 	cp LINK_STATE_BATTLING
 	ret z
-	ld a,[W_TRAINERCLASS] ; what trainer class is this?
+	ld a,[wTrainerClass] ; what trainer class is this?
 	dec a
 	ld c,a
 	ld b,0
@@ -553,14 +552,14 @@ DecrementAICount: ; 3a695 (e:6695)
 	scf
 	ret
 
-Func_3a69b: ; 3a69b (e:669b)
-	ld a,(SFX_08_3e - SFX_Headers_08) / 3
+AIPlayRestoringSFX: ; 3a69b (e:669b)
+	ld a,SFX_HEAL_AILMENT
 	jp PlaySoundWaitForCurrent
 
 AIUseFullRestore: ; 3a6a0 (e:66a0)
 	call AICureStatus
 	ld a,FULL_RESTORE
-	ld [wcf05],a
+	ld [wAIItem],a
 	ld de,wHPBarOldHP
 	ld hl,wEnemyMonHP + 1
 	ld a,[hld]
@@ -601,7 +600,7 @@ AIUseHyperPotion: ; 3a6d6 (e:66d6)
 
 AIRecoverHP: ; 3a6da (e:66da)
 ; heal b HP and print "trainer used $(a) on pokemon!"
-	ld [wcf05],a
+	ld [wAIItem],a
 	ld hl,wEnemyMonHP + 1
 	ld a,[hl]
 	ld [wHPBarOldHP],a
@@ -642,7 +641,7 @@ AIRecoverHP: ; 3a6da (e:66da)
 
 AIPrintItemUseAndUpdateHPBar: ; 3a718 (e:6718)
 	call AIPrintItemUse_
-	hlCoord 2, 2
+	coord hl, 2, 2
 	xor a
 	ld [wHPBarType],a
 	predef UpdateHPBar2
@@ -666,7 +665,7 @@ AISwitchIfEnoughMons: ; 3a72a (e:672a)
 	inc d
 .Fainted
 	push bc
-	ld bc,$2C
+	ld bc, wEnemyMon2 - wEnemyMon1
 	add hl,bc
 	pop bc
 	dec c
@@ -696,11 +695,13 @@ SwitchEnemyMon: ; 3a74b (e:674b)
 	ld hl, AIBattleWithdrawText
 	call PrintText
 
+	; This wFirstMonsNotOutYet variable is abused to prevent the player from
+	; switching in a new mon in response to this switch.
 	ld a,1
-	ld [wd11d],a
+	ld [wFirstMonsNotOutYet],a
 	callab EnemySendOut
 	xor a
-	ld [wd11d],a
+	ld [wFirstMonsNotOutYet],a
 
 	ld a,[wLinkState]
 	cp LINK_STATE_BATTLING
@@ -713,7 +714,7 @@ AIBattleWithdrawText: ; 3a781 (e:6781)
 	db "@"
 
 AIUseFullHeal: ; 3a786 (e:6786)
-	call Func_3a69b
+	call AIPlayRestoringSFX
 	call AICureStatus
 	ld a,FULL_HEAL
 	jp AIPrintItemUse
@@ -727,27 +728,27 @@ AICureStatus: ; 3a791 (e:6791)
 	xor a
 	ld [hl],a ; clear status in enemy team roster
 	ld [wEnemyMonStatus],a ; clear status of active enemy
-	ld hl,W_ENEMYBATTSTATUS3
+	ld hl,wEnemyBattleStatus3
 	res 0,[hl]
 	ret
 
 AIUseXAccuracy: ; 0x3a7a8 unused
-	call Func_3a69b
-	ld hl,W_ENEMYBATTSTATUS2
+	call AIPlayRestoringSFX
+	ld hl,wEnemyBattleStatus2
 	set 0,[hl]
 	ld a,X_ACCURACY
 	jp AIPrintItemUse
 
 AIUseGuardSpec: ; 3a7b5 (e:67b5)
-	call Func_3a69b
-	ld hl,W_ENEMYBATTSTATUS2
+	call AIPlayRestoringSFX
+	ld hl,wEnemyBattleStatus2
 	set 1,[hl]
 	ld a,GUARD_SPEC_
 	jp AIPrintItemUse
 
 AIUseDireHit: ; 0x3a7c2 unused
-	call Func_3a69b
-	ld hl,W_ENEMYBATTSTATUS2
+	call AIPlayRestoringSFX
+	ld hl,wEnemyBattleStatus2
 	set 2,[hl]
 	ld a,DIRE_HIT
 	jp AIPrintItemUse
@@ -799,11 +800,11 @@ AIUseXSpecial: ; 3a804 (e:6804)
 	; fallthrough
 
 AIIncreaseStat: ; 3a808 (e:6808)
-	ld [wcf05],a
+	ld [wAIItem],a
 	push bc
 	call AIPrintItemUse_
 	pop bc
-	ld hl,W_ENEMYMOVEEFFECT
+	ld hl,wEnemyMoveEffect
 	ld a,[hld]
 	push af
 	ld a,[hl]
@@ -821,13 +822,13 @@ AIIncreaseStat: ; 3a808 (e:6808)
 	jp DecrementAICount
 
 AIPrintItemUse: ; 3a82c (e:682c)
-	ld [wcf05],a
+	ld [wAIItem],a
 	call AIPrintItemUse_
 	jp DecrementAICount
 
 AIPrintItemUse_: ; 3a835 (e:6835)
-; print "x used [wcf05] on z!"
-	ld a,[wcf05]
+; print "x used [wAIItem] on z!"
+	ld a,[wAIItem]
 	ld [wd11e],a
 	call GetItemName
 	ld hl, AIBattleUseItemText

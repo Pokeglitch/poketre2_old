@@ -4,18 +4,18 @@ MarowakAnim: ; 708ca (1c:48ca)
 	ld [rOBP1], a
 	call CopyMonPicFromBGToSpriteVRAM ; cover the BG ghost pic with a sprite ghost pic that looks the same
 ; now that the ghost pic is being displayed using sprites, clear the ghost pic from the BG tilemap
-	hlCoord 12, 0
-	ld bc, $707
+	coord hl, 12, 0
+	lb bc, 7, 7
 	call ClearScreenArea
 	call Delay3
 	xor a
 	ld [H_AUTOBGTRANSFERENABLED], a ; disable BG transfer so we don't see the Marowak too soon
 ; replace ghost pic with Marowak in BG
 	ld a, MAROWAK
-	ld [wHPBarMaxHP], a
+	ld [wChangeMonPicEnemyTurnSpecies], a
 	ld a, $1
 	ld [H_WHOSETURN], a
-	callab Func_79793
+	callab ChangeMonPic
  ; alternate between black and light grey 8 times.
  ; this makes the ghost's body appear to flash
 	ld d, $80
@@ -55,22 +55,22 @@ CopyMonPicFromBGToSpriteVRAM: ; 7092a (1c:492a)
 	ld bc, 7 * 7
 	call CopyVideoData
 	ld a, $10
-	ld [W_BASECOORDY], a
+	ld [wBaseCoordY], a
 	ld a, $70
-	ld [W_BASECOORDX], a
+	ld [wBaseCoordX], a
 	ld hl, wOAMBuffer
-	ld bc, $606
+	lb bc, 6, 6
 	ld d, $8
 .oamLoop
 	push bc
-	ld a, [W_BASECOORDY]
+	ld a, [wBaseCoordY]
 	ld e, a
 .oamInnerLoop
 	ld a, e
 	add $8
 	ld e, a
 	ld [hli], a
-	ld a, [W_BASECOORDX]
+	ld a, [wBaseCoordX]
 	ld [hli], a
 	ld a, d
 	ld [hli], a
@@ -80,9 +80,9 @@ CopyMonPicFromBGToSpriteVRAM: ; 7092a (1c:492a)
 	dec c
 	jr nz, .oamInnerLoop
 	inc d
-	ld a, [W_BASECOORDX]
+	ld a, [wBaseCoordX]
 	add $8
-	ld [W_BASECOORDX], a
+	ld [wBaseCoordX], a
 	pop bc
 	dec b
 	jr nz, .oamLoop

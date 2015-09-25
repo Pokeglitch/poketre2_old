@@ -3,11 +3,11 @@ HealEffect_: ; 3b9ec (e:79ec)
 	and a
 	ld de, wBattleMonHP
 	ld hl, wBattleMonMaxHP
-	ld a, [W_PLAYERMOVENUM]
+	ld a, [wPlayerMoveNum]
 	jr z, .healEffect
 	ld de, wEnemyMonHP
 	ld hl, wEnemyMonMaxHP
-	ld a, [W_ENEMYMOVENUM]
+	ld a, [wEnemyMoveNum]
 .healEffect
 	ld b, a
 	ld a, [de]
@@ -76,7 +76,7 @@ HealEffect_: ; 3b9ec (e:79ec)
 	ld a, [de]
 	sbc [hl]
 	jr c, .playAnim
-; copy max HP to current HP if an overflow ocurred	
+; copy max HP to current HP if an overflow ocurred
 	ld a, [hli]
 	ld [de], a
 	ld [wHPBarNewHP+1], a
@@ -89,10 +89,10 @@ HealEffect_: ; 3b9ec (e:79ec)
 	call BankswitchEtoF
 	ld a, [H_WHOSETURN]
 	and a
-	hlCoord 10, 9
+	coord hl, 10, 9
 	ld a, $1
 	jr z, .updateHPBar
-	hlCoord 2, 2
+	coord hl, 2, 2
 	xor a
 .updateHPBar
 	ld [wHPBarType], a

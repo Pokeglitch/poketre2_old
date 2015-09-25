@@ -17,12 +17,12 @@ DoInGameTradeDialogue: ; 71ad9 (1c:5ad9)
 	ld a,[hli]
 	push af
 	ld de,wInGameTradeMonNick
-	ld bc,$000b
+	ld bc, NAME_LENGTH
 	call CopyData
 	pop af
 	ld l,a
 	ld h,$0
-	ld de,InGameTradeTextPointers ; $5d64
+	ld de,InGameTradeTextPointers
 	add hl,hl
 	add hl,de
 	ld a,[hli]
@@ -38,7 +38,7 @@ DoInGameTradeDialogue: ; 71ad9 (1c:5ad9)
 	ld hl,wCompletedInGameTradeFlags
 	ld a,[wWhichTrade]
 	ld c,a
-	ld b,$2
+	ld b,FLAG_TEST
 	predef FlagActionPredef
 	ld a,c
 	and a
@@ -81,14 +81,14 @@ InGameTrade_GetMonName: ; 71b6a (1c:5b6a)
 	call GetMonName
 	ld hl,wcd6d
 	pop de
-	ld bc,$b
+	ld bc, NAME_LENGTH
 	jp CopyData
 
 INCLUDE "data/trades.asm"
 
 InGameTrade_DoTrade: ; 71c07 (1c:5c07)
-	xor a
-	ld [wd07d],a
+	xor a ; NORMAL_PARTY_MENU
+	ld [wPartyMenuTypeOrMessageID],a
 	dec a
 	ld [wUpdateSpritesEnabled],a
 	call DisplayPartyMenu
@@ -105,36 +105,36 @@ InGameTrade_DoTrade: ; 71c07 (1c:5c07)
 	jr nz,.tradeFailed ; jump if the selected mon's species is not the required one
 	ld a,[wWhichPokemon]
 	ld hl,wPartyMon1Level
-	ld bc,$002c
+	ld bc, wPartyMon2 - wPartyMon1
 	call AddNTimes
 	ld a,[hl]
-	ld [W_CURENEMYLVL],a
+	ld [wCurEnemyLVL],a
 	ld hl,wCompletedInGameTradeFlags
 	ld a,[wWhichTrade]
 	ld c,a
-	ld b,$1
+	ld b,FLAG_SET
 	predef FlagActionPredef
 	ld hl, ConnectCableText
 	call PrintText
 	ld a,[wWhichPokemon]
 	push af
-	ld a,[W_CURENEMYLVL]
+	ld a,[wCurEnemyLVL]
 	push af
 	call LoadHpBarAndStatusTilePatterns
 	call InGameTrade_PrepareTradeData
 	predef InternalClockTradeAnim
 	pop af
-	ld [W_CURENEMYLVL],a
+	ld [wCurEnemyLVL],a
 	pop af
 	ld [wWhichPokemon],a
 	ld a,[wInGameTradeReceiveMonSpecies]
 	ld [wcf91],a
 	xor a
-	ld [wcc49],a
-	ld [wcf95],a
+	ld [wMonDataLocation],a ; not used
+	ld [wRemoveMonFromBox],a
 	call RemovePokemon
-	ld a,$80
-	ld [wcc49],a
+	ld a,$80 ; prevent the player from naming the mon
+	ld [wMonDataLocation],a
 	call AddPartyMon
 	call InGameTrade_CopyDataToReceivedMon
 	callab EvolveTradeMon
@@ -160,9 +160,7 @@ InGameTrade_RestoreScreen: ; 71ca2 (1c:5ca2)
 	call LoadGBPal
 	ld c, 10
 	call DelayFrames
-	ld b, BANK(LoadWildData)
-	ld hl, LoadWildData
-	jp Bankswitch
+	jpba LoadWildData
 
 InGameTrade_PrepareTradeData: ; 71cc1 (1c:5cc1)
 	ld hl, wTradedPlayerMonSpecies
@@ -171,16 +169,16 @@ InGameTrade_PrepareTradeData: ; 71cc1 (1c:5cc1)
 	ld a, [wInGameTradeReceiveMonSpecies]
 	ld [hl], a ; wTradedEnemyMonSpecies
 	ld hl, wPartyMonOT
-	ld bc, $b
+	ld bc, NAME_LENGTH
 	ld a, [wWhichPokemon]
 	call AddNTimes
 	ld de, wTradedPlayerMonOT
-	ld bc, $b
+	ld bc, NAME_LENGTH
 	call InGameTrade_CopyData
 	ld hl, InGameTrade_TrainerString
-	ld de, wcd4e
+	ld de, wTradedEnemyMonOT
 	call InGameTrade_CopyData
-	ld de, W_GRASSRATE
+	ld de, wLinkEnemyTrainerName
 	call InGameTrade_CopyData
 	ld hl, wPartyMon1OTID
 	ld bc, wPartyMon2 - wPartyMon1
@@ -204,16 +202,16 @@ InGameTrade_CopyData: ; 71d11 (1c:5d11)
 
 InGameTrade_CopyDataToReceivedMon: ; 71d19 (1c:5d19)
 	ld hl, wPartyMonNicks
-	ld bc, $b
+	ld bc, NAME_LENGTH
 	call InGameTrade_GetReceivedMonPointer
 	ld hl, wInGameTradeMonNick
-	ld bc, $b
+	ld bc, NAME_LENGTH
 	call CopyData
 	ld hl, wPartyMonOT
-	ld bc, $b
+	ld bc, NAME_LENGTH
 	call InGameTrade_GetReceivedMonPointer
 	ld hl, InGameTrade_TrainerString
-	ld bc, $b
+	ld bc, NAME_LENGTH
 	call CopyData
 	ld hl, wPartyMon1OTID
 	ld bc, wPartyMon2 - wPartyMon1

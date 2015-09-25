@@ -54,7 +54,7 @@ Char4E::
 	ld a,[hFlags_0xFFF6]
 	bit 2,a
 	jr z,.next2
-	ld bc,$14
+	ld bc,SCREEN_WIDTH
 .next2
 	pop hl
 	add hl,bc
@@ -76,7 +76,7 @@ Char4F::
 	pop hl		;recover the destination pointer
 	
 	pop hl
-	hlCoord 1, 16
+	coord hl, 1, 16
 	push hl
 	inc de
 	ld a,[wTextCharCount]
@@ -113,7 +113,7 @@ Char52:: ; 0x19f9 player’s name
 Char53:: ; 19ff (0:19ff) ; rival’s name
 	pop hl		;recover the destination pointer
 	push de
-	ld de,W_RIVALNAME
+	ld de,wRivalName
 	jp FinishDTE
 
 Char5D:: ; 1a05 (0:1a05) ; TRAINER
@@ -182,7 +182,7 @@ MonsterNameCharsCommon:: ; 1a37 (0:1a37)
 	ld de,wBattleMonNick ; player active monster name
 	jr FinishDTE
 
-.Enemy ; 1A40
+.Enemy
 	; print “Enemy ”
 	ld a,[wEnemyMonSpecies2]
 	cp HUMAN
@@ -296,10 +296,9 @@ Char58:: ; 1a95 (0:1a95)
 Next1AA2:: ; 1aa2 (0:1aa2)
 	call ProtectedDelay3
 	call ManualTextScroll
-	ld a,$C4
+	ld a," "
 	Coorda 18, 13
 	jr Char57Finish
-	
 Char57:: ; 1aad (0:1aad)
 	pop hl
 Char57Finish::
@@ -317,14 +316,14 @@ Char51:: ; 1ab4 (0:1ab4)
 	Coorda 18, 13
 	call ProtectedDelay3
 	call ManualTextScroll
-	hlCoord 1, 13
-	ld bc,$0412
+	coord hl, 1, 13
+	lb bc, 4, 18
 	call ClearScreenArea
-	ld c,$14
+	ld c,20
 	call DelayFrames
 	pop de
 	inc de
-	hlCoord 1, 14
+	coord hl, 1, 14
 	ld a,[wTextCharCount]
 	and a
 	jr z,.finish		;if we aren't, then finish
@@ -341,16 +340,16 @@ Char49:: ; 1ad5 (0:1ad5)
 	Coorda 18, 13
 	call ProtectedDelay3
 	call ManualTextScroll
-	hlCoord 1, 10
-	ld bc,$0712
+	coord hl, 1, 10
+	lb bc, 7, 18
 	call ClearScreenArea
-	ld c,$14
+	ld c,20
 	call DelayFrames
 	pop de
 	pop hl
-	hlCoord 1, 11
+	coord hl, 1, 11
 	push hl
-	jp Next19E8
+	jp PlaceNextChar_inc
 
 
 Char55::
@@ -362,7 +361,7 @@ Char4B:: ; 1af8 (0:1af8)
 	push de
 	call ManualTextScroll
 	pop de
-	ld a,$C4
+	ld a, " "
 	Coorda 18, 13
 	push hl		;push hl again because 4c will pop it
 	;fall through
@@ -372,7 +371,7 @@ Char4C:: ; 1b0a (0:1b0a)
 	push de
 	call Next1B18
 	call Next1B18
-	hlCoord 1, 16
+	coord hl, 1, 16
 	pop de
 	inc de
 	ld a,[wTextCharCount]
@@ -385,18 +384,18 @@ Char4C:: ; 1b0a (0:1b0a)
 	jp PlaceNextChar
 
 Next1B18:: ; 1b18 (0:1b18)
-	hlCoord 0, 14
-	deCoord 0, 13
-	ld b,$3C
+	coord hl, 0, 14
+	coord de, 0, 13
+	ld b,60
 .next
 	ld a,[hli]
 	ld [de],a
 	inc de
 	dec b
 	jr nz,.next
-	hlCoord 1, 16
-	ld a,$C4
-	ld b,$12
+	coord hl, 1, 16
+	ld a, " "
+	ld b,SCREEN_WIDTH - 2
 .next2
 	ld [hli],a
 	dec b
@@ -435,7 +434,7 @@ PrintText:: ; 3c49 (0:3c49)
 	ret
 	
 Func_3c59:: ; 3c59 (0:3c59)
-	bcCoord 1, 14
+	coord bc, 1, 14
 	jp TextCommandProcessor
 	
 
@@ -504,7 +503,7 @@ FinishCountingLetters:
 
 	;move pointer to second line
 	pop hl		;recover the destination
-	hlCoord 1, 16		;store the new destination
+	coord hl, 1, 16		;store the new destination
 	pop de		;recover the starting position
 	push de		;store the starting position again since we are still counting
 	jr PlaceNextChar	;start over
@@ -654,24 +653,24 @@ SpecialTextChars:
 	db $FF	
 
 TextCommandProcessor:: ; 1b40 (0:1b40)
-	ld a,[wd358]
+	ld a,[wLetterPrintingDelayFlags]
 	push af
 	set 1,a
 	ld e,a
 	ld a,[$fff4]
 	xor e
-	ld [wd358],a
+	ld [wLetterPrintingDelayFlags],a
 	ld a,c
-	ld [wcc3a],a
+	ld [wUnusedCC3A],a
 	ld a,b
-	ld [wcc3b],a
+	ld [wUnusedCC3B],a
 
 NextTextCommand:: ; 1b55 (0:1b55)
 	ld a,[hli]
 	cp a, "@" ; terminator
 	jr nz,.doTextCommand
 	pop af
-	ld [wd358],a
+	ld [wLetterPrintingDelayFlags],a
 	ret
 .doTextCommand
 	push hl
@@ -774,10 +773,10 @@ TextCommand02:: ; 1ba5 (0:1ba5)
 TextCommand03:: ; 1bb7 (0:1bb7)
 	pop hl
 	ld a,[hli]
-	ld [wcc3a],a
+	ld [wUnusedCC3A],a
 	ld c,a
 	ld a,[hli]
-	ld [wcc3b],a
+	ld [wUnusedCC3B],a
 	ld b,a
 	jp NextTextCommand
 
@@ -786,7 +785,7 @@ TextCommand03:: ; 1bb7 (0:1bb7)
 ; (no arguments)
 TextCommand05:: ; 1bc5 (0:1bc5)
 	pop hl
-	bcCoord 1, 16 ; address of second line of dialogue text box
+	coord bc, 1, 16 ; address of second line of dialogue text box
 	jp NextTextCommand
 
 ; blink arrow and wait for A or B to be pressed
@@ -815,7 +814,7 @@ TextCommand07:: ; 1be7 (0:1be7)
 	call Next1B18 ; scroll up text
 	call Next1B18
 	pop hl
-	bcCoord 1, 16 ; address of second line of dialogue text box
+	coord bc, 1, 16 ; address of second line of dialogue text box
 	jp NextTextCommand
 
 ; execute asm inline
@@ -848,7 +847,7 @@ TextCommand09:: ; 1bff (0:1bff)
 	ld a,b
 	and a,$f0
 	swap a
-	set 6,a
+	set BIT_LEFT_ALIGN,a
 	ld b,a
 	call PrintNumber
 	ld b,h
@@ -863,7 +862,7 @@ TextCommand0A:: ; 1c1d (0:1c1d)
 	push bc
 	call Joypad
 	ld a,[hJoyHeld]
-	and a,%00000011 ; A and B buttons
+	and a,A_BUTTON | B_BUTTON
 	jr nz,.skipDelay
 	ld c,30
 	call DelayFrames
@@ -913,13 +912,13 @@ TextCommand0B:: ; 1c31 (0:1c31)
 
 ; format: text command ID, sound ID or cry ID
 TextCommandSounds:: ; 1c64 (0:1c64)
-	db $0B,(SFX_02_3a - SFX_Headers_02) / 3
-	db $12,(SFX_08_46 - SFX_Headers_08) / 3
-	db $0E,(SFX_02_41 - SFX_Headers_02) / 3
-	db $0F,(SFX_02_3a - SFX_Headers_02) / 3
-	db $10,(SFX_02_3b - SFX_Headers_02) / 3
-	db $11,(SFX_02_42 - SFX_Headers_02) / 3
-	db $13,(SFX_08_45 - SFX_Headers_08) / 3
+	db $0B,SFX_GET_ITEM_1
+	db $12,SFX_CAUGHT_MON
+	db $0E,SFX_POKEDEX_RATING
+	db $0F,SFX_GET_ITEM_1
+	db $10,SFX_GET_ITEM_2
+	db $11,SFX_GET_KEY_ITEM
+	db $13,SFX_DEX_PAGE_ADDED
 	db $14,NIDORINA ; used in OakSpeech
 	db $15,PIDGEOT  ; used in SaffronCityText12
 	db $16,DEWGONG  ; unused?
@@ -941,7 +940,7 @@ TextCommand0C:: ; 1c78 (0:1c78)
 	call Joypad
 	pop de
 	ld a,[hJoyHeld] ; joypad state
-	and a,%00000011 ; is A or B button pressed?
+	and a,A_BUTTON | B_BUTTON
 	jr nz,.skipDelay ; if so, skip the delay
 	ld c,10
 	call DelayFrames
@@ -977,7 +976,7 @@ TextCommand17:: ; 1ca3 (0:1ca3)
 	ld d,a
 	ld a,[hli]
 	ld [H_LOADEDROMBANK],a
-	ld [$2000],a
+	ld [MBC1RomBank],a
 	push hl
 	ld l,e
 	ld h,d
@@ -985,7 +984,7 @@ TextCommand17:: ; 1ca3 (0:1ca3)
 	pop hl
 	pop af
 	ld [H_LOADEDROMBANK],a
-	ld [$2000],a
+	ld [MBC1RomBank],a
 	jp NextTextCommand
 
 TextCommandJumpTable:: ; 1cc1 (0:1cc1)
