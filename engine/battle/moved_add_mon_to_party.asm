@@ -1,7 +1,7 @@
 _AddPartyMon: ; f2e5 (3:72e5)
-	ld a, [wcc49]
+	ld a, [wMonDataLocation]
 	and $f
-	ld a, [W_ISINBATTLE]
+	ld a, [wIsInBattle]
 	jr z, .playersParty	;adding to players party
 	;otherwise, its the enemy party
 	and a	;in battle?
@@ -67,7 +67,7 @@ AddCapturedMonToPlayerParty:
 	call GoToPartyNickname
 	
 	call CopyEnemyNickname
-	ld a,[W_ISINBATTLE]
+	ld a,[wIsInBattle]
 	dec a
 	jr z,.notTrainerBattleNickname
 	ld a,[wActiveCheats]
@@ -95,9 +95,9 @@ AddNewMonToEnemyParty:
 	ld a,[wTotems]
 	bit IronTotem,a		;is the iron totem set?
 	jr z,.notIronTotem	;then dont double
-	ld a,[W_CURENEMYLVL]
+	ld a,[wCurEnemyLVL]
 	add a		;double
-	ld [W_CURENEMYLVL],a
+	ld [wCurEnemyLVL],a
 	
 .notIronTotem
 	call ClearEnemyMonOT
@@ -259,7 +259,7 @@ TryAddMonToEnemyParty:
 	
 ;to see if the pokemon can be added to the pc and add if so
 TryAddMonToPC:
-	ld de, W_NUMINBOX
+	ld de, wNumInBox
 	ld b, MONS_PER_BOX
 	;fall through
 	
@@ -369,13 +369,13 @@ CopySpDefEV:
 
 ;to copy the secondary status and delayed damage
 CopyEnemySecondaryStatus:
-	ld a,[W_ENEMYBATTSTATUS3]
+	ld a,[wEnemyBattleStatus3]
 	ld de,wEnemyMonDelayedDamage
 	jr FinishCopySecondaryStatus
 	
 ;to copy the delayed damage
 CopyPlayerSecondaryStatus:
-	ld a,[W_PLAYERBATTSTATUS3]
+	ld a,[wPlayerBattleStatus3]
 	ld de,wBattleMonDelayedDamage
 	;fall through
 
@@ -441,7 +441,7 @@ FinishCopyHeldItem:
 	
 GetNewMonGender:
 	xor a		;set the value to zero
-	ld hl,W_MONHGENDEREGGGROUP
+	ld hl,wMonHGenderEggGroup
 	bit 7,[hl]		;can this pokemon be female?
 	jr z,.cantBeFemale	;skip down if not
 	bit 6,[hl]		;can this pokemon be male
@@ -552,7 +552,7 @@ FinishCopyTraits:
 
 ;To get the morale	
 NewPlayerMorale:
-	ld a,[W_ISINBATTLE]
+	ld a,[wIsInBattle]
 	cp 2		;is it trainer battle?
 	ld a, [W_MONHBASEMORALE]
 	jr nz,.afterTrainerBattle
@@ -635,8 +635,8 @@ NewTrainerNickname:
 	ret
 
 NewPlayerNickname:
-	ld a, $2
-	ld [wd07d], a
+	ld a, NAME_MON_SCREEN
+	ld [wNamingScreenType], a
 	predef AskName
 	ret
 	
@@ -840,7 +840,7 @@ FinishCopyHPLevelStatus:
 	ld a,[de]
 	ld [hli],a	;HP
 	inc de
-	ld a,[W_CURENEMYLVL]
+	ld a,[wCurEnemyLVL]
 	ld [hli],a	;level
 	inc de
 	ld a,[de]
@@ -852,7 +852,7 @@ NewLevelStatus:
 	xor a
 	ld [hli],a
 	ld [hli],a		;set the HP to zero for now
-	ld a,[W_CURENEMYLVL]
+	ld a,[wCurEnemyLVL]
 	ld [hli], a         ; level
 	xor a
 	ld [hli], a         ; status ailments
@@ -975,7 +975,7 @@ FinishCopyExp:
 
 GenerateNewExp:	
 	push hl
-	ld a, [W_CURENEMYLVL]
+	ld a, [wCurEnemyLVL]
 	ld d, a
 	callab CalcExperience
 	pop hl
@@ -1015,7 +1015,7 @@ FinishCopyEnergy:
 	ret
 	
 GenerateNewEnergy:
-	ld a,[W_CURENEMYLVL]
+	ld a,[wCurEnemyLVL]
 	push hl	;store pointer
 	
 	ld d,0
@@ -1099,7 +1099,7 @@ FinishCopyStats:
 	ret
 
 GenerateNewStats:
-	ld a, [W_CURENEMYLVL]
+	ld a, [wCurEnemyLVL]
 	ld [hli], a	;level
 	push hl
 	pop de
@@ -1291,16 +1291,16 @@ _AddEnemyMonToPlayerParty: ; f49d (3:749d)
 	ret                  ; return success
 
 
-Func_f51e: ; f51e (3:751e)
-	ld a, [wcf95]
+_MoveMon: ; f51e (3:751e)
+	ld a, [wMoveMonType]
 	and a
 	jr z, .checkPartyMonSlots
-	cp $2
+	cp DAYCARE_TO_PARTY
 	jr z, .checkPartyMonSlots
-	cp $3
+	cp PARTY_TO_DAYCARE
 	ld hl, wDayCareMon
 	jr z, .asm_f575
-	ld hl, W_NUMINBOX ; wda80
+	ld hl, wNumInBox
 	ld a, [hl]
 	cp MONS_PER_BOX
 	jr nz, .partyOrBoxNotFull
@@ -1322,14 +1322,14 @@ Func_f51e: ; f51e (3:751e)
 	ld b, $0
 	add hl, bc
 	ld a, [wcf95]
-	cp $2
+	cp DAYCARE_TO_PARTY
 	ld a, [wDayCareMon]
 	jr z, .asm_f556
 	ld a, [wcf91]
 .asm_f556
 	ld [hli], a          ; write new mon ID
 	ld [hl], $ff         ; write new sentinel
-	ld a, [wcf95]
+	ld a, [wMoveMonType]
 	dec a
 	ld hl, wPartyMons
 	ld bc, wPartyMon2 - wPartyMon1 ; $2c
@@ -1337,7 +1337,7 @@ Func_f51e: ; f51e (3:751e)
 	jr nz, .skipToNewMonEntry
 	ld hl, wBoxMons
 	ld bc, wBoxMon2 - wBoxMon1 ; $21
-	ld a, [W_NUMINBOX] ; wda80
+	ld a, [wNumInBox] ; wda80
 .skipToNewMonEntry
 	dec a
 	call AddNTimes
@@ -1345,12 +1345,12 @@ Func_f51e: ; f51e (3:751e)
 	push hl
 	ld e, l
 	ld d, h
-	ld a, [wcf95]
+	ld a, [wMoveMonType]
 	and a
 	ld hl, wBoxMons
 	ld bc, wBoxMon2 - wBoxMon1 ; $21
 	jr z, .asm_f591
-	cp $2
+	cp DAYCARE_TO_PARTY
 	ld hl, wDayCareMon
 	jr z, .asm_f597
 	ld hl, wPartyMons
@@ -1365,10 +1365,10 @@ Func_f51e: ; f51e (3:751e)
 	call CopyData
 	pop de
 	pop hl
-	ld a, [wcf95]
+	ld a, [wMoveMonType]
 	and a
 	jr z, .asm_f5b4
-	cp $2
+	cp DAYCARE_TO_PARTY
 	jr z, .asm_f5b4
 	ld bc, wBoxMon1Level - wBoxMon1	;to set the pokemon's boxlevel
 	add hl, bc
@@ -1378,8 +1378,8 @@ Func_f51e: ; f51e (3:751e)
 	inc de
 	ld [de], a
 .asm_f5b4
-	ld a, [wcf95]
-	cp $3
+	ld a, [wMoveMonType]
+	cp PARTY_TO_DAYCARE
 	ld de, W_DAYCAREMONOT
 	jr z, .asm_f5d3
 	dec a
@@ -1387,7 +1387,7 @@ Func_f51e: ; f51e (3:751e)
 	ld a, [wPartyCount] ; wPartyCount
 	jr nz, .asm_f5cd
 	ld hl, wBoxMonOT
-	ld a, [W_NUMINBOX] ; wda80
+	ld a, [wNumInBox] ; wda80
 .asm_f5cd
 	dec a
 	call SkipFixedLengthTextEntries
@@ -1395,29 +1395,29 @@ Func_f51e: ; f51e (3:751e)
 	ld e, l
 .asm_f5d3
 	ld hl, wBoxMonOT
-	ld a, [wcf95]
+	ld a, [wMoveMonType]
 	and a
 	jr z, .asm_f5e6
 	ld hl, W_DAYCAREMONOT
-	cp $2
+	cp DAYCARE_TO_PARTY
 	jr z, .asm_f5ec
 	ld hl, wPartyMonOT ; wd273
 .asm_f5e6
 	ld a, [wWhichPokemon] ; wWhichPokemon
 	call SkipFixedLengthTextEntries
 .asm_f5ec
-	ld bc, $b
+	ld bc, NAME_LENGTH
 	call CopyData
-	ld a, [wcf95]
-	cp $3
-	ld de, W_DAYCAREMONNAME
+	ld a, [wMoveMonType]
+	cp PARTY_TO_DAYCARE
+	ld de, wDayCareMonName
 	jr z, .asm_f611
 	dec a
 	ld hl, wPartyMonNicks ; wPartyMonNicks
 	ld a, [wPartyCount] ; wPartyCount
 	jr nz, .asm_f60b
 	ld hl, wBoxMonNicks
-	ld a, [W_NUMINBOX] ; wda80
+	ld a, [wNumInBox] ; wda80
 .asm_f60b
 	dec a
 	call SkipFixedLengthTextEntries
@@ -1425,18 +1425,18 @@ Func_f51e: ; f51e (3:751e)
 	ld e, l
 .asm_f611
 	ld hl, wBoxMonNicks
-	ld a, [wcf95]
+	ld a, [wMoveMonType]
 	and a
 	jr z, .asm_f624
-	ld hl, W_DAYCAREMONNAME
-	cp $2
+	ld hl, wDayCareMonName
+	cp DAYCARE_TO_PARTY
 	jr z, .asm_f62a
 	ld hl, wPartyMonNicks ; wPartyMonNicks
 .asm_f624
 	ld a, [wWhichPokemon] ; wWhichPokemon
 	call SkipFixedLengthTextEntries
 .asm_f62a
-	ld bc, $b
+	ld bc, NAME_LENGTH
 	call CopyData
 	pop hl
 	;no need to recalculate stats (unless daycare mon get a level...)
@@ -1445,7 +1445,7 @@ Func_f51e: ; f51e (3:751e)
 
 ;to random if its the players turn and battle random if its the enemies turn
 RandomOrBattleRandom:
-	ld a, [wcc49]
+	ld a, [wMonDataLocation]
 	and a
 	jp nz,BattleRandomFar2	;use BattleRandom if it is the enemy
 	jp Random

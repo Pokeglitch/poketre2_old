@@ -164,7 +164,7 @@ DrawFrameBlock: ; 78000 (1e:4000)
 ;to save the subanimation special effect (if it exists)
 SaveSubAnimSpecEffect:
 	push bc
-	ld a,[W_ANIMATIONID]
+	ld a,[wAnimationID]
 	ld b,a
 .loop
 	ld a,[hli]
@@ -429,7 +429,7 @@ NonMoveAnimation:
 
 .NonMoveAnimation
 	; check if battle animations are disabled in the options
-	ld a,[W_OPTIONS]
+	ld a,[wOptions]
 	bit 7,a
 	jr nz,.AnimationsDisabled
 	call PlayNonMoveAnimation2
@@ -460,7 +460,7 @@ MoveAnimation: ; 78d5e (1e:4d5e)
 	push af
 	call WaitForSoundToFinish
 	call Func_78e23
-	ld a,[W_ANIMATIONID]
+	ld a,[wAnimationID]
 	and a
 	jr z,.AnimationFinished
 .MoveAnimation

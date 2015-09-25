@@ -34,7 +34,7 @@ _DrawPlayerHUDAndHPBar: ; 3cd60 (f:4d60)
 	predef DrawHP
 	ld a, $1
 	ld [H_AUTOBGTRANSFERENABLED], a
-	ld hl, wcf1d
+	ld hl, wPlayerHPBarColor
 	callab GetBattleHealthBarColor2
 	ld hl, wBattleMonHP
 	ld a, [hli]
@@ -43,8 +43,8 @@ _DrawPlayerHUDAndHPBar: ; 3cd60 (f:4d60)
 	ld a, [wccf6]
 	and a
 	ret nz
-	ld a, [wcf1d]
-	cp $2
+	ld a, [wPlayerHPBarColor]
+	cp HP_BAR_RED
 	jr z, .asm_3cde6
 .asm_3cdd9
 	ld hl, wLowHealthAlarm
@@ -156,7 +156,7 @@ GetBattleHealthBarColor2: ; 3ce90 (f:4e90)
 	cp b
 	ret z
 	ld b, $1
-	jp GoPAL_SET
+	jp RunPaletteCommand
 
 
 ; center's mon's name on the battle screen
@@ -191,14 +191,14 @@ _DrawHUDsAndHPBars::
 	
 _DisplayBattleMenu: ; 3ceb3 (f:4eb3)
 	call LoadScreenTilesFromBuffer1 ; restore saved screen
-	ld a, [W_BATTLETYPE]
+	ld a, [wBattleType]
 	and a
 	jr nz, .nonstandardbattle
 	call _DrawHUDsAndHPBars
 	call PrintEmptyString2
 	call SaveScreenTilesToBuffer1
 .nonstandardbattle
-	ld a, [W_BATTLETYPE]
+	ld a, [wBattleType]
 	cp $2 ; safari
 	ld a, BATTLE_MENU_TEMPLATE
 	jr nz, .menuselected
@@ -206,7 +206,7 @@ _DisplayBattleMenu: ; 3ceb3 (f:4eb3)
 .menuselected
 	ld [wTextBoxID], a
 	call DisplayTextBoxID
-	ld a, [W_BATTLETYPE]
+	ld a, [wBattleType]
 	dec a
 	jp nz, .handleBattleMenuInput ; handle menu input if it's not the old man tutorial
 ; the following happens for the old man tutorial
@@ -238,7 +238,7 @@ _DisplayBattleMenu: ; 3ceb3 (f:4eb3)
 .oldManName
 	db "OLD MAN@"
 .handleBattleMenuInput
-	ld a, [wcc2d]
+	ld a, [wBattleAndStartSavedMenuItem]
 	ld [wCurrentMenuItem], a
 	ld [wLastMenuItem], a
 	sub 2 ; check if the cursor is in the left column
@@ -248,7 +248,7 @@ _DisplayBattleMenu: ; 3ceb3 (f:4eb3)
 	ld [wLastMenuItem], a
 	jr .rightColumn
 .leftColumn ; put cursor in left column of menu
-	ld a, [W_BATTLETYPE]
+	ld a, [wBattleType]
 	cp $2
 	ld a, " "
 	jr z, .safariLeftColumn
@@ -281,7 +281,7 @@ _DisplayBattleMenu: ; 3ceb3 (f:4eb3)
 	jr nz, .rightColumn
 	jr .AButtonPressed ; the A button was pressed
 .rightColumn ; put cursor in right column of menu
-	ld a, [W_BATTLETYPE]
+	ld a, [wBattleType]
 	cp $2
 	ld a, " "
 	jr z, .safariRightColumn
@@ -318,10 +318,10 @@ _DisplayBattleMenu: ; 3ceb3 (f:4eb3)
 	ld [wCurrentMenuItem], a
 .AButtonPressed
 	call PlaceUnfilledArrowMenuCursor
-	ld a, [W_BATTLETYPE]
+	ld a, [wBattleType]
 	cp $2 ; is it a Safari battle?
 	ld a, [wCurrentMenuItem]
-	ld [wcc2d], a
+	ld [wBattleAndStartSavedMenuItem], a
 	jr z, .handleMenuSelection
 ; not Safari battle
 ; swap the IDs of the item menu and party menu (this is probably because they swapped the positions
@@ -340,7 +340,7 @@ _DisplayBattleMenu: ; 3ceb3 (f:4eb3)
 	and a
 	jr nz, .upperLeftMenuItemWasNotSelected
 ; the upper left menu item was selected
-	ld a, [W_BATTLETYPE]
+	ld a, [wBattleType]
 	cp $2
 	jr z, .throwSafariBallWasSelected
 ; the "FIGHT" menu was selected
@@ -368,7 +368,7 @@ _DisplayBattleMenu: ; 3ceb3 (f:4eb3)
 
 .notLinkBattle
 	call SaveScreenTilesToBuffer2
-	ld a, [W_BATTLETYPE]
+	ld a, [wBattleType]
 	cp $2 ; is it a safari battle?
 	jr nz, BagWasSelected
 
@@ -379,14 +379,14 @@ _DisplayBattleMenu: ; 3ceb3 (f:4eb3)
 
 BagWasSelected:
 	call LoadScreenTilesFromBuffer1
-	ld a, [W_BATTLETYPE]
+	ld a, [wBattleType]
 	and a ; is it a normal battle?
 	jr nz, .next
 
 ; normal battle
 	call _DrawHUDsAndHPBars
 .next
-	ld a, [W_BATTLETYPE]
+	ld a, [wBattleType]
 	dec a ; is it the old man tutorial?
 	jr nz, DisplayPlayerBag ; no, it is a normal battle
 	ld hl, OldManItemList
@@ -437,7 +437,7 @@ UseBagItem:
 	call ClearSprites
 	xor a
 	ld [wCurrentMenuItem], a
-	ld a, [W_BATTLETYPE]
+	ld a, [wBattleType]
 	cp $2 ; is it a safari battle?
 	jr z, .checkIfMonCaptured
 
@@ -445,13 +445,13 @@ UseBagItem:
 	and a ; was the item used successfully?
 	jp z, BagWasSelected ; if not, go back to the bag menu
 
-	ld a, [W_PLAYERBATTSTATUS1]
+	ld a, [wPlayerBattleStatus1]
 	bit UsingTrappingMove, a ; is the player using a multi-turn move like wrap?
 	jr z, .checkIfMonCaptured
 	ld hl, wPlayerNumAttacksLeft
 	dec [hl]
 	jr nz, .checkIfMonCaptured
-	ld hl, W_PLAYERBATTSTATUS1
+	ld hl, wPlayerBattleStatus1
 	res UsingTrappingMove, [hl] ; not using multi-turn move any more
 
 .checkIfMonCaptured
@@ -459,7 +459,7 @@ UseBagItem:
 	and a ; was the enemy mon captured with a ball?
 	jr nz, .returnAfterCapturingMon
 
-	ld a, [W_BATTLETYPE]
+	ld a, [wBattleType]
 	cp $2 ; is it a safari battle?
 	jr z, .returnAfterUsingItem_NoCapture
 ; not a safari battle
@@ -490,7 +490,7 @@ PartyMenuOrRockOrRun:
 	jp nz, BattleMenu_RunWasSelected
 ; party menu or rock was selected
 	call SaveScreenTilesToBuffer2
-	ld a, [W_BATTLETYPE]
+	ld a, [wBattleType]
 	cp $2 ; is it a safari battle?
 	jr nz, .partyMenuWasSelected
 ; safari battle
@@ -499,8 +499,8 @@ PartyMenuOrRockOrRun:
 	jp UseBagItem
 .partyMenuWasSelected
 	call LoadScreenTilesFromBuffer1
-	xor a
-	ld [wd07d], a
+	xor a ; NORMAL_PARTY_MENU
+	ld [wPartyMenuTypeOrMessageID], a
 	ld [wMenuItemToSwap], a
 	call DisplayPartyMenu
 .checkIfPartyMonWasSelected
@@ -510,16 +510,16 @@ PartyMenuOrRockOrRun:
 	call GBPalWhiteOut
 	callab LoadHudTilePatterns
 	call LoadScreenTilesFromBuffer2
-	call GoPAL_SET_CF1C
+	call RunDefaultPaletteCommand
 	call GBPalNormal
 	jp _DisplayBattleMenu
 .partyMonDeselected
 	coord hl, 11, 11
-	ld bc, $81
-	ld a, $7f
+	ld bc, 6 * SCREEN_WIDTH + 9
+	ld a, " "
 	call FillMemory
-	xor a
-	ld [wd07d], a
+	xor a ; NORMAL_PARTY_MENU
+	ld [wPartyMenuTypeOrMessageID], a
 	call GoBackToPartyMenu
 	jr .checkIfPartyMonWasSelected
 .partyMonWasSelected
@@ -551,19 +551,19 @@ PartyMenuOrRockOrRun:
 	jr z, .switchMon ; if so, jump
 ; Stats was selected
 	xor a
-	ld [wcc49], a
+	ld [wMonDataLocation], a
 	ld hl, wPartyMon1
 	call ClearSprites
 ; display the two status screens
 	predef StatusScreen
 	predef StatusScreen2
 ; now we need to reload the enemy mon pic
-	ld a, [W_ENEMYBATTSTATUS2]
+	ld a, [wEnemyBattleStatus2]
 	bit HasSubstituteUp, a ; does the enemy mon have a substitute?
 	ld hl, AnimationSubstitute
 	jr nz, .doEnemyMonAnimation
 ; enemy mon doesn't have substitute
-	ld a, [wccf3]
+	ld a, [wEnemyMonMinimized]
 	and a ; has the enemy mon used Minimise?
 	ld hl, AnimationMinimizeMon
 	jr nz, .doEnemyMonAnimation
@@ -599,7 +599,7 @@ PartyMenuOrRockOrRun:
 	call ClearSprites
 	callab LoadHudTilePatterns
 	call LoadScreenTilesFromBuffer1
-	call GoPAL_SET_CF1C
+	call RunDefaultPaletteCommand
 	call GBPalNormal
 ; fall through to SwitchPlayerMon
 	callab SwitchPlayerMon
@@ -630,13 +630,13 @@ TryRunningFromBattle2:
 TryRunningFromBattle: ; 3cab9 (f:4ab9)
 	callab IsGhostBattle
 	jp z, .canEscape ; jump if it's a ghost battle
-	ld a, [W_BATTLETYPE]
+	ld a, [wBattleType]
 	cp $2
 	jp z, .canEscape ; jump if it's a safari battle
 	ld a, [wLinkState]
 	cp LINK_STATE_BATTLING
 	jp z, .canEscape
-	ld a, [W_ISINBATTLE]
+	ld a, [wIsInBattle]
 	dec a
 	jr nz, .trainerBattle ; jump if it's a trainer battle
 	ld a, [wNumRunAttempts]

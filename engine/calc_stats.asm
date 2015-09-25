@@ -204,7 +204,7 @@ CalcStat:: ; 394a (0:394a)
 	ld [H_MULTIPLICAND+1], a
 	xor a
 	ld [H_MULTIPLICAND], a
-	ld a, [W_CURENEMYLVL] ; W_CURENEMYLVL
+	ld a, [wCurEnemyLVL] ; wCurEnemyLVL
 	ld [H_MULTIPLIER], a
 	call Multiply            ; ((Base + IV) * 2 + ceil(Sqrt(stat exp)) / 4) * Level
 	ld a, [H_MULTIPLICAND]
@@ -222,7 +222,7 @@ CalcStat:: ; 394a (0:394a)
 	cp $1
 	ld a, $5
 	jr nz, .notHPStat
-	ld a, [W_CURENEMYLVL] ; W_CURENEMYLVL
+	ld a, [wCurEnemyLVL] ; wCurEnemyLVL
 	ld b, a
 	ld a, [H_MULTIPLICAND+2]
 	add b

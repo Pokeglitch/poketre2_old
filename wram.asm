@@ -1335,6 +1335,7 @@ wOnSGB:: ; cf1b
 wDefaultPaletteCommand:: ; cf1c
 	ds 1
 
+wEvoCrySpecies::
 wPlayerHPBarColor:: ; cf1d
 
 wWholeScreenPaletteMonSpecies:: ; cf1d
@@ -2975,7 +2976,8 @@ wSeafoamIslands5CurScript:: ; d668
 	ds 1
 wRoute18GateCurScript:: ; d669
 	ds 1
-
+	
+AfterCurScripts::
 	ds 78
 wGameProgressFlagsEnd::
 
@@ -3900,15 +3902,13 @@ wBoxDataEnd::
 SECTION "Stack", WRAMX[$dfff], BANK[1]
 wStack:: ; dfff
 	ds -$100
-
+	
 SECTION "Sprite Buffers", SRAM, BANK[0]
-sNormalModeGameSave::
-	ds SIZE_OF_GAMESAVE
 
 ;SPRITE BUFFERS	
-S_SPRITEBUFFER0:: ds SPRITEBUFFERSIZE ; b000
-S_SPRITEBUFFER1:: ds SPRITEBUFFERSIZE ; b188
-S_SPRITEBUFFER2:: ds SPRITEBUFFERSIZE ; b310
+sSpriteBuffer0:: ds SPRITEBUFFERSIZE ; b000
+sSpriteBuffer1:: ds SPRITEBUFFERSIZE ; b188
+sSpriteBuffer2:: ds SPRITEBUFFERSIZE ; b310
 
 REPLAY_PLAYER_DATA_LENGTH EQU $100			;make this function to add up all of the data
 REPLAY_RANDOM_DATA_LENGTH EQU 500

@@ -144,12 +144,12 @@ ClearBattleBytes:
 ;to save addition mon bytes from the battle to the pokemon
 SaveAdditionalMonBytes:
 	ld hl,wPartyMon1SecondaryStatus	;secondary status pointer
-	ld de,W_PLAYERBATTSTATUS1	;temporary battle bits
+	ld de,wPlayerBattleStatus1	;temporary battle bits
 	ld a, [H_WHOSETURN]
 	and a
 	jr z, .saveAdditionalBytes	;don't load enemy data if its the players turn
 	ld hl,wEnemyMon1SecondaryStatus	;secondary status pointer
-	ld de,W_ENEMYBATTSTATUS1	;temporary battle bits
+	ld de,wEnemyBattleStatus1	;temporary battle bits
 .saveAdditionalBytes
 	ld a,[wWhichPokemon]	;get the index of the pokemon we are copying from
 	call SkipFixedLengthTextEntries	;go to the data of the corresponding pokemon
@@ -230,18 +230,18 @@ StoreBattleBytes:
 	push de
 	push hl
 	ld hl,wPlayerPartyMon1ToxicCounter	;start of stored toxic counter
-	ld de,W_PLAYERTOXICCOUNTER	;where to read from
+	ld de,wPlayerToxicCounter	;where to read from
 	jr z, .loadDisabledPointers	;don't load enemy data if its the players turn
 	ld hl,wEnemyPartyMon1ToxicCounter	;start of stored toxic counter
-	ld de,W_ENEMYTOXICCOUNTER	;where to read from
+	ld de,wEnemyToxicCounter	;where to read from
 .loadDisabledPointers
 	push de
 	push hl
 	ld hl,wPlayerPartyMon1DisabledMove	;start of stored disabled byte
-	ld de,W_PLAYERDISABLEDMOVE	;where to read from
+	ld de,wPlayerDisabledMove	;where to read from
 	jr z, .loadCursedFear	;don't load enemy data if its the players turn
 	ld hl,wEnemyPartyMon1DisabledMove	;start of stored disabled byte
-	ld de,W_ENEMYDISABLEDMOVE	;where to read from
+	ld de,wEnemyDisabledMove	;where to read from
 .loadCursedFear
 	push de
 	push hl
@@ -254,10 +254,10 @@ StoreBattleBytes:
 	push de
 	push hl
 	ld hl,wPlayerPartyMon1ConfusedCounter	;start of stored confused counter
-	ld de,W_PLAYERCONFUSEDCOUNTER	;where to read from
+	ld de,wPlayerConfusedCounter	;where to read from
 	jr z, .beginLoading	;don't load enemy data if its the players turn
 	ld hl,wEnemyPartyMon1ConfusedCounter	;start of stored confused counter
-	ld de,W_ENEMYCONFUSEDCOUNTER	;where to read from
+	ld de,wEnemyConfusedCounter	;where to read from
 .beginLoading
 	call .goToPokemonIndex	;go to corresponding pokemon in list
 	ld a,[de]

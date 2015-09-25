@@ -62,7 +62,7 @@ TryDoWildEncounter: ; 13870 (4:7870)
 	jr c, .determineEncounterSlot	;if the random value is greater than the table value, then move to the next one
 .gotEncounterSlot
 ; determine which wild pokémon (grass or water) can appear in the half-block we’re standing in
-	ld hl, W_GRASSMONS
+	ld hl, wGrassMons
 	aCoord 8, 9	
 	cp $14 ; is the bottom left tile (8,9) of the half-block we're standing in a water tile?	
 	jr nz, .gotWildEncounterType ; else, it's treated as a grass tile by default
@@ -75,7 +75,7 @@ TryDoWildEncounter: ; 13870 (4:7870)
 	call AdjustWildMonForTimeAndSeason
 	ld a, [hl]
 	ld [wcf91], a
-	callab NewWildMonLevel		;get the vary pk level and store into W_CURENEMYLVL
+	callab NewWildMonLevel		;get the vary pk level and store into wCurEnemyLVL
 	callab SeeIfPokemonShouldEvolve		;see if the pokemon should be evolved, based on the level
 	ld a,[wcf91]
 	ld [wEnemyMonSpecies2], a

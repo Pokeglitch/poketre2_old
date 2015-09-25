@@ -100,7 +100,7 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	call LoadTextBoxTilePatterns
 	call LoadSecondTextBoxBorderTiles
 	ld b, $8
-	call GoPAL_SET
+	call RunPaletteCommand
 	
 	coord hl, 2,9
 	ld bc,$50e
@@ -109,8 +109,8 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	ld bc,$50e
 	call TextBoxBorderAndAdjust
 	
-	ld a, [wd07d]
-	cp 2	;nickname screen?
+	ld a, [wNamingScreenType]
+	cp NAME_MON_SCREEN	;nickname screen?
 	jr c,.afterClearingSpriteArea		;skip if not
 	coord hl, 14,4
 	ld a,$D9
@@ -196,7 +196,7 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	
 	pop de
 	
-	call GoPAL_SET_CF1C
+	call RunDefaultPaletteCommand
 	call GBPalNormal
 	xor a
 	ld [wAnimCounter], a
@@ -236,8 +236,8 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	ld [wAlphabetCase], a
 	ret
 .pressedStart
-	ld a, [wd07d]
-	cp $2
+	ld a, [wNamingScreenType]
+	cp NAME_MON_SCREEN
 	jr nc, .skipCheckingLength
 	ld a, [wNamingScreenNameLength]
 	and a
@@ -254,13 +254,13 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	cp $9B
 	jr z,.deleteLetter		;delete letter
 	cp $9C
-	jr z, .asm_667e		;swap case
+	jr z, .pressedA_changedCase		;swap case
 	cp $9D
-	jr z, .asm_667e		;swap case
+	jr z, .pressedA_changedCase		;swap case
 	cp $9E
-	jr z, .asm_668c		;finish
+	jr z, .pressedStart		;finish
 	cp $9F
-	jr z, .asm_668c		;finish
+	jr z, .pressedStart		;finish
 	ld [wNamingScreenLetter], a
 	call CalcStringLength
 	ld a, [wNamingScreenNameLength]
@@ -272,6 +272,7 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	call AnimateTilePress
 	call PlayButtonPressSound
 	ret
+.deleteLetter
 .pressedB
 	ld a, [wNamingScreenNameLength]
 	and a
@@ -294,10 +295,10 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	cp 11		;at the end?
 	jr z,.wrapAroundRight
 	inc a
-	jr .asm_6755
+	jr .done
 .wrapAroundRight
 	ld a, 0
-	jr .asm_6755
+	jr .done
 .pressedLeft	;left pressed
 	ld a, [wCurrentMenuItem]
 	cp " "
@@ -312,16 +313,16 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	ld a,[wTopMenuItemX]
 	dec a
 	dec a
-	jr .asm_6755
+	jr .done
 .noJumpLeft
 	ld a,[wTopMenuItemX]
 	and a
 	jr z,.wrapAroundLeft		;if at start, then wrap around
 	dec a
-	jr .asm_6755
+	jr .done
 .wrapAroundLeft
 	ld a, 11
-	jr .asm_6755
+	jr .done
 .pressedUp		;up pressed
 	ld a,[wTopMenuItemY]
 	and a
@@ -573,7 +574,7 @@ AnimateTilePress:
 	jp CopyVideoData
 	
 PlayButtonPressSound:
-	ld a, (SFX_02_40 - SFX_Headers_02) / 3
+	ld a, SFX_PRESS_AB
 	jp PlaySound
 	
 AnimateCaps:
@@ -794,8 +795,8 @@ PrintNamingText: ; 68f8 (1:68f8)
 	dec b
 	jr nz,.loop		;print the Name: string
 	
-	ld a, [wd07d]
-	cp 2	;nickname screen?
+	ld a, [wNamingScreenType]
+	cp NAME_MON_SCREEN	;nickname screen?
 	ret c		;return if not
 	ld a, [wcf91]
 	ld [wMonPartySpriteSpecies], a

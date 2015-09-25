@@ -79,7 +79,7 @@ ReadTrainer: ; 39c53 (e:5c53)
 	ld [wd0b5],a		;the name index
 	ld b,MALE_NAME
 	ld hl,FemaleTrainerList
-	ld a,[W_CUROPPONENT]
+	ld a,[wCurOpponent]
 	ld c,a
 .findFemaleLoop
 	ld a,[hli]
@@ -122,7 +122,7 @@ ReadTrainer: ; 39c53 (e:5c53)
 	inc de
 	inc de
 	dec b
-	jr nz,.LastLoop ; repeat W_CURENEMYLVL times
+	jr nz,.LastLoop ; repeat wCurEnemyLVL times
 	ret
 	
 	
@@ -147,7 +147,7 @@ NewWildMonLevel:
 	pop af	;recover the level
 	add b	;add the random value
 	
-	ld [W_CURENEMYLVL],a	;save
+	ld [wCurEnemyLVL],a	;save
 	ret
 	
 ;if the level in a is less than the min for the map, then set it to the min
@@ -155,7 +155,7 @@ NewWildMonLevel:
 AdjustVaryPkLevelForMap:
 	ret
 
-;stores the new level into W_CURENEMYLVL
+;stores the new level into wCurEnemyLVL
 NewTrainerLevels:
 	push hl
 	ld a,[wEnemyTrainerBaseLevel]
@@ -165,7 +165,7 @@ NewTrainerLevels:
 	ld a,[wEnemyTrainerLevelRoutine]
 	ld hl,NewTrainerLevelsTable
 	call RunTrainerRoutineFromTable
-	ld [W_CURENEMYLVL],a
+	ld [wCurEnemyLVL],a
 	pop hl
 	ret
 	

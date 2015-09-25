@@ -93,7 +93,7 @@ AbsorbDamageCommon:
 	
 ;to divide the damage by 4
 MultiplyDamageBy025:
-	ld hl,W_DAMAGE + 1
+	ld hl,wDamage + 1
 	ld a,[hld]
 	ld h,[hl]
 	ld l,a    ; hl = damage
@@ -106,9 +106,9 @@ MultiplyDamageBy025:
 .storeDamage
 ; store damage
 	ld a,b
-	ld [W_DAMAGE],a
+	ld [wDamage],a
 	ld a,c
-	ld [W_DAMAGE + 1],a
+	ld [wDamage + 1],a
 	ret
 
 
@@ -148,7 +148,7 @@ FluffyModifyDamage:
 	
 ;to multiply the damage by 0.75
 MultiplyDamageBy075:
-	ld hl,W_DAMAGE + 1
+	ld hl,wDamage + 1
 	ld a,[hld]
 	ld h,[hl]
 	ld l,a    ; hl = damage
@@ -164,7 +164,7 @@ MultiplyDamageBy075:
 .storeDamage
 ; store damage
 	ld a,h
-	ld [W_DAMAGE],a
+	ld [wDamage],a
 	ld a,l
-	ld [W_DAMAGE + 1],a
+	ld [wDamage + 1],a
 	ret

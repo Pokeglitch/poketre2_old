@@ -5,7 +5,7 @@ HatchEggScreen:
 	ld c,a
 	add hl,bc		;hl now points to the pokemon id
 	ld a,[hl]
-	ld [wcf1d],a	;store the original pokemon
+	ld [wEvoCrySpecies],a	;store the original pokemon
 	ld a,$FF
 	ld [wEvoOldSpecies],a		;store $FF (egg) as the original pokemon
 	ld [wEvoNewSpecies],a	;store as the new pokemon
@@ -54,15 +54,15 @@ HatchEggScreen:
 	
 	ld a,[wcf91]	;store the previous value
 	push af
-	ld a,[wcf1d]	;get the original pokemon
+	ld a,[wEvoCrySpecies]	;get the original pokemon
 	ld [wcf91],a	;store the original pokemon
 	
 	
 	ld a, [wWhichPokemon]
 	ld hl, wPartyMonNicks
 	call SkipFixedLengthTextEntries
-	ld a, $2
-	ld [wd07d], a
+	ld a, NAME_MON_SCREEN
+	ld [wNamingScreenType], a
 	predef AskName
 	
 	pop af
@@ -135,7 +135,7 @@ EvolveMon: ; 7bde9 (1e:7de9)
 	pop af
 	cp $FF		;egg?
 	jr z,.skipCry	;then dont play cry
-	ld a, [wcf1d]
+	ld a, [wEvoCrySpecies]
 	call PlayCry
 	call WaitForSoundToFinish
 .skipCry
@@ -166,11 +166,11 @@ EvolveMon: ; 7bde9 (1e:7de9)
 .done
 	cp $FF		;was it egg?
 	call z,LoadFinalEggSprite	;then whiteout the screen
-	ld [wWholeScreenPaletteMonSpecies],a		;store into cf1d
+	ld [wEvoCrySpecies],a		;store into cf1d
 	ld a, $ff
 	ld [wNewSoundID], a
 	call PlaySound
-	ld a, [wWholeScreenPaletteMonSpecies]
+	ld a, [wEvoCrySpecies]
 	call PlayCry
 	ld c, 0
 	call EvolutionSetWholeScreenPalette
@@ -215,7 +215,7 @@ LoadFinalEggSprite:
 	jr nz,.loop
 
 	call GBPalWhiteOutWithDelay3
-	ld a,[wcf1d]
+	ld a,[wEvoCrySpecies]
 	ld [wcf91], a
 	ld [wd0b5], a
 	push af
@@ -244,7 +244,7 @@ FlippedEggSprite: INCBIN "pic/other/flippedegg.pic"
 LoadEvoSpriteEggFlipped:
 	cp a,$FF		;egg?
 	ld a, 1
-	ld [W_SPRITEFLIPPED], a
+	ld [wSpriteFlipped], a
 	jr nz,LoadNotEggSprite
 	ld hl, FlippedEggSprite
 	call LoadEggSprite
@@ -255,7 +255,7 @@ LoadEvoSprite: ; 7beb9 (1e:7eb9)
 	cp a,$FF		;egg?
 	jr nz,LoadNotEggSprite
 	ld a, 1
-	ld [W_SPRITEFLIPPED], a
+	ld [wSpriteFlipped], a
 	ld hl, EggNormalSprite
 	call LoadEggSprite
 	ret

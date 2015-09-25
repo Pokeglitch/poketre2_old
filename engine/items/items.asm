@@ -115,15 +115,15 @@ ItemUseBall: ; d687 (3:5687)
 ; If this is for the old man battle, skip checking if the party & box are full.
 	ld a,[wBattleType]
 	dec a
-	jr z,.UseBall
+	jr z,.canUseBall
 	push bc
 	ld a,[wMaxPartyMons]		;get the max party size
 	ld b,a		;store into b
 	ld a,[wPartyCount]	;is Party full?
 	cp a,b	; PARTY_LENGTH
 	pop bc
-	jr nz,.UseBall
-	ld a,[W_NUMINBOX]	;is Box full?
+	jr nz,.canUseBall
+	ld a,[wNumInBox]	;is Box full?
 	cp a,MONS_PER_BOX
 	jp z,BoxFullCannotThrowBall
 

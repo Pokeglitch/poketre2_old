@@ -8,7 +8,7 @@ RemovePCPokemonCaughtInBattle:
 	ld a,1
 	ld [wcf95],a	;specify the PC box
 	ld hl,wPartyMon1Traits	;pointer to the first mon traits
-	ld a,[W_NUMINBOX]		;number of pokemon in the box
+	ld a,[wNumInBox]		;number of pokemon in the box
 	push hl
 	jr RemovePokemonCaughtInBattleCommon
 	
@@ -47,7 +47,7 @@ ResetPokemonCaughtInBattleBit:
 	
 ResetPCPokemonCaughtInBattleBit:
 	ld hl,wPartyMon1Traits	;pointer to the first mon traits
-	ld a,[W_NUMINBOX]		;number of pokemon in the box
+	ld a,[wNumInBox]		;number of pokemon in the box
 	jr ResetPokemonCaughtInBattleBitCommon
 	
 ResetPartyPokemonCaughtInBattleBit:

@@ -9,7 +9,7 @@ _AdjustDamageForMoveType: ; 3e3a5 (f:63a5)
 	ld a,[hli]
 	ld d,a    ; d = type 1 of defender
 	ld e,[hl] ; e = type 2 of defender
-	ld a,[W_PLAYERMOVETYPE]
+	ld a,[wPlayerMoveType]
 	ld [wd11e],a
 	ld a,[H_WHOSETURN]
 	and a
@@ -19,7 +19,7 @@ _AdjustDamageForMoveType: ; 3e3a5 (f:63a5)
 	push de
 	pop bc
 	pop de	; swap bc and de
-	ld a,[W_ENEMYMOVETYPE]
+	ld a,[wEnemyMoveType]
 	ld [wd11e],a
 .next
 	ld a,[wd11e] ; move type
@@ -166,13 +166,13 @@ CheckHeldItem:
 	ld de,wEnemyMonHeldItem
 	ld a,[H_WHOSETURN]
 	and a
-	ld a,[W_PLAYERMOVETYPE]
+	ld a,[wPlayerMoveType]
 	jr z,.skipEnemyTurn	;dont swap hl and de if players turn
 	push hl
 	push de
 	pop hl
 	pop de
-	ld a,[W_ENEMYMOVETYPE]
+	ld a,[wEnemyMoveType]
 .skipEnemyTurn
 	push af		;save the type
 	add FAN		;add fan (fan is start of the boosting held items)
@@ -212,11 +212,11 @@ CheckInvincibilityPotion:
 	
 ;to boost by 1.5 (STAB) if the attack is a bird move and the pokemon has flying dragon ability or aero type
 CheckBirdMoves:
-	ld hl,W_PLAYERMOVENUM
+	ld hl,wPlayerMoveNum
 	ld a,[H_WHOSETURN]
 	and a
 	jr z,.skipEnemyAttackID	;dont load enemy id if players turn
-	ld hl,W_ENEMYMOVENUM
+	ld hl,wEnemyMoveNum
 .skipEnemyAttackID
 	ld a,[hl]		;load the attack into a
 	ld hl,BirdMovesTable
@@ -255,16 +255,16 @@ CheckBirdMoves:
 ;to check to see if the move fails in the current landscape unless the types match
 MoveFailInLandscapeUnlessTypesMatchCheck:
 	ld de,wBattleMonType
-	ld hl,W_PLAYERMOVENUM
+	ld hl,wPlayerMoveNum
 	ld a,[H_WHOSETURN]
 	and a
 	jr z,.skipEnemyAttackID	;dont load enemy id if players turn
-	ld hl,W_ENEMYMOVENUM
+	ld hl,wEnemyMoveNum
 	ld de,wEnemyMonType
 .skipEnemyAttackID
 	ld a,[hl]
 	
-	ld bc,W_PLAYERMOVETYPE - W_PLAYERMOVENUM
+	ld bc,wPlayerMoveType - wPlayerMoveNum
 	add hl,bc
 	push hl
 	
@@ -334,11 +334,11 @@ MoveFailInLandscapeUnlessTypesMatchCheck:
 	
 ;to check to see if the move fails in the current landscape
 MoveFailInLandscapeCheck:
-	ld hl,W_PLAYERMOVENUM
+	ld hl,wPlayerMoveNum
 	ld a,[H_WHOSETURN]
 	and a
 	jr z,.skipEnemyAttackID	;dont load enemy id if players turn
-	ld hl,W_ENEMYMOVENUM
+	ld hl,wEnemyMoveNum
 .skipEnemyAttackID
 	ld b,[hl]
 	ld a,[wBattleLandscape]
@@ -466,7 +466,7 @@ LookFor0xDamage:
 ;to set the damage to zero
 SetDamageToZero:
 	xor a
-	ld hl,W_DAMAGE
+	ld hl,wDamage
 	ld [hli],a
 	ld [hl],a	;zero the damage
 	inc a
@@ -522,7 +522,7 @@ MultiplyDamageByAmount:
 	;set up the multiplicand values
 	xor a
 	ld [H_MULTIPLICAND],a
-	ld hl,W_DAMAGE
+	ld hl,wDamage
 	ld a,[hli]
 	ld [H_MULTIPLICAND + 1],a
 	ld a,[hld]
@@ -753,11 +753,11 @@ RemainingDamageChecks:
 	call CheckAbilityTable
 	
 	;if the defender has a substitute up, then don't check the defenders abilities
-	ld hl,W_ENEMYBATTSTATUS2	;load enemy status
+	ld hl,wEnemyBattleStatus2	;load enemy status
 	ld a,[H_WHOSETURN]
 	and a
 	jr z,.playersTurn
-	ld hl,W_PLAYERBATTSTATUS2	;load players status
+	ld hl,wPlayerBattleStatus2	;load players status
 .playersTurn
 	ld a,[hl]
 	bit HasSubstituteUp,a ; does the player have a substitute?
@@ -827,7 +827,7 @@ INCLUDE "engine/battle/ability_routines.asm"
 	
 ;to multiply the damage by 1.5
 MultiplyDamageBy15:
-	ld hl,W_DAMAGE + 1
+	ld hl,wDamage + 1
 	ld a,[hld]
 	ld h,[hl]
 	ld l,a    ; hl = damage
@@ -838,14 +838,14 @@ MultiplyDamageBy15:
 	add hl,bc ; hl = floor(1.5 * damage)
 ; store damage
 	ld a,h
-	ld [W_DAMAGE],a
+	ld [wDamage],a
 	ld a,l
-	ld [W_DAMAGE + 1],a
+	ld [wDamage + 1],a
 	ret
 	
 ;to set the damage to 1 if it is zero
 EnsureDamageIsNotZero:
-	ld hl,W_DAMAGE
+	ld hl,wDamage
 	ld a,[hli]
 	and a
 	ret nz		;return if first byte isnt 0

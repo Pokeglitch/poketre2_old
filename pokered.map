@@ -76,7 +76,7 @@ Bank #0 (HOME):
            $08AD = CheckMapConnections.loadNewMap
            $107C = LoadMapHeader
            $22AF = Func_2312
-           $3D93 = GoPAL_SET
+           $3D93 = RunPaletteCommand
            $09FC = LoadTileBlockMap
            $0402 = OverworldLoopLessDelay
            $234E = PlaySound
@@ -369,7 +369,7 @@ Bank #0 (HOME):
            $3D4B = JumpTable.returnAddress
            $3DAC = ReloadMapSpriteTilePatterns
            $369E = LoadScreenTilesFromBuffer2
-           $3D91 = GoPAL_SET_CF1C
+           $3D91 = RunDefaultPaletteCommand
            $361D = LoadFontTilePatterns
            $2B6C = AddItemToInventory
            $3E31 = Predef.done
@@ -15053,7 +15053,7 @@ WRAM0:
            $CCF0 = wccf0
            $CCF1 = wccf1
            $CCF2 = wccf2
-           $CCF3 = wccf3
+           $CCF3 = wEnemyMonMinimized
            $CCE4 = wcce4
            $CCE3 = wcce3
            $CCD4 = wccd4
@@ -15182,7 +15182,7 @@ WRAM0:
            $CC97 = wNPCMovementDirections2
            $C300 = wOAMBuffer
            $CEFD = wHPBarHPDifference
-           $CFD3 = W_PLAYERMOVEEFFECT
+           $CFD3 = wPlayerMoveEffect
            $CFC6 = wTileInFrontOfPlayer
            $CD2E = wEnemyMonStatMods
            $CC30 = wMenuCursorLocation
@@ -15194,7 +15194,7 @@ WRAM0:
            $CD3D = wFlyAnimUsingCoordList
            $CEED = wHPBarNewHP
            $CD1D = wPlayerMonSpecialMod
-           $CFD2 = W_PLAYERMOVENUM
+           $CFD2 = wPlayerMoveNum
            $CD16 = wPlayerMonUnmodifiedSpeed
            $CCE2 = wEnemyMoveListIndex
            $CFD8 = wEnemyMonSpecies2
@@ -15227,7 +15227,7 @@ WRAM0:
            $CFFC = wEnemyMonSpecial
            $CD33 = wEnemyMonEvasionMod
            $CFE5 = wEnemyMonSpecies
-           $CFCC = W_ENEMYMOVENUM
+           $CFCC = wEnemyMoveNum
            $CFF1 = wEnemyMonDVs
            $CC2F = wPlayerMonNumber
            $CC5B = wHallOfFame
@@ -15269,8 +15269,8 @@ WRAM0:
            $CD2D = wEngagedTrainerClass
            $CFF4 = wEnemyMonMaxHP
            $CF70 = wGymLeaderName
-           $CFCF = W_ENEMYMOVETYPE
-           $CFCD = W_ENEMYMOVEEFFECT
+           $CFCF = wEnemyMoveType
+           $CFCD = wEnemyMoveEffect
            $CD37 = wNPCMovementDirections2Index
            $CFD0 = W_ENEMYMOVEACCURACY
            $CD3E = wTrainerEngageDistance
@@ -15284,7 +15284,7 @@ WRAM0:
            $CD2E = wEngagedTrainerSet
            $CD60 = wFlags_0xcd60
            $CFFA = wEnemyMonSpeed
-           $CFD5 = W_PLAYERMOVETYPE
+           $CFD5 = wPlayerMoveType
            $CD10 = wPlayerMonUnmodifiedMaxHP
            $CFD4 = W_PLAYERMOVEPOWER
            $CCDD = wEnemySelectedMove
@@ -15329,7 +15329,7 @@ WRAM0:
            $CD1E = wPlayerMonAccuracyMod
            $CC2B = wcc2b
            $CC2C = wcc2c
-           $CC2D = wcc2d
+           $CC2D = wBattleAndStartSavedMenuItem
            $CC5E = wcc5e
            $CC5D = wcc5d
            $CC5C = wcc5c
@@ -15342,7 +15342,7 @@ WRAM0:
            $CC42 = wcc42
            $CC43 = wcc43
            $CC48 = wcc48
-           $CC49 = wcc49
+           $CC49 = wMonDataLocation
            $CEF0 = wcef0
            $CEF1 = wcef1
     SLACK: $0000 bytes
@@ -15355,9 +15355,9 @@ WRAM0:
            $DA64 = wDayCareMonType1
            $D8F6 = wEnemyMon2Defense
            $D715 = W_RIVALSTARTER
-           $D067 = W_ENEMYBATTSTATUS1
-           $D068 = W_ENEMYBATTSTATUS2
-           $D069 = W_ENEMYBATTSTATUS3
+           $D067 = wEnemyBattleStatus1
+           $D068 = wEnemyBattleStatus2
+           $D069 = wEnemyBattleStatus3
            $D0CB = W_MONHGROWTHRATE
            $D1E5 = wPartyMon3Stats
            $D06F = wEnemyNumAttacksLeft
@@ -15384,7 +15384,7 @@ WRAM0:
            $D359 = wPlayerID
            $D1B0 = wPartyMon2SpecialExp
            $D0B7 = wPredefBank
-           $D733 = W_FLAGS_D733
+           $D733 = wFlags_D733
            $D8A8 = wEnemyMon1Status
            $D05D = W_TRAINERNO
            $D718 = wBoulderSpriteIndex
@@ -15398,7 +15398,7 @@ WRAM0:
            $D65E = W_CINNABARGYMCURSCRIPT
            $D017 = wBattleMonBoxLevel
            $D647 = W_SILPHCO6CURSCRIPT
-           $D0D7 = W_DAMAGE
+           $D0D7 = wDamage
            $D646 = W_SILPHCO5CURSCRIPT
            $DEA9 = wTotems
            $D62B = W_POKEMONTOWER2CURSCRIPT
@@ -15420,7 +15420,7 @@ WRAM0:
            $D23F = wPartyMon5Attack
            $D8BD = wEnemyMon1SpecialExp
            $D362 = W_XCOORD
-           $D06D = W_PLAYERDISABLEDMOVE
+           $D06D = wPlayerDisabledMove
            $D1A8 = wPartyMon2HPExp
            $D94A = wEnemyMon4MaxHP
            $D619 = W_MUSEUM1FCURSCRIPT
@@ -15452,7 +15452,7 @@ WRAM0:
            $D08E = wEndBattleLoseTextPointer
            $D99D = wEnemyMon6PP
            $D62A = W_VERMILIONCITYCURSCRIPT
-           $D07C = W_ANIMATIONID
+           $D07C = wAnimationID
            $D229 = wPartyMon5Exp
            $D236 = wPartyMon5DVs
            $D89C = wEnemyPartyCount
@@ -15506,7 +15506,7 @@ WRAM0:
            $D221 = wPartyMon5Type2
            $D8ED = wEnemyMon2PP
            $D96B = wEnemyMon5SpeedExp
-           $D057 = W_ISINBATTLE
+           $D057 = wIsInBattle
            $DA39 = W_CURMAPSCRIPT
            $D94E = wEnemyMon4Defense
            $D617 = W_SSANNE5CURSCRIPT
@@ -15573,7 +15573,7 @@ WRAM0:
            $D75A = wd75a
            $D75B = wd75b
            $D783 = wd783
-           $D059 = W_CUROPPONENT
+           $D059 = wCurOpponent
            $D798 = wd798
            $D790 = wd790
            $D792 = wd792
@@ -15645,7 +15645,7 @@ WRAM0:
            $D528 = wd528
            $D365 = wLastMap
            $D172 = wPartyMon1CatchRate
-           $D888 = W_GRASSMONS
+           $D888 = wGrassMons
            $D1C9 = wPartyMon3Type2
            $D1C8 = wPartyMon3Type1
            $D1CF = wPartyMon3OTID
@@ -15660,7 +15660,7 @@ WRAM0:
            $D920 = wEnemyMon3Attack
            $D029 = wBattleMonSpeed
            $D8F2 = wEnemyMon2Stats
-           $D367 = W_CURMAPTILESET
+           $D367 = wCurMapTileset
            $D919 = wEnemyMon3PP
            $DAA5 = wBoxMon1HPExp
            $D9A2 = wEnemyMon6MaxHP
@@ -15737,7 +15737,7 @@ WRAM0:
            $D11A = wWalkBikeSurfStateCopy
            $DA70 = wDayCareMonHPExp
            $D1C8 = wPartyMon3Type
-           $D072 = W_ENEMYDISABLEDMOVE
+           $D072 = wEnemyDisabledMove
            $D97A = wEnemyMon5Defense
            $DA47 = W_NUMSAFARIBALLS
            $D3AD = wd3ad
@@ -15891,7 +15891,7 @@ WRAM0:
            $D0A3 = W_SPRITEWITDH
            $D260 = wPartyMon6SpecialExp
            $D02B = wBattleMonSpecial
-           $D05A = W_BATTLETYPE
+           $D05A = wBattleType
            $D882 = wd882
            $D880 = wd880
            $D881 = wd881
@@ -15988,9 +15988,9 @@ WRAM0:
            $D63F = W_VICTORYROAD2CURSCRIPT
            $D208 = wPartyMon4SpecialExp
            $D21C = wPartyMon5HP
-           $DA40 = W_PLAYTIMEHOURS
+           $DA40 = wPlayTimeHours
            $D1C3 = wPartyMon3Species
-           $DA49 = W_DAYCAREMONNAME
+           $DA49 = wDayCareMonName
            $D1ED = wPartyMon3Special
            $D632 = W_ROCKETHIDEOUT2CURSCRIPT
            $D238 = wPartyMon5PP
@@ -16034,7 +16034,7 @@ WRAM0:
            $D05F = W_MOVEMISSED
            $D1DA = wPartyMon3SpeedExp
            $D5FB = W_VIRIDIANGYMCURSCRIPT
-           $DA80 = W_NUMINBOX
+           $DA80 = wNumInBox
            $D93F = wEnemyMon4SpeedExp
            $D64B = W_HALLOFFAMEROOMCURSCRIPT
            $D1C7 = wPartyMon3Status
@@ -16048,11 +16048,11 @@ WRAM0:
            $D0BA = W_MONHBASEATTACK
            $DA5F = wDayCareMonSpecies
            $D222 = wPartyMon5CatchRate
-           $D355 = W_OPTIONS
+           $D355 = wOptions
            $D1F6 = wPartyMon4CatchRate
            $DA38 = wda38
            $DE8D = wPokedexOwnedEnd
-           $D071 = W_ENEMYTOXICCOUNTER
+           $D071 = wEnemyToxicCounter
            $D713 = W_ENEMYMONORTRAINERCLASS
            $D37C = W_MAPCONN2PTR
            $D913 = wEnemyMon3SpeedExp
@@ -16089,7 +16089,7 @@ WRAM0:
            $D007 = wEnemyMonCatchRate
            $D5F4 = W_VIRIDIANCITYCURSCRIPT
            $DA60 = wDayCareMonHP
-           $D04A = W_TRAINERNAME
+           $D04A = wTrainerName
            $D26D = wPartyMon6Defense
            $D62E = W_POKEMONTOWER5CURSCRIPT
            $D23D = wPartyMon5MaxHP
@@ -16127,7 +16127,7 @@ WRAM0:
            $D08B = W_SUBANIMTRANSFORM
            $D936 = wEnemyMon4Exp
            $D61F = W_SAFARIZONEENTRANCECURSCRIPT
-           $D127 = W_CURENEMYLVL
+           $D127 = wCurEnemyLVL
            $D26F = wPartyMon6Speed
            $D0BE = W_MONHTYPES
            $D0BE = W_MONHTYPE1
@@ -16145,7 +16145,7 @@ WRAM0:
            $D0C0 = W_MONHCATCHRATE
            $D8DE = wEnemyMon2Exp
            $D908 = wEnemyMon3OTID
-           $D031 = W_TRAINERCLASS
+           $D031 = wTrainerClass
            $D4E2 = wYOffsetSinceLastSpecialWarp
            $D19D = wPartyMon2Type2
            $D19C = wPartyMon2Type1
@@ -16193,7 +16193,7 @@ WRAM0:
            $D9A1 = wEnemyMon6Level
            $D12B = W_ISLINKBATTLE
            $D8B9 = wEnemyMon1DefenseExp
-           $D06C = W_PLAYERTOXICCOUNTER
+           $D06C = wPlayerToxicCounter
            $D22E = wPartyMon5AttackExp
            $D1D4 = wPartyMon3HPExp
            $D650 = W_UNKNOWNDUNGEON3CURSCRIPT
@@ -16224,7 +16224,7 @@ WRAM0:
            $DE8D = wPokedexSeen
            $DA99 = wBoxMon1Type
            $D60F = W_CERULEANCITYCURSCRIPT
-           $D0AA = W_SPRITEFLIPPED
+           $D0AA = wSpriteFlipped
            $D5A6 = W_MISSABLEOBJECTFLAGS
            $D5F1 = W_PALLETTOWNCURSCRIPT
            $D71A = wDestinationMap
@@ -16235,9 +16235,9 @@ WRAM0:
            $D1D8 = wPartyMon3DefenseExp
            $D0CE = W_MONHBASESPECIALD
            $D0BD = W_MONHBASESPECIALA
-           $D062 = W_PLAYERBATTSTATUS1
-           $D064 = W_PLAYERBATTSTATUS3
-           $D063 = W_PLAYERBATTSTATUS2
+           $D062 = wPlayerBattleStatus1
+           $D064 = wPlayerBattleStatus3
+           $D063 = wPlayerBattleStatus2
            $D8B7 = wEnemyMon1AttackExp
            $D9A8 = wEnemyMon6Speed
            $D13A = wIgnoreInputCounter

@@ -40,13 +40,13 @@ TempLandscapesDoesntChangeLocationTable:
 
 ;to get the current attack into a
 GetCurrentAttack:
-	ld a,[W_ENEMYMOVENUM]	;load the enemy move into a
+	ld a,[wEnemyMoveNum]	;load the enemy move into a
 	push af
 	ld a,[H_WHOSETURN]
 	and a
 	jr nz,.finish		;finish if enemy turn
 	pop af
-	ld a,[W_PLAYERMOVENUM]
+	ld a,[wPlayerMoveNum]
 	push af
 .finish
 	pop af
@@ -60,11 +60,11 @@ IsHeadAttack:
 	jp IsInArray
 
 IsPlayerAttackPhysical:
-	ld a,[W_PLAYERMOVENUM]
+	ld a,[wPlayerMoveNum]
 	jr IsPhysicalAttack
 
 IsEnemyAttackPhysical:
-	ld a,[W_ENEMYMOVENUM]
+	ld a,[wEnemyMoveNum]
 	;fall through
 
 ;to see if the attack in a is a physical attack

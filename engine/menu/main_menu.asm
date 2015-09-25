@@ -4,7 +4,7 @@ MainMenu: ; 5af2 (1:5af2)
 	xor a
 	ld [wOptionsInitialized],a
 	inc a
-	ld [wd088],a
+	ld [wSaveFileStatus],a
 
 .mainMenuLoop
 	ld c,20
@@ -59,21 +59,21 @@ MainMenu: ; 5af2 (1:5af2)
 	jp z,.next4 ; if press_A on Normal Mode
 	call DisplayOptionsFromMainMenu ; if press_a on Options
 	ld a,1
-	ld [wd08a],a
-	jp .next0
+	ld [wOptionsInitialized],a
+	jp .mainMenuLoop
 .hard_mode
 	;turn off hard mode flag
-	ld hl,W_OPTIONS
+	ld hl,wOptions
 	set 4,[hl]
 	jr .tryLoad
 .next4
 	;turn off hard mode flag
-	ld hl,W_OPTIONS
+	ld hl,wOptions
 	res 4,[hl]
 .tryLoad
 	predef LoadSAV	;try to load the data
 	
-	ld a,[wd088]	;did it load data?
+	ld a,[wSaveFileStatus]	;did it load data?
 	cp a,$1	;1 means it did not load data
 	jp z,NewGame	;then run new game
 	
@@ -465,11 +465,11 @@ DisplayOptionMenu: ; 5e8a (1:5e8a)
 	ld [wTopMenuItemX],a
 	call EraseMenuCursor
 	ld a,d
-	ld [W_OPTIONS],a	;store d into w_options
+	ld [wOptions],a	;store d into wOptions
 	jp .loop
 .checkDirectionKeys
-	ld a,[W_OPTIONS]
-	ld d,a		;d stores w_options
+	ld a,[wOptions]
+	ld d,a		;d stores wOptions
 	ld a,[wTopMenuItemY]
 	bit 7,b ; Down pressed?
 	jr nz,.downPressed
@@ -614,7 +614,7 @@ BattleTextOptionText: ; 5ffd (1:5ffd)
 
 ; reads the options variable and places menu cursors in the correct positions within the options menu
 SetCursorPositionsFromOptions: ; 604c (1:604c)
-	ld a,[W_OPTIONS]
+	ld a,[wOptions]
 	ld d,a
 	call BattleSpeedXCoord
 	push af

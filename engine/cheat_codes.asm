@@ -35,8 +35,8 @@ CheatCodeCheck:
 .clearName
 	ld [hl],a		;save the byte
 	coord hl, 5, 7
-	ld a, [wd07d]
-	cp 2	;nickname screen?
+	ld a, [wNamingScreenType]
+	cp NAME_MON_SCREEN		;nickname screen?
 	jr nc,.dontAdjust		;dont adjust the line if so
 	ld de,-20
 	add hl,de		;move up a line if not pokemon screen

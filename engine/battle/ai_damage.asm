@@ -5,7 +5,7 @@
 ; ($05 is not very effective, $10 is neutral, $14 is super effective)
 ; as far is can tell, this is only used once in some AI code to help decide which move to use
 AIGetTypeEffectiveness: ; 3e449 (f:6449)
-	ld a,[W_ENEMYMOVETYPE]
+	ld a,[wEnemyMoveType]
 	ld d,a                 ; d = type of enemy move
 	ld hl,wBattleMonType
 	ld b,[hl]              ; b = type 1 of player's pokemon

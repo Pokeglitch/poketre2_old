@@ -3,7 +3,7 @@ SECTION "rst 00", ROM0 [$00]
 ;see if we are in hard mode or not
 IsHardMode:
 	push hl
-	ld hl,W_OPTIONS
+	ld hl,wOptions
 	bit 4,[hl]
 	pop hl
 	ret
@@ -11,7 +11,7 @@ IsHardMode:
 ;to see if the current battle is wild or trainer/horder
 GetHordeIsInBattle:
 	push hl
-	ld a,[W_ISINBATTLE]
+	ld a,[wIsInBattle]
 	ld hl,wPreBattleBits
 	bit HordeBattleBit,[hl]
 	jr z,.finish	;if not horde, then don't adjust
@@ -25,7 +25,7 @@ GetHordeIsInBattle:
 GetTimeOfDay:
 	push hl
 	push af
-	ld a,[W_PLAYTIMEHOURS + 1]	;get the hours low byte
+	ld a,[wPlayTimeHours + 1]	;get the hours low byte
 	ld hl,wPokefluteTimeAdjustment
 	add [hl]		;add to a
 	bit 0,a		;is the 0th bit set?
@@ -39,7 +39,7 @@ GetTimeOfDay:
 GetSeason:
 	push hl
 	push af
-	ld a,[W_PLAYTIMEHOURS + 1]	;get the hours low byte
+	ld a,[wPlayTimeHours + 1]	;get the hours low byte
 	ld hl,wPokefluteTimeAdjustment
 	add [hl]		;add to a
 	bit 3,a		;is the 3rd bit set?

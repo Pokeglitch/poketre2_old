@@ -194,7 +194,7 @@ MonsterNameCharsCommon:: ; 1a37 (0:1a37)
 	ld l,c
 	jr FinishDTE
 .lastStandName
-	ld de,W_TRAINERNAME
+	ld de,wTrainerName
 	ld a,[wEnemyTrainerFirstName + 1]
 	cp "@"		;is the trainer first name empty?
 	jr z,.finish		;then finish
@@ -251,7 +251,7 @@ Char47:
 Char48::
 	pop hl		;recover the destination pointer
 	push de
-	ld de,W_TRAINERNAME
+	ld de,wTrainerName
 	ld a,[wEnemyTrainerFirstName + 1]
 	cp "@"		;is the trainer first name empty?
 	jr z,.finish		;then finish
@@ -428,12 +428,12 @@ PrintText:: ; 3c49 (0:3c49)
 	ld a,%11000000
 	ld [wTextCharCount],a	;initialize wTextCharCount to indicate that we should check for word wrapping and counting letters
 	pop hl
-	call Func_3c59
+	call PrintText_NoCreatingTextBox
 	xor a
 	ld [wTextCharCount],a		;reset wTextCharCount
 	ret
 	
-Func_3c59:: ; 3c59 (0:3c59)
+PrintText_NoCreatingTextBox:: ; 3c59 (0:3c59)
 	coord bc, 1, 14
 	jp TextCommandProcessor
 	
@@ -586,7 +586,7 @@ PlaceNextChar:: ; 1956 (0:1956)
 	
 	inc [hl]		;increment the counter
 	pop hl			;recover the destination, don't increment
-	jr Next19E8
+	jr PlaceNextChar_inc
 	
 .placeChar
 	pop hl			;recover the destination
@@ -595,7 +595,7 @@ PlaceNextChar:: ; 1956 (0:1956)
 	call PrintLetterDelay
 	;fall through
 	
-Next19E8:
+PlaceNextChar_inc:
 	inc de
 	jp PlaceNextChar		
 

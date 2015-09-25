@@ -30,11 +30,11 @@ DisplayInvincibilityNoDamageText:
 	jp ClearBattleTextBits
 
 DisplayLandscapeNoDamageText:
-	ld hl,W_PLAYERMOVENUM
+	ld hl,wPlayerMoveNum
 	ld a,[H_WHOSETURN]
 	and a
 	jr z,.next	;dont load enemy id if players turn
-	ld hl,W_ENEMYMOVENUM
+	ld hl,wEnemyMoveNum
 .next
 	ld a,[hl]
 	ld hl,MovesFailInLandscapeNoDamageText
@@ -92,7 +92,7 @@ DisplayAbility2NoDamageText:
 	jp ClearBattleTextBits
 
 DisplayEffectiveness: ; 2fb7b (b:7b7b)
-	ld a,[W_OPTIONS]	;check the options
+	ld a,[wOptions]	;check the options
 	bit 5,a
 	jr nz,.displayAbilityText	;if set, only display the ability and effective text
 	
@@ -205,13 +205,13 @@ DisplayHeldItemDamageEffectText:
 	ld de,wEnemyMonHeldItem
 	ld a,[H_WHOSETURN]
 	and a
-	ld a,[W_PLAYERMOVETYPE]
+	ld a,[wPlayerMoveType]
 	jr z,.skipEnemyTurn	;dont swap hl and de if players turn
 	push hl
 	push de
 	pop hl
 	pop de
-	ld a,[W_ENEMYMOVETYPE]
+	ld a,[wEnemyMoveType]
 .skipEnemyTurn
 	push af		;save the type
 	add FAN		;add fan (fan is start of the boosting held items)

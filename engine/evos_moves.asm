@@ -131,7 +131,7 @@ Evolution_PartyMonLoop: ; loop over party mons
 	call ClearSprites
 
 	ld a, [wEvoOldSpecies]
-	ld [wcf1d],a		;store the pokemon index for the cry to be played
+	ld [wEvoCrySpecies],a		;store the pokemon index for the cry to be played
 	
 	callab EvolveMon
 	jp c, CancelledEvolution

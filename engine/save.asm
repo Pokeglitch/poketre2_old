@@ -189,7 +189,7 @@ LoadSAVCheckSum: ; 73623 (1c:7623)
 	ld a,[hl]	;load the tileset type
 	ld [hTilesetType],a
 	
-	ld hl, W_CURMAPTILESET
+	ld hl, wCurMapTileset
 	set 7, [hl]
 	
 	pop hl
@@ -651,7 +651,7 @@ WalkAutosave0:
 	ld hl,SIZE_OF_PLAYER_NAME_SAVE_DATA
 	call AddToStartPoint
 	ld hl, wStoryLineData
-	ld bc, W_OAKSLABCURSCRIPT - wStoryLineData
+	ld bc, wOaksLabCurScript - wStoryLineData
 	call CopyDataAndChecksum
 	cpl
 	pop de
@@ -691,10 +691,10 @@ WalkAutosave2:
 ;autosave game data part 2
 WalkAutosave3:
 	push de
-	ld hl,SIZE_OF_PLAYER_NAME_SAVE_DATA + (W_OAKSLABCURSCRIPT - wStoryLineData)
+	ld hl,SIZE_OF_PLAYER_NAME_SAVE_DATA + (wOaksLabCurScript - wStoryLineData)
 	call AddToStartPoint
-	ld hl, W_OAKSLABCURSCRIPT
-	ld bc, AfterCurScripts - W_OAKSLABCURSCRIPT
+	ld hl, wOaksLabCurScript
+	ld bc, AfterCurScripts - wOaksLabCurScript
 	call CopyDataAndChecksum
 	cpl
 	pop de
@@ -710,7 +710,7 @@ WalkAutosave4:
 	ld hl,SIZE_OF_PLAYER_NAME_SAVE_DATA + (AfterCurScripts - wStoryLineData)
 	call AddToStartPoint
 	ld hl, AfterCurScripts
-	ld bc, wd743 - AfterCurScripts
+	ld bc, wEventFlags - AfterCurScripts
 	call CopyDataAndChecksum
 	cpl
 	pop de
@@ -723,10 +723,10 @@ WalkAutosave4:
 ;autosave game data part 4
 WalkAutosave5:
 	push de
-	ld hl,SIZE_OF_PLAYER_NAME_SAVE_DATA + (wd743 - wStoryLineData)
+	ld hl,SIZE_OF_PLAYER_NAME_SAVE_DATA + (wEventFlags - wStoryLineData)
 	call AddToStartPoint
-	ld hl, wd743
-	ld bc, wLinkEnemyTrainerName - wd743
+	ld hl, wEventFlags
+	ld bc, wLinkEnemyTrainerName - wEventFlags
 	call CopyDataAndChecksum
 	cpl
 	pop de
@@ -804,7 +804,7 @@ WalkAutosave7:
 	ret
 	
 AutoSaveHardModeCheckInBattle:
-	ld a,[W_ISINBATTLE]
+	ld a,[wIsInBattle]
 	and a
 	jp nz,SaveInBattle	;if we are in battle, then just save the in battle info
 	;fall through
@@ -951,14 +951,14 @@ SaveInBattle:
 	
 
 ;save the CheckSums for each PC box in the current bank
-Func_73863: ; 73863 (1c:7863)
+CalcIndividualBoxCheckSums: ; 73863 (1c:7863)
 	ld hl, $a000
 	ld de, $ba41	;was $ba4d
 	ld b, 10	;10 boxes
-.asm_7386b
+.loop
 	push bc
 	push de
-	ld bc, wBoxMonNicksEnd - W_NUMINBOX	;size of data to copy
+	ld bc, wBoxMonNicksEnd - wNumInBox	;size of data to copy
 	call SAVCheckSum
 	pop de
 	ld [de], a
@@ -970,9 +970,9 @@ Func_73863: ; 73863 (1c:7863)
 
 ;get the pointer to the start of the box data
 ;get the bank in b
-Func_7387b: ; 7387b (1c:787b)
-	ld hl, PointerTable_73895 ; $7895
-	ld a, [wd5a0]
+GetBoxSRAMLocation: ; 7387b (1c:787b)
+	ld hl, BoxSRAMPointerTable ; $7895
+	ld a, [wCurrentBoxNum]
 	and $7f
 	ld e, a
 	ld d, 0

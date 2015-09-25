@@ -171,7 +171,7 @@ LoadMrMimeBattleData:
 	ld a,MR_MIME
 	ld [wEnemyMonSpecies2],a
 	ld a,30		;level 30
-	ld [W_CURENEMYLVL],a
+	ld [wCurEnemyLVL],a
 	
 	ld hl,wMrMimeFlags
 	bit MrMimeEncountered,[hl]		;have we encountered mr mime?
@@ -384,7 +384,7 @@ StoreBattleDVs:
 
 LoadWildHPLevelStatus:
 	ld de, wEnemyMonLevel
-	ld a, [W_CURENEMYLVL]	
+	ld a, [wCurEnemyLVL]	
 	ld [de], a
 	inc de
 	ld b, $0
@@ -402,7 +402,7 @@ LoadWildHPLevelStatus:
 	ret
 	
 LoadPlayerLastStandHPLevelStatus:
-	ld a,[W_CURENEMYLVL]
+	ld a,[wCurEnemyLVL]
 	push af		;store the enemy mon level
 	
 	;store the level
@@ -415,7 +415,7 @@ LoadPlayerLastStandHPLevelStatus:
 	ld a,100				;otherwise, load to 100
 .saveLevel
 	ld [wBattleMonLevel],a
-	ld [W_CURENEMYLVL],a		;temporarily store into enemy mon level (for calculating stats)
+	ld [wCurEnemyLVL],a		;temporarily store into enemy mon level (for calculating stats)
 	
 	;calc the stats
 	ld hl,wBattleMonDVs - 11	;when calculating stat using DVs, it adds 11 to HL
@@ -424,7 +424,7 @@ LoadPlayerLastStandHPLevelStatus:
 	call CalcStats
 	
 	pop af
-	ld [W_CURENEMYLVL],a		;restore the enemy mon level
+	ld [wCurEnemyLVL],a		;restore the enemy mon level
 	
 	;see if the max hp changed, if so apply difference to current hp
 	ld a,[wLastStandMaxHP]
@@ -716,12 +716,12 @@ FinishLoadTrainerMonOTData:
 
 LoadPlayerTemporarySecondaryStatus:
 	ld hl,wBattleMonSecondaryStatus
-	ld bc,W_PLAYERBATTSTATUS1	;temporary battle bits
+	ld bc,wPlayerBattleStatus1	;temporary battle bits
 	jr FinishLoadTemporarySecondaryStatus
 	
 LoadEnemyTemporarySecondaryStatus:
 	ld hl,wEnemyMonSecondaryStatus
-	ld bc,W_ENEMYBATTSTATUS1	;temporary battle bits
+	ld bc,wEnemyBattleStatus1	;temporary battle bits
 	;fall through
 	
 FinishLoadTemporarySecondaryStatus:
@@ -950,12 +950,12 @@ GoToTemporaryBattleDataIndex:
 
 LoadPlayerMonConfusedStatus:
 	ld hl,wPlayerPartyMon1ConfusedCounter	;start of stored confused counter
-	ld de,W_PLAYERCONFUSEDCOUNTER
+	ld de,wPlayerConfusedCounter
 	jr FinishLoadPartyMonConfusedStatus
 	
 LoadEnemyTrainerMonConfusedStatus:
 	ld hl,wEnemyPartyMon1ConfusedCounter	;start of stored confused counter
-	ld de,W_ENEMYCONFUSEDCOUNTER
+	ld de,wEnemyConfusedCounter
 	;fall through
 	
 FinishLoadPartyMonConfusedStatus:
@@ -964,11 +964,11 @@ FinishLoadPartyMonConfusedStatus:
 	jr FinishLoadEnemyMonConfusedStatus
 
 LoadLastStandConfusedStatus:
-	ld de,W_PLAYERCONFUSEDCOUNTER
+	ld de,wPlayerConfusedCounter
 	jr FinishLoadEmptyConfusedStatus
 	
 LoadWildMonConfusedStatus:
-	ld de,W_ENEMYCONFUSEDCOUNTER
+	ld de,wEnemyConfusedCounter
 	;fall through
 	
 FinishLoadEmptyConfusedStatus:
@@ -1017,7 +1017,7 @@ LoadPlayerMonDisabledStatus:
 	push hl
 	ld hl,wPlayerPartyMon1DisabledMove	;start of stored disabled byte
 	ld de,wBattleMonMoves	;battle mon  move list
-	ld bc,W_PLAYERDISABLEDMOVE
+	ld bc,wPlayerDisabledMove
 	jr FinishLoadTrainerMonDisabledStatus
 	
 LoadEnemyTrainerMonDisabledStatus:
@@ -1025,7 +1025,7 @@ LoadEnemyTrainerMonDisabledStatus:
 	push hl
 	ld hl,wEnemyPartyMon1DisabledMove	;start of stored disabled byte
 	ld de,wEnemyMonMoves	;enemy mon  move list
-	ld bc,W_ENEMYDISABLEDMOVE
+	ld bc,wEnemyDisabledMove
 	;fall through
 	
 FinishLoadTrainerMonDisabledStatus:
@@ -1040,12 +1040,12 @@ FinishLoadTrainerMonDisabledStatus:
 
 LoadLastStandDisabledStatus:
 	ld hl,wPlayerDisabledMoveNumber
-	ld bc,W_ENEMYDISABLEDMOVE
+	ld bc,wEnemyDisabledMove
 	jr FinishLoadEmptyDisabledStatus
 	
 LoadWildMonDisabledStatus:
 	ld hl,wEnemyDisabledMoveNumber
-	ld bc,W_ENEMYDISABLEDMOVE
+	ld bc,wEnemyDisabledMove
 	;fall through
 	
 FinishLoadEmptyDisabledStatus:
@@ -1075,12 +1075,12 @@ FinishLoadEnemyMonDisabledStatus:
 	
 LoadPlayerMonToxicStatus:
 	ld hl,wPlayerPartyMon1ToxicCounter
-	ld de,W_PLAYERTOXICCOUNTER
+	ld de,wPlayerToxicCounter
 	jr FinishLoadTrainerMonToxicStatus
 	
 LoadEnemyTrainerMonToxicStatus:
 	ld hl,wEnemyPartyMon1ToxicCounter
-	ld de,W_ENEMYTOXICCOUNTER
+	ld de,wEnemyToxicCounter
 	;fall through
 	
 FinishLoadTrainerMonToxicStatus:
@@ -1089,11 +1089,11 @@ FinishLoadTrainerMonToxicStatus:
 	jr FinishLoadEnemyMonToxicStatus
 
 LoadLastStandToxicStatus:
-	ld de,W_PLAYERTOXICCOUNTER
+	ld de,wPlayerToxicCounter
 	jr FinishLoadEmptyToxicStatus
 	
 LoadWildMonToxicStatus:
-	ld de,W_ENEMYTOXICCOUNTER
+	ld de,wEnemyToxicCounter
 	;fall through
 	
 FinishLoadEmptyToxicStatus:

@@ -293,7 +293,7 @@ ApplyFilters:
 	inc hl
 	inc hl
 .checkSwap
-	ld a,[W_SPRITEFLIPPED]	;sprite flipped?
+	ld a,[wSpriteFlipped]	;sprite flipped?
 	and a
 	jr z,.skipSwap	;dont swap if not
 	swap [hl]

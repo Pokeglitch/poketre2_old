@@ -186,7 +186,7 @@ SlidePlayerAndEnemySilhouettesOnScreen: ; 3c04c (f:404c)
 	ld [H_AUTOBGTRANSFERENABLED], a
 	call Delay3
 	ld b, $1
-	call GoPAL_SET
+	call RunPaletteCommand
 	call HideSprites
 	ld hl, PrintBeginningBattleText
 	ld b, BANK(PrintBeginningBattleText)

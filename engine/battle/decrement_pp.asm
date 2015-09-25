@@ -4,14 +4,14 @@ DecrementPP: ; 68000 (1a:4000)
 	ld a, [wPlayerMonNumber]
 	ld [wWhichPokemon], a
 	ld a, $4
-	ld [wcc49], a
+	ld [wMonDataLocation], a
 	callab GetMaxPP
 
 
 ; after using a move, decrement pp in battle and (if not transformed?) in party
-	ld hl, W_PLAYERBATTSTATUS1
-	ld a, [hli]          ; load the W_PLAYERBATTSTATUS1 pokemon status flags and increment hl to load the
-	                     ; W_PLAYERBATTSTATUS2 status flags later
+	ld hl, wPlayerBattleStatus1
+	ld a, [hli]          ; load the wPlayerBattleStatus1 pokemon status flags and increment hl to load the
+	                     ; wPlayerBattleStatus2 status flags later
 	and a, (1 << StoringEnergy) | (1 << ThrashingAbout) | (1 << AttackingMultipleTimes)
 	ret nz               ; if any of these statuses are true, don't decrement PP
 	bit UsingRage, [hl]

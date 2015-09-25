@@ -450,7 +450,7 @@ MainInBattleLoop: ; 3c233 (f:4233)
 	jp MainInBattleLoop
 
 HandlePoisonBurnLeechSeed: ; 3c3bd (f:43bd)
-	ld de,W_PLAYERBATTSTATUS3
+	ld de,wPlayerBattleStatus3
 	push de		;store the battle status 3 (for toxic bit)
 	ld hl, wBattleMonHP
 	ld de, wBattleMonStatus
@@ -459,7 +459,7 @@ HandlePoisonBurnLeechSeed: ; 3c3bd (f:43bd)
 	and a
 	jr z, .playersTurn
 	pop de
-	ld de,W_ENEMYBATTSTATUS3	;replace the battle status 3
+	ld de,wEnemyBattleStatus3	;replace the battle status 3
 	push de
 	ld hl, wEnemyMonHP
 	ld de, wEnemyMonStatus
@@ -1481,7 +1481,7 @@ EnemySendOutFirstMon: ; 3c92a (f:492a)
 	inc hl
 	inc hl
 	res Transformed,[hl]		;turn off the transformed bit
-	ld [wccf3],a
+	ld [wEnemyMonMinimized],a
 	ld hl,wPlayerUsedMove
 	ld [hli],a
 	ld [hl],a
@@ -1529,7 +1529,7 @@ EnemySendOutFirstMon: ; 3c92a (f:492a)
 	xor a
 	ld [wWhichPokemon],a		;just set which pokemon as the first pokemon (to avoid any possible issues in other scripts)
 	ld a,[wEnemyMon1Level]		;use the first pokemon level as the level
-	ld [W_CURENEMYLVL],a
+	ld [wCurEnemyLVL],a
 	ld a,HUMAN		;pokemon id
 	jr .loadEnemyData	;and load the data
 .next3
@@ -1684,7 +1684,7 @@ AnyPartyAlive: ; 3ca83 (f:4a83)
 	ld d, a
 	and a
 	ret nz	;return if there are pokemon that aren't fainted
-	ld a,[W_ISINBATTLE]
+	ld a,[wIsInBattle]
 	and a
 	jr nz,.battleCheck	;run the battle check if we are not in battle
 	ld hl,wTotems
@@ -1758,7 +1758,7 @@ SendOutMon: ; 3cc91 (f:4c91)
 	predef LoadMonBackPic
 	xor a
 	ld [$ffe1], a
-	ld hl, wcc2d
+	ld hl, wBattleAndStartSavedMenuItem
 	ld [hli], a
 	ld [hl], a
 	ld [wBoostExpByExpAll], a
@@ -1773,7 +1773,7 @@ SendOutMon: ; 3cc91 (f:4c91)
 	ld [wPlayerMonMinimized], a
 	ld b, SET_PAL_BATTLE
 	call RunPaletteCommand
-	ld hl, W_ENEMYBATTSTATUS1
+	ld hl, wEnemyBattleStatus1
 	res UsingTrappingMove, [hl]
 	ld a,[wBattleMonSpecies2]
 	cp HUMAN		;human being sent out?
@@ -1805,7 +1805,7 @@ ReadPlayerMonCurHPAndStatus: ; 3cd43 (f:4d43)
 	ld [hli],a
 	xor a
 	push hl
-	ld hl,W_PLAYERBATTSTATUS3
+	ld hl,wPlayerBattleStatus3
 	bit 0,[hl]	;toxic bit set?
 	jr z,.skipToxic
 	set Toxic2,a		;set toxic bit
@@ -1846,7 +1846,7 @@ ReadPlayerMonCurHPAndStatus: ; 3cd43 (f:4d43)
 	ld [wMrMimeStatus],a
 	xor a
 	push hl
-	ld hl,W_ENEMYBATTSTATUS3
+	ld hl,wEnemyBattleStatus3
 	bit 0,[hl]	;toxic bit set?
 	jr z,.skipToxic2
 	set Toxic2,a		;set toxic bit
@@ -1876,7 +1876,7 @@ GetBattleHealthBarColor: ; 3ce90 (f:4e90)
 	cp b
 	ret z
 	ld b, $1
-	jp GoPAL_SET
+	jp RunPaletteCommand
 	
 DisplayBattleMenu:
 	callab _DisplayBattleMenu
@@ -2089,7 +2089,7 @@ SelectMenuItem: ; 3d2fe (f:52fe)
 	ld a, [wPlayerMonNumber]
 	ld [wWhichPokemon], a
 	ld a, $4
-	ld [wcc49], a
+	ld [wMonDataLocation], a
 	callab GetMaxPP
 	
 	;see if the player has enough PP to use this move
@@ -2101,7 +2101,7 @@ SelectMenuItem: ; 3d2fe (f:52fe)
 	cp [hl]		;if the pp required is greater than what is remaining, then say not enough PP
 	jr c, .nopp
 .enoughPP
-	ld a, [W_PLAYERDISABLEDMOVE]
+	ld a, [wPlayerDisabledMove]
 	swap a
 	and $f
 	dec a
@@ -2843,7 +2843,7 @@ CheckPlayerStatusConditions: ; 3d854 (f:5854)
 	jp .returnToHL
 
 .FearCheck
-	ld hl,W_PLAYERBATTSTATUS3
+	ld hl,wPlayerBattleStatus3
 	bit 4,[hl]	;fear?
 	jr z,.cursedCheck
 	
@@ -2873,7 +2873,7 @@ CheckPlayerStatusConditions: ; 3d854 (f:5854)
 	jp .returnToHL
 	
 .cursedCheck
-	ld hl,W_PLAYERBATTSTATUS3
+	ld hl,wPlayerBattleStatus3
 	bit 6,[hl]	;cursed?
 	jr z,.HyperBeamCheck
 	ld a,[wBattleMonCursedFearCounter]
@@ -3747,7 +3747,7 @@ GetDamageVarsForPlayerAttack: ; 3ddcf (f:5dcf)
 	ld a, [hli]
 	ld b, a
 	ld c, [hl] ; bc = enemy special defense
-	ld a, [W_ENEMYBATTSTATUS3]
+	ld a, [wEnemyBattleStatus3]
 	bit HasLightScreenUp, a ; check for Light Screen
 	call nz, DoubleBCUpTo999 ; if the enemy has used Light Screen, double the enemy's special
 	ld hl, wBattleMonSpecial
@@ -4289,11 +4289,11 @@ ApplyAttackToEnemyPokemon: ; 3e0df (f:60df)
 	ld [hl],a
 
 ApplyDamageToEnemyPokemon: ; 3e142 (f:6142)
-	ld a,[W_PLAYERBATTSTATUS3]
+	ld a,[wPlayerBattleStatus3]
 	bit 6,a		;cursed?
 	jr z,.enemyNotCursed	;skip down if not
 	ld hl,wPreviousAttackDamage
-	ld de,W_DAMAGE
+	ld de,wDamage
 	ld a,[de]
 	cp a,[hl]	;compare current damage high to previous damage high
 	inc hl
@@ -4454,11 +4454,11 @@ ApplyAttackToPlayerPokemon: ; 3e1a0 (f:61a0)
 	ld [hl],a
 
 ApplyDamageToPlayerPokemon: ; 3e200 (f:6200)
-	ld a,[W_ENEMYBATTSTATUS3]
+	ld a,[wEnemyBattleStatus3]
 	bit 6,a		;cursed?
 	jr z,.notCursed
 	ld hl,wPreviousAttackDamage
-	ld de,W_DAMAGE
+	ld de,wDamage
 	ld a,[de]
 	cp a,[hl]	;compare current damage high to previous damage high
 	inc hl
@@ -4878,11 +4878,11 @@ MoveHitTest: ; 3e56b (f:656b)
 	and a
 	jr z,.playerTurn2
 .enemyTurn2
-	ld hl,W_ENEMYBATTSTATUS1
+	ld hl,wEnemyBattleStatus1
 	res UsingTrappingMove,[hl] ; end multi-turn attack e.g. wrap
 	ret
 .playerTurn2
-	ld hl,W_PLAYERBATTSTATUS1
+	ld hl,wPlayerBattleStatus1
 	res UsingTrappingMove,[hl] ; end multi-turn attack e.g. wrap
 	ret
 	
@@ -5474,7 +5474,7 @@ CheckEnemyStatusConditions: ; 3e88f (f:688f)
 	jp .enemyReturnToHL
 
 .enemyFearCheck
-	ld hl,W_ENEMYBATTSTATUS3
+	ld hl,wEnemyBattleStatus3
 	bit 4,[hl]	;fear?
 	jr z,.enemyCursedCheck
 	
@@ -5506,7 +5506,7 @@ CheckEnemyStatusConditions: ; 3e88f (f:688f)
 
 	
 .enemyCursedCheck
-	ld hl,W_ENEMYBATTSTATUS3
+	ld hl,wEnemyBattleStatus3
 	bit 6,[hl]	;cursed?
 	jr z,.checkIfMustRecharge
 	ld a,[wEnemyMonCursedFearCounter]
@@ -5701,7 +5701,7 @@ CheckEnemyStatusConditions: ; 3e88f (f:688f)
 	ld [hli], a
 	ld [hl], a
 	ld a, BIDE
-	ld [W_ENEMYMOVENUM], a
+	ld [wEnemyMoveNum], a
 	call SwapPlayerAndEnemyLevels
 	ld hl, handleIfEnemyMoveMissed ; skip damage calculation, DecrementPP and MoveHitTest
 	jp .enemyReturnToHL
@@ -5709,7 +5709,7 @@ CheckEnemyStatusConditions: ; 3e88f (f:688f)
 	bit ThrashingAbout, [hl] ; is mon using thrash or petal dance?
 	jr z, .checkIfUsingMultiturnMove
 	ld a, THRASH
-	ld [W_ENEMYMOVENUM], a
+	ld [wEnemyMoveNum], a
 	ld hl, ThrashingAboutText
 	call PrintText
 	ld hl, wEnemyNumAttacksLeft
@@ -5717,14 +5717,14 @@ CheckEnemyStatusConditions: ; 3e88f (f:688f)
 	ld hl, EnemyCalcMoveDamage ; skip DecrementPP
 	jp nz, .enemyReturnToHL
 	push hl
-	ld hl, W_ENEMYBATTSTATUS1
+	ld hl, wEnemyBattleStatus1
 	res ThrashingAbout, [hl] ; mon is no longer using thrash or petal dance
 	set Confused, [hl] ; mon is now confused
 	call BattleRandom
 	and $3
 	inc a
 	inc a ; confused for 2-5 turns
-	ld [W_ENEMYCONFUSEDCOUNTER], a
+	ld [wEnemyConfusedCounter], a
 	pop hl ; skip DecrementPP
 	jp .enemyReturnToHL
 .checkIfUsingMultiturnMove
@@ -5739,7 +5739,7 @@ CheckEnemyStatusConditions: ; 3e88f (f:688f)
 	jp nz, .enemyReturnToHL
 	jp .enemyReturnToHL
 .checkIfUsingRage
-	ld a, [W_ENEMYBATTSTATUS2]
+	ld a, [wEnemyBattleStatus2]
 	bit UsingRage, a ; is mon using rage?
 	jp z, .checkEnemyStatusConditionsDone ; if we made it this far, mon can move normally this turn
 	ld a, RAGE
@@ -5747,7 +5747,7 @@ CheckEnemyStatusConditions: ; 3e88f (f:688f)
 	call GetMoveName
 	call CopyStringToCF4B
 	xor a
-	ld [W_ENEMYMOVEEFFECT], a
+	ld [wEnemyMoveEffect], a
 	ld hl, EnemyCanExecuteMove
 	jp .enemyReturnToHL
 .enemyReturnToHL
@@ -5762,14 +5762,14 @@ GetCurrentMove: ; 3eabe (f:6abe)
 	ld a, [H_WHOSETURN]
 	and a
 	jp z, .player
-	ld de, W_ENEMYMOVENUM
+	ld de, wEnemyMoveNum
 	ld a, [wEnemySelectedMove]
 	jr .selected
 .player
-	ld de, W_PLAYERMOVENUM
-	ld a, [W_FLAGS_D733]
+	ld de, wPlayerMoveNum
+	ld a, [wFlags_D733]
 	bit 0, a
-	ld a, [wccd9]
+	ld a, [wTestBattlePlayerSelectedMove]
 	jr nz, .selected
 	ld a, [wPlayerSelectedMove]
 .selected
@@ -5855,13 +5855,13 @@ ApplyBurnAndParalysisPenalties: ; 3ed1f (f:6d1f)
 QuarterSpeedDueToParalysis: ; 3ed27 (f:6d27)
 	ld de,wBattleMonStatus
 	ld hl,wPlayerMonUnmodifiedSpeed + 1
-	ld bc,W_PLAYERBATTSTATUS3
+	ld bc,wPlayerBattleStatus3
 	ld a, [H_WHOSETURN]
 	and a
 	jr nz, .checkStatus	;check status
 	ld de,wEnemyMonStatus
 	ld hl,wEnemyMonUnmodifiedSpeed + 1
-	ld bc,W_ENEMYBATTSTATUS3
+	ld bc,wEnemyBattleStatus3
 .checkStatus
 	ld a,[de]
 	and 1 << PAR
@@ -6202,7 +6202,7 @@ PlayMoveAnimation: ; 3ef07 (f:6f07)
 	predef_jump MoveAnimation
 	
 PlayNonMoveAnimation:
-	ld [W_ANIMATIONID],a
+	ld [wAnimationID],a
 	call Delay3
 	predef_jump NonMoveAnimation
 
@@ -6270,9 +6270,9 @@ InitWildBattle: ; 3ef8b (f:6f8b)
 	ld a,[wTotems]
 	bit IronTotem,a		;iron totem set?
 	jr z,.notIronTotem	;dont double if not
-	ld a,[W_CURENEMYLVL]
+	ld a,[wCurEnemyLVL]
 	add a		;double
-	ld [W_CURENEMYLVL],a
+	ld [wCurEnemyLVL],a
 .notIronTotem
 	callab LoadEnemyMonData
 	call DoBattleTransitionAndInitBattleVariables
@@ -6372,7 +6372,7 @@ _LoadTrainerPic: ; 3f04b (f:704b)
 	ld e, a
 	ld a, [wTrainerPicPointer + 1]
 	ld d, a ; de contains pointer to trainer pic
-	ld a,[W_TRAINERCLASS]
+	ld a,[wTrainerClass]
 	cp SONY1	;are we battling the rival?
 	jr z,.checkTotem	;if so, then check the totem
 	cp SONY2	;battle the 2nd rival trainer data?
@@ -6448,9 +6448,9 @@ AnimateSendingOutMon: ; 3f073 (f:7073)
 DrawEvoEggSprite:
 	xor a
 	coord hl, 7, 2
-	call asm_3f0d0
+	call CopyUncompressedPicToHL
 	xor a
-	ld [W_SPRITEFLIPPED], a
+	ld [wSpriteFlipped], a
 	ret
 	
 CopyUncompressedPicToTilemap: ; 3f0c6 (f:70c6)
@@ -8372,14 +8372,14 @@ PlayCurrentMoveAnimation2: ; 3fb89 (f:7b89)
 .notEnemyTurn
 	and a
 	ret z
-	ld [W_ANIMATIONID], a
+	ld [wAnimationID], a
 	ld a, [H_WHOSETURN]
 	and a
 	ld a, $6
 	jr z, .asm_3fba2
 	ld a, $3
 .asm_3fba2
-	ld [wcc5b], a
+	ld [wAnimationType], a
 	jr PlayMoveAnimationSkip
 
 PlayBattleAnimation2: ; 3fb96 (f:7b96)
@@ -8425,7 +8425,7 @@ PlayBattleAnimationGotID: ; 3fbbc (f:7bbc)
 	ret
 	
 PlayMoveAnimation3:
-	ld [W_ANIMATIONID], a
+	ld [wAnimationID], a
 PlayMoveAnimationSkip:
 	push hl
 	push de
@@ -8471,9 +8471,9 @@ AddDamageCommon:
 	ld h,b
 	
 	;add the damage to the pokemon
-	ld a,[W_DAMAGE]
+	ld a,[wDamage]
 	ld b,a
-	ld a,[W_DAMAGE + 1]
+	ld a,[wDamage + 1]
 	ld c,a			;bc = damage
 	add hl,bc		;hl = new HP
 	
@@ -8695,7 +8695,7 @@ DetermineWildHeldItem:
 	
 ;this is only for wild pokemon
 DetermineNewTraits2:
-	ld a, [W_ENEMYBATTSTATUS3]
+	ld a, [wEnemyBattleStatus3]
 	bit Transformed, a ; is enemy mon transformed?
 	jr z,.notTransformed
 	ld a,[wEnemyMonTraits]		;just load the same traits that were already loaded
@@ -8704,7 +8704,7 @@ DetermineNewTraits2:
 	push hl
 	push bc
 	xor a		;set the value to zero
-	ld hl,W_MONHGENDEREGGGROUP
+	ld hl,wMonHGenderEggGroup
 	bit 7,[hl]		;can this pokemon be female?
 	jr z,.cantBeFemale	;skip down if not
 	bit 6,[hl]		;can this pokemon be male

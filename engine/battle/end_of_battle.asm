@@ -44,7 +44,7 @@ EndOfBattle: ; 137aa (4:77aa)
 	ld [wForceEvolution], a
 	predef EvolutionAfterBattle
 .resetVariables
-	ld a,[W_ISINBATTLE]
+	ld a,[wIsInBattle]
 	dec a		;wild battle?
 	jr nz,.notWildBattle
 	callab AutoSaveHardMode		;auto save if wild battle and hard mode

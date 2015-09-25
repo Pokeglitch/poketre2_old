@@ -1,4 +1,6 @@
 SECTION "Sprite Buffers", SRAM, BANK[0]
+sNormalModeGameSave::
+	ds SIZE_OF_GAMESAVE
 
 sSpriteBuffer0:: ds SPRITEBUFFERSIZE ; a000
 sSpriteBuffer1:: ds SPRITEBUFFERSIZE ; a188

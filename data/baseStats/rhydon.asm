@@ -1,3 +1,4 @@
+MonBaseStats:
 RhydonBaseStats: ; 39002 (e:5002)
 db DEX_RHYDON ; pokedex id
 db 105 ; base hp
@@ -26,3 +27,4 @@ db 00	;evolution shed item
 db 00	;extra byte 1
 db 00	;extra byte 2
 db BANK(RhydonPicFront) ; sprite bank
+MonBaseStatsEnd:
