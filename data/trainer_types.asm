@@ -1,9 +1,9 @@
 FemaleTrainerList:: ; 3434 (0:3434)
-	db 200+LASS
-	db 200+BUSINESSLADY
-	db 200+WITCH
-	db 200+BEAUTY
-	db 200+SORCERER
+	db OPP_LASS
+	db OPP_BUSINESSLADY
+	db OPP_WITCH
+	db OPP_BEAUTY
+	db OPP_SORCERER
 	db $FF
 
 EvilTrainerList:: ; 3439 (0:3439)

@@ -15304,7 +15304,7 @@ WRAM0:
            $D5FE = W_VERMILIONGYMCURSCRIPT
            $DA97 = wBoxMon1BoxLevel
            $D3AE = wNumberOfWarps
-           $D0AB = W_SPRITEINPUTPTR
+           $D0AB = wSpriteInputPtr
            $D1BB = wPartyMon2Attack
            $D717 = W_PLAYERSTARTER
            $D25C = wPartyMon6DefenseExp
@@ -16029,7 +16029,7 @@ WRAM0:
            $D649 = W_SILPHCO8CURSCRIPT
            $D602 = W_ROUTE24CURSCRIPT
            $D605 = W_ROUTE10CURSCRIPT
-           $D0B8 = W_MONHDEXNUM
+           $D0B8 = wMonHIndex
            $D986 = wEnemyMon6Type2
            $D985 = wEnemyMon6Type1
            $D08C = wEndBattleWinTextPointer

@@ -128,11 +128,11 @@ CompareChecksums:
 	jr nz,.finish 	;return if they do not match
 	
 	;check the total data checkum data
-	inc de
-	pop hl
-	push hl		;hl = start of data
-	ld bc, SIZE_OF_GAMESAVE - 2	 ; size of total data (including all checksums except this)
-	call CompareChecksum
+;	inc de
+;	pop hl
+;	push hl		;hl = start of data
+;	ld bc, SIZE_OF_GAMESAVE - NUM_OF_GAMESAVE_CHECKSUMS - 2	 ; size of total data (excluding all checksums)
+;	call CompareChecksum
 .finish
 	pop hl
 	ret
@@ -550,7 +550,7 @@ SaveSAVtoSRAM0: ; 7378c (1c:778c)
 	add c
 	dec b
 	jr nz,.loop	;quick way to generate the final checksum
-	cpl
+;	cpl
 	ld [hl],a	;save the checksum
 	
 	xor a

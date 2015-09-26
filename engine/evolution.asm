@@ -33,7 +33,7 @@ HatchEggScreen:
 	call GBPalNormal
 	
 	
-	call Func_7bde9
+	call EvolveMon
 	
 	xor a
 	ld [wUpdateSpritesEnabled],a

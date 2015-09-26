@@ -2320,6 +2320,8 @@ wPartyMon2OT:: ds 11 * 5
 wPartyMonNicks:: ds 11 * PARTY_LENGTH ; d2b5
 
 wPartyMonNicksEnd:: ;end of party mon nicks list
+wPartyDataEnd::
+wMainDataStart::
 
 wStoryLineData::	;d2f7
 wAdditionalInBattleData::
@@ -3183,7 +3185,7 @@ wCardKeyDoorX:: ; d740
 wFirstLockTrashCanIndex:: ; d743
 	ds 1
 
-wSecondLockTrashCanIndex:: ; d743
+wSecondLockTrashCanIndex:: ; d744
 	ds 1
 
 	ds 2
@@ -3347,6 +3349,7 @@ wBoxMon1RadioDamage::
 wBoxMon2OT::    ds 11 * 9 ; dd2a
 wBoxMonNicks:: ds 11 * MONS_PER_BOX ; de06
 wBoxMonNicksEnd::
+wBoxDataEnd::
 
 wAdditionalData::
 wPokedexOwned:: ; de72
@@ -3899,14 +3902,15 @@ wSavedPokemonTraits::
 wTextCharCount::
 	ds 1
 
-wBoxDataEnd::
-
 
 SECTION "Stack", WRAMX[$dfff], BANK[1]
 wStack:: ; dfff
 	ds -$100
 	
+	
 SECTION "Sprite Buffers", SRAM, BANK[0]
+sNormalModeGameSave::
+	ds SIZE_OF_GAMESAVE
 
 ;SPRITE BUFFERS	
 sSpriteBuffer0:: ds SPRITEBUFFERSIZE ; b000

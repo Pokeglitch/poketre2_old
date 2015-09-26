@@ -219,9 +219,9 @@ GetPokemonSpritePointer:
 
 .loadOriginalSprite
 	ld a,[hli]
-	ld [W_SPRITEINPUTPTR],a    ; fetch sprite input pointer
+	ld [wSpriteInputPtr],a    ; fetch sprite input pointer
 	ld a,[hl]
-	ld [W_SPRITEINPUTPTR+1],a
+	ld [wSpriteInputPtr+1],a
 	ld a,[wMonHSpriteBank]
 	ld h,a
 	ret
@@ -252,9 +252,9 @@ GetPokemonSpritePointer:
 	add hl,bc		;hl now points to the start of the pokemon in the table
 	
 	ld a,[hli]
-	ld [W_SPRITEINPUTPTR],a    ; fetch sprite input pointer
+	ld [wSpriteInputPtr],a    ; fetch sprite input pointer
 	ld a,[hli]
-	ld [W_SPRITEINPUTPTR+1],a
+	ld [wSpriteInputPtr+1],a
 	ld a,[hl]
 	ld h,a
 	ret
@@ -262,7 +262,7 @@ GetPokemonSpritePointer:
 .getDexNumber
 	ld a,[wd11e]
 	push af
-	ld a,[W_MONHDEXNUM]
+	ld a,[wMonHIndex]
 	ld [wd11e],a
 	predef IndexToPokedex
 	ld hl,wd11e
