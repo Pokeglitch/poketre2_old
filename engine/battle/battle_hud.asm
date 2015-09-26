@@ -40,7 +40,7 @@ _DrawPlayerHUDAndHPBar: ; 3cd60 (f:4d60)
 	ld a, [hli]
 	or [hl]
 	jr z, .asm_3cdd9
-	ld a, [wccf6]
+	ld a, [wLowHealthAlarmDisabled]
 	and a
 	ret nz
 	ld a, [wPlayerHPBarColor]
@@ -52,7 +52,7 @@ _DrawPlayerHUDAndHPBar: ; 3cd60 (f:4d60)
 	ld [hl], $0
 	ret z
 	xor a
-	ld [wc02a], a
+	ld [wChannelSoundIDs + CH4], a
 	ret
 .asm_3cde6
 	ld hl, wLowHealthAlarm
@@ -147,7 +147,7 @@ _DrawEnemyHUDAndHPBar: ; 3cdec (f:4dec)
 	call DrawHPBar
 	ld a, $1
 	ld [H_AUTOBGTRANSFERENABLED], a
-	ld hl, wcf1e
+	ld hl, wEnemyHPBarColor
 		
 GetBattleHealthBarColor2: ; 3ce90 (f:4e90)
 	ld b, [hl]
@@ -211,7 +211,7 @@ _DisplayBattleMenu: ; 3ceb3 (f:4eb3)
 	jp nz, .handleBattleMenuInput ; handle menu input if it's not the old man tutorial
 ; the following happens for the old man tutorial
 	ld hl, wPlayerName
-	ld de, W_GRASSRATE
+	ld de, wGrassRate
 	ld bc, $b
 	call CopyData  ; temporarily save the player name in unused space,
 	               ; which is supposed to get overwritten when entering a
@@ -261,7 +261,7 @@ _DisplayBattleMenu: ; 3ceb3 (f:4eb3)
 	Coorda 13, 14
 	Coorda 13, 16
 	coord hl, 7, 14
-	ld de, W_NUMSAFARIBALLS
+	ld de, wNumSafariBalls
 	ld bc, $102
 	call PrintNumber
 	ld b, $1 ; top menu item X
@@ -294,7 +294,7 @@ _DisplayBattleMenu: ; 3ceb3 (f:4eb3)
 	Coorda 1, 14 ; clear upper cursor position in left column
 	Coorda 1, 16 ; clear lower cursor position in left column
 	coord hl, 7, 14
-	ld de, W_NUMSAFARIBALLS
+	ld de, wNumSafariBalls
 	ld bc, $102
 	call PrintNumber
 	ld b, $d ; top menu item X
@@ -391,9 +391,9 @@ BagWasSelected:
 	jr nz, DisplayPlayerBag ; no, it is a normal battle
 	ld hl, OldManItemList
 	ld a, l
-	ld [wList], a
+	ld [wListPointer], a
 	ld a, h
-	ld [wList + 1], a
+	ld [wListPointer + 1], a
 	jr DisplayBagMenu
 
 OldManItemList:
@@ -405,22 +405,22 @@ DisplayPlayerBag:
 	; get the pointer to player's bag when in a normal battle
 	ld hl, wNumBagItems
 	ld a, l
-	ld [wList], a
+	ld [wListPointer], a
 	ld a, h
-	ld [wList + 1], a
+	ld [wListPointer + 1], a
 
 DisplayBagMenu:
 	xor a
-	ld [wcf93], a
+	ld [wPrintItemPrices], a
 	ld a, ITEMLISTMENU
 	ld [wListMenuID], a
-	ld a, [wcc2c]
+	ld a, [wBagSavedMenuItem]
 	ld [wCurrentMenuItem], a
 	call DisplayListMenuID
 	ld a, [wCurrentMenuItem]
-	ld [wcc2c], a
+	ld [wBagSavedMenuItem], a
 	ld a, $0
-	ld [wcc37], a
+	ld [wMenuWatchMovingOutOfBounds], a
 	ld [wMenuItemToSwap], a
 	jp c, _DisplayBattleMenu ; go back to battle menu if an item was not selected
 
@@ -431,7 +431,7 @@ UseBagItem:
 	call GetItemName
 	call CopyStringToCF4B ; copy name
 	xor a
-	ld [wd152], a
+	ld [wPseudoItemID], a
 	call UseItem
 	callab LoadHudTilePatterns
 	call ClearSprites
@@ -441,7 +441,7 @@ UseBagItem:
 	cp $2 ; is it a safari battle?
 	jr z, .checkIfMonCaptured
 
-	ld a, [wcd6a]
+	ld a, [wActionResultOrTookBattleTurn]
 	and a ; was the item used successfully?
 	jp z, BagWasSelected ; if not, go back to the bag menu
 
@@ -455,7 +455,7 @@ UseBagItem:
 	res UsingTrappingMove, [hl] ; not using multi-turn move any more
 
 .checkIfMonCaptured
-	ld a, [wd11c]
+	ld a, [wCapturedMonSpecies]
 	and a ; was the enemy mon captured with a ball?
 	jr nz, .returnAfterCapturingMon
 
@@ -475,7 +475,7 @@ UseBagItem:
 .returnAfterCapturingMon
 	call GBPalNormal
 	xor a
-	ld [wd11c], a
+	ld [wCapturedMonSpecies], a
 	ld a, $2
 	ld [wBattleResult], a
 	scf ; set carry
@@ -594,7 +594,7 @@ PartyMenuOrRockOrRun:
 	call HasMonFainted2
 	jp z, .partyMonDeselected ; can't switch to fainted mon
 	ld a, $1
-	ld [wcd6a], a
+	ld [wActionResultOrTookBattleTurn], a
 	call GBPalWhiteOut
 	call ClearSprites
 	callab LoadHudTilePatterns
@@ -613,9 +613,9 @@ BattleMenu_RunWasSelected: ; 3d1fa (f:51fa)
 	ld de, wEnemyMonSpeed
 	call TryRunningFromBattle
 	ld a, $0
-	ld [wd11f], a
+	ld [wForcePlayerToChooseMon], a
 	ret c
-	ld a, [wcd6a]
+	ld a, [wActionResultOrTookBattleTurn]
 	and a
 	ret nz
 	jp _DisplayBattleMenu
@@ -703,7 +703,7 @@ TryRunningFromBattle: ; 3cab9 (f:4ab9)
 	                  ; plus 30 times the number of attempts, the player can escape
 ; can't escape
 	ld a, $1
-	ld [wcd6a], a
+	ld [wActionResultOrTookBattleTurn], a
 	ld hl, CantEscapeText
 	jr .printCantEscapeOrNoRunningText
 .trainerBattle
@@ -711,7 +711,7 @@ TryRunningFromBattle: ; 3cab9 (f:4ab9)
 .printCantEscapeOrNoRunningText
 	call PrintText
 	ld a, $1
-	ld [wd11f], a
+	ld [wForcePlayerToChooseMon], a
 	call SaveScreenTilesToBuffer1
 	and a ; reset carry
 	ret
@@ -723,7 +723,7 @@ TryRunningFromBattle: ; 3cab9 (f:4ab9)
 ; link battle
 	call SaveScreenTilesToBuffer1
 	xor a
-	ld [wcd6a], a
+	ld [wActionResultOrTookBattleTurn], a
 	ld a, $f
 	ld [wPlayerMoveListIndex], a
 	call LinkBattleExchangeData
@@ -735,7 +735,7 @@ TryRunningFromBattle: ; 3cab9 (f:4ab9)
 	dec a
 .playSound
 	ld [wBattleResult], a
-	ld a, (SFX_08_44 - SFX_Headers_08) / 3
+	ld a, SFX_RUN
 	call PlaySoundWaitForCurrent
 	ld hl, GotAwayText
 	call PrintText
@@ -773,7 +773,7 @@ HasMonFainted2: ; 3ca97 (f:4a97)
 	ld a, [hli]
 	or [hl]
 	ret nz
-	ld a, [wd11d]
+	ld a, [wFirstMonsNotOutYet]
 	and a
 	jr nz, .done
 	ld hl, NoWillText2

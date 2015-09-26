@@ -1422,6 +1422,9 @@ wRemoveMonFromBox:: ; cf95
 ; if non-zero, RemovePokemon will remove the mon from the current box,
 ; else it will remove the mon from the party
 
+wRemoveCaughtPokemonFromWhere::
+;where to remove the 'caught pokemon' from
+
 wMoveMonType:: ; cf95
 ; 0 = move from box to party
 ; 1 = move from party to box
@@ -1719,7 +1722,7 @@ wEnemyNumAttacksLeft:: ; d06f
 wEnemyConfusedCounter:: ; d070
 	ds 1
 
-wEnemyToxcCounter:: ; d071
+wEnemyToxicCounter:: ; d071
 	ds 1
 
 wEnemyDisabledMove:: ; d072

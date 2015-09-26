@@ -103,13 +103,13 @@ LoadEnemyTrainerMonData:
 	ret
 		
 LoadEnemyLastStandData:
-	ld hl,W_MONHFRONTSPRITE
+	ld hl,wMonHFrontSprite
 	ld a,[wTrainerPicPointer]
 	ld [hli],a
 	ld a,[wTrainerPicPointer + 1]
 	ld [hl],a		;set the pokemon front pic pointer to the enemy front pic pointer
 	ld a,$13
-	ld [W_MONHSPRITEBANK],a		;set the pokemon pic bank to the enemy trainer pic bank (all trainers are in bank $13
+	ld [wMonHSpriteBank],a		;set the pokemon pic bank to the enemy trainer pic bank (all trainers are in bank $13
 	
 	call LoadWildMonData
 	call LoadEnemyLastStandMoves
@@ -123,7 +123,7 @@ LoadWildMonDataCheckMrMime:
 	bit MrMimeRoaming,a
 	jr z,LoadWildMonData		;if mr mime still isnt roaming, then skip down
 	ld hl,wMrMimeMap
-	ld a,[W_CURMAP]
+	ld a,[wCurMap]
 	cp [hl]		;is mr mime in the current map?
 	jr nz,LoadWildMonData	;skip down if not
 	call BattleRandom	;otherwise, call battle random
@@ -272,7 +272,7 @@ FinishLoadBattleMonHeader:
 	pop hl
 	
 	;copy the base stats
-	ld de, W_MONHBASESTATS
+	ld de, wMonHBaseStats
 	ld b, 5
 .copyBaseStatsLoop
 	ld a, [de]
@@ -281,7 +281,7 @@ FinishLoadBattleMonHeader:
 	dec b
 	jr nz, .copyBaseStatsLoop
 	
-	ld de, W_MONHCATCHRATE
+	ld de, wMonHCatchRate
 	ld a, [de]
 	ld [hli], a	;catch rate
 	inc de
@@ -290,7 +290,7 @@ FinishLoadBattleMonHeader:
 	
 	
 	pop de
-	ld hl, W_MONHTYPES
+	ld hl, wMonHTypes
 	ld a, [hli]            ; copy type 1
 	ld [de], a
 	inc de
@@ -301,7 +301,7 @@ FinishLoadBattleMonHeader:
 	ld [de],a
 	
 	pop bc
-	ld hl,W_MONHABILITY1
+	ld hl,wMonHAbility1
 	ld a,[hli]
 	ld [bc],a
 	inc bc
@@ -533,7 +533,7 @@ FinishLoadPartyMonMoves:
 
 LoadWildMonMoves:
 	ld de,wEnemyMonMoves
-	ld hl, W_MONHMOVES
+	ld hl, wMonHMoves
 	ld a, [hli]
 	ld [de], a
 	inc de
@@ -866,7 +866,7 @@ LoadPlayerLastStandMorale:
 	jr FinishLoadingMonMorale
 	
 LoadWildMonMorale:
-	ld a,[W_MONHBASEMORALE]
+	ld a,[wMonHBaseMorale]
 	;fall through
 	
 FinishLoadingMonMorale:

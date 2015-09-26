@@ -213,7 +213,7 @@ INCLUDE "data/baseStats/missingno.asm"
 ;checks to see what source we should use for the pokemon sprite
 GetPokemonSpritePointer:
 	ld a,d
-	ld hl,W_MONHBACKSPRITE
+	ld hl,wMonHBackSprite
 	cp $d		;loading back sprite?
 	jr nz,.loadFrontSprite
 
@@ -222,13 +222,13 @@ GetPokemonSpritePointer:
 	ld [W_SPRITEINPUTPTR],a    ; fetch sprite input pointer
 	ld a,[hl]
 	ld [W_SPRITEINPUTPTR+1],a
-	ld a,[W_MONHSPRITEBANK]
+	ld a,[wMonHSpriteBank]
 	ld h,a
 	ret
 	
 	
 .loadFrontSprite
-	ld hl,W_MONHFRONTSPRITE
+	ld hl,wMonHFrontSprite
 	ld a,[wSpriteFilter]
 	ld a,[wActiveCheats]
 	bit SketchSpritesCheat,a		;load sketch sprite?
@@ -238,7 +238,7 @@ GetPokemonSpritePointer:
 	call .getDexNumber
 	
 	ld a,c
-	ld hl,W_MONHFRONTSPRITE
+	ld hl,wMonHFrontSprite
 	cp DEX_HUMAN
 	jr nc,.loadOriginalSprite		;load the original sprite if the pokedex value is human or higher
 	

@@ -234,7 +234,7 @@ IsOffspringEgg:
 	ld a,[wPresetTraits]
 	bit PresetEgg,a	;is it an egg?
 	jr z,.notOffspringEgg
-	ld a,[W_CURMAP]		;get the map
+	ld a,[wCurMap]		;get the map
 	cp DAYCAREM		;is it the daycare?
 	jr nz,.notOffspringEgg
 	scf
@@ -301,15 +301,15 @@ SetDexSeenAndOwned:
 	ld a, [wd11e]
 	dec a
 	ld c, a
-	ld b, $2
+	ld b, FLAG_TEST
 	ld hl, wPokedexOwned ; wPokedexOwned
 	call FlagAction
 	ld a, c
-	ld [wd153], a
+	ld [wUnusedD153], a
 	ld a, [wd11e]
 	dec a
 	ld c, a
-	ld b, $1
+	ld b, FLAG_SET
 	push bc
 	call FlagAction
 	pop bc
@@ -554,7 +554,7 @@ FinishCopyTraits:
 NewPlayerMorale:
 	ld a,[wIsInBattle]
 	cp 2		;is it trainer battle?
-	ld a, [W_MONHBASEMORALE]
+	ld a, [wMonHBaseMorale]
 	jr nz,.afterTrainerBattle
 	
 	;if trainer battle, divide the morale by 4
@@ -903,7 +903,7 @@ NewPlayerMonMoves:
 ;de is the pointer to the moves
 NewMonMoves:
 	;to store the pokemons base moves
-	ld hl, W_MONHMOVES
+	ld hl, wMonHMoves
 	
 	push de
 	ld a, [hli]
@@ -928,9 +928,9 @@ GetEggMoves:
 	ret
 	
 CopyTypes:
-	ld a,[W_MONHTYPES]
+	ld a,[wMonHTypes]
 	ld [hli],a
-	ld a,[W_MONHTYPES + 1]
+	ld a,[wMonHTypes + 1]
 	ld [hli],a	;types
 	inc hl	;skip the HP/Special Defence DVs (formerly Catch Rate)
 	ret
@@ -1103,7 +1103,7 @@ GenerateNewStats:
 	ld [hli], a	;level
 	push hl
 	pop de
-	ld hl,W_MONHBASESTATS + 1
+	ld hl,wMonHBaseStats + 1
 	ld b, $0
 	jp CalcStats         ; calculate fresh set of stats
 	
@@ -1139,7 +1139,7 @@ SetEggWalkCounter:
 	ret
 .setCounter
 	push hl	;save the delayed damage pointer
-	ld hl,W_MONHBASESTATS
+	ld hl,wMonHBaseStats
 	xor a
 	ld b,0
 	ld c,5	;5 stats
@@ -1153,13 +1153,13 @@ SetEggWalkCounter:
 	jr nz,.loop
 	
 	ld c,a
-	ld a,[W_MONHBASESPECIALD]
+	ld a,[wMonHBaseSpecialDefense]
 	add c
 	jr nc,.dontInc2
 	inc b
 .dontInc2
 	ld c,a
-	ld a,[W_MONHBASEPRICE]
+	ld a,[wMonHBasePrice]
 	add c
 	jr nc,.dontInc3
 	inc b
@@ -1216,7 +1216,7 @@ AddPartyMon_WriteMovePP: ; f476 (3:7476)
 	pop bc
 	pop de
 	pop hl
-	ld a, [wcd72] ; sixth move byte = pp
+	ld a, [wcd6d + 5] ; sixth move byte = pp
 .empty
 	inc de
 	ld [de], a
@@ -1321,7 +1321,7 @@ _MoveMon: ; f51e (3:751e)
 	ld c, a
 	ld b, $0
 	add hl, bc
-	ld a, [wcf95]
+	ld a, [wMoveMonType]
 	cp DAYCARE_TO_PARTY
 	ld a, [wDayCareMon]
 	jr z, .asm_f556
@@ -1380,7 +1380,7 @@ _MoveMon: ; f51e (3:751e)
 .asm_f5b4
 	ld a, [wMoveMonType]
 	cp PARTY_TO_DAYCARE
-	ld de, W_DAYCAREMONOT
+	ld de, wDayCareMonOT
 	jr z, .asm_f5d3
 	dec a
 	ld hl, wPartyMonOT ; wd273
@@ -1398,7 +1398,7 @@ _MoveMon: ; f51e (3:751e)
 	ld a, [wMoveMonType]
 	and a
 	jr z, .asm_f5e6
-	ld hl, W_DAYCAREMONOT
+	ld hl, wDayCareMonOT
 	cp DAYCARE_TO_PARTY
 	jr z, .asm_f5ec
 	ld hl, wPartyMonOT ; wd273

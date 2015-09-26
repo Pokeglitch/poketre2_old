@@ -706,7 +706,7 @@ HandlePoisonBurnLeechSeed_DecreaseOwnHP: ; 3c43d (f:443d)
 	and a
 	jr z, .playersTurn
 	ld hl, wEnemyBattleStatus3
-	ld de, wEnemyToxcCounter
+	ld de, wEnemyToxicCounter
 .playersTurn
 	bit BadlyPoisoned, [hl]
 	jr z, .noToxic
@@ -6784,7 +6784,7 @@ PoisonEffect: ; 3f24f (f:724f)
 	jr nz, .ok
 	ld b, ANIM_A9
 	ld hl, wEnemyBattleStatus3
-	ld de, wEnemyToxcCounter
+	ld de, wEnemyToxicCounter
 .ok
 	cp TOXIC
 	jr nz, .normalPoison ; done if move is not Toxic

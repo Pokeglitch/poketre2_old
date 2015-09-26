@@ -262,13 +262,13 @@ LoadEvoSprite: ; 7beb9 (1e:7eb9)
 	
 LoadEggSprite:
 	ld a,l
-	ld [W_MONHFRONTSPRITE],a
+	ld [wMonHFrontSprite],a
 	ld a,h
-	ld [W_MONHFRONTSPRITE+1],a
+	ld [wMonHFrontSprite+1],a
 	ld a,BANK(EggSprite)
-	ld [W_MONHSPRITEBANK],a
+	ld [wMonHSpriteBank],a
 	ld a,$77
-	ld [W_MONHSPRITEDIM],a
+	ld [wMonHSpriteDim],a
 	ld de, vFrontPic
 	call LoadMonFrontSprite
 	callab DrawEvoEggSprite

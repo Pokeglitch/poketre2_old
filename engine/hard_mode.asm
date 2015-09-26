@@ -6,7 +6,7 @@ RemovePokemonCaughtInBattle:
 	
 RemovePCPokemonCaughtInBattle:
 	ld a,1
-	ld [wcf95],a	;specify the PC box
+	ld [wRemoveCaughtPokemonFromWhere],a	;specify the PC box
 	ld hl,wPartyMon1Traits	;pointer to the first mon traits
 	ld a,[wNumInBox]		;number of pokemon in the box
 	push hl
@@ -14,7 +14,7 @@ RemovePCPokemonCaughtInBattle:
 	
 RemovePartyPokemonCaughtInBattle:
 	xor a
-	ld [wcf95],a	;specify the party
+	ld [wRemoveCaughtPokemonFromWhere],a	;specify the party
 	ld hl,wPartyMon1Traits	;pointer to the first mon traits
 	ld a,[wPartyCount]		;number of pokemon in the party
 	push hl

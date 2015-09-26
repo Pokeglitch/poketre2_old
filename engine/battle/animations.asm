@@ -442,9 +442,9 @@ NonMoveAnimation:
 .AnimationFinished
 	call WaitForSoundToFinish
 	xor a
-	ld [W_SUBANIMSUBENTRYADDR],a
-	ld [wd09b],a
-	ld [W_SUBANIMTRANSFORM],a
+	ld [wSubAnimSubEntryAddr],a
+	ld [wUnusedD09B],a
+	ld [wSubAnimTransform],a
 	dec a
 	ld [wAnimSoundID],a
 	pop af
@@ -459,7 +459,7 @@ MoveAnimation: ; 78d5e (1e:4d5e)
 	push bc
 	push af
 	call WaitForSoundToFinish
-	call Func_78e23
+	call SetAnimationPalette
 	ld a,[wAnimationID]
 	and a
 	jr z,.AnimationFinished

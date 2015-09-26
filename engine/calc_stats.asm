@@ -63,11 +63,11 @@ CalcStat:: ; 394a (0:394a)
 	ld a, b
 	ld d, a
 	push hl
-	ld hl, W_MONHEADER
+	ld hl, wMonHeader
 	ld a,c
 	cp 6		;special defense?
 	jr nz,.notSpecialDefenseFromHeader
-	ld hl,W_MONHBASESPECIALD
+	ld hl,wMonHBaseSpecialDefense
 	jr .afterSpecialDefenseFromHeader
 	
 .notSpecialDefenseFromHeader

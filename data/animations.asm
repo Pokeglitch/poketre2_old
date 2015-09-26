@@ -30,16 +30,16 @@ NonMoveSpecialEffects:
 
 SpecialEffectsPointers:
 	dw AnimationFlashScreen
-	dw Func_790d0
+	dw TailWhipAnimationUnused
 	dw DoGrowlSpecialEffects
 	dw DoBlizzardSpecialEffects
 	dw FlashScreenEveryFourFrameBlocks
 	dw FlashScreenEveryEightFrameBlocks
 	dw DoExplodeSpecialEffects
 	dw DoRockSlideSpecialEffects
-	dw Func_79041
-	dw Func_7904c
-	dw Func_7907c
+	dw TradeHidePokemon
+	dw TradeShakePokeball
+	dw TradeJumpPokeball
 	dw DoBallTossSpecialEffects
 	dw DoBallShakeSpecialEffects
 	dw DoPoofSpecialEffects

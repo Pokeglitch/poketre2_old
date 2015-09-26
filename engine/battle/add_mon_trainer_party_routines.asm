@@ -175,7 +175,7 @@ NewTrainerMoraleTable:
 	dw TrainerMorale_Base
 	
 TrainerMorale_Base:
-	ld a, [W_MONHBASEMORALE]
+	ld a, [wMonHBaseMorale]
 	ret
 	
 	

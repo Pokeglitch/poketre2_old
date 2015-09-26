@@ -53,8 +53,8 @@ CheatCodeCheck:
 	ld hl, wHPBarMaxHP + 1
 	ld [hli], a
 	ld [hli], a
-	ld a,$B6
-	ld [wc0ee],a
+	ld a,SFX_INTRO_WHOOSH
+	ld [wNewSoundID],a
 	call PlaySound	;play sound
 	call WaitForSoundToFinish	;wait for it to 
 	scf

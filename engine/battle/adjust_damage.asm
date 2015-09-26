@@ -470,7 +470,7 @@ SetDamageToZero:
 	ld [hli],a
 	ld [hl],a	;zero the damage
 	inc a
-	ld [W_MOVEMISSED],a	;make the move miss
+	ld [wMoveMissed],a	;make the move miss
 	
 	ld hl,wDamageMultipliers
 	ld a,[hl]

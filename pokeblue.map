@@ -15226,7 +15226,7 @@ WRAM0:
   EMPTY
 
   SECTION: $D000-$DEA8 ($0EA9 bytes)
-           $D0B9 = W_MONHBASESTATS
+           $D0B9 = wMonHBaseStats
            $DA65 = wDayCareMonType2
            $DA64 = wDayCareMonType1
            $D8F6 = wEnemyMon2Defense
@@ -15256,7 +15256,7 @@ WRAM0:
            $D9A2 = wEnemyMon6Stats
            $D92D = wEnemyMon4Type
            $D0BD = W_MONHBASESPECIAL
-           $D0C5 = W_MONHBACKSPRITE
+           $D0C5 = wMonHBackSprite
            $D359 = wPlayerID
            $D1B0 = wPartyMon2SpecialExp
            $D0B7 = wPredefBank
@@ -15340,7 +15340,7 @@ WRAM0:
            $D61E = W_ROUTE21CURSCRIPT
            $D669 = W_ROUTE18GATECURSCRIPT
            $D1F4 = wPartyMon4Type
-           $D35E = W_CURMAP
+           $D35E = wCurMap
            $D8F2 = wEnemyMon2MaxHP
            $D16B = wPartyMon1Species
            $D195 = wPartyMon1Special
@@ -15383,7 +15383,7 @@ WRAM0:
            $D8ED = wEnemyMon2PP
            $D96B = wEnemyMon5SpeedExp
            $D057 = wIsInBattle
-           $DA39 = W_CURMAPSCRIPT
+           $DA39 = wCurMapSCRIPT
            $D94E = wEnemyMon4Defense
            $D617 = W_SSANNE5CURSCRIPT
            $D8FA = wEnemyMon2Special
@@ -15401,7 +15401,7 @@ WRAM0:
            $D25A = wPartyMon6AttackExp
            $D8D7 = wEnemyMon2CatchRate
            $D058 = wPartyGainExpFlags
-           $D096 = W_SUBANIMSUBENTRYADDR
+           $D096 = wSubAnimSubEntryAddr
            $D71E = wWhichDungeonWarp
            $D72C = wd72c
            $D72A = wd72a
@@ -15614,7 +15614,7 @@ WRAM0:
            $D1C8 = wPartyMon3Type
            $D072 = wEnemyDisabledMove
            $D97A = wEnemyMon5Defense
-           $DA47 = W_NUMSAFARIBALLS
+           $DA47 = wNumSafariBalls
            $D3AD = wd3ad
            $D3AA = wd3aa
            $D3A9 = wd3a9
@@ -15710,7 +15710,7 @@ WRAM0:
            $DA76 = wDayCareMonSpeedExp
            $D8FF = wEnemyMon3BoxLevel
            $D917 = wEnemyMon3DVs
-           $D887 = W_GRASSRATE
+           $D887 = wGrassRate
            $D90A = wEnemyMon3Exp
            $D993 = wEnemyMon6AttackExp
            $D530 = W_TILESETCOLLISIONPTR
@@ -15720,7 +15720,7 @@ WRAM0:
            $D087 = W_SUBANIMCOUNTER
            $D05C = W_GYMLEADERNO
            $D8F8 = wEnemyMon2Speed
-           $D0D3 = W_MONHSPRITEBANK
+           $D0D3 = wMonHSpriteBank
            $D902 = wEnemyMon3Type2
            $D901 = wEnemyMon3Type1
            $D637 = W_ROUTE8GATECURSCRIPT
@@ -15854,7 +15854,7 @@ WRAM0:
            $D002 = wEnemyMonBaseStats
            $D603 = W_ROUTE25CURSCRIPT
            $D8AB = wEnemyMon1CatchRate
-           $D0C2 = W_MONHSPRITEDIM
+           $D0C2 = wMonHSpriteDim
            $D626 = W_ROUTE16CURSCRIPT
            $D640 = W_VICTORYROAD3CURSCRIPT
            $D234 = wPartyMon5SpecialExp
@@ -15875,8 +15875,8 @@ WRAM0:
            $D215 = wPartyMon4Defense
            $DA94 = wBoxMon1Species
            $D934 = wEnemyMon4OTID
-           $D0CD = W_MONHABILITY2
-           $D0CC = W_MONHABILITY1
+           $D0CD = wMonHAbility2
+           $D0CC = wMonHAbility1
            $D8DC = wEnemyMon2OTID
            $D248 = wPartyMon6HP
            $D0A9 = W_SPRITEUNPACKMODE
@@ -15906,7 +15906,7 @@ WRAM0:
            $D90F = wEnemyMon3AttackExp
            $D5CE = W_MISSABLEOBJECTLIST
            $D1EF = wPartyMon4Species
-           $D05F = W_MOVEMISSED
+           $D05F = wMoveMissed
            $D1DA = wPartyMon3SpeedExp
            $D5FB = W_VIRIDIANGYMCURSCRIPT
            $DA80 = wNumInBox
@@ -15969,11 +15969,11 @@ WRAM0:
            $D62E = W_POKEMONTOWER5CURSCRIPT
            $D23D = wPartyMon5MaxHP
            $D651 = W_VICTORYROAD1CURSCRIPT
-           $D368 = W_CURMAPHEIGHT
+           $D368 = wCurMapHEIGHT
            $D5FC = W_PEWTERGYMCURSCRIPT
            $D62F = W_POKEMONTOWER6CURSCRIPT
            $D36E = W_MAPSCRIPTPTR
-           $D0C3 = W_MONHFRONTSPRITE
+           $D0C3 = wMonHFrontSprite
            $D173 = wPartyMon1Moves
            $D1B2 = wPartyMon2DVs
            $D53A = wNumBoxItems
@@ -15999,12 +15999,12 @@ WRAM0:
            $D255 = wPartyMon6Exp
            $D025 = wBattleMonAttack
            $D642 = W_FIGHTINGDOJOCURSCRIPT
-           $D08B = W_SUBANIMTRANSFORM
+           $D08B = wSubAnimTransform
            $D936 = wEnemyMon4Exp
            $D61F = W_SAFARIZONEENTRANCECURSCRIPT
            $D127 = wCurEnemyLVL
            $D26F = wPartyMon6Speed
-           $D0BE = W_MONHTYPES
+           $D0BE = wMonHTypes
            $D0BE = W_MONHTYPE1
            $D0BF = W_MONHTYPE2
            $D086 = W_SUBANIMFRAMEDELAY
@@ -16017,7 +16017,7 @@ WRAM0:
            $D180 = wPartyMon1DefenseExp
            $D662 = W_ROUTE5GATECURSCRIPT
            $D213 = wPartyMon4Attack
-           $D0C0 = W_MONHCATCHRATE
+           $D0C0 = wMonHCatchRate
            $D8DE = wEnemyMon2Exp
            $D908 = wEnemyMon3OTID
            $D031 = wTrainerClass
@@ -16050,7 +16050,7 @@ WRAM0:
            $D39D = W_SPRITESET
            $D984 = wEnemyMon6Status
            $D52B = W_TILESETBANK
-           $D0C7 = W_MONHMOVES
+           $D0C7 = wMonHMoves
            $D18D = wPartyMon1MaxHP
            $D965 = wEnemyMon5HPExp
            $D243 = wPartyMon5Speed
@@ -16061,7 +16061,7 @@ WRAM0:
            $D230 = wPartyMon5DefenseExp
            $D223 = wPartyMon5Moves
            $D19E = wPartyMon2CatchRate
-           $D0CF = W_MONHBASEPRICE
+           $D0CF = wMonHBasePrice
            $D604 = W_ROUTE9CURSCRIPT
            $D5FD = W_CERULEANGYMCURSCRIPT
            $D975 = wEnemyMon5Level
@@ -16086,7 +16086,7 @@ WRAM0:
            $D987 = wEnemyMon6CatchRate
            $DA67 = wDayCareMonMoves
            $D0AD = W_SPRITEOUTPUTPTR
-           $D0B8 = W_MONHEADER
+           $D0B8 = wMonHeader
            $D1EB = wPartyMon3Speed
            $D269 = wPartyMon6MaxHP
            $DAA0 = wBoxMon1OTID
@@ -16094,7 +16094,7 @@ WRAM0:
            $D5F7 = W_PEWTERCITYCURSCRIPT
            $D504 = W_MAPSPRITEEXTRADATA
            $D24F = wPartyMon6Moves
-           $DA54 = W_DAYCAREMONOT
+           $DA54 = wDayCareMonOT
            $DA48 = W_DAYCARE_IN_USE
            $DE8D = wPokedexSeen
            $DA99 = wBoxMon1Type
@@ -16108,7 +16108,7 @@ WRAM0:
            $D019 = wBattleMonType1
            $D01A = wBattleMonType2
            $D1D8 = wPartyMon3DefenseExp
-           $D0CE = W_MONHBASESPECIALD
+           $D0CE = wMonHBaseSpecialDefense
            $D0BD = W_MONHBASESPECIALA
            $D062 = wPlayerBattleStatus1
            $D064 = wPlayerBattleStatus3
@@ -16116,7 +16116,7 @@ WRAM0:
            $D8B7 = wEnemyMon1AttackExp
            $D9A8 = wEnemyMon6Speed
            $D13A = wIgnoreInputCounter
-           $D369 = W_CURMAPWIDTH
+           $D369 = wCurMapWIDTH
            $D623 = W_ROUTE11CURSCRIPT
            $D18C = wPartyMon1Level
            $D0D1 = W_MONHEXTRABYTES
@@ -16196,7 +16196,7 @@ HRAM:
   SECTION: $A000-$B857 ($1858 bytes)
            $A598 = sHallOfFame
            $A000 = S_SPRITEBUFFER0
-           $A188 = S_SPRITEBUFFER1
+           $A188 = sSpriteBuffer1
            $A310 = S_SPRITEBUFFER2
     SLACK: $07A8 bytes
 

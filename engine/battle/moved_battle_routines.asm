@@ -9,7 +9,7 @@ LoadMonBackPic: ; 3f103 (f:7103)
 	ld b, $7
 	ld c, $8
 	call ClearScreenArea
-	ld hl,  W_MONHBACKSPRITE - W_MONHEADER
+	ld hl,  wMonHBackSprite - wMonHeader
 	call UncompressMonSprite
 	call Load6x6BackPic
 	ld hl, vSprites
@@ -77,7 +77,7 @@ LoadPlayerBackPic: ; 3ec92 (f:6c92)
 	xor a
 	ld [$4000], a
 	ld hl, vSprites
-	ld de, S_SPRITEBUFFER1
+	ld de, sSpriteBuffer1
 	ld a, [H_LOADEDROMBANK]
 	ld b, a
 	ld c, 7 * 7
@@ -85,9 +85,9 @@ LoadPlayerBackPic: ; 3ec92 (f:6c92)
 	xor a
 	ld [$0], a
 	ld a, $31
-	ld [$ffe1], a
+	ld [hStartTileID], a
 	coord hl, 1, 5
-	predef_jump Func_3f0c6
+	predef_jump CopyUncompressedPicToTilemap
 
 ; does nothing since no stats are ever selected (barring glitches)
 DoubleOrHalveSelectedStats: ; 3ed02 (f:6d02)
@@ -178,7 +178,7 @@ SlidePlayerAndEnemySilhouettesOnScreen: ; 3c04c (f:404c)
 	ld a, $31
 	ld [$ffe1], a
 	coord hl, 1, 5
-	predef Func_3f0c6
+	predef CopyUncompressedPicToTilemap
 	xor a
 	ld [hWY], a
 	ld [rWY], a
@@ -227,29 +227,29 @@ SetScrollXForSlidingPlayerBodyLeft: ; 3c110 (f:4110)
 ; show 2 stages of the player getting smaller before disappearing
 AnimateRetreatingPlayerMon: ; 3ccfa (f:4cfa)
 	coord hl, 1, 5
-	ld bc, $707
+	lb bc, 7, 7
 	call ClearScreenArea
 	coord hl, 3, 7
-	ld bc, $505
+	lb bc, 5, 5
 	xor a
-	ld [wcd6c], a
-	ld [H_DOWNARROWBLINKCNT1], a
-	predef Func_79aba
-	ld c, $4
+	ld [wDownscaledMonSize], a
+	ld [hBaseTileID], a
+	predef CopyDownscaledMonTiles
+	ld c, 4
 	call DelayFrames
 	call .clearScreenArea
 	coord hl, 4, 9
 	ld bc, $303
 	ld a, $1
-	ld [wcd6c], a
+	ld [wDownscaledMonSize], a
 	xor a
-	ld [H_DOWNARROWBLINKCNT1], a
-	predef Func_79aba
+	ld [hBaseTileID], a
+	predef CopyDownscaledMonTiles
 	call Delay3
 	call .clearScreenArea
 	ld a, $4c
 	Coorda 5, 11
 .clearScreenArea
 	coord hl, 1, 5
-	ld bc, $707
+	lb bc, 7, 7
 	jp ClearScreenArea
