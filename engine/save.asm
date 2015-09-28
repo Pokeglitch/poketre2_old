@@ -33,7 +33,7 @@ CheckPriorGame:
 .loop
 	ld a,[hli]
 	cp a,"@"		;if there is an "@", then check to see if the checksum matches
-	jr z,.compareChecksum
+	jr z,.success
 	dec b
 	jr nz,.loop
 .fail
@@ -46,13 +46,7 @@ CheckPriorGame:
 	ld [MBC1SRamBankingMode], a
 	ld [MBC1SRamEnable], a
 	ret
-.compareChecksum
-	pop hl
-	push hl
-	ld de,sGameSaveStart + sGameSaveChecksum1Offset
-	ld bc, SIZE_OF_PLAYER_NAME_SAVE_DATA	 ; size of player name data
-	call CompareChecksum
-	jr nz,.fail		;if they dont match, then return failure
+.success
 	call .finish
 	xor a
 	pop hl
