@@ -19,7 +19,45 @@ GetSaveBank:
 	ld a, 1		;Hard Mode Save Bank
 	ret
 
-
+;to see if a prior gamesave exists
+CheckPriorGame:
+	push hl
+	ld a, SRAM_ENABLE
+	ld [MBC1SRamEnable], a
+	ld a, $1
+	ld [MBC1SRamBankingMode], a
+	call GetSaveBank	;get the appropriate bank
+	ld [MBC1SRamBank], a
+	
+	ld b, NAME_LENGTH
+.loop
+	ld a,[hli]
+	cp a,"@"		;if there is an "@", then check to see if the checksum matches
+	jr z,.compareChecksum
+	dec b
+	jr nz,.loop
+.fail
+	call .finish
+	inc a		;unset the zero flag, meaning there is no prior gamesave
+	pop hl
+	ret	
+.finish
+	ld a, 0
+	ld [MBC1SRamBankingMode], a
+	ld [MBC1SRamEnable], a
+	ret
+.compareChecksum
+	pop hl
+	push hl
+	ld de,sGameSaveStart + sGameSaveChecksum1Offset
+	ld bc, SIZE_OF_PLAYER_NAME_SAVE_DATA	 ; size of player name data
+	call CompareChecksum
+	jr nz,.fail		;if they dont match, then return failure
+	call .finish
+	xor a
+	pop hl
+	ret		;set the zero flag and return
+	
 
 LoadSAV: ; 735e8 (1c:75e8)
 ;(if carry -> write
@@ -27,7 +65,12 @@ LoadSAV: ; 735e8 (1c:75e8)
 	call ClearScreen
 	call LoadFontTilePatterns
 	call LoadTextBoxTilePatterns
+	
 	ld hl, sGameSaveStart		;location in bank to read from
+	
+	call CheckPriorGame	
+	jr nz,.goodsum		;finish if there is no prior gamesave
+	
 	call LoadSAVCheckSum
 	jr c, .badsum
 	
@@ -128,11 +171,13 @@ CompareChecksums:
 	jr nz,.finish 	;return if they do not match
 	
 	;check the total data checkum data
-;	inc de
-;	pop hl
-;	push hl		;hl = start of data
-;	ld bc, SIZE_OF_GAMESAVE - NUM_OF_GAMESAVE_CHECKSUMS - 2	 ; size of total data (excluding all checksums)
-;	call CompareChecksum
+	inc de
+	pop hl
+	push hl		;hl = start of data
+	ld bc, sGameSaveChecksum1Offset
+	add hl,bc		;hl points to start of checksum data
+	ld bc, NUM_OF_GAMESAVE_CHECKSUMS-1
+	call CompareChecksum
 .finish
 	pop hl
 	ret
@@ -541,16 +586,8 @@ SaveSAVtoSRAM0: ; 7378c (1c:778c)
 	ld a, [hTilesetType]
 	ld [de], a		;save the tileset type
 	ld hl, sGameSaveStart + sGameSaveChecksum1Offset	;start of data
-	ld b, NUM_OF_GAMESAVE_CHECKSUMS - 1	;number of checksums
-.loop
-	add [hl]
-	ld c,a
-	ld a,[hli]
-	cpl
-	add c
-	dec b
-	jr nz,.loop	;quick way to generate the final checksum
-;	cpl
+	ld bc, NUM_OF_GAMESAVE_CHECKSUMS - 1	;number of checksums
+	call SAVCheckSum
 	ld [hl],a	;save the checksum
 	
 	xor a
@@ -778,16 +815,8 @@ WalkAutosave7:
 
 	ld hl,sGameSaveChecksum1Offset	;start of checksum data
 	add hl,de
-	ld b, NUM_OF_GAMESAVE_CHECKSUMS - 1	;number of checksums
-.loop
-	add [hl]
-	ld c,a
-	ld a,[hli]
-	cpl
-	add c
-	dec b
-	jr nz,.loop	;quick way to generate the total checksum
-	cpl
+	ld bc, NUM_OF_GAMESAVE_CHECKSUMS - 1	;number of checksums
+	call SAVCheckSum
 	ld [hl],a	;save the checksum
 	
 	ld hl,wAutosaveBits
@@ -799,7 +828,7 @@ WalkAutosave7:
 	ld hl,wAutosaveBits
 	res 0,[hl]	;reset bit, saying we should save to normal data
 	ld hl,sGameSaveStart + sGameSaveTotalChecksumOffset
-	inc [hl]		;corrups the checksum in the normal data so this data gets loaded next time
+	inc [hl]		;corrupts the checksum in the normal data so this data gets loaded next time
 .finish
 	ret
 	

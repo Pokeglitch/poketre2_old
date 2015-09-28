@@ -11,13 +11,16 @@ ChoosePlayerName: ; 695d (1:695d)
 	call OakSpeechSlidePicLeft
 	jr .done
 .customName
-	ld hl, wPlayerName
 	xor a ; NAME_PLAYER_SCREEN
 	ld [wNamingScreenType], a
 	call DisplayNamingScreen
 	ld a, [wcf4b]
 	cp "@"
 	jr z, .customName
+	ld de, wPlayerName
+	ld hl, wcf4b
+	ld bc, NAME_LENGTH
+	call CopyData	;store the player name
 	call ClearScreen
 	call Delay3
 	ld de, JamesPicFront ; $6ede
@@ -44,13 +47,16 @@ ChooseRivalName: ; 69a4 (1:69a4)
 	call OakSpeechSlidePicLeft
 	jr .done
 .customName
-	ld hl, wRivalName
 	ld a, NAME_RIVAL_SCREEN
 	ld [wNamingScreenType], a
 	call DisplayNamingScreen
 	ld a, [wcf4b]
 	cp "@"
 	jr z, .customName
+	ld de, wRivalName
+	ld hl, wcf4b
+	ld bc, NAME_LENGTH
+	call CopyData	;store the player name
 	call ClearScreen
 	call Delay3
 	ld de, Jessie1Pic ; $6049
