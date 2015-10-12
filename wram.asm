@@ -3901,6 +3901,9 @@ wSavedPokemonTraits::
 ;used when writing a string with word wrap
 wTextCharCount::
 	ds 1
+	
+wNextChar::
+	ds 1
 
 
 SECTION "Stack", WRAMX[$dfff], BANK[1]

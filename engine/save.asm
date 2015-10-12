@@ -42,13 +42,12 @@ CheckPriorGame:
 	pop hl
 	ret	
 .finish
-	ld a, 0
+	xor a		;load 0 into a
 	ld [MBC1SRamBankingMode], a
 	ld [MBC1SRamEnable], a
 	ret
 .success
 	call .finish
-	xor a
 	pop hl
 	ret		;set the zero flag and return
 	

@@ -685,10 +685,12 @@ PrintBCDNumber:: ; 15cd (0:15cd)
 .skipRightAlignmentAdjustment
 	bit 5,b
 	jr z,.skipCurrencySymbol
-	ld [hl],"¥"
+	ld a,"¥"
+	call PlaceCharOrCountChars
 	inc hl
 .skipCurrencySymbol
-	ld [hl],"0"
+	ld a,"0"
+	call PlaceCharOrCountChars
 	call PrintLetterDelay
 	inc hl
 .done
@@ -704,14 +706,16 @@ PrintBCDDigit:: ; 1604 (0:1604)
 ; if bit 7 is set, then no numbers have been printed yet
 	bit 5,b ; print the currency symbol?
 	jr z,.skipCurrencySymbol
-	ld [hl],"¥"
+	ld a,"¥"
+	call PlaceCharOrCountChars
 	inc hl
 	res 5,b
 .skipCurrencySymbol
 	res 7,b ; unset 7 to indicate that a nonzero digit has been reached
 .outputDigit
 	add a,"0"
-	ld [hli],a
+	call PlaceCharOrCountChars
+	inc hl
 	jp PrintLetterDelay
 .zeroDigit
 	bit 7,b ; either printing leading zeroes or already reached a nonzero digit?
@@ -3494,6 +3498,9 @@ Divide:: ; 38b9 (0:38b9)
 ; screen unless the player presses the A/B button or the delay is turned off
 ; through the [wd730] or [wLetterPrintingDelayFlags] flags.
 PrintLetterDelay:: ; 38d3 (0:38d3)
+	ld a,[wTextCharCount]
+	bit CountingLetters,a
+	ret nz		;return if counting letters
 	ld a,[wd730]
 	bit 6,a
 	ret nz
@@ -4065,14 +4072,15 @@ endm
 .past
 	ld a, "0"
 	add c
-	ld [hl], a
+	call PlaceCharOrCountChars
 .next
 
 	call .NextDigit
 .ones
 	ld a, "0"
 	add b
-	ld [hli], a
+	call PlaceCharOrCountChars
+	inc hl
 	pop de
 	dec de
 	pop bc
@@ -4149,14 +4157,15 @@ endm
 
 	ld a, "0"
 	add c
-	ld [hl], a
+	call PlaceCharOrCountChars
 	ld [H_PASTLEADINGZEROES], a
 	ret
 
 .PrintLeadingZero:
 	bit BIT_LEADING_ZEROES, d
 	ret z
-	ld [hl], "0"
+	ld a, "0"
+	call PlaceCharOrCountChars
 	ret
 
 .NextDigit:

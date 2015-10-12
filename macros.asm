@@ -7,11 +7,33 @@ cont   EQUS "db $55," ; Scroll to the next line.
 done   EQUS "db $57"  ; End a text box.
 prompt EQUS "db $58"  ; Prompt the player to end a text box (initiating some other event).
 
+more_text EQUS "db "	;just more text
+
 ram_text: MACRO
 ; prints the string in the textbox
 ; \1: RAM address to read from
 	db $47
 	dw \1
+	ENDM
+	
+hex_number: MACRO
+; prints a hex number in decimal
+; \1: RAM address to read from
+; \2: length of number in bytes
+; \3: amount of digits to display
+	db $46
+	dw \1
+	db \2 << 4 | \3
+	ENDM
+	
+dec_number: MACRO
+; prints a hex number in decimal
+; \1: RAM address to read from
+; \2: flags
+; \3: length of number in bytes
+	db $45
+	dw \1
+	db \2 << 5 | \3
 	ENDM
 	
 text_ram_text: MACRO

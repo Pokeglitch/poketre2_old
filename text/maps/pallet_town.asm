@@ -14,7 +14,6 @@ _OakWalksUpText::
 
 _PalletTownText2::
 	text "I'm raising # too!"
-
 	para "When they get strong, they can protect me!"
 	done
 

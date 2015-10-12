@@ -39,6 +39,38 @@ TextBoxBorder::
 	ld [hl], a
 	ret
 
+GetFollowingCharacter:
+	ld a,[de]		;get the character into DE again
+	push hl
+	push de
+	ld hl,SizeOfSpecialChars
+	ld de,2
+	call IsInArray		;if its in the array, then get the size
+	pop de
+	push de
+	jr nc,.dontAdjust
+	inc hl
+	ld l,[hl]
+	ld h,0
+	add hl,de
+	ld a,[hl]	;get the character after
+	jr .finish
+.dontAdjust
+	inc de
+	ld a,[de]
+.finish
+	ld [wNextChar],a		;store the next character
+	pop de
+	pop hl
+	ret
+	
+;how many bytes these special characters use
+SizeOfSpecialChars:
+	db $45, 4
+	db $46, 4
+	db $47, 3
+	db $FF
+	
 NPlaceChar::
 ; Place char a c times.
 	ld d, c
@@ -58,6 +90,9 @@ Char4E::
 .next2
 	pop hl
 	add hl,bc
+	;fall through
+	
+Shared4e4f:
 	push hl
 	inc de
 	
@@ -77,87 +112,90 @@ Char4F::
 	
 	pop hl
 	coord hl, 1, 16
-	push hl
-	inc de
-	ld a,[wTextCharCount]
-	and a
-	jr z,.finish		;if we aren't, then jump down
-	
-	ld a,%11100000		;reset the value
-	ld [wTextCharCount],a		;make sure we continue to count again
-	push de		;push the source pointer
-	
-.finish
-	jp PlaceNextChar
+	jr Shared4e4f		;finish
 		
-
-Char00:: ; 19ec (0:19ec)
-	pop hl		;recover the destination pointer
-	ld b,h
-	ld c,l
-	pop hl
-	ld de,Char00Text
-	dec de
-	ret
-
-Char00Text:: ; 0x19f4 “%d ERROR.”
-	TX_FAR _Char00Text
-	db "@"
-
 Char52:: ; 0x19f9 player’s name
 	pop hl		;recover the destination pointer
 	push de
 	ld de,wPlayerName
-	jp FinishDTE
+	jr FinishDTE
 
 Char53:: ; 19ff (0:19ff) ; rival’s name
 	pop hl		;recover the destination pointer
 	push de
 	ld de,wRivalName
-	jp FinishDTE
+	jr FinishDTE
 
 Char5D:: ; 1a05 (0:1a05) ; TRAINER
 	pop hl		;recover the destination pointer
 	push de
 	ld de,Char5DText
-	jp FinishDTE
+	jr FinishDTE
 
 Char5C:: ; 1a0b (0:1a0b) ; TM
 	pop hl		;recover the destination pointer
 	push de
 	ld de,Char5CText
-	jp FinishDTE
+	jr FinishDTE
 
 Char5B:: ; 1a11 (0:1a11) ; PC
 	pop hl		;recover the destination pointer
 	push de
 	ld de,Char5BText
-	jp FinishDTE
+	jr FinishDTE
 
 Char5E:: ; 1a17 (0:1a17) ; ROCKET
 	pop hl		;recover the destination pointer
 	push de
 	ld de,Char5EText
-	jp FinishDTE
+	jr FinishDTE
 
 Char54:: ; 1a1d (0:1a1d) ; POKé
 	pop hl		;recover the destination pointer
 	push de
 	ld de,Char54Text
-	jp FinishDTE
+	jr FinishDTE
 
 Char56:: ; 1a23 (0:1a23) ; ……
 	pop hl		;recover the destination pointer
 	push de
 	ld de,Char56Text
-	jp FinishDTE
+	jr FinishDTE
 
 Char4A:: ; 1a29 (0:1a29) ; PKMN
 	pop hl		;recover the destination pointer
 	push de
 	ld de,Char4AText
-	jp FinishDTE
+	;fall through to FinishDTE
+	
+FinishDTE::
+	call PlaceInlineString
+	ld h,b
+	ld l,c
+	pop de
+	inc de
+	push hl
+	ld hl,wTextCharCount
+	ld a,[hl]
+	and a
+	jr z,.finish		;if we aren't, then finish
 
+	set CountingLetters,[hl]	;make sure we continue to count again
+	
+	call IsNextCharacterBreaking	;see if the next character was non breaking
+	jr c,.dontCount		;don't decrement if so
+	dec [hl]
+	
+.dontCount
+	pop hl
+	push de		;save the starting position
+	jr .finish2
+	
+.finish
+	pop hl
+.finish2
+	jp PlaceNextChar
+	
 Char59:: ; 1a2f (0:1a2f)
 ; depending on whose turn it is, print
 ; enemy active monster’s name, prefixed with “Enemy ”
@@ -206,33 +244,185 @@ MonsterNameCharsCommon:: ; 1a37 (0:1a37)
 	jr FinishDTE
 
 PlaceInlineString:: ; 1a4b (0:1a4b)
-	ld a,[wTextCharCount]
-	bit CheckWordWrap,a		;are we checking for word wrap
+	push hl
+	ld hl,wTextCharCount
+	bit CheckWordWrap,[hl]		;are we checking for word wrap
 	jr z,.dontCount		;dont count if not
 		
-	set CountingLetters,a
-	ld [wTextCharCount],a
+	set CountingLetters,[hl]
+	
+	call IsNextCharacterBreaking	;see if the next character is non breaking
+	jr c,.dontCount		;don't increment if so
+	
+	inc [hl]		;otherwise increment the character count
 	
 .dontCount
+	pop hl
 	jp PlaceString
 	
-FinishDTE::
-	call PlaceInlineString
-	ld h,b
-	ld l,c
+IsNextCharacterBreaking:
+	push de
+	push hl
+	ld a,[wNextChar]
+	ld hl,BreakingChars
+	ld de,1
+	call IsInArray
+	pop hl
 	pop de
-	inc de
-	ld a,[wTextCharCount]
-	and a
-	jr z,.finish		;if we aren't, then finish
+	ret
 	
-	set CountingLetters,a
-	ld [wTextCharCount],a		;make sure we continue to count again
-	push de		;save the starting position
-	
-.finish
-	jp PlaceNextChar
+BreakingChars:
+	db " ",0,$57,$58,$FF
 
+;to set the counting character flag if we are in word wrap mode
+SetCountCharIfWordWrap:
+	ld hl,wTextCharCount
+	bit CheckWordWrap,[hl]		;are we checking for word wrap
+	ret z					;return if not
+	set CountingLetters,[hl]	;set counting letters
+	ret
+	
+;to print a decimal number from a BCD decimal
+; AAAA = address of BCD number
+; BB
+; bits 0-4 = length in bytes
+; bits 5-7 = flags
+Char45:
+	call SetCountCharIfWordWrap
+	pop hl		;hl = destination pointer
+	push hl		;store it again
+	
+.PrintInsteadOfCountLoop
+	push de		;store the source pointer
+	call ExtractNumberData
+
+	push bc
+	pop de		;de = where the number is stored
+	
+	or a,%11000000	;make sure no leading zeros and left align
+	ld c,a		;c = flags and length
+	call PrintBCDNumber
+	
+	push hl		;store the 'print to' location
+	call AfterPrintNumber
+	pop hl ;recover the 'print to' location
+	pop de		;recover the start point
+	jr z,Char4546Finish		;finish if the zero flag is set
+	jr c,.PrintInsteadOfCount	;if carry flag, then print instead of count
+	
+	;else, we moved pointer to second line
+	pop hl
+	coord hl, 1, 16		;store the new destination
+	push hl
+	jp Char45		;and count again
+	
+.PrintInsteadOfCount
+	pop hl		;recover the print to location
+	jr .PrintInsteadOfCountLoop		;and do it again, but print numbers this time
+	
+	
+Char4546Finish:
+	inc de
+	inc de
+	inc de
+	jp PlaceNextChar_inc
+
+ExtractNumberData:
+	inc de
+	ld a,[de]
+	ld c,a
+	inc de
+	ld a,[de]
+	ld b,a		;bc = address
+	inc de
+	ld a,[de]	;a = flags
+	ret
+	
+AfterPrintNumber:	
+	ld hl,wTextCharCount
+	bit CheckWordWrap,[hl]		;are we checking for word wrap
+	ret z		;return if not
+	
+	bit CountingLetters,[hl]	;were we counting letters?
+	jr nz,.counting		;then handle if we were counting
+
+	call IsNextCharacterBreaking	;see if the next character is non breaking
+	jr c,.dontDec		;don't decrement if so
+	
+	dec [hl]		;otherwise increment the character count
+.dontDec
+	xor a		;set zero flag
+	ret
+	
+.counting
+	res CountingLetters,[hl]		;unset counting letters
+	call IsNextCharacterBreaking	;see if the next character is non breaking
+	jr c,.dontInc		;don't increment if so
+	
+	inc [hl]		;otherwise increment the character count
+.dontInc
+	;see if we should word wrap
+	call CheckForWordWrap
+	ret c		;return if there is a carry
+
+	call TryScrollText	;try to scroll the text
+	ld [hl],%11100000		;reset the counter and but set all other flags
+	inc hl
+	ld [hl],0		;reset the 'next character' byte
+	xor a
+	inc a		;unset the zero and carry flag
+	ret
+	
+	
+	
+	
+;to print a decimal number from a binary number
+; AAAA = address of number
+; BB
+; bits 0-3 = how many digits to display
+; bits 4-7 = how long the number is in bytes
+Char46:
+	call SetCountCharIfWordWrap	;if we are checking word wrap, then count characters
+	pop hl		;hl = destination pointer
+	push hl		;store it again
+
+.PrintInsteadOfCountLoop
+	push de		;store the source pointer
+	call ExtractNumberData
+
+	push bc
+	pop de		;de = where the number is stored
+	
+	ld b,a
+	and a,$0f	
+	ld c,a		;c = number of digits to display
+	ld a,b
+	and a,$f0
+	swap a
+	set BIT_LEFT_ALIGN,a
+	ld b,a		;b = size of number in bytes & left align string
+	call PrintNumber
+	
+	push hl		;store the 'print to' location
+	call AfterPrintNumber
+	pop hl ;recover the 'print to' location
+	pop de		;recover the start point
+	jr z,Char4546Finish		;finish if the zero flag is set
+	jr c,.PrintInsteadOfCount	;if carry flag, then print instead of count
+	
+	;else, we moved pointer to second line
+	pop hl
+	coord hl, 1, 16		;store the new destination
+	push hl
+	jp Char46		;and count again
+	
+.PrintInsteadOfCount
+	pop hl		;recover the print to location
+	jr .PrintInsteadOfCountLoop		;and do it again, but print numbers this time
+		
+	
+
+	
 ;read from RAM
 Char47:
 	pop hl		;recover the destination pointer
@@ -299,6 +489,8 @@ Next1AA2:: ; 1aa2 (0:1aa2)
 	ld a," "
 	Coorda 18, 13
 	jr Char57Finish
+	
+Char00::
 Char57:: ; 1aad (0:1aad)
 	pop hl
 Char57Finish::
@@ -369,8 +561,7 @@ Char4B:: ; 1af8 (0:1af8)
 Char4C:: ; 1b0a (0:1b0a)
 	pop hl		;recover the destination pointer
 	push de
-	call Next1B18
-	call Next1B18
+	call Scroll2Lines
 	coord hl, 1, 16
 	pop de
 	inc de
@@ -383,7 +574,11 @@ Char4C:: ; 1b0a (0:1b0a)
 .finish
 	jp PlaceNextChar
 
-Next1B18:: ; 1b18 (0:1b18)
+Scroll2Lines:
+	call ScrollLine
+	;fall through
+	
+ScrollLine:: ; 1b18 (0:1b18)
 	coord hl, 0, 14
 	coord de, 0, 13
 	ld b,60
@@ -468,17 +663,18 @@ CharSpace:
 	push de		;save the letter starting position
 	jr PlaceNextChar
 	
-FinishCountingLetters:
+CheckForWordWrap:
 	;if we were counting letters, then see if we need to add a line break
 	ld a,%00011111
 	and [hl]		;only keep the character count
 	cp CharsPerRow + 1
-	jr c,.noLineBreak		;if it is under 19, then we do not need to add a line break, so finish counting
+	ret
 	
+;to scroll the text
+TryScrollText:
 	bit FirstLineBreak,[hl]		;have we already added the first line break
-	jr z,.dontScrollText		;if not, then we don't scroll the text
+	ret z		;if not, then we don't scroll the text
 	
-	;scroll text
 	push hl
 	push de
 	
@@ -492,15 +688,21 @@ FinishCountingLetters:
 	Coorda 18, 13
 	
 	
-	call Next1B18
-	call Next1B18
+	call Scroll2Lines
 	pop de			;scroll the text
 	pop hl
-	;fall through
+	ret
 	
-.dontScrollText
-	ld [hl],%11100000		;reset the counter and but set all other flags
+FinishCountingLetters:
+	call CheckForWordWrap	;check if we should word wrap
+	jr c,.noLineBreak		;if it is under 19, then we do not need to add a line break, so finish counting
+	
+	call TryScrollText
 
+	ld [hl],%11100000		;reset the counter and but set all other flags
+	inc hl
+	ld [hl],0		;reset the 'next character' byte
+	
 	;move pointer to second line
 	pop hl		;recover the destination
 	coord hl, 1, 16		;store the new destination
@@ -515,6 +717,20 @@ FinishCountingLetters:
 	pop de		;recover the start of the word
 	jr PlaceNextChar	;place the characters
 	
+	
+;to place a into hl or increment the counter
+PlaceCharOrCountChars:
+	push hl
+	ld hl,wTextCharCount
+	bit CountingLetters,[hl]
+	jr z,.placeChar
+	inc [hl]		;increment the counter
+	pop hl
+	ret
+.placeChar
+	pop hl
+	ld [hl],a
+	ret
 	
 ;to place a smart string, we have to first save the starting location
 ;this will cause an infinite loop if a word is >18 characters
@@ -576,7 +792,8 @@ PlaceNextChar:: ; 1956 (0:1956)
 	ld hl,wTextCharCount
 	jp FinishCountingLetters	;and run the routine to finish counting letters
 
-.runCharFunction	
+.runCharFunction
+	call GetFollowingCharacter	;get the character after this special text
 	jp [hl]
 	
 .handleChar
@@ -604,6 +821,10 @@ SpecialTextChars:
 	dw Char00
 	db " "
 	dw CharSpace
+	db $45
+	dw Char45
+	db $46
+	dw Char46
 	db $47
 	dw Char47
 	db $48
@@ -751,34 +972,34 @@ TextCommand01:: ; 1b97 (0:1b97)
 ; bits 0-4 = length in bytes
 ; bits 5-7 = unknown flags
 TextCommand02:: ; 1ba5 (0:1ba5)
-	pop hl
-	ld a,[hli]
-	ld e,a
-	ld a,[hli]
-	ld d,a
-	ld a,[hli]
-	push hl
-	ld h,b
-	ld l,c
-	ld c,a
-	call PrintBCDNumber
-	ld b,h
-	ld c,l
-	pop hl
-	jr NextTextCommand
+;	pop hl
+;	ld a,[hli]
+;	ld e,a
+;	ld a,[hli]
+;	ld d,a
+;	ld a,[hli]
+;	push hl
+;	ld h,b
+;	ld l,c
+;	ld c,a
+;	call PrintBCDNumber
+;	ld b,h
+;	ld c,l
+;	pop hl
+;	jr NextTextCommand
 
 ; repoint destination address
 ; 03AAAA
 ; AAAA = new destination address
 TextCommand03:: ; 1bb7 (0:1bb7)
-	pop hl
-	ld a,[hli]
-	ld [wUnusedCC3A],a
-	ld c,a
-	ld a,[hli]
-	ld [wUnusedCC3B],a
-	ld b,a
-	jp NextTextCommand
+;	pop hl
+;	ld a,[hli]
+;	ld [wUnusedCC3A],a
+;	ld c,a
+;	ld a,[hli]
+;	ld [wUnusedCC3B],a
+;	ld b,a
+;	jp NextTextCommand
 
 ; repoint destination to second line of dialogue text box
 ; 05
@@ -811,8 +1032,7 @@ TextCommand06:: ; 1bcc (0:1bcc)
 TextCommand07:: ; 1be7 (0:1be7)
 	ld a," "
 	Coorda 18, 13 ; place blank space in lower right corner of dialogue text box
-	call Next1B18 ; scroll up text
-	call Next1B18
+	call Scroll2Lines
 	pop hl
 	coord bc, 1, 16 ; address of second line of dialogue text box
 	jp NextTextCommand
@@ -832,28 +1052,28 @@ TextCommand08:: ; 1bf9 (0:1bf9)
 ; bits 0-3 = how many digits to display
 ; bits 4-7 = how long the number is in bytes
 TextCommand09:: ; 1bff (0:1bff)
-	pop hl
-	ld a,[hli]
-	ld e,a
-	ld a,[hli]
-	ld d,a
-	ld a,[hli]
-	push hl
-	ld h,b
-	ld l,c
-	ld b,a
-	and a,$0f
-	ld c,a
-	ld a,b
-	and a,$f0
-	swap a
-	set BIT_LEFT_ALIGN,a
-	ld b,a
-	call PrintNumber
-	ld b,h
-	ld c,l
-	pop hl
-	jp NextTextCommand
+;	pop hl
+;	ld a,[hli]
+;	ld e,a
+;	ld a,[hli]
+;	ld d,a
+;	ld a,[hli]
+;	push hl
+;	ld h,b
+;	ld l,c
+;	ld b,a
+;	and a,$0f
+;	ld c,a
+;	ld a,b
+;	and a,$f0
+;	swap a
+;	set BIT_LEFT_ALIGN,a
+;	ld b,a
+;	call PrintNumber
+;	ld b,h
+;	ld c,l
+;	pop hl
+;	jp NextTextCommand
 
 ; wait half a second if the user doesn't hold A or B
 ; 0A
@@ -875,82 +1095,82 @@ TextCommand0A:: ; 1c1d (0:1c1d)
 ; this actually handles various command ID's, not just 0B
 ; (no arguments)
 TextCommand0B:: ; 1c31 (0:1c31)
-	pop hl
-	push bc
-	dec hl
-	ld a,[hli]
-	ld b,a ; b = command number that got us here
-	push hl
-	ld hl,TextCommandSounds
-.loop
-	ld a,[hli]
-	cp b
-	jr z,.matchFound
-	inc hl
-	jr .loop
-.matchFound
-	cp a,$14
-	jr z,.pokemonCry
-	cp a,$15
-	jr z,.pokemonCry
-	cp a,$16
-	jr z,.pokemonCry
-	ld a,[hl]
-	call PlaySound
-	call WaitForSoundToFinish
-	pop hl
-	pop bc
-	jp NextTextCommand
-.pokemonCry
-	push de
-	ld a,[hl]
-	call PlayCry
-	pop de
-	pop hl
-	pop bc
-	jp NextTextCommand
+;	pop hl
+;	push bc
+;	dec hl
+;	ld a,[hli]
+;	ld b,a ; b = command number that got us here
+;	push hl
+;	ld hl,TextCommandSounds
+;.loop
+;	ld a,[hli]
+;	cp b
+;	jr z,.matchFound
+;	inc hl
+;	jr .loop
+;.matchFound
+;	cp a,$14
+;	jr z,.pokemonCry
+;	cp a,$15
+;	jr z,.pokemonCry
+;	cp a,$16
+;	jr z,.pokemonCry
+;	ld a,[hl]
+;	call PlaySound
+;	call WaitForSoundToFinish
+;	pop hl
+;	pop bc
+;	jp NextTextCommand
+;.pokemonCry
+;	push de
+;	ld a,[hl]
+;	call PlayCry
+;	pop de
+;	pop hl
+;	pop bc
+;	jp NextTextCommand
 
 ; format: text command ID, sound ID or cry ID
 TextCommandSounds:: ; 1c64 (0:1c64)
-	db $0B,SFX_GET_ITEM_1
-	db $12,SFX_CAUGHT_MON
-	db $0E,SFX_POKEDEX_RATING
-	db $0F,SFX_GET_ITEM_1
-	db $10,SFX_GET_ITEM_2
-	db $11,SFX_GET_KEY_ITEM
-	db $13,SFX_DEX_PAGE_ADDED
-	db $14,NIDORINA ; used in OakSpeech
-	db $15,PIDGEOT  ; used in SaffronCityText12
-	db $16,DEWGONG  ; unused?
+;	db $0B,SFX_GET_ITEM_1
+;	db $12,SFX_CAUGHT_MON
+;	db $0E,SFX_POKEDEX_RATING
+;	db $0F,SFX_GET_ITEM_1
+;	db $10,SFX_GET_ITEM_2
+;	db $11,SFX_GET_KEY_ITEM
+;	db $13,SFX_DEX_PAGE_ADDED
+;	db $14,NIDORINA ; used in OakSpeech
+;	db $15,PIDGEOT  ; used in SaffronCityText12
+;	db $16,DEWGONG  ; unused?
 
 ; draw ellipses
 ; 0CAA
 ; AA = number of ellipses to draw
 TextCommand0C:: ; 1c78 (0:1c78)
-	pop hl
-	ld a,[hli]
-	ld d,a
-	push hl
-	ld h,b
-	ld l,c
-.loop
-	ld a,$75 ; ellipsis
-	ld [hli],a
-	push de
-	call Joypad
-	pop de
-	ld a,[hJoyHeld] ; joypad state
-	and a,A_BUTTON | B_BUTTON
-	jr nz,.skipDelay ; if so, skip the delay
-	ld c,10
-	call DelayFrames
-.skipDelay
-	dec d
-	jr nz,.loop
-	ld b,h
-	ld c,l
-	pop hl
-	jp NextTextCommand
+;	pop hl
+;	ld a,[hli]
+;	ld d,a
+;	push hl
+;	ld h,b
+;	ld l,c
+;.loop
+;	ld a,$75 ; ellipsis
+;	ld [hli],a
+;	push de
+;	call Joypad
+;	pop de
+;	ld a,[hJoyHeld] ; joypad state
+;	and a,A_BUTTON | B_BUTTON
+;	jr nz,.skipDelay ; if so, skip the delay
+;	ld c,10
+;	call DelayFrames
+;.skipDelay
+;	dec d
+;	jr nz,.loop
+;	ld b,h
+;	ld c,l
+;	pop hl
+;	jp NextTextCommand
 
 ; wait for A or B to be pressed
 ; 0D

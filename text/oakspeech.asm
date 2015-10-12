@@ -1,7 +1,14 @@
 _OakSpeechText1::
-	text "Hello there! Welcome to the world of #! My name is OAK! People call me the # PROF!"
+;	text "Hello there! Welcome to the world of #! My name is OAK! People call me the # PROF!"
+;	prompt
+
+	text "There are about "
+	hex_number _testnumber, 1, 3
+	more_text "!"
 	prompt
 
+_testnumber:
+	db 51
 
 _OakSpeechText2A::
 	text "This world is"
