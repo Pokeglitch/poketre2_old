@@ -79,7 +79,7 @@ NPlaceChar::
 	dec d
 	jr nz, .loop
 	ret
-
+	
 Char4E::
 	pop hl		;recover the destination pointer
 	ld bc,$0028
@@ -96,13 +96,10 @@ Shared4e4f:
 	push hl
 	inc de
 	
-	ld a,[wTextCharCount]
-	and a
-	jr z,.finish		;if we aren't, then jump down
+	call ResetCharCount_LineBreak
+	jr z,.finish		;if we aren't counting, then jump down
 	
-	ld a,%11100000		;reset the value
-	ld [wTextCharCount],a		;make sure we continue to count again
-	push de		;push the pointer
+	push de		;otherwise, push the pointer
 	
 .finish
 	jp PlaceNextChar
@@ -366,9 +363,6 @@ AfterPrintNumber:
 	ret c		;return if there is a carry
 
 	call TryScrollText	;try to scroll the text
-	ld [hl],%11100000		;reset the counter and but set all other flags
-	inc hl
-	ld [hl],0		;reset the 'next character' byte
 	xor a
 	inc a		;unset the zero and carry flag
 	ret
@@ -494,6 +488,7 @@ Char00::
 Char57:: ; 1aad (0:1aad)
 	pop hl
 Char57Finish::
+	
 	ld de,Char58Text
 	jp PlaceNextChar
 
@@ -516,12 +511,9 @@ Char51:: ; 1ab4 (0:1ab4)
 	pop de
 	inc de
 	coord hl, 1, 14
-	ld a,[wTextCharCount]
-	and a
-	jr z,.finish		;if we aren't, then finish
-	ld a,%11000000		;re-initialize the counter
-	ld [wTextCharCount],a
-	push de		;push de since we are counting again
+	call ResetCharCount_NoLineBreak
+	jr z,.finish		;if we aren't counting, then finish
+	push de		;other, push de since we are counting again
 .finish
 	jp PlaceNextChar
 
@@ -565,12 +557,9 @@ Char4C:: ; 1b0a (0:1b0a)
 	coord hl, 1, 16
 	pop de
 	inc de
-	ld a,[wTextCharCount]
-	and a
-	jr z,.finish		;if we aren't, then finish
-	ld a,%11000000		;re-initialize the counter
-	ld [wTextCharCount],a
-	push de		;push the source pointer
+	call ResetCharCount_LineBreak
+	jr z,.finish		;if we not counting, then finish
+	push de		;otherwise, push the source pointer
 .finish
 	jp PlaceNextChar
 
@@ -691,6 +680,31 @@ TryScrollText:
 	call Scroll2Lines
 	pop de			;scroll the text
 	pop hl
+	
+.finish
+	ld [hl],%11100000		;reset the counter and but set all other flags
+	inc hl
+	ld [hl],0		;reset the 'next character' byte
+	ret
+	
+ResetCharCount_NoLineBreak:
+	push hl
+	ld a,%11000000
+	jr ResetCharCountFinish
+	
+ResetCharCount_LineBreak:
+	push hl
+	ld a,%11100000
+	
+ResetCharCountFinish:
+	ld hl, wTextCharCount
+	bit CountingLetters,[hl]		;are we counting letters?
+	jr z,.finish			;finish if not
+	ld [hli],a		;store the flags
+	ld [hl], 0		;zero the 'next character' byte
+	
+.finish
+	pop hl
 	ret
 	
 FinishCountingLetters:
@@ -698,10 +712,6 @@ FinishCountingLetters:
 	jr c,.noLineBreak		;if it is under 19, then we do not need to add a line break, so finish counting
 	
 	call TryScrollText
-
-	ld [hl],%11100000		;reset the counter and but set all other flags
-	inc hl
-	ld [hl],0		;reset the 'next character' byte
 	
 	;move pointer to second line
 	pop hl		;recover the destination

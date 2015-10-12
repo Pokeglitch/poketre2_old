@@ -11,10 +11,7 @@ _testnumber:
 	db 51
 
 _OakSpeechText2A::
-	text "This world is"
-	line "inhabited by"
-	cont "creatures called"
-	cont "#!"
+	text "This world is inhabited by creatures called #!"
 	done
 
 _OakSpeechText2B::
