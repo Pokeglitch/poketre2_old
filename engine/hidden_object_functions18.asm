@@ -151,14 +151,15 @@ CinnabarIslandPokecenterBenchGuyText: ; 624df (18:64df)
 	db "@"
 
 SaffronCityPokecenterBenchGuyText: ; 624e4 (18:64e4)
-	TX_ASM
+	asm_text
 	CheckEvent EVENT_BEAT_SILPH_CO_GIOVANNI
 	ld hl, SaffronCityPokecenterBenchGuyText2
 	jr nz, .asm_624f2
 	ld hl, SaffronCityPokecenterBenchGuyText1
 .asm_624f2
 	call PrintText
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 SaffronCityPokecenterBenchGuyText1: ; 624f8 (18:64f8)
 	TX_FAR _SaffronCityPokecenterGuyText1

@@ -341,33 +341,37 @@ BoostExp: ; 5549f (15:549f)
 	ret
 
 GainedText: ; 554b2 (15:54b2)
-	TX_FAR _GainedText
-	TX_ASM
+	far_text _GainedText
+	asm_text
 	ld a, [wBoostExpByExpAll]
 	ld hl, WithExpAllText
 	and a
-	ret nz
+	jr nz,.finish
 	ld hl, ExpPointsText
 	ld a, [wGainBoostedExp]
 	and a
-	ret z
+	jr z,.finish
 	ld hl, BoostedText
-	ret
+.finish
+	call PlaceStringFromASM_HL
+	end_asm_text
+	done
 
 WithExpAllText: ; 554cb (15:54cb)
-	TX_FAR _WithExpAllText
-	TX_ASM
+	far_text _WithExpAllText
+	asm_text
 	ld hl, ExpPointsText
-	ret
+	call PlaceStringFromASM_HL
+	end_asm_text
+	done
 
 BoostedText: ; 554d4 (15:54d4)
-	TX_FAR _BoostedText
+	far_text _BoostedText
 
 ExpPointsText: ; 554d8 (15:54d8)
-	TX_FAR _ExpPointsText
-	db "@"
+	far_text _ExpPointsText
+	done
 
 GrewLevelText: ; 554dd (15:54dd)
-	TX_FAR _GrewLevelText
-	db $0b
-	db "@"
+	far_text _GrewLevelText
+	done

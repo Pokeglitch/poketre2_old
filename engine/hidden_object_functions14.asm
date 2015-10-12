@@ -11,7 +11,7 @@ TMNotebook: ; 529a4 (14:69a4)
 	db "@"
 
 ViridianSchoolNotebook: ; 529aa (14:69aa)
-	TX_ASM
+	asm_text
 	ld hl, ViridianSchoolNotebookText1
 	call PrintText
 	call TurnPageSchoolNotebook
@@ -29,7 +29,8 @@ ViridianSchoolNotebook: ; 529aa (14:69aa)
 	ld hl, ViridianSchoolNotebookText5
 	call PrintText
 .doneReading
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 TurnPageSchoolNotebook: ; 529db (14:69db)
 	ld hl, TurnPageText

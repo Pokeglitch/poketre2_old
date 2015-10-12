@@ -28,14 +28,11 @@ _OaksLabBulbasaurText:: ; 94e57 (25:4e57)
 	text "So! You want the plant #, BULBASAUR?"
 	done
 
-_OaksLabMonEnergeticText:: ; 94e80 (25:4e80)
+_OaksLabMonReceivedText:: ; 94e80 (25:4e80)
 	text "This # is really energetic!"
-	prompt
-
-_OaksLabReceivedMonText:: ; 94ea0 (25:4ea0)
-	text $52, " received a "
+	para $52, " received a "
 	ram_text wcd6d
-	db "!"
+	text "!"
 	prompt
 
 _OaksLabLastMonText:: ; 94eb6 (25:4eb6)
@@ -252,70 +249,10 @@ _OaksLabRivalInterjectionText:: ; 953dc (25:53dc)
 	done
 
 _OaksLabBePatientText:: ; 953fc (25:53fc)
-IF DEF(_YELLOW)
-	text "OAK: Be patient,"
-	line $53,", I'll give"
-	cont "you one later."
-	done
-ELSE
 	text "OAK: Be patient!"
 	line $53, ", you can"
 	cont "have one too!"
 	done
-ENDC
-
-IF DEF(_YELLOW)
-_OaksLabRivalTakesText1::
-	text $53,": No way!"
-	line $52,", I want"
-	cont "this #!"
-	prompt
-
-_OaksLabRivalTakesText2::
-	text $53," snatched"
-	line "the #!@@"
-
-_OaksLabRivalTakesText3::
-	text "OAK: ",$53,"! What"
-	line "are you doing?"
-	prompt
-
-_OaksLabRivalTakesText4::
-	text $53,": Gramps, I"
-	line "want this one!"
-	prompt
-
-_OaksLabRivalTakesText5::
-	text "OAK: But, I... Oh,"
-	line "all right then."
-	cont "That # is"
-	cont "yours."
-
-	para "I was going to"
-	line "give you one"
-	cont "anyway..."
-
-	para $52,", come over"
-	line "here."
-	done
-
-_OaksLabOakGivesText::
-	text "OAK: ",$52,", this"
-	line "is the # I"
-	cont "caught earlier."
-
-	para "You can have it."
-	line "I caught it in"
-	cont "the wild and it's"
-	cont "not tame yet."
-	prompt
-
-_OaksLabReceivedText::
-	text $52," received"
-	line "a "
-	TX_RAM $CD6D
-	text "!@@"
-ENDC
 
 _OaksLabLeavingText:: ; 95427 (25:5427)
 	text "OAK: Hey! Don't go away yet!"
@@ -326,14 +263,13 @@ _OaksLabRivalPickingMonText:: ; 95444 (25:5444)
 	done
 
 _OaksLabRivalReceivedMonText:: ; 95461 (25:5461)
-	text $53, " received a @"
-	TX_RAM wcd6d
+	text $53, " received a "
+	ram_text wcd6d
 	text "!"
 	prompt
 
 _OaksLabRivalChallengeText:: ; 95477 (25:5477)
 	text $53, ": Wait ", $52, "! Let's check out our #!"
-
 	para "Come on, I'll take you on!"
 	done
 

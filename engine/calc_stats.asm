@@ -1,3 +1,4 @@
+
 ; calculates all 6 stats of current mon and writes them to [de]
 ; #6 is special defense
 _CalcStats:: ; 3936 (0:3936)
@@ -9,7 +10,7 @@ _CalcStats:: ; 3936 (0:3936)
 	ld c, $0
 .statsLoop
 	inc c
-	call CalcStat
+	call _CalcStat
 	ld a,c
 	cp 6		;special defense?
 	jr nz,.notSpecialDefense
@@ -52,11 +53,21 @@ _CalcStats:: ; 3936 (0:3936)
 	inc de
 	jr .statsLoop
 
+	
+_CalcStatFar::
+	ld a,c		;store c into a
+	ld a,[H_MULTIPLICAND]
+	ld h,a
+	ld a,[H_MULTIPLICAND + 1]
+	ld l,a		;restore hl
+	ld c, $0
+	;fall through
+	
 ; calculates stat c of current mon
 ; c: stat to calc (HP=1,Atk=2,Def=3,Spd=4,Spc Attack=5,Spc Defense=6)
 ; b: consider stat exp?
 ; hl: base ptr to stat exp values ([hl + 2*c - 1] and [hl + 2*c])
-CalcStat:: ; 394a (0:394a)
+_CalcStat:: ; 394a (0:394a)
 	push hl
 	push de
 	push bc

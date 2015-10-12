@@ -1,6 +1,9 @@
-; Note:
+; Notes:
 ; When placing string from Inline ASM, it always assumes the next character is breaking
 ; To resolve: Always include the full words/punctuation inside the text
+; In Inline ASM:
+; Use PrintText if you dont want to combine strings
+; Otherwise, use PlaceStringFromASM_HL or PlaceStringFromASM_DE
 
 ResetNextChar:
 	xor a

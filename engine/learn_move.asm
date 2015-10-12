@@ -204,13 +204,15 @@ TryingToLearnText: ; 6fc3 (1:6fc3)
 	db "@"
 
 OneTwoAndText: ; 6fc8 (1:6fc8)
-	TX_FAR _OneTwoAndText
+	far_text _OneTwoAndText
 	db $a
-	TX_ASM
+	asm_text
 	ld a, SFX_SWAP
 	call PlaySoundWaitForCurrent
 	ld hl, PoofText
-	ret
+	call PrintText
+	end_asm_text
+	done
 
 PoofText: ; 6fd7 (1:6fd7)
 	TX_FAR _PoofText

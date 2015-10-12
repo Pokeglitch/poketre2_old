@@ -17,7 +17,7 @@ FormatMovesString: ; 39b87 (e:5b87)
 	ld hl, wcd6d
 .copyNameLoop
 	ld a, [hli]
-	cp $50
+	cp "@"
 	jr z, .doneCopyingName
 	ld [de], a
 	inc de

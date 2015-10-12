@@ -75,7 +75,7 @@ BookshelfTileIDs: ; fb8b (3:7b8b)
 	db $FF
 
 IndigoPlateauStatues: ; fbbf (3:7bbf)
-	TX_ASM
+	asm_text
 	ld hl, IndigoPlateauStatuesText1
 	call PrintText
 	ld a, [wXCoord]
@@ -85,7 +85,8 @@ IndigoPlateauStatues: ; fbbf (3:7bbf)
 	ld hl, IndigoPlateauStatuesText3
 .asm_fbd3
 	call PrintText
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 IndigoPlateauStatuesText1: ; fbd9 (3:7bd9)
 	TX_FAR _IndigoPlateauStatuesText1
@@ -100,7 +101,7 @@ IndigoPlateauStatuesText3: ; fbe3 (3:7be3)
 	db "@"
 
 BookOrSculptureText: ; fbe8 (3:7be8)
-	TX_ASM
+	asm_text
 	ld hl, PokemonBooksText
 	ld a, [wCurMapTileset]
 	cp MANSION ; Celadon Mansion tileset
@@ -111,7 +112,8 @@ BookOrSculptureText: ; fbe8 (3:7be8)
 	ld hl, DiglettSculptureText
 .asm_fbfd
 	call PrintText
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 PokemonBooksText: ; fc03 (3:7c03)
 	TX_FAR _PokemonBooksText

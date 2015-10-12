@@ -1846,9 +1846,9 @@ FluteWokeUpText: ; e210 (3:6210)
 	db "@"
 
 PlayedFluteHadEffectText: ; e215 (3:6215)
-	TX_FAR _PlayedFluteHadEffectText
+	far_text _PlayedFluteHadEffectText
 	db $06
-	TX_ASM
+	asm_text
 	ld a,[wIsInBattle]
 	and a
 	jr nz,.done
@@ -1864,7 +1864,8 @@ PlayedFluteHadEffectText: ; e215 (3:6215)
 	jr z,.musicWaitLoop
 	call PlayDefaultMusic ; start playing normal music again
 .done
-	jp TextScriptEnd ; end text
+	end_asm_text
+	done
 
 ItemUseCoinCase: ; e23a (3:623a)
 	ld a,[wIsInBattle]

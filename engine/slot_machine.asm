@@ -476,7 +476,7 @@ SlotMachine_CheckForMatches: ; 37588 (d:7588)
 	jp .done
 
 SymbolLinedUpSlotMachineText: ; 37665 (d:7665)
-	TX_ASM
+	asm_text
 	push bc
 	call SlotMachine_PrintWinningSymbol
 	ld hl, LinedUpText
@@ -485,7 +485,8 @@ SymbolLinedUpSlotMachineText: ; 37665 (d:7665)
 	inc bc
 	inc bc
 	inc bc
-	ret
+	place_string_end_asm_text
+	done
 
 LinedUpText: ; 37673 (d:7673)
 	TX_FAR _LinedUpText

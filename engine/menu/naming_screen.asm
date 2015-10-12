@@ -41,7 +41,7 @@ AskName: ; 64eb (1:64eb)
 	pop af
 	ld [wUpdateSpritesEnabled], a
 	ld a, [wcf4b]
-	cp $50
+	cp "@"
 	ret z	;return if the name was empty
 ;otherwise, copy the name from cf4b
 	ld d, h
@@ -135,7 +135,7 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	ld [wCurrentMenuItem], a
 	ld a, $ff
 	ld [wMenuWatchedKeys], a
-	ld a, $50
+	ld a, "@"
 	ld [wcf4b], a
 	xor a
 	ld hl, wNamingScreenSubmitName
@@ -268,7 +268,7 @@ DisplayNamingScreen: ; 6596 (1:6596)
 	ret nc
 	ld a, [wNamingScreenLetter]
 	ld [hli], a
-	ld [hl], $50
+	ld [hl], "@"
 	call AnimateTilePress
 	call PlayButtonPressSound
 	ret
@@ -706,7 +706,7 @@ PrintNicknameAndUnderscores: ; 680e (1:680e)
 .loop2
 	push af
 	ld a,[de]
-	cp $50
+	cp "@"
 	jr z,.finish
 	pop af
 	ld [hli],a
@@ -815,7 +815,7 @@ PrintNamingText: ; 68f8 (1:68f8)
 .loop2
 	push af
 	ld a,[de]
-	cp $50
+	cp "@"
 	jr z,.finish
 	pop af
 	ld [hli],a

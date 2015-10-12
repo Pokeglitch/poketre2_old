@@ -96,7 +96,7 @@ PrintSafariGameOverText: ; 1e9ed (7:69ed)
 	jp PrintText
 
 SafariGameOverText: ; 1e9f7 (7:69f7)
-	TX_ASM
+	asm_text
 	ld a, [wNumSafariBalls]
 	and a
 	jr z, .asm_1ea04
@@ -105,7 +105,8 @@ SafariGameOverText: ; 1e9f7 (7:69f7)
 .asm_1ea04
 	ld hl, GameOverText
 	call PrintText
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 TimesUpText: ; 1ea0d (7:6a0d)
 	TX_FAR _TimesUpText
@@ -123,7 +124,7 @@ PrintCinnabarQuiz: ; 1ea17 (7:6a17)
 	tx_pre_jump CinnabarGymQuiz
 
 CinnabarGymQuiz: ; 1ea25 (7:6a25)
-	TX_ASM
+	asm_text
 	xor a
 	ld [wOpponentAfterWrongAnswer], a
 	ld a, [wHiddenObjectFunctionArgument]
@@ -150,7 +151,8 @@ CinnabarGymQuiz: ; 1ea25 (7:6a25)
 	ld a, 1
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
 	call CinnabarGymQuiz_1ea92
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 CinnabarGymQuizIntroText: ; 1ea5b (7:6a5b)
 	TX_FAR _CinnabarGymQuizIntroText
@@ -235,9 +237,9 @@ CinnabarGymQuiz_1ea92: ; 1ea92 (7:6a92)
 
 CinnabarGymQuizCorrectText: ; 1eae3 (7:6ae3)
 	db $0b
-	TX_FAR _CinnabarGymQuizCorrectText
+	far_text _CinnabarGymQuizCorrectText
 	db $06
-	TX_ASM
+	asm_text
 
 	ld a, [$ffe0]
 	AdjustEventBit EVENT_CINNABAR_GYM_GATE0_UNLOCKED, 0
@@ -246,12 +248,14 @@ CinnabarGymQuizCorrectText: ; 1eae3 (7:6ae3)
 	call CinnabarGymGateFlagAction
 	ld a, c
 	and a
-	jp nz, TextScriptEnd
+	jr nz, .finish
 	call WaitForSoundToFinish
 	ld a, SFX_GO_INSIDE
 	call PlaySound
 	call WaitForSoundToFinish
-	jp TextScriptEnd
+.finish
+	end_asm_text
+	done
 
 CinnabarGymQuizIncorrectText: ; 1eb05 (7:6b05)
 	TX_FAR _CinnabarGymQuizIncorrectText
@@ -370,9 +374,9 @@ BillsHouseMonitorText: ; 1ebdd (7:6bdd)
 	db "@"
 
 BillsHouseInitiatedText: ; 1ebe2 (7:6be2)
-	TX_FAR _BillsHouseInitiatedText
+	far_text _BillsHouseInitiatedText
 	db $06
-	TX_ASM
+	asm_text
 	ld a, $ff
 	ld [wNewSoundID], a
 	call PlaySound
@@ -383,10 +387,11 @@ BillsHouseInitiatedText: ; 1ebe2 (7:6be2)
 	call WaitForSoundToFinish
 	ld c, 60
 	call DelayFrames
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 BillsHousePokemonList: ; 1ec05 (7:6c05)
-	TX_ASM
+	asm_text
 	call SaveScreenTilesToBuffer1
 	ld hl, BillsHousePokemonListText1
 	call PrintText
@@ -437,7 +442,8 @@ BillsHousePokemonList: ; 1ec05 (7:6c05)
 	ld hl, wd730
 	res 6, [hl]
 	call LoadScreenTilesFromBuffer2
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 BillsHousePokemonListText1: ; 1ec7f (7:6c7f)
 	TX_FAR _BillsHousePokemonListText1

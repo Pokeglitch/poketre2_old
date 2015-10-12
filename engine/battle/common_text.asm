@@ -71,28 +71,28 @@ PrintBeginningBattleText: ; 58d99 (16:4d99)
 	ret
 
 WildMonAppearedText: ; 58e3b (16:4e3b)
-	TX_FAR _WildMonAppearedText
-	db "@"
+	far_text _WildMonAppearedText
+	done
 
 HookedMonAttackedText: ; 58e40 (16:4e40)
-	TX_FAR _HookedMonAttackedText
-	db "@"
+	far_text _HookedMonAttackedText
+	done
 
 EnemyAppearedText: ; 58e45 (16:4e45)
-	TX_FAR _EnemyAppearedText
-	db "@"
+	far_text _EnemyAppearedText
+	done
 
 TrainerWantsToFightText: ; 58e4a (16:4e4a)
-	TX_FAR _TrainerWantsToFightText
-	db "@"
+	far_text _TrainerWantsToFightText
+	done
 
 UnveiledGhostText: ; 58e4f (16:4e4f)
-	TX_FAR _UnveiledGhostText
-	db "@"
+	far_text _UnveiledGhostText
+	done
 
 GhostCantBeIDdText: ; 58e54 (16:4e54)
-	TX_FAR _GhostCantBeIDdText
-	db "@"
+	far_text _GhostCantBeIDdText
+	done
 
 PrintSendOutMonMessage: ; 58e59 (16:4e59)
 	ld a,[wBattleMonSpecies2]
@@ -144,32 +144,31 @@ PrintSendOutMonMessage: ; 58e59 (16:4e59)
 	jp PrintText
 
 IntoLastStandText:
-	TX_FAR _IntoLastStandText
-	db "@"
+	far_text _IntoLastStandText
+	done
 	
 GoText: ; 58eae (16:4eae)
-	TX_FAR _GoText
-	db "@"
+	far_text _GoText
+	done
 
 DoItText: ; 58eb5 (16:4eb5)
-	TX_FAR _DoItText
-	db "@"
+	far_text _DoItText
+	done
 
 GetmText: ; 58ebc (16:4ebc)
-	TX_FAR _GetmText
-	db "@"
-
-EnemysWeakText: ; 58ec3 (16:4ec3)
-	TX_FAR _EnemysWeakText
-	TX_ASM
+	far_text _GetmText
+	done
 
 RetreatMon: ; 58ed1 (16:4ed1)
 	ld hl, PlayerMon2Text
 	jp PrintText
 
+EnemysWeakText: ; 58ec3 (16:4ec3)
+	far_text _EnemysWeakText
+	
 PlayerMon2Text: ; 58ed7 (16:4ed7)
-	TX_FAR _PlayerMon2Text
-	TX_ASM
+	far_text _PlayerMon2Text
+	asm_text
 	push de
 	push bc
 	ld hl, wEnemyMonHP + 1
@@ -208,35 +207,38 @@ PlayerMon2Text: ; 58ed7 (16:4ed7)
 ; can fall in any of the ranges below.
 	ld hl, EnoughText ; HP stayed the same
 	and a
-	ret z
+	jr z,.finish
 	ld hl, ComeBackText ; HP went down 1% - 29%
 	cp 30
-	ret c
+	jr c,.finish
 	ld hl, OKExclamationText ; HP went down 30% - 69%
 	cp 70
-	ret c
+	jr c,.finish
 	ld hl, GoodText ; HP went down 70% or more
-	ret
+.finish
+	place_string_end_asm_text
+	done
 
 EnoughText: ; 58f25 (16:4f25)
-	TX_FAR _EnoughText
-	TX_ASM
+	far_text _EnoughText
+	asm_text
 	jr PrintComeBackText
 
 OKExclamationText: ; 58f2c (16:4f2c)
-	TX_FAR _OKExclamationText
-	TX_ASM
+	far_text _OKExclamationText
+	asm_text
 	jr PrintComeBackText
 
 GoodText: ; 58f33 (16:4f33)
-	TX_FAR _GoodText
-	TX_ASM
+	far_text _GoodText
+	asm_text
 	jr PrintComeBackText
 
 PrintComeBackText: ; 58f3a (16:4f3a)
 	ld hl, ComeBackText
-	ret
+	place_string_end_asm_text
+	done
 
 ComeBackText: ; 58f3e (16:4f3e)
-	TX_FAR _ComeBackText
-	db "@"
+	far_text _ComeBackText
+	done

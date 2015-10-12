@@ -1,9 +1,8 @@
 OaksLabScript: ; 1cb0e (7:4b0e)
 	CheckEvent EVENT_PALLET_AFTER_GETTING_POKEBALLS_2
 	call nz, OaksLabScript_1d076
-	ld a, $1
-	ld [wAutoTextBoxDrawingControl], a
 	xor a
+	ld [wAutoTextBoxDrawingControl], a
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
 	ld hl, OaksLabScriptPointers
 	ld a, [wOaksLabCurScript]
@@ -761,7 +760,7 @@ OaksLabTextPointers: ; 1d082 (7:5082)
 
 OaksLabText28: ; 1d0ce (7:50ce)
 OaksLabText1: ; 1d0ce (7:50ce)
-	TX_ASM
+	asm_text
 	CheckEvent EVENT_FOLLOWED_OAK_INTO_LAB_2
 	jr nz, .asm_1d0de
 	ld hl, OaksLabGaryText1
@@ -777,23 +776,24 @@ OaksLabText1: ; 1d0ce (7:50ce)
 	ld hl, OaksLabText41
 	call PrintText
 .asm_1d0f0
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 OaksLabGaryText1: ; 1d0f3 (7:50f3)
-	TX_FAR _OaksLabGaryText1
-	db "@"
+	far_text _OaksLabGaryText1
+	done
 
 OaksLabText40: ; 1d0f8 (7:50f8)
-	TX_FAR _OaksLabText40
-	db "@"
+	far_text _OaksLabText40
+	done
 
 OaksLabText41: ; 1d0fd (7:50fd)
-	TX_FAR _OaksLabText41
-	db "@"
+	far_text _OaksLabText41
+	done
 
 OaksLabText29: ; 1d102 (7:5102)
 OaksLabText2: ; 1d102 (7:5102)
-	TX_ASM
+	asm_text
 	ld a, STARTER2
 	ld [wRivalStarterTemp], a
 	ld a, $3
@@ -804,7 +804,7 @@ OaksLabText2: ; 1d102 (7:5102)
 
 OaksLabText30: ; 1d113 (7:5113)
 OaksLabText3: ; 1d113 (7:5113)
-	TX_ASM
+	asm_text
 	ld a, STARTER3
 	ld [wRivalStarterTemp], a
 	ld a, $4
@@ -815,7 +815,7 @@ OaksLabText3: ; 1d113 (7:5113)
 
 OaksLabText31: ; 1d124 (7:5124)
 OaksLabText4: ; 1d124 (7:5124)
-	TX_ASM
+	asm_text
 	ld a, STARTER1
 	ld [wRivalStarterTemp], a
 	ld a, $2
@@ -834,11 +834,12 @@ OaksLabScript_1d133: ; 1d133 (7:5133)
 	jr nz, OaksLabScript_1d157
 	ld hl, OaksLabText39
 	call PrintText
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 OaksLabText39: ; 1d152 (7:5152)
-	TX_FAR _OaksLabText39
-	db "@"
+	far_text _OaksLabText39
+	done
 
 OaksLabScript_1d157: ; 1d157 (7:5157)
 	ld a, $5
@@ -872,22 +873,22 @@ OaksLabLookAtCharmander: ; 1d195 (7:5195)
 	ld hl, OaksLabCharmanderText
 	jr OaksLabMonChoiceMenu
 OaksLabCharmanderText: ; 1d19a (7:519a)
-	TX_FAR _OaksLabCharmanderText
-	db "@"
+	far_text _OaksLabCharmanderText
+	done
 
 OaksLabLookAtSquirtle: ; 1d19f (7:519f)
 	ld hl, OaksLabSquirtleText
 	jr OaksLabMonChoiceMenu
 OaksLabSquirtleText: ; 1d1a4 (7:51a4)
-	TX_FAR _OaksLabSquirtleText
-	db "@"
+	far_text _OaksLabSquirtleText
+	done
 
 OaksLabLookAtBulbasaur: ; 1d1a9 (7:51a9)
 	ld hl, OaksLabBulbasaurText
 	jr OaksLabMonChoiceMenu
 OaksLabBulbasaurText: ; 1d1ae (7:51ae)
-	TX_FAR _OaksLabBulbasaurText
-	db "@"
+	far_text _OaksLabBulbasaurText
+	done
 
 OaksLabMonChoiceMenu: ; 1d1b3 (7:51b3)
 	call PrintText
@@ -918,9 +919,7 @@ OaksLabMonChoiceMenu: ; 1d1b3 (7:51b3)
 	predef HideObject
 	ld a, $1
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
-	ld hl, OaksLabMonEnergeticText
-	call PrintText
-	ld hl, OaksLabReceivedMonText
+	ld hl, OaksLabMonReceivedText
 	call PrintText
 	xor a ; PLAYER_PARTY_DATA
 	ld [wMonDataLocation], a
@@ -936,15 +935,12 @@ OaksLabMonChoiceMenu: ; 1d1b3 (7:51b3)
 	ld a, $8
 	ld [wOaksLabCurScript], a
 OaksLabMonChoiceEnd: ; 1d21f (7:521f)
-	jp TextScriptEnd
+	end_asm_text
+	done
 
-OaksLabMonEnergeticText: ; 1d222 (7:5222)
-	TX_FAR _OaksLabMonEnergeticText
-	db "@"
-
-OaksLabReceivedMonText: ; 1d227 (7:5227)
-	TX_FAR _OaksLabReceivedMonText
-	db $11, "@"
+OaksLabMonReceivedText: ; 1d222 (7:5222)
+	far_text _OaksLabMonReceivedText
+	done
 
 OaksLabScript_1d22d: ; 1d22d (7:522d)
 	ld a, $5
@@ -955,15 +951,16 @@ OaksLabScript_1d22d: ; 1d22d (7:522d)
 	ld [hl], $0
 	ld hl, OaksLabLastMonText
 	call PrintText
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 OaksLabLastMonText: ; 1d243 (7:5243)
-	TX_FAR _OaksLabLastMonText
-	db "@"
+	far_text _OaksLabLastMonText
+	done
 
 OaksLabText32: ; 1d248 (7:5248)
 OaksLabText5: ; 1d248 (7:5248)
-	TX_ASM
+	asm_text
 	CheckEvent EVENT_PALLET_AFTER_GETTING_POKEBALLS
 	jr nz, .asm_1d266
 	ld hl, wPokedexOwned
@@ -1031,208 +1028,222 @@ OaksLabText5: ; 1d248 (7:5248)
 	ld hl, OaksLabPleaseVisitText
 	call PrintText
 .asm_1d2ed
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 OaksLabText_1d2f0: ; 1d2f0 (7:52f0)
-	TX_FAR _OaksLabText_1d2f0
-	db "@"
+	far_text _OaksLabText_1d2f0
+	done
 
 OaksLabText_1d2f5: ; 1d2f5 (7:52f5)
-	TX_FAR _OaksLabText_1d2f5
-	db "@"
+	far_text _OaksLabText_1d2f5
+	done
 
 OaksLabText_1d2fa: ; 1d2fa (7:52fa)
-	TX_FAR _OaksLabText_1d2fa
-	db "@"
+	far_text _OaksLabText_1d2fa
+	done
 
 OaksLabDeliverParcelText: ; 1d2ff (7:52ff)
-	TX_FAR _OaksLabDeliverParcelText1
+	far_text _OaksLabDeliverParcelText1
 	db $11
-	TX_FAR _OaksLabDeliverParcelText2
-	db "@"
+	far_text _OaksLabDeliverParcelText2
+	done
 
 OaksLabAroundWorldText: ; 1d309 (7:5309)
-	TX_FAR _OaksLabAroundWorldText
-	db "@"
+	far_text _OaksLabAroundWorldText
+	done
 
 OaksLabGivePokeballsText: ; 1d30e (7:530e)
-	TX_FAR _OaksLabGivePokeballsText1
+	far_text _OaksLabGivePokeballsText1
 	db $11
-	TX_FAR _OaksLabGivePokeballsText2
-	db "@"
+	far_text _OaksLabGivePokeballsText2
+	done
 
 OaksLabPleaseVisitText: ; 1d318 (7:5318)
-	TX_FAR _OaksLabPleaseVisitText
-	db "@"
+	far_text _OaksLabPleaseVisitText
+	done
 
 OaksLabText_1d31d: ; 1d31d (7:531d)
-	TX_FAR _OaksLabText_1d31d
-	db "@"
+	far_text _OaksLabText_1d31d
+	done
 
 OaksLabText34: ; 1d322 (7:5322)
 OaksLabText33: ; 1d322 (7:5322)
 OaksLabText7: ; 1d322 (7:5322)
 OaksLabText6: ; 1d322 (7:5322)
-	TX_ASM
+	asm_text
 	ld hl, OaksLabText_1d32c
 	call PrintText
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 OaksLabText_1d32c: ; 1d32c (7:532c)
-	TX_FAR _OaksLabText_1d32c
-	db "@"
+	far_text _OaksLabText_1d32c
+	done
 
 OaksLabText35: ; 1d331 (7:5331)
 OaksLabText8: ; 1d331 (7:5331)
-	TX_FAR _OaksLabText8
-	db "@"
+	far_text _OaksLabText8
+	done
 
 OaksLabText36: ; 1d336 (7:5336)
 OaksLabText9: ; 1d336 (7:5336)
-	TX_ASM
+	asm_text
 	ld hl, OaksLabText_1d340
 	call PrintText
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 OaksLabText_1d340: ; 1d340 (7:5340)
-	TX_FAR _OaksLabText_1d340
-	db "@"
+	far_text _OaksLabText_1d340
+	done
 
 OaksLabText17: ; 1d345 (7:5345)
-	TX_ASM
+	asm_text
 	ld hl, OaksLabRivalWaitingText
 	call PrintText
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 OaksLabRivalWaitingText: ; 1d34f (7:534f)
-	TX_FAR _OaksLabRivalWaitingText
-	db "@"
+	far_text _OaksLabRivalWaitingText
+	done
 
 OaksLabText18: ; 1d354 (7:5354)
-	TX_ASM
+	asm_text
 	ld hl, OaksLabChooseMonText
 	call PrintText
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 OaksLabChooseMonText: ; 1d35e (7:535e)
-	TX_FAR _OaksLabChooseMonText
-	db "@"
+	far_text _OaksLabChooseMonText
+	done
 
 OaksLabText19: ; 1d363 (7:5363)
-	TX_ASM
+	asm_text
 	ld hl, OaksLabRivalInterjectionText
 	call PrintText
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 OaksLabRivalInterjectionText: ; 1d36d (7:536d)
-	TX_FAR _OaksLabRivalInterjectionText
-	db "@"
+	far_text _OaksLabRivalInterjectionText
+	done
 
 OaksLabText20: ; 1d372 (7:5372)
-	TX_ASM
+	asm_text
 	ld hl, OaksLabBePatientText
 	call PrintText
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 OaksLabBePatientText: ; 1d37c (7:537c)
-	TX_FAR _OaksLabBePatientText
-	db "@"
+	far_text _OaksLabBePatientText
+	done
 
 OaksLabText12: ; 1d381 (7:5381)
-	TX_ASM
+	asm_text
 	ld hl, OaksLabLeavingText
 	call PrintText
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 OaksLabLeavingText: ; 1d38b (7:538b)
-	TX_FAR _OaksLabLeavingText
-	db "@"
+	far_text _OaksLabLeavingText
+	done
 
 OaksLabText13: ; 1d390 (7:5390)
-	TX_ASM
+	asm_text
 	ld hl, OaksLabRivalPickingMonText
 	call PrintText
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 OaksLabRivalPickingMonText: ; 1d39a (7:539a)
-	TX_FAR _OaksLabRivalPickingMonText
-	db "@"
+	far_text _OaksLabRivalPickingMonText
+	done
 
 OaksLabText14: ; 1d39f (7:539f)
-	TX_ASM
+	asm_text
 	ld hl, OaksLabRivalReceivedMonText
 	call PrintText
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 OaksLabRivalReceivedMonText: ; 1d3a9 (7:53a9)
-	TX_FAR _OaksLabRivalReceivedMonText
-	db $11, "@"
+	far_text _OaksLabRivalReceivedMonText
+	done
 
 OaksLabText15: ; 1d3af (7:53af)
-	TX_ASM
+	asm_text
 	ld hl, OaksLabRivalChallengeText
 	call PrintText
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 OaksLabRivalChallengeText: ; 1d3b9 (7:53b9)
-	TX_FAR _OaksLabRivalChallengeText
-	db "@"
+	far_text _OaksLabRivalChallengeText
+	done
 
 OaksLabText_1d3be: ; 1d3be (7:53be)
-	TX_FAR _OaksLabText_1d3be
-	db "@"
+	far_text _OaksLabText_1d3be
+	done
 
 OaksLabText_1d3c3: ; 1d3c3 (7:53c3)
-	TX_FAR _OaksLabText_1d3c3
-	db "@"
+	far_text _OaksLabText_1d3c3
+	done
 
 OaksLabText16: ; 1d3c8 (7:53c8)
-	TX_ASM
+	asm_text
 	ld hl, OaksLabRivalToughenUpText
 	call PrintText
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 OaksLabRivalToughenUpText: ; 1d3d2 (7:53d2)
-	TX_FAR _OaksLabRivalToughenUpText
-	db "@"
+	far_text _OaksLabRivalToughenUpText
+	done
 
 OaksLabText21: ; 1d3d7 (7:53d7)
-	TX_FAR _OaksLabText21
-	db "@"
+	far_text _OaksLabText21
+	done
 
 OaksLabText22: ; 1d3dc (7:53dc)
-	TX_FAR _OaksLabText22
-	db "@"
+	far_text _OaksLabText22
+	done
 
 OaksLabText23: ; 1d3e1 (7:53e1)
-	TX_FAR _OaksLabText23
-	db "@"
+	far_text _OaksLabText23
+	done
 
 OaksLabText24: ; 1d3e6 (7:53e6)
-	TX_FAR _OaksLabText24
-	db "@"
+	far_text _OaksLabText24
+	done
 
 OaksLabText25: ; 1d3eb (7:53eb)
-	TX_FAR _OaksLabText25
-	db $11, "@"
+	far_text _OaksLabText25
+	db $11
+	done
 
 OaksLabText26: ; 1d3f1 (7:53f1)
-	TX_FAR _OaksLabText26
-	db "@"
+	far_text _OaksLabText26
+	done
 
 OaksLabText27: ; 1d3f6 (7:53f6)
-	TX_FAR _OaksLabText27
-	db "@"
+	far_text _OaksLabText27
+	done
 
 OaksLabText38: ; 1d3fb (7:53fb)
 OaksLabText37: ; 1d3fb (7:53fb)
 OaksLabText11: ; 1d3fb (7:53fb)
 OaksLabText10: ; 1d3fb (7:53fb)
-	TX_ASM
+	asm_text
 	ld hl, OaksLabText_1d405
 	call PrintText
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 OaksLabText_1d405: ; 1d405 (7:5405)
-	TX_FAR _OaksLabText_1d405
-	db "@"
+	far_text _OaksLabText_1d405
+	done

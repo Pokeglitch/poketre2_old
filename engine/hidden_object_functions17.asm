@@ -90,7 +90,7 @@ PrintBlackboardLinkCableText: ; 5dc1a (17:5c1a)
 	ret
 
 LinkCableHelp: ; 5dc29 (17:5c29)
-	TX_ASM
+	asm_text
 	call SaveScreenTilesToBuffer1
 	ld hl, LinkCableHelpText1
 	call PrintText
@@ -140,7 +140,8 @@ LinkCableHelp: ; 5dc29 (17:5c29)
 	ld hl, wd730
 	res 6, [hl]
 	call LoadScreenTilesFromBuffer1
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 LinkCableHelpText1: ; 5dc9e (17:5c9e)
 	TX_FAR _LinkCableHelpText1
@@ -174,7 +175,7 @@ LinkCableInfoText3: ; 5dce8 (17:5ce8)
 	db "@"
 
 ViridianSchoolBlackboard: ; 5dced (17:5ced)
-	TX_ASM
+	asm_text
 	call SaveScreenTilesToBuffer1
 	ld hl, ViridianSchoolBlackboardText1
 	call PrintText
@@ -257,7 +258,8 @@ ViridianSchoolBlackboard: ; 5dced (17:5ced)
 	ld hl, wd730
 	res 6, [hl]
 	call LoadScreenTilesFromBuffer1
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 ViridianSchoolBlackboardText1: ; 5dda2 (17:5da2)
 	TX_FAR _ViridianSchoolBlackboardText1
@@ -435,13 +437,14 @@ GymTrashCans: ; 5de7d (17:5e7d)
 ; 5dec8
 
 VermilionGymTrashSuccesText1: ; 5dec8 (17:5ec8)
-	TX_FAR _VermilionGymTrashSuccesText1
-	TX_ASM
+	far_text _VermilionGymTrashSuccesText1
+	asm_text
 	call WaitForSoundToFinish
 	ld a, SFX_SWITCH
 	call PlaySound
 	call WaitForSoundToFinish
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 ; unused
 VermilionGymTrashSuccesText2: ; 5dedb (17:5edb)
@@ -450,27 +453,30 @@ VermilionGymTrashSuccesText2: ; 5dedb (17:5edb)
 
 ; unused
 VermilionGymTrashSuccesPlaySfx: ; 5dee0 (17:5ee0)
-	TX_ASM
+	asm_text
 	call WaitForSoundToFinish
 	ld a, SFX_SWITCH
 	call PlaySound
 	call WaitForSoundToFinish
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 VermilionGymTrashSuccesText3: ; 5deef (17:5eef)
 	TX_FAR _VermilionGymTrashSuccesText3
-	TX_ASM
+	asm_text
 	call WaitForSoundToFinish
 	ld a, SFX_GO_INSIDE
 	call PlaySound
 	call WaitForSoundToFinish
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 VermilionGymTrashFailText: ; 5df02 (17:5f02)
 	TX_FAR _VermilionGymTrashFailText
-	TX_ASM
+	asm_text
 	call WaitForSoundToFinish
 	ld a, SFX_DENIED
 	call PlaySound
 	call WaitForSoundToFinish
-	jp TextScriptEnd
+	end_asm_text
+	done

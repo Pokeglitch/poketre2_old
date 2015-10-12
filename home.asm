@@ -291,17 +291,6 @@ DrawHPBar:: ; 1336 (0:1336)
 LoadMonData:: ; 1372 (0:1372)
 	jpab LoadMonData_
 
-
-OverwritewMoves:: ; 137a (0:137a)
-; Write c to [wMoves + b]. Unused.
-	ld hl, wMoves
-	ld e, b
-	ld d, 0
-	add hl, de
-	ld a, c
-	ld [hl], a
-	ret
-
 LoadFlippedFrontSpriteByMonIndex:: ; 1384 (0:1384)
 	ld a, 1
 	ld [wSpriteFlipped], a
@@ -940,10 +929,10 @@ PokeCenterSignText:: ; 24ef (0:24ef)
 	db "@"
 
 PickUpItemText:: ; 24f4 (0:24f4)
-; XXX better label (what does predef $5C do?)
-	TX_ASM
+	asm_text
 	predef PickUpItem
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 
 INCLUDE "home/pic.asm"
@@ -2559,11 +2548,11 @@ GetSavedEndBattleTextPointer:: ; 33b7 (0:33b7)
 	ret
 
 TrainerEndBattleText:: ; 33cf (0:33cf)
-	TX_FAR _TrainerNameText
-	TX_ASM
+	far_text _TrainerNameText
+	asm_text
 	call GetSavedEndBattleTextPointer
-	call TextCommandProcessor
-	jp TextScriptEnd
+	place_string_end_asm_text
+	done
 
 ; only engage withe trainer if the player is not already
 ; engaged with another trainer
@@ -3569,13 +3558,20 @@ AddPartyMon:: ; 3927 (0:3927)
 	pop hl
 	ret
 	
+CalcStat:
+	call InitCalcStat
+	jpba _CalcStatFar
+
 CalcStats:
+	call InitCalcStat
+	jpba _CalcStats
+	
+InitCalcStat
 	ld c,b		;store b into c
 	ld a,h
 	ld [H_MULTIPLICAND],a
 	ld a,l
 	ld [H_MULTIPLICAND + 1],a			;store hl
-	callab _CalcStats
 	ret
 
 AddEnemyMonToPlayerParty:: ; 3a53 (0:3a53)
@@ -3585,11 +3581,7 @@ AddEnemyMonToPlayerParty:: ; 3a53 (0:3a53)
 	ld [H_LOADEDROMBANK], a
 	ld [MBC1RomBank], a
 	call _AddEnemyMonToPlayerParty
-	pop bc
-	ld a, b
-	ld [H_LOADEDROMBANK], a
-	ld [MBC1RomBank], a
-	ret
+	jr FinishReturnFromBank
 
 MoveMon:: ; 3a68 (0:3a68)
 	ld a, [H_LOADEDROMBANK]
@@ -3598,6 +3590,9 @@ MoveMon:: ; 3a68 (0:3a68)
 	ld [H_LOADEDROMBANK], a
 	ld [MBC1RomBank], a
 	call _MoveMon
+	;fall through
+	
+FinishReturnFromBank:
 	pop bc
 	ld a, b
 	ld [H_LOADEDROMBANK], a

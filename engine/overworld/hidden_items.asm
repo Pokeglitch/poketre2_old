@@ -21,8 +21,8 @@ HiddenItems: ; 76688 (1d:6688)
 INCLUDE "data/hidden_item_coords.asm"
 
 FoundHiddenItemText: ; 7675b (1d:675b)
-	TX_FAR _FoundHiddenItemText
-	TX_ASM
+	far_text _FoundHiddenItemText
+	asm_text
 	ld a, [wHiddenObjectFunctionArgument] ; item ID
 	ld b, a
 	ld c, 1
@@ -36,14 +36,16 @@ FoundHiddenItemText: ; 7675b (1d:675b)
 	ld a, SFX_GET_ITEM_2
 	call PlaySoundWaitForCurrent
 	call WaitForSoundToFinish
-	jp TextScriptEnd
+	jr .finish
 .BagFull
 	call WaitForTextScrollButtonPress ; wait for button press
 	xor a
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
 	ld hl, HiddenItemBagFullText
 	call PrintText
-	jp TextScriptEnd
+.finish
+	end_asm_text
+	done
 
 HiddenItemBagFullText: ; 76794 (1d:6794)
 	TX_FAR _HiddenItemBagFullText

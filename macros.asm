@@ -15,6 +15,11 @@ end_asm_text:	MACRO
 	call TextScriptEnd
 	ENDM
 
+place_string_end_asm_text:	MACRO
+	call PlaceStringFromASM_HL
+	call TextScriptEnd
+	ENDM
+	
 ram_text: MACRO
 ; prints the string in the textbox
 ; \1: RAM address to read from

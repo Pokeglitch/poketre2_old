@@ -158,7 +158,7 @@ PalletTownTextPointers: ; 18f88 (6:4f88)
 	dw PalletTownText7
 
 PalletTownText1: ; 18f96 (6:4f96)
-	TX_ASM
+	asm_text
 	ld a,[wcf0d]
 	and a
 	jr nz,.next
@@ -170,11 +170,12 @@ PalletTownText1: ; 18f96 (6:4f96)
 	ld hl,OakWalksUpText
 .done
 	call PrintText
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 OakAppearsText: ; 18fb0 (6:4fb0)
-	TX_FAR _OakAppearsText
-	TX_ASM
+	far_text _OakAppearsText
+	asm_text
 	ld c,10
 	call DelayFrames
 	xor a
@@ -183,32 +184,33 @@ OakAppearsText: ; 18fb0 (6:4fb0)
 	predef EmotionBubble
 	ld a,PLAYER_DIR_DOWN
 	ld [wPlayerMovingDirection],a
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 OakWalksUpText: ; 18fce (6:4fce)
-	TX_FAR _OakWalksUpText
-	db "@"
+	far_text _OakWalksUpText
+	done
 
 PalletTownText2: ; 0x18fd3 girl
-	TX_FAR _PalletTownText2
-	db "@"
+	far_text _PalletTownText2
+	done
 
 PalletTownText3: ; 0x18fd8 fat man
-	TX_FAR _PalletTownText3
-	db "@"
+	far_text _PalletTownText3
+	done
 
 PalletTownText4: ; 0x18fdd sign by lab
-	TX_FAR _PalletTownText4
-	db "@"
+	far_text _PalletTownText4
+	done
 
 PalletTownText5: ; 0x18fe2 sign by fence
-	TX_FAR _PalletTownText5
-	db "@"
+	far_text _PalletTownText5
+	done
 
 PalletTownText6: ; 0x18fe7 sign by Red’s house
-	TX_FAR _PalletTownText6
-	db "@"
+	far_text _PalletTownText6
+	done
 
 PalletTownText7: ; 0x18fec sign by Blue’s house
-	TX_FAR _PalletTownText7
-	db "@"
+	far_text _PalletTownText7
+	done

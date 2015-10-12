@@ -583,7 +583,7 @@ PokedexDataDividerLine: ; 4045f (10:445f)
 	db $69,$6B,$69,$6B,$6B
 	db $6B,$6B,$69,$6B,$69
 	db $6B,$69,$6B,$69,$6A
-	db $50
+	done
 
 ; draws a line of tiles
 ; INPUT:

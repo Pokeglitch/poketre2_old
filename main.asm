@@ -3172,12 +3172,13 @@ PrintStrengthTxt: ; cd99 (3:4d99)
 	jp PrintText
 
 UsedStrengthText: ; cdaa (3:4daa)
-	TX_FAR _UsedStrengthText
-	TX_ASM
+	far_text _UsedStrengthText
+	asm_text
 	ld a, [wcf91]
 	call PlayCry
 	call Delay3
-	jp TextScriptEnd
+	end_asm_text
+	done
 
 CanMoveBouldersText: ; cdbb (3:4dbb)
 	TX_FAR _CanMoveBouldersText
