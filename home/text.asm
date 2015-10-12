@@ -66,6 +66,7 @@ GetFollowingCharacter:
 	
 ;how many bytes these special characters use
 SizeOfSpecialChars:
+	db $44, 4
 	db $45, 4
 	db $46, 4
 	db $47, 3
@@ -166,32 +167,43 @@ Char4A:: ; 1a29 (0:1a29) ; PKMN
 	;fall through to FinishDTE
 	
 FinishDTE::
-	call PlaceInlineString
-	ld h,b
-	ld l,c
+	call InitAndPlaceInlineString
 	pop de
 	inc de
+	
+FinishDTECommon:
+	call AfterPlaceInlineString
+	jr z,.finish		;if we aren't, then finish
+	push de		;save the starting position
+.finish
+	jp PlaceNextChar
+	
+AfterPlaceInlineString:
 	push hl
 	ld hl,wTextCharCount
-	ld a,[hl]
-	and a
+	bit CheckWordWrap,[hl]	;are we checking for word wrap
 	jr z,.finish		;if we aren't, then finish
 
 	set CountingLetters,[hl]	;make sure we continue to count again
-	
-	call IsNextCharacterBreaking	;see if the next character was non breaking
-	jr c,.dontCount		;don't decrement if so
-	dec [hl]
-	
-.dontCount
+	call DecIfNextCharNotBreaking
 	pop hl
-	push de		;save the starting position
-	jr .finish2
-	
+	xor a
+	inc a		;unzero flag
 .finish
 	pop hl
-.finish2
-	jp PlaceNextChar
+	ret
+	
+	
+;the routine to init and place the inline string
+InitAndPlaceInlineString:
+	push hl
+	ld hl, wTextCharCount
+	call IncIfNextCharNotBreaking
+	pop hl
+	call PlaceInlineString
+	ld h,b
+	ld l,c
+	ret
 	
 Char59:: ; 1a2f (0:1a2f)
 ; depending on whose turn it is, print
@@ -246,16 +258,21 @@ PlaceInlineString:: ; 1a4b (0:1a4b)
 	bit CheckWordWrap,[hl]		;are we checking for word wrap
 	jr z,.dontCount		;dont count if not
 		
-	set CountingLetters,[hl]
-	
-	call IsNextCharacterBreaking	;see if the next character is non breaking
-	jr c,.dontCount		;don't increment if so
-	
-	inc [hl]		;otherwise increment the character count
-	
+	set CountingLetters,[hl]	
 .dontCount
 	pop hl
 	jp PlaceString
+	
+DecIfNextCharNotBreaking:
+	call IsNextCharacterBreaking	;see if the next character is breaking
+	ret c		;return if so
+	dec [hl]
+	ret
+IncIfNextCharNotBreaking:
+	call IsNextCharacterBreaking	;see if the next character is breaking
+	ret c		;return if so
+	inc [hl]
+	ret
 	
 IsNextCharacterBreaking:
 	push de
@@ -279,6 +296,40 @@ SetCountCharIfWordWrap:
 	set CountingLetters,[hl]	;set counting letters
 	ret
 	
+	
+	
+; process text commands in another ROM bank
+; AAAA = address of text commands
+; BB = bank
+Char44:
+	pop hl		;recover the destination pointer
+	ld a,[H_LOADEDROMBANK]
+	push af		;store the current bank
+	
+	call ExtractNumberData	;get pointer and bank
+	
+	ld [H_LOADEDROMBANK],a
+	ld [MBC1RomBank],a		;set the current bank	
+	
+	push de		;store the current text pointer
+	
+	push bc
+	pop de		;set de to be the new text pointer
+	
+	call InitAndPlaceInlineString		;place the new string
+	
+	pop de
+	inc de		;move to next character
+	
+	pop af		;recover the previous bank
+	ld [H_LOADEDROMBANK],a
+	ld [MBC1RomBank],a		;set the current bank	
+	
+	jp FinishDTECommon
+	
+
+
+
 ;to print a decimal number from a BCD decimal
 ; AAAA = address of BCD number
 ; BB
@@ -343,21 +394,13 @@ AfterPrintNumber:
 	bit CountingLetters,[hl]	;were we counting letters?
 	jr nz,.counting		;then handle if we were counting
 
-	call IsNextCharacterBreaking	;see if the next character is non breaking
-	jr c,.dontDec		;don't decrement if so
-	
-	dec [hl]		;otherwise increment the character count
-.dontDec
+	call DecIfNextCharNotBreaking
 	xor a		;set zero flag
 	ret
 	
 .counting
 	res CountingLetters,[hl]		;unset counting letters
-	call IsNextCharacterBreaking	;see if the next character is non breaking
-	jr c,.dontInc		;don't increment if so
-	
-	inc [hl]		;otherwise increment the character count
-.dontInc
+	call IncIfNextCharNotBreaking
 	;see if we should word wrap
 	call CheckForWordWrap
 	ret c		;return if there is a carry
@@ -662,7 +705,7 @@ CheckForWordWrap:
 ;to scroll the text
 TryScrollText:
 	bit FirstLineBreak,[hl]		;have we already added the first line break
-	ret z		;if not, then we don't scroll the text
+	jr z,.finish		;if not, then we don't scroll the text
 	
 	push hl
 	push de
@@ -698,7 +741,7 @@ ResetCharCount_LineBreak:
 	
 ResetCharCountFinish:
 	ld hl, wTextCharCount
-	bit CountingLetters,[hl]		;are we counting letters?
+	bit CheckWordWrap,[hl]		;are we checking word wrap?
 	jr z,.finish			;finish if not
 	ld [hli],a		;store the flags
 	ld [hl], 0		;zero the 'next character' byte
@@ -831,6 +874,8 @@ SpecialTextChars:
 	dw Char00
 	db " "
 	dw CharSpace
+	db $44
+	dw Char44
 	db $45
 	dw Char45
 	db $46
@@ -963,17 +1008,17 @@ TextCommand00:: ; 1b8a (0:1b8a)
 ; 01AAAA
 ; AAAA = address of string
 TextCommand01:: ; 1b97 (0:1b97)
-	pop hl
-	ld a,[hli]
-	ld e,a
-	ld a,[hli]
-	ld d,a
-	push hl
-	ld h,b
-	ld l,c
-	call PlaceString
-	pop hl
-	jr NextTextCommand
+;	pop hl
+;	ld a,[hli]
+;	ld e,a
+;	ld a,[hli]
+;	ld d,a
+;	push hl
+;	ld h,b
+;	ld l,c
+;	call PlaceString
+;	pop hl
+;	jr NextTextCommand
 
 ; print BCD number
 ; 02AAAABB
@@ -1023,18 +1068,18 @@ TextCommand05:: ; 1bc5 (0:1bc5)
 ; 06
 ; (no arguments)
 TextCommand06:: ; 1bcc (0:1bcc)
-	ld a,[wLinkState]
-	cp a,LINK_STATE_BATTLING
-	jp z,TextCommand0D
-	ld a,$ee ; down arrow
-	Coorda 18, 13 ; place down arrow in lower right corner of dialogue text box
-	push bc
-	call ManualTextScroll ; blink arrow and wait for A or B to be pressed
-	pop bc
-	ld a," "
-	Coorda 18, 13 ; overwrite down arrow with blank space
-	pop hl
-	jp NextTextCommand
+;	ld a,[wLinkState]
+;	cp a,LINK_STATE_BATTLING
+;	jp z,TextCommand0D
+;	ld a,$ee ; down arrow
+;	Coorda 18, 13 ; place down arrow in lower right corner of dialogue text box
+;	push bc
+;	call ManualTextScroll ; blink arrow and wait for A or B to be pressed
+;	pop bc
+;	ld a," "
+;	Coorda 18, 13 ; overwrite down arrow with blank space
+;	pop hl
+;	jp NextTextCommand
 
 ; scroll text up one line
 ; 07

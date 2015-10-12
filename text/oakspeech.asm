@@ -17,8 +17,7 @@ _OakSpeechText2A::
 _OakSpeechText2B::
 	text $51,"For some people,"
 	line "# are"
-	cont "pets. Others use"
-	cont "them for fights."
+	cont "pets. Others use them for fights."
 	
 	para "Myself..."
  
