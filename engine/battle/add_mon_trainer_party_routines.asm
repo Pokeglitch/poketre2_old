@@ -178,9 +178,3 @@ TrainerMorale_Base:
 	ld a, [wMonHBaseMorale]
 	ret
 	
-	
-	
-	
-	
-AdjustVaryPKLevelForMap:
-	ret

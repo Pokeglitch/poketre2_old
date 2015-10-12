@@ -353,16 +353,14 @@ GainedText: ; 554b2 (15:54b2)
 	jr z,.finish
 	ld hl, BoostedText
 .finish
-	call PlaceStringFromASM_HL
-	end_asm_text
+	place_string_end_asm_text
 	done
 
 WithExpAllText: ; 554cb (15:54cb)
 	far_text _WithExpAllText
 	asm_text
 	ld hl, ExpPointsText
-	call PlaceStringFromASM_HL
-	end_asm_text
+	place_string_end_asm_text
 	done
 
 BoostedText: ; 554d4 (15:54d4)
@@ -374,4 +372,5 @@ ExpPointsText: ; 554d8 (15:54d8)
 
 GrewLevelText: ; 554dd (15:54dd)
 	far_text _GrewLevelText
+	db $0b
 	done

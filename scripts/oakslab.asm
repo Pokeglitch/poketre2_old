@@ -940,6 +940,7 @@ OaksLabMonChoiceEnd: ; 1d21f (7:521f)
 
 OaksLabMonReceivedText: ; 1d222 (7:5222)
 	far_text _OaksLabMonReceivedText
+	db $11
 	done
 
 OaksLabScript_1d22d: ; 1d22d (7:522d)

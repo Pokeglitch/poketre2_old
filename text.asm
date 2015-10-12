@@ -1684,7 +1684,7 @@ _FireDefrostedText:: ; 94782 (25:4782)
 	prompt
 
 _MonsStatsRoseText:: ; 94795 (25:4795)
-	text $5a, "'s"
+	text $5a, "'s "
 	ram_text wcf4b
 	done
 
@@ -1697,7 +1697,7 @@ _RoseText:: ; 947ab (25:47ab)
 	prompt
 
 _MonsStatsFellText:: ; 947b3 (25:47b3)
-	text $59, "'s"
+	text $59, "'s "
 	ram_text wcf4b
 	done
 

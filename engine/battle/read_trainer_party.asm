@@ -129,7 +129,7 @@ ReadTrainer: ; 39c53 (e:5c53)
 	
 
 
-NewWildMonLevel:
+NewWildMonLevel::
 	call GetVaryPKLevel
 	
 	;adjust for the maps min/max level
@@ -152,11 +152,11 @@ NewWildMonLevel:
 	
 ;if the level in a is less than the min for the map, then set it to the min
 ;if the level in a is greater than the max, set it to the max
-AdjustVaryPkLevelForMap:
+AdjustVaryPKLevelForMap::
 	ret
 
 ;stores the new level into wCurEnemyLVL
-NewTrainerLevels:
+NewTrainerLevels::
 	push hl
 	ld a,[wEnemyTrainerBaseLevel]
 	ld hl,wEnemyTrainerBaseLevelRoutineTables
