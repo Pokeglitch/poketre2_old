@@ -147,7 +147,7 @@ charmap "ゅ", $E1
 charmap "ょ", $E2
 charmap "ー", $E3
 
-charmap "@", $50
+charmap "@", $00
 charmap "#", $54
 ;charmap "POKé", $54
 charmap "…", $75

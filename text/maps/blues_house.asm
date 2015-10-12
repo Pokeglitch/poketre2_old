@@ -13,7 +13,7 @@ _DaisyOfferMapText::
 
 _GotMapText::
 	text $52," got a "
-	text_ram_text wcf4b
+	ram_text wcf4b
 	db "!@@"
 
 _DaisyBagFullText::

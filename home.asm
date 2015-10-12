@@ -919,12 +919,6 @@ UpdateSprites:: ; 2429 (0:2429)
 
 INCLUDE "data/mart_inventories.asm"
 
-TextScriptEndingChar:: ; 24d6 (0:24d6)
-	db "@"
-TextScriptEnd:: ; 24d7 (0:24d7)
-	ld hl,TextScriptEndingChar
-	ret
-
 ExclamationText:: ; 24db (0:24db)
 	TX_FAR _ExclamationText
 	db "@"
@@ -1124,7 +1118,7 @@ DisplayTextID:: ; 2920 (0:2920)
 	callab CableClubNPC
 	jr AfterDisplayingTextID
 .notSpecialCase
-	call PrintText_NoCreatingTextBox ; display the text
+	call PrintText_NoCreatingTextBox_WordWrap ; display the text
 	ld a,[wDoNotWaitForButtonPressAfterDisplayingText]
 	and a
 	jr nz,HoldTextDisplayOpen

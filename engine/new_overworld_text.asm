@@ -9,7 +9,7 @@ _DisplayNewOverworldText:
 	ld a,[hli]
 	ld h,[hl]
 	ld l,a
-	jp PrintText
+	jp PrintText_NoCreatingTextBox_WordWrap
 	
 NewOverworldTextPointersTable:
 	add_overworld_text IsHatchingText
@@ -35,16 +35,16 @@ HatchedIntoText:
 	prompt
 	
 DelayedDamageOccuredText:
-	text_ram_text wcf4b
+	ram_text wcf4b
 	db " exploded!"
 	prompt
 	
 LastStandDelayedDamageOccuredText:
-	text_ram_text wPlayerName
+	ram_text wPlayerName
 	db " exploded!"
 	prompt
 	
 PokemonCF4BFaintedText:
-	text_ram_text wcf4b
+	ram_text wcf4b
 	db " fainted!"
 	prompt

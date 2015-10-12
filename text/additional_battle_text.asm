@@ -536,7 +536,7 @@ _TrainerLastStandText2:
 	prompt
 	
 _IntoLastStandText:
-	text_ram_text wPlayerName
+	ram_text wPlayerName
 	db " went into Last Stand mode!"
 	prompt
 	

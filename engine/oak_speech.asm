@@ -153,22 +153,20 @@ OakSpeech: ; 6115 (1:6115)
 	call GBFadeOutToWhite
 	jp ClearScreen
 OakSpeechText1: ; 6253 (1:6253)
-	TX_FAR _OakSpeechText1
-	db "@"
+	far_text _OakSpeechText1
+	done
 OakSpeechText2: ; 6258 (1:6258)
-	TX_FAR _OakSpeechText2A
-	db $14 ; play NIDORINA cry from TextCommandSounds
-	TX_FAR _OakSpeechText2B
-	db "@"
+	far_text _OakSpeechText2
+	done
 IntroducePlayerText: ; 6262 (1:6262)
-	TX_FAR _IntroducePlayerText
-	db "@"
+	far_text _IntroducePlayerText
+	done
 IntroduceRivalText: ; 6267 (1:6267)
-	TX_FAR _IntroduceRivalText
-	db "@"
+	far_text _IntroduceRivalText
+	done
 OakSpeechText3: ; 626c (1:626c)
-	TX_FAR _OakSpeechText3
-	db "@"
+	far_text _OakSpeechText3
+	done
 
 FadeInIntroPic: ; 6271 (1:6271)
 	ld hl,IntroFadePalettes

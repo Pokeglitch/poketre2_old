@@ -122,7 +122,7 @@ _VendingMachineText4:: ; 9ce96 (27:4e96)
 	done
 
 _VendingMachineText5:: ; 9ceaf (27:4eaf)
-	text_ram_text wcf4b
+	ram_text wcf4b
 	db " popped out!"
 	done
 

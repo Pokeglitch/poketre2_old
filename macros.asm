@@ -1,19 +1,33 @@
 
-text   EQUS "db $00," ; Start writing text.
+text   EQUS "db " ; Start writing text.
 next   EQUS "db $4e," ; Move a line down.
 line   EQUS "db $4f," ; Start writing at the bottom line.
 para   EQUS "db $51," ; Start a new paragraph.
-cont   EQUS "db $55," ; Scroll to the next line.
-done   EQUS "db $57"  ; End a text box.
+cont   EQUS "db $4B," ; Scroll to the next line.
+done   EQUS "db $00"  ; End a text box.
 prompt EQUS "db $58"  ; Prompt the player to end a text box (initiating some other event).
 
-more_text EQUS "db "	;just more text
+asm_text: MACRO
+	db $43
+	ENDM
+	
+end_asm_text:	MACRO
+	call TextScriptEnd
+	ENDM
 
 ram_text: MACRO
 ; prints the string in the textbox
 ; \1: RAM address to read from
 	db $47
 	dw \1
+	ENDM
+	
+far_text:  MACRO
+; prints the string in the textbox
+; \1: address to read from
+	db $44
+	dw \1
+	db BANK(\1)
 	ENDM
 	
 hex_number: MACRO
@@ -35,16 +49,9 @@ dec_number: MACRO
 	dw \1
 	db \2 << 5 | \3
 	ENDM
-	
-text_ram_text: MACRO
-; prints the string in the textbox
-; \1: RAM address to read from
-	db $00,$47
-	dw \1
-	ENDM
 
 page   EQUS "db $49,"     ; Start a new Pokedex page.
-dex    EQUS "db $5f, $50" ; End a Pokedex entry.
+dex    EQUS "db $5f, $00" ; End a Pokedex entry.
 
 
 percent EQUS "* $ff / 100"
@@ -367,13 +374,13 @@ TX_NUM: MACRO
 ; \1: address to read from
 ; \2: number of bytes to read
 ; \3: number of digits to display
-	db $09
+	db $46
 	dw \1
 	db \2 << 4 | \3
 	ENDM
 
 TX_FAR: MACRO
-	db $17
+	db $44
 	dw \1
 	db BANK(\1)
 	ENDM
@@ -382,12 +389,12 @@ TX_FAR: MACRO
 TX_RAM: MACRO
 ; prints text to screen
 ; \1: RAM address to read from
-	db $1
+	db $47
 	dw \1
 	ENDM
 
 TX_BCD: MACRO
-	db $2
+	db $45
 	dw \1
 	db \2
 	ENDM

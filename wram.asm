@@ -3904,6 +3904,9 @@ wTextCharCount::
 	
 wNextChar::
 	ds 1
+	
+wStringLocation::
+	ds 2
 
 
 SECTION "Stack", WRAMX[$dfff], BANK[1]

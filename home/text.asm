@@ -1,3 +1,46 @@
+; Note:
+; When placing string from Inline ASM, it always assumes the next character is breaking
+; To resolve: Always include the full words/punctuation inside the text
+
+ResetNextChar:
+	xor a
+	ld [wNextChar],a
+	ret
+	
+	
+PlaceStringFromASM_HL::
+	push hl
+	pop de
+	;fall through
+	
+PlaceStringFromASM_DE::
+	call ResetNextChar			;clear the next char byte, not possible to determine
+	call RecoverStringLocation	;recover the location to place the string
+	call InitAndPlaceInlineString
+	call ResetNextChar		;clear the next char byte, not possible to determine
+	call AfterPlaceInlineString
+	;fall through
+	
+StoreStringLocation:
+	ld a,l			;store hl
+	ld [wStringLocation],a
+	ld a,h
+	ld [wStringLocation+1],a
+	ret
+
+RecoverStringLocation:
+	ld a,[wStringLocation]
+	ld l,a
+	ld a,[wStringLocation+1]
+	ld h,a		;get the new string pointer location
+	ret
+
+	
+TextScriptEnd:: ; 24d7 (0:24d7)
+	pop de		;the return pointer = next character, so store that into de
+	call RecoverStringLocation
+	jp FinishDTECommon
+	
 TextBoxBorder::
 ; Draw a cxb text box at hl.
 
@@ -168,6 +211,7 @@ Char4A:: ; 1a29 (0:1a29) ; PKMN
 	
 FinishDTE::
 	call InitAndPlaceInlineString
+
 	pop de
 	inc de
 	
@@ -177,33 +221,6 @@ FinishDTECommon:
 	push de		;save the starting position
 .finish
 	jp PlaceNextChar
-	
-AfterPlaceInlineString:
-	push hl
-	ld hl,wTextCharCount
-	bit CheckWordWrap,[hl]	;are we checking for word wrap
-	jr z,.finish		;if we aren't, then finish
-
-	set CountingLetters,[hl]	;make sure we continue to count again
-	call DecIfNextCharNotBreaking
-	pop hl
-	xor a
-	inc a		;unzero flag
-.finish
-	pop hl
-	ret
-	
-	
-;the routine to init and place the inline string
-InitAndPlaceInlineString:
-	push hl
-	ld hl, wTextCharCount
-	call IncIfNextCharNotBreaking
-	pop hl
-	call PlaceInlineString
-	ld h,b
-	ld l,c
-	ret
 	
 Char59:: ; 1a2f (0:1a2f)
 ; depending on whose turn it is, print
@@ -252,6 +269,124 @@ MonsterNameCharsCommon:: ; 1a37 (0:1a37)
 .finish
 	jr FinishDTE
 
+;his/her when referring to rival
+Char57:: ; 1aad (0:1aad)
+	pop hl		;recover the destination pointer
+	push de
+	ld de,HerText	;text if totem is on
+	ld bc,HisText	;text if totem is on
+	
+RoleReversalTextCommon:
+	ld a,[wTotems]
+	bit RoleReversalTotem,a		;did we switch characters
+	jr z,.finish		;finish if not
+	push bc
+	pop de		;use the BC text instead
+.finish
+	jr FinishDTE
+	
+;read from RAM
+Char47:
+	pop hl		;recover the destination pointer
+	inc de
+	ld a,[de]
+	ld c,a
+	inc de
+	ld a,[de]
+	push de		;store the new source pointer
+	ld d,a
+	ld e,c		;set de to be the ram pointer
+	jr FinishDTE
+	
+	
+;trainers name
+Char48::
+	pop hl		;recover the destination pointer
+	push de
+	ld de,wTrainerName
+	ld a,[wEnemyTrainerFirstName + 1]
+	cp "@"		;is the trainer first name empty?
+	jr z,.finish		;then finish
+	call PlaceInlineString
+	ld h,b
+	ld l,c
+	ld de,wEnemyTrainerFirstName
+.finish
+	jr FinishDTE
+	
+;boy/girl when referring to rival
+Char40::
+	pop hl		;recover the destination pointer
+	push de
+	ld de,GirlText	;text if totem is off
+	ld bc,BoyText	;text if totem is on
+	jr RoleReversalTextCommon
+	
+;boy/girl when referring to player
+Char50::
+	pop hl		;recover the destination pointer
+	push de
+	ld de,BoyText	;text if totem is off
+	ld bc,GirlText	;text if totem is on
+	jr RoleReversalTextCommon
+	
+;he/she when referring to rival
+Char4D::
+	pop hl		;recover the destination pointer
+	push de
+	ld de,SheText	;text if totem is off
+	ld bc,HeText	;text if totem is on
+	jr RoleReversalTextCommon
+	
+;capital he/she when referring to rival
+Char42::
+	pop hl		;recover the destination pointer
+	push de
+	ld de,CapitalSheText	;text if totem is off
+	ld bc,CapitalHeText	;text if totem is on
+	jr RoleReversalTextCommon
+	
+;his/hers when referring to rival
+Char41::
+	pop hl		;recover the destination pointer
+	push de
+	ld de,HersText	;text if totem is off
+	ld bc,HisText	;text if totem is on
+	jr RoleReversalTextCommon
+	
+;capital his/her when referring to rival
+Char55::
+	pop hl		;recover the destination pointer
+	push de
+	ld de,CapitalHerText	;text if totem is off
+	ld bc,CapitalHisText	;text if totem is on
+	jr RoleReversalTextCommon
+	
+AfterPlaceInlineString:
+	push hl
+	ld hl,wTextCharCount
+	bit CheckWordWrap,[hl]	;are we checking for word wrap
+	jr z,.finish		;if we aren't, then finish
+
+	set CountingLetters,[hl]	;make sure we continue to count again
+	call DecIfNextCharPunctuation
+	xor a
+	inc a		;unzero flag
+.finish
+	pop hl
+	ret	
+	
+;the routine to init and place the inline string
+InitAndPlaceInlineString:
+	push hl
+	ld hl, wTextCharCount
+	call IncIfNextCharPunctuation
+	pop hl
+	call PlaceInlineString
+	ld h,b
+	ld l,c
+	ret
+	
 PlaceInlineString:: ; 1a4b (0:1a4b)
 	push hl
 	ld hl,wTextCharCount
@@ -263,30 +398,30 @@ PlaceInlineString:: ; 1a4b (0:1a4b)
 	pop hl
 	jp PlaceString
 	
-DecIfNextCharNotBreaking:
-	call IsNextCharacterBreaking	;see if the next character is breaking
-	ret c		;return if so
+DecIfNextCharPunctuation:
+	call IsNextCharacterPunctuation	;see if the next character is punctuation
+	ret nc		;return if not
 	dec [hl]
 	ret
-IncIfNextCharNotBreaking:
-	call IsNextCharacterBreaking	;see if the next character is breaking
-	ret c		;return if so
+IncIfNextCharPunctuation:
+	call IsNextCharacterPunctuation	;see if the next character is breaking
+	ret nc		;return if not
 	inc [hl]
 	ret
 	
-IsNextCharacterBreaking:
+IsNextCharacterPunctuation:
 	push de
 	push hl
 	ld a,[wNextChar]
-	ld hl,BreakingChars
+	ld hl,PunctuationChars
 	ld de,1
 	call IsInArray
 	pop hl
 	pop de
 	ret
 	
-BreakingChars:
-	db " ",0,$57,$58,$FF
+PunctuationChars:
+	db "?!.,",$BD,$FF
 
 ;to set the counting character flag if we are in word wrap mode
 SetCountCharIfWordWrap:
@@ -296,7 +431,14 @@ SetCountCharIfWordWrap:
 	set CountingLetters,[hl]	;set counting letters
 	ret
 	
-	
+;to run inline ASM commands
+Char43:
+	pop hl		;recover the 'print to' location
+	call StoreStringLocation ;and save it
+	inc de
+	push de
+	pop hl		;hl = next line of text
+	jp [hl]
 	
 ; process text commands in another ROM bank
 ; AAAA = address of text commands
@@ -327,9 +469,6 @@ Char44:
 	
 	jp FinishDTECommon
 	
-
-
-
 ;to print a decimal number from a BCD decimal
 ; AAAA = address of BCD number
 ; BB
@@ -394,13 +533,13 @@ AfterPrintNumber:
 	bit CountingLetters,[hl]	;were we counting letters?
 	jr nz,.counting		;then handle if we were counting
 
-	call DecIfNextCharNotBreaking
+	call DecIfNextCharPunctuation
 	xor a		;set zero flag
 	ret
 	
 .counting
 	res CountingLetters,[hl]		;unset counting letters
-	call IncIfNextCharNotBreaking
+	call IncIfNextCharPunctuation
 	;see if we should word wrap
 	call CheckForWordWrap
 	ret c		;return if there is a carry
@@ -460,35 +599,6 @@ Char46:
 	
 
 	
-;read from RAM
-Char47:
-	pop hl		;recover the destination pointer
-	inc de
-	ld a,[de]
-	ld c,a
-	inc de
-	ld a,[de]
-	push de		;store the new source pointer
-	ld d,a
-	ld e,c		;set de to be the ram pointer
-	jp FinishDTE
-	
-	
-;trainers name
-Char48::
-	pop hl		;recover the destination pointer
-	push de
-	ld de,wTrainerName
-	ld a,[wEnemyTrainerFirstName + 1]
-	cp "@"		;is the trainer first name empty?
-	jr z,.finish		;then finish
-	call PlaceInlineString
-	ld h,b
-	ld l,c
-	ld de,wEnemyTrainerFirstName
-.finish
-	jp FinishDTE
-	
 Char5CText:: ; 1a55 (0:1a55)
 	db "TM@"
 Char5DText:: ; 1a58 (0:1a58)
@@ -525,19 +635,61 @@ Next1AA2:: ; 1aa2 (0:1aa2)
 	call ManualTextScroll
 	ld a," "
 	Coorda 18, 13
-	jr Char57Finish
+	jr Char58Finish
 	
 Char00::
-Char57:: ; 1aad (0:1aad)
 	pop hl
-Char57Finish::
-	
+Char58Finish::
 	ld de,Char58Text
 	jp PlaceNextChar
 
 Char58Text:: ; 1ab3 (0:1ab3)
-	db "@@"
+	db "@"
+	
+HisText:
+	text "his"
+	done
+	
+HerText:
+	text "her"
+	done
 
+HersText:	
+	text "hers"
+	done
+	
+CapitalHisText:
+	text "His"
+	done
+	
+CapitalHerText:
+	text "Her"
+	done
+	
+HeText:
+	text "he"
+	done
+	
+SheText:
+	text "she"
+	done
+	
+CapitalHeText:
+	text "He"
+	done
+	
+CapitalSheText:
+	text "She"
+	done
+	
+BoyText:
+	text "boy"
+	done
+	
+GirlText:
+	text "girl"
+	done
+	
 	
 Char51:: ; 1ab4 (0:1ab4)
 	pop hl		;recover the destination pointer
@@ -578,8 +730,6 @@ Char49:: ; 1ad5 (0:1ad5)
 	push hl
 	jp PlaceNextChar_inc
 
-
-Char55::
 Char4B:: ; 1af8 (0:1af8)
 	pop hl		;recover the destination pointer
 	ld a,$EE
@@ -652,12 +802,14 @@ PrintText:: ; 3c49 (0:3c49)
 	call DisplayTextBoxID
 	call UpdateSprites
 	call Delay3
+	pop hl
+	
+PrintText_NoCreatingTextBox_WordWrap:
 	ld a,%11000000
 	ld [wTextCharCount],a	;initialize wTextCharCount to indicate that we should check for word wrapping and counting letters
-	pop hl
 	call PrintText_NoCreatingTextBox
-	xor a
-	ld [wTextCharCount],a		;reset wTextCharCount
+	call ResetNextChar
+	ld [wTextCharCount],a		;reset wTextCharCount as well
 	ret
 	
 PrintText_NoCreatingTextBox:: ; 3c59 (0:3c59)
@@ -870,10 +1022,16 @@ PlaceNextChar_inc:
 	jp PlaceNextChar		
 
 SpecialTextChars:
-	db $00
-	dw Char00
 	db " "
 	dw CharSpace
+	db $40
+	dw Char40
+	db $41
+	dw Char41
+	db $42
+	dw Char42
+	db $43
+	dw Char43
 	db $44
 	dw Char44
 	db $45
@@ -892,10 +1050,14 @@ SpecialTextChars:
 	dw Char4B
 	db $4C
 	dw Char4C
+	db $4D
+	dw Char4D
 	db $4E
 	dw Char4E
 	db $4F
 	dw Char4F
+	db $50
+	dw Char50
 	db $51
 	dw Char51
 	db $52
@@ -936,37 +1098,18 @@ TextCommandProcessor:: ; 1b40 (0:1b40)
 	ld a,[$fff4]
 	xor e
 	ld [wLetterPrintingDelayFlags],a
-	ld a,c
-	ld [wUnusedCC3A],a
-	ld a,b
-	ld [wUnusedCC3B],a
-
-NextTextCommand:: ; 1b55 (0:1b55)
-	ld a,[hli]
-	cp a, "@" ; terminator
-	jr nz,.doTextCommand
+	push hl
+	pop de
+	push bc
+	pop hl
+	call PlaceString
+	push de
+	pop hl
+	inc hl
 	pop af
 	ld [wLetterPrintingDelayFlags],a
 	ret
-.doTextCommand
-	push hl
-	cp a,$17
-	jp z,TextCommand17	;text in another bank
-	cp a,$0e
-	jp nc,TextCommand0B			;play sounds
-	; if a != 0x17 and a >= 0xE, go to command 0xB
-; if a < 0xE, use a jump table
-	ld hl,TextCommandJumpTable
-	push bc
-	add a
-	ld b,$00
-	ld c,a
-	add hl,bc
-	pop bc
-	ld a,[hli]
-	ld h,[hl]
-	ld l,a
-	jp [hl]
+
 
 ; draw box
 ; 04AAAABBCC
@@ -974,74 +1117,22 @@ NextTextCommand:: ; 1b55 (0:1b55)
 ; BB = height
 ; CC = width
 TextCommand04:: ; 1b78 (0:1b78)
-	pop hl
-	ld a,[hli]
-	ld e,a
-	ld a,[hli]
-	ld d,a
-	ld a,[hli]
-	ld b,a
-	ld a,[hli]
-	ld c,a
-	push hl
-	ld h,d
-	ld l,e
-	call TextBoxBorder
-	pop hl
-	jr NextTextCommand
-
-; place string inline
-; 00{string}
-TextCommand00:: ; 1b8a (0:1b8a)
-	pop hl
-	ld d,h
-	ld e,l
-	ld h,b
-	ld l,c
-	call PlaceString
-	ld h,d
-	ld l,e
-	inc hl
-	jr NextTextCommand
-
-; place string from RAM
-; 01AAAA
-; AAAA = address of string
-TextCommand01:: ; 1b97 (0:1b97)
-;	pop hl
-;	ld a,[hli]
-;	ld e,a
-;	ld a,[hli]
-;	ld d,a
-;	push hl
-;	ld h,b
-;	ld l,c
-;	call PlaceString
-;	pop hl
-;	jr NextTextCommand
-
-; print BCD number
-; 02AAAABB
-; AAAA = address of BCD number
-; BB
-; bits 0-4 = length in bytes
-; bits 5-7 = unknown flags
-TextCommand02:: ; 1ba5 (0:1ba5)
 ;	pop hl
 ;	ld a,[hli]
 ;	ld e,a
 ;	ld a,[hli]
 ;	ld d,a
 ;	ld a,[hli]
-;	push hl
-;	ld h,b
-;	ld l,c
+;	ld b,a
+;	ld a,[hli]
 ;	ld c,a
-;	call PrintBCDNumber
-;	ld b,h
-;	ld c,l
+;	push hl
+;	ld h,d
+;	ld l,e
+;	call TextBoxBorder
 ;	pop hl
 ;	jr NextTextCommand
+
 
 ; repoint destination address
 ; 03AAAA
@@ -1060,9 +1151,9 @@ TextCommand03:: ; 1bb7 (0:1bb7)
 ; 05
 ; (no arguments)
 TextCommand05:: ; 1bc5 (0:1bc5)
-	pop hl
-	coord bc, 1, 16 ; address of second line of dialogue text box
-	jp NextTextCommand
+;	pop hl
+;	coord bc, 1, 16 ; address of second line of dialogue text box
+;	jp NextTextCommand
 
 ; blink arrow and wait for A or B to be pressed
 ; 06
@@ -1085,66 +1176,36 @@ TextCommand06:: ; 1bcc (0:1bcc)
 ; 07
 ; (no arguments)
 TextCommand07:: ; 1be7 (0:1be7)
-	ld a," "
-	Coorda 18, 13 ; place blank space in lower right corner of dialogue text box
-	call Scroll2Lines
-	pop hl
-	coord bc, 1, 16 ; address of second line of dialogue text box
-	jp NextTextCommand
+;	ld a," "
+;	Coorda 18, 13 ; place blank space in lower right corner of dialogue text box
+;	call Scroll2Lines
+;	pop hl
+;	coord bc, 1, 16 ; address of second line of dialogue text box
+;	jp NextTextCommand
 
 ; execute asm inline
 ; 08{code}
 TextCommand08:: ; 1bf9 (0:1bf9)
-	pop hl
-	ld de,NextTextCommand
-	push de ; return address
-	jp [hl]
-
-; print decimal number (converted from binary number)
-; 09AAAABB
-; AAAA = address of number
-; BB
-; bits 0-3 = how many digits to display
-; bits 4-7 = how long the number is in bytes
-TextCommand09:: ; 1bff (0:1bff)
 ;	pop hl
-;	ld a,[hli]
-;	ld e,a
-;	ld a,[hli]
-;	ld d,a
-;	ld a,[hli]
-;	push hl
-;	ld h,b
-;	ld l,c
-;	ld b,a
-;	and a,$0f
-;	ld c,a
-;	ld a,b
-;	and a,$f0
-;	swap a
-;	set BIT_LEFT_ALIGN,a
-;	ld b,a
-;	call PrintNumber
-;	ld b,h
-;	ld c,l
-;	pop hl
-;	jp NextTextCommand
+;	ld de,NextTextCommand
+;	push de ; return address
+;	jp [hl]
 
 ; wait half a second if the user doesn't hold A or B
 ; 0A
 ; (no arguments)
 TextCommand0A:: ; 1c1d (0:1c1d)
-	push bc
-	call Joypad
-	ld a,[hJoyHeld]
-	and a,A_BUTTON | B_BUTTON
-	jr nz,.skipDelay
-	ld c,30
-	call DelayFrames
-.skipDelay
-	pop bc
-	pop hl
-	jp NextTextCommand
+;	push bc
+;	call Joypad
+;	ld a,[hJoyHeld]
+;	and a,A_BUTTON | B_BUTTON
+;	jr nz,.skipDelay
+;	ld c,30
+;	call DelayFrames
+;.skipDelay
+;	pop bc
+;	pop hl
+;	jp NextTextCommand
 
 ; plays sounds
 ; this actually handles various command ID's, not just 0B
@@ -1231,49 +1292,8 @@ TextCommand0C:: ; 1c78 (0:1c78)
 ; 0D
 ; (no arguments)
 TextCommand0D:: ; 1c9a (0:1c9a)
-	push bc
-	call ManualTextScroll ; wait for A or B to be pressed
-	pop bc
-	pop hl
-	jp NextTextCommand
-
-; process text commands in another ROM bank
-; 17AAAABB
-; AAAA = address of text commands
-; BB = bank
-TextCommand17:: ; 1ca3 (0:1ca3)
-	pop hl
-	ld a,[H_LOADEDROMBANK]
-	push af
-	ld a,[hli]
-	ld e,a
-	ld a,[hli]
-	ld d,a
-	ld a,[hli]
-	ld [H_LOADEDROMBANK],a
-	ld [MBC1RomBank],a
-	push hl
-	ld l,e
-	ld h,d
-	call TextCommandProcessor
-	pop hl
-	pop af
-	ld [H_LOADEDROMBANK],a
-	ld [MBC1RomBank],a
-	jp NextTextCommand
-
-TextCommandJumpTable:: ; 1cc1 (0:1cc1)
-	dw TextCommand00
-	dw TextCommand01
-	dw TextCommand02
-	dw TextCommand03
-	dw TextCommand04
-	dw TextCommand05
-	dw TextCommand06
-	dw TextCommand07
-	dw TextCommand08
-	dw TextCommand09
-	dw TextCommand0A
-	dw TextCommand0B
-	dw TextCommand0C
-	dw TextCommand0D
+;	push bc
+;	call ManualTextScroll ; wait for A or B to be pressed
+;	pop bc
+;	pop hl
+;	jp NextTextCommand
