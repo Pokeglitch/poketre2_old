@@ -1310,7 +1310,7 @@ ItemUseMedicine: ; dabb (3:5abb)
 .statNameInnerLoop
 	ld a,[hli]
 	ld b,a
-	ld a,$50
+	ld a,"@"
 	cp b
 	jr nz,.statNameInnerLoop
 	jr .statNameLoop

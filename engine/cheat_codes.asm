@@ -47,7 +47,7 @@ CheatCodeCheck:
 	ld [hli],a
 	dec b
 	jr nz,.clearLoop
-	ld a,$50
+	ld a,"@"
 	ld [wcf4b],a
 	xor a
 	ld hl, wHPBarMaxHP + 1

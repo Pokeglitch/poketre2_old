@@ -53,7 +53,7 @@ DisplayTownMap: ; 70e3e (1c:4e3e)
 	ld a, [hli]
 	ld [de], a
 	inc de
-	cp $50
+	cp "@"
 	jr nz, .copyMapName
 	coord hl, 1, 0
 	ld de, wcd6d
@@ -359,7 +359,7 @@ DrawPlayerOrBirdSprite: ; 711c4 (1c:51c4)
 	ld a, [hli]
 	ld [de], a
 	inc de
-	cp $50
+	cp "@"
 	jr nz, .asm_711dc
 	ld hl, wOAMBuffer
 	ld de, wTileMapBackup

@@ -172,11 +172,11 @@ CenterMonName: ; 3ce9c (f:4e9c)
 .loop
 	inc de
 	ld a, [de]
-	cp $50
+	cp "@"
 	jr z, .done
 	inc de
 	ld a, [de]
-	cp $50
+	cp "@"
 	jr z, .done
 	dec hl
 	dec b
