@@ -2010,7 +2010,6 @@ _DisplayPokedex: ; 7c18 (1:7c18)
 	call ReloadMapData
 	ld c, 10
 	call DelayFrames
-	predef IndexToPokedex
 	ld a, [wd11e]
 	dec a
 	ld c, a

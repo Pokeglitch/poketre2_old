@@ -235,9 +235,7 @@ GetPokemonSpritePointer:
 	jr z,.loadOriginalSprite		;load original sprite if not
 		
 	;get the index
-	call .getDexNumber
-	
-	ld a,c
+	ld a,[wMonHIndex]
 	ld hl,wMonHFrontSprite
 	cp DEX_HUMAN
 	jr nc,.loadOriginalSprite		;load the original sprite if the pokedex value is human or higher
@@ -257,18 +255,6 @@ GetPokemonSpritePointer:
 	ld [wSpriteInputPtr+1],a
 	ld a,[hl]
 	ld h,a
-	ret
-	
-.getDexNumber
-	ld a,[wd11e]
-	push af
-	ld a,[wMonHIndex]
-	ld [wd11e],a
-	predef IndexToPokedex
-	ld hl,wd11e
-	ld c, [hl]
-	pop af
-	ld [wd11e],a		;restore what d11e was originally
 	ret
 	
 ;Apply filters after tile is copied:

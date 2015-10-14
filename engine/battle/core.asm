@@ -6165,7 +6165,7 @@ InitWildBattle: ; 3ef8b (f:6f8b)
 	ld [hl], "@"
 	ld a, [wcf91]
 	push af
-	ld a, MON_GHOST
+	ld a, POLTERGOST
 	ld [wcf91], a
 	ld de, vFrontPic
 	call LoadMonFrontSprite ; load ghost sprite

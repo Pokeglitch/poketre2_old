@@ -61,8 +61,6 @@ SetPokedexOwnedFlag: ; 4fe11 (13:7e11)
 	ld a, [wcf91]
 	push af
 	ld [wd11e], a
-	predef IndexToPokedex
-	ld a, [wd11e]
 	dec a
 	ld c, a
 	ld hl, wPokedexOwned

@@ -277,9 +277,6 @@ DeterminePaletteIDOutOfBattle: ; 71f9d (1c:5f9d)
 	ld [wd11e], a
 	and a ; is the mon index 0?
 	jr z, .skipDexNumConversion
-	push bc
-	predef IndexToPokedex
-	pop bc
 	ld a, [wd11e]
 .skipDexNumConversion
 	ld e, a

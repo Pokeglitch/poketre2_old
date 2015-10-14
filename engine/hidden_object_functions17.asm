@@ -29,7 +29,7 @@ Route15UpstairsBinocularsText: ; 5dba8 (17:5ba8)
 	db "@"
 
 AerodactylFossil: ; 5dbad (17:5bad)
-	ld a, FOSSIL_AERODACTYL
+	ld a, AEROFOSSIL
 	ld [wcf91], a
 	call DisplayMonFrontSpriteInBox
 	call EnableAutoTextBoxDrawing
@@ -41,7 +41,7 @@ AerodactylFossilText: ; 5dbbe (17:5bbe)
 	db "@"
 
 KabutopsFossil: ; 5bdc3 (17:5bc3)
-	ld a, FOSSIL_KABUTOPS
+	ld a, SKEBUTOPS
 	ld [wcf91], a
 	call DisplayMonFrontSpriteInBox
 	call EnableAutoTextBoxDrawing

@@ -524,7 +524,6 @@ ItemUseBall: ; d687 (3:5687)
 	call PrintText
 
 ; Add the caught Pokémon to the Pokédex.
-	predef IndexToPokedex
 	ld a,[wd11e]
 	dec a
 	ld c,a

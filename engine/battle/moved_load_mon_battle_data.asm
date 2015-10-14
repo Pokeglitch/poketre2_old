@@ -217,8 +217,6 @@ LoadEnemyMonData: ; 3eb01 (f:6b01)
 SetPokedexSeen:
 	ld a, [wEnemyMonSpecies2]
 	ld [wd11e], a
-	predef IndexToPokedex
-	ld a, [wd11e]
 	dec a
 	ld c, a
 	ld b, $1
