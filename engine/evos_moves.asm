@@ -135,8 +135,6 @@ Evolution_PartyMonLoop: ; loop over party mons
 	
 	callab EvolveMon
 	jp c, CancelledEvolution
-	ld hl, EvolvedText
-	call PrintText
 	pop hl
 	ld a, [hl]
 	ld [wd0b5], a
@@ -148,8 +146,8 @@ Evolution_PartyMonLoop: ; loop over party mons
 	ld [wPredefBank], a
 	call GetName
 	push hl
-	ld hl, IntoText
-	call PrintText_NoCreatingTextBox
+	ld hl, EvolvedText
+	call PrintText
 	ld a, SFX_GET_ITEM_2
 	call PlaySoundWaitForCurrent
 	call WaitForSoundToFinish
@@ -168,8 +166,6 @@ Evolution_PartyMonLoop: ; loop over party mons
 	call AddNTimes
 	ld de, wMonHeader
 	call CopyData
-	ld a, [wd0b5]
-	ld [wMonHIndex], a
 	pop af
 	ld [wd11e], a
 		
@@ -265,7 +261,7 @@ RenameEvolvedMon: ; 3aef7 (e:6ef7)
 ; nickname, in which case the nickname is kept.
 	ld a, [wd0b5]
 	push af
-	ld a, [wMonHIndex]
+	ld a, [wEvoOldSpecies]
 	ld [wd0b5], a
 	call GetName
 	pop af
@@ -299,20 +295,16 @@ CancelledEvolution: ; 3af2e (e:6f2e)
 	jp Evolution_PartyMonLoop
 
 EvolvedText: ; 3af3e (e:6f3e)
-	TX_FAR _EvolvedText
-	db "@"
-
-IntoText: ; 3af43 (e:6f43)
-	TX_FAR _IntoText
-	db "@"
+	far_text _EvolvedText
+	done
 
 StoppedEvolvingText: ; 3af48 (e:6f48)
-	TX_FAR _StoppedEvolvingText
-	db "@"
+	far_text _StoppedEvolvingText
+	done
 
 IsEvolvingText: ; 3af4d (e:6f4d)
-	TX_FAR _IsEvolvingText
-	db "@"
+	far_text _IsEvolvingText
+	done
 
 Evolution_ReloadTilesetTilePatterns: ; 3af52 (e:6f52)
 	ld a, [wLinkState]

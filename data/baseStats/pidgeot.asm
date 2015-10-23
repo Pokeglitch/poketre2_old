@@ -4,7 +4,7 @@ db 83 ; base hp
 db 80 ; base attack
 db 75 ; base defense
 db 91 ; base speed
-db $46 ; base special
+db 70 ; base special
 db AERO ; species type 1
 db TALON ; species type 2
 db 45 ; catch rate

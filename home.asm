@@ -589,8 +589,6 @@ GetMonHeader:: ; 1537 (0:1537)
 	ld de,wMonHeader
 	ld bc,MonBaseStatsEnd - MonBaseStats
 	call CopyData		;copy the header data
-	ld a,[wd0b5]
-	ld [wMonHIndex],a
 	pop af
 	ld [wd11e],a
 	pop hl

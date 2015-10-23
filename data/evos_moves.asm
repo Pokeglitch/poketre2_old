@@ -541,13 +541,6 @@ BEEDRILL_EvosMoves:
 	db 42,VENOM_SHOT
 	db 0
 
-	
-	
-	
-	
-
-
-
 PIDGEY_EvosMoves:
 ;Evolutions
 	db EV_LEVEL,18,PIDGEOTTO

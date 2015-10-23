@@ -235,7 +235,7 @@ GetPokemonSpritePointer:
 	jr z,.loadOriginalSprite		;load original sprite if not
 		
 	;get the index
-	ld a,[wMonHIndex]
+	ld a,[wcf91]
 	ld hl,wMonHFrontSprite
 	cp DEX_HUMAN
 	jr nc,.loadOriginalSprite		;load the original sprite if the pokedex value is human or higher

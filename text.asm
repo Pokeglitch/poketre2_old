@@ -1633,12 +1633,8 @@ _ChooseABoxText:: ; 946b0 (25:46b0)
 	done
 
 _EvolvedText:: ; 946c2 (25:46c2)
-	TX_RAM wcf4b
-	text " evolved "
-	done
-
-_IntoText:: ; 946cf (25:46cf)
-	line "into "
+	ram_text wcf4b
+	text " evolved  into "
 	ram_text wcd6d
 	text "!"
 	done

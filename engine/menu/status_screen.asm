@@ -126,7 +126,7 @@ StatusScreen: ; 12953 (4:6953)
 	call PlaceString ; "STATUS/"
 	coord hl, 14, 2
 	call PrintLevel ; Pokémon level
-	ld a, [wMonHIndex]
+	ld a, [wcf91]
 	ld [wd11e], a
 	ld [wd0b5], a
 	coord hl, 3, 7
@@ -404,7 +404,7 @@ StatusScreen2: ; 12b57 (4:6b57)
 	call StatusScreen_ClearName
 	coord hl, 9, 1
 	call StatusScreen_ClearName
-	ld a, [wMonHIndex]
+	ld a, [wcf91]
 	ld [wd11e], a
 	call GetMonName
 	coord hl, 9, 1

@@ -4,7 +4,7 @@ db 63 ; base hp
 db 60 ; base attack
 db 55 ; base defense
 db 71 ; base speed
-db $32 ; base special
+db 50 ; base special
 db AERO ; species type 1
 db AERO ; species type 2
 db 120 ; catch rate
