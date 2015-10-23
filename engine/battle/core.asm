@@ -2523,8 +2523,6 @@ ExecutePlayerMove: ; 3d65e (f:565e)
 	ld a, [wActionResultOrTookBattleTurn]
 	and a ; has the player already used the turn (e.g. by using an item, trying to run or switching pokemon)
 	jp nz, ExecutePlayerMoveDone
-	call PrintGhostText
-	jp z, ExecutePlayerMoveDone
 	call CheckPlayerStatusConditions
 	jr nz, .playerHasNoSpecialCondition
 	jp [hl]
@@ -2713,51 +2711,6 @@ ExecutePlayerMoveDone: ; 3d80a (f:580a)
 	xor a
 	ld [wActionResultOrTookBattleTurn],a
 	ld b,1
-	ret
-
-PrintGhostText: ; 3d811 (f:5811)
-; print the ghost battle messages
-	call IsGhostBattle
-	ret nz
-	ld a,[H_WHOSETURN]
-	and a
-	jr nz,.Ghost
-	ld a,[wBattleMonStatus] ; player’s turn
-	and a,SLP | (1 << FRZ)
-	ret nz
-	ld hl,ScaredText
-	call PrintText
-	xor a
-	ret
-.Ghost ; ghost’s turn
-	ld hl,GetOutText
-	call PrintText
-	xor a
-	ret
-
-ScaredText: ; 3d830 (f:5830)
-	far_text _ScaredText
-	done
-
-GetOutText: ; 3d835 (f:5835)
-	far_text _GetOutText
-	done
-
-IsGhostBattle: ; 3d83a (f:583a)
-	ld a,[wIsInBattle]
-	dec a
-	ret nz
-	ld a,[wCurMap]
-	cp a,POKEMONTOWER_1
-	jr c,.next
-	cp a,LAVENDER_HOUSE_1
-	jr nc,.next
-	ld b,SILPH_SCOPE
-	call IsItemInBag
-	ret z
-.next
-	ld a,1
-	and a
 	ret
 
 ; checks for various status conditions affecting the player mon
@@ -5044,8 +4997,6 @@ RandomizeDamage: ; 3e687 (f:6687)
 ExecuteEnemyMove: ; 3e6bc (f:66bc)
 	ld a, [wEnemySelectedMove]
 	inc a
-	jp z, ExecuteEnemyMoveDone
-	call PrintGhostText
 	jp z, ExecuteEnemyMoveDone
 	ld a, [wLinkState]
 	cp LINK_STATE_BATTLING

@@ -628,8 +628,6 @@ TryRunningFromBattle2:
 ; try to run from battle (hl = player speed, de = enemy speed)
 ; stores whether the attempt was successful in carry flag
 TryRunningFromBattle: ; 3cab9 (f:4ab9)
-	callab IsGhostBattle
-	jp z, .canEscape ; jump if it's a ghost battle
 	ld a, [wBattleType]
 	cp $2
 	jp z, .canEscape ; jump if it's a safari battle

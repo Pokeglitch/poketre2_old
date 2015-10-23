@@ -149,12 +149,6 @@ ItemUseBall: ; d687 (3:5687)
 	ld hl,ItemUseText00
 	call PrintText
 
-; If the player is fighting an unidentified ghost, set the value that indicates
-; the Pokémon can't be caught and skip the capture calculations.
-	callab IsGhostBattle
-	ld b,$10 ; can't be caught value
-	jp z,.setAnimData
-
 	ld a,[wBattleType]
 	dec a
 	jr nz,.notOldManBattle
@@ -167,15 +161,6 @@ ItemUseBall: ; d687 (3:5687)
 	jp .captured
 
 .notOldManBattle
-; If the player is fighting the ghost Marowak, set the value that indicates the
-; Pokémon can't be caught and skip the capture calculations.
-	ld a,[wCurMap]
-	cp a,POKEMONTOWER_6
-	jr nz,.loop
-	ld a,[wEnemyMonSpecies2]
-	cp a,MAROWAK
-	ld b,$10 ; can't be caught value
-	jp z,.setAnimData
 
 ; Get the first random number. Let it be called Rand1.
 ; Rand1 must be within a certain range according the kind of ball being thrown.
