@@ -2096,6 +2096,9 @@ SelectMenuItem: ; 3d2fe (f:52fe)
 	ld a,[wBattleMonPP]
 	and a		;is the high byte zero?
 	jr nz,.enoughPP		;if not, then there is enough PP
+	ld hl,wActiveCheats2
+	bit RedBullCheat,[hl]
+	jr nz,.enoughPP		;if cheat is active, then there is enough PP
 	ld a,[wBattleMonPP + 1]
 	ld hl,wd11e	;hl = PP used for this move
 	cp [hl]		;if the pp required is greater than what is remaining, then say not enough PP

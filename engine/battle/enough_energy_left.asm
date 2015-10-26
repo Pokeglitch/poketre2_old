@@ -2,6 +2,9 @@
 ;1 = has enough
 ;0 = not enough
 DoesBattleMonHasEnoughPP:
+	ld hl,wActiveCheats2
+	bit RedBullCheat,[hl]
+	jr nz,.enough		;return if the red bull cheat is on (no decreasing pp)
 	ld hl,wBattleMonPP
 	ld a,[hli]
 	and a
