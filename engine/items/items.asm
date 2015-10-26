@@ -2500,6 +2500,7 @@ AddBonusPP: ; e642 (3:6642)
 ; 02: current box
 ; 03: daycare
 ; 04: player's in-battle pokemon
+; 05: enemy in-battle pokemon
 ; [wCurrentMenuItem] = move index
 ; OUTPUT:
 ; [wMaxPP] = max PP
@@ -2520,6 +2521,9 @@ GetMaxPP: ; e677 (3:6677)
 	dec a
 	jr z,.sourceWithOneMon
 	ld hl,wBattleMonMoves ; player's in-battle pokemon
+	dec a
+	jr z,.sourceWithOneMon
+	ld hl,wEnemyMonMoves	;enemy in-battle pokemon
 .sourceWithOneMon
 	call GetSelectedMoveOffset2
 	jr .next

@@ -945,17 +945,13 @@ _MoveDisabledText:: ; 8987b (22:587b)
 	text "The move is disabled!"
 	prompt
 
-_NotEnoughEnergyLeft:: ; 89892 (22:5892)
-	ram_text wBattleMonNick
-	text " doesn't have enough energy to move!"
-	para_then
-	ram_text wBattleMonNick
-	text " fell asleep!"
+_OnlyDisabledMoveLeft:: ; 89892 (22:5892)
+	text $5A, " only has disabled moves available!"
 	prompt
 
-_OnlyDisabledMoveLeft:: ; 89892 (22:5892)
-	ram_text wBattleMonNick
-	text " only has disabled moves!"
+_NotEnoughEnergyLeft:: ; 89892 (22:5892)
+	text $5A, " doesn't have enough energy to move!"
+	para $5A, " fell asleep!"
 	prompt
 
 _MultiHitText:: ; 898aa (22:58aa)

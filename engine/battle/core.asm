@@ -2331,6 +2331,14 @@ ENDC
 TypeText: ; 3d55f (f:555f)
 	db "TYPE@"
 
+EnemyOnlyDisabledMoveLeft:
+	far_text _OnlyDisabledMoveLeft
+	done
+	
+EnemyNotEnoughEnergyLeft: ; 3d430 (f:5430)
+	far_text _NotEnoughEnergyLeft
+	done
+	
 SelectEnemyMove: ; 3d564 (f:5564)
 	ld a, [wLinkState]
 	sub LINK_STATE_BATTLING
@@ -2341,7 +2349,7 @@ SelectEnemyMove: ; 3d564 (f:5564)
 	call LoadScreenTilesFromBuffer1
 	ld a, [wSerialExchangeNybbleReceiveData]
 	cp $e
-	jp z, .unableToSelectMove
+	jp z,EnemyOutOfEnergy
 	cp $d
 	jr z, .unableToSelectMove
 	cp $4
@@ -2352,7 +2360,9 @@ SelectEnemyMove: ; 3d564 (f:5564)
 	ld b, $0
 	add hl, bc
 	ld a, [hl]
-	jr .done
+.done
+	ld [wEnemySelectedMove], a
+	ret
 .noLinkBattle
 	ld a, [wEnemyBattleStatus2]
 	and (1 << NeedsToRecharge) | (1 << UsingRage) ; need to recharge or using rage
@@ -2380,13 +2390,20 @@ SelectEnemyMove: ; 3d564 (f:5564)
 	jr nz, .atLeastTwoMovesAvailable
 	ld a, [wEnemyDisabledMove]
 	and a
-	jr nz, .unableToSelectMove	;unable to move is only move is disabled
+	jr nz,EnemyOnlyDisabledLeft	;unable to move is only move is disabled
 .atLeastTwoMovesAvailable
 	ld a, [wIsInBattle]
 	dec a
 	jr z, .chooseRandomMove ; wild encounter
 	callab AIEnemyTrainerChooseMoves
 .chooseRandomMove
+	callab DoesEnemyMonHasEnoughPP
+	dec d
+	jr z,.findMove	;if it was 1, then there is enough pp somewhere, find it
+	dec d
+	jr z,EnemyOnlyDisabledLeft	;if it was 2, then only disable moves left
+	jr EnemyOutOfEnergy	;otherwise, it is out of energy
+.findMove
 	push hl
 	call BattleRandom
 	ld b, $1
@@ -2412,12 +2429,36 @@ SelectEnemyMove: ; 3d564 (f:5564)
 	cp b
 	ld a, [hl]
 	pop hl
-	jr z, .chooseRandomMove ; move disabled, try again
+	jr z, .findMove ; move disabled, try again
 	and a
-	jr z, .chooseRandomMove ; move non-existant, try again
-.done
+	jr z, .findMove ; move non-existant, try again
+	callab EnemyMoveHaveEnoughPP
+	dec d
+	jr nz,.chooseRandomMove	;not enough pp, try again
+EnemyChooseMoveDone:
 	ld [wEnemySelectedMove], a
 	ret
+EnemyOutOfEnergy:
+	ld a,1
+	ld [H_WHOSETURN], a ; set enemy's turn
+	call BattleRandom
+	and SLP ; sleep mask
+	jr nz,.notSleepZero
+	ld a,4		;if zero, set to 4
+.notSleepZero
+	ld [wEnemyMonStatus], a
+	ld hl, EnemyNotEnoughEnergyLeft
+	call PrintText
+	call PlayEnemySleepAnimation
+	xor a
+	jr EnemyChooseMoveDone
+EnemyOnlyDisabledLeft:
+	ld a,1
+	ld [H_WHOSETURN], a ; set enemy's turn
+	ld hl, EnemyOnlyDisabledMoveLeft
+	call PrintText
+	xor a
+	jr EnemyChooseMoveDone
 
 ; this appears to exchange data with the other gameboy during link battles
 LinkBattleExchangeData: ; 3d605 (f:5605)
@@ -2513,10 +2554,7 @@ PlayerCanExecuteChargingMove: ; 3d6a9 (f:56a9)
 	res Invulnerable,[hl]
 PlayerCanExecuteMove: ; 3d6b0 (f:56b0)
 	call PrintMonName1Text
-	ld hl,DecrementPP
-	ld de,wPlayerSelectedMove ; pointer to the move just used
-	ld b,BANK(DecrementPP)
-	call Bankswitch
+	callab DecrementPP
 	ld a,[wPlayerMoveEffect] ; effect of the move just used
 	ld hl,ResidualEffects1
 	ld de,1
@@ -2723,18 +2761,7 @@ CheckPlayerStatusConditions: ; 3d854 (f:5854)
 .printWokeUp
 	call PrintText
 	ld hl,wBattleMonPP
-	ld a,[hli]
-	and a
-	jr nz,.sleepDone	;dont inc if high byte is non zero
-	ld a,[hl]
-	cp 51		;compare to 51
-	jr nc,.sleepDone	;if 51 or greater, then dont adjust
-	call BattleRandom
-	and a,$0F
-	add 35
-	ld [hl],a	;update the pp to random between 35-51
-	ld hl,RegainedEnergy
-	call PrintText
+	call RegainWakeupEnergy
 .sleepDone
 	xor a
 	ld [wPlayerUsedMove],a
@@ -4993,6 +5020,9 @@ ExecuteEnemyMove: ; 3e6bc (f:66bc)
 	jr nz, .enemyHasNoSpecialConditions
 	jp [hl]
 .enemyHasNoSpecialConditions
+	ld a,[wEnemySelectedMove]
+	and a
+	jp z,ExecuteEnemyMoveDone
 	ld hl, wEnemyBattleStatus1
 	bit ChargingUp, [hl] ; is the enemy charging up for attack?
 	jr nz, EnemyCanExecuteChargingMove ; if so, jump
@@ -5019,6 +5049,7 @@ EnemyCanExecuteChargingMove: ; 3e70b (f:670b)
 	ld de, wcd6d
 	call CopyStringToCF4B
 EnemyCanExecuteMove: ; 3e72b (f:672b)
+	callab DecrementEnemyPP
 	xor a
 	ld [wMonIsDisobedient], a
 	call PrintMonName1Text
@@ -5228,6 +5259,8 @@ CheckEnemyStatusConditions: ; 3e88f (f:688f)
 	ld hl, WokeUpText	;otherwise, print normal woke up text
 .printWokeUp
 	call PrintText
+	ld hl,wEnemyMonPP
+	call RegainWakeupEnergy
 .sleepDone
 	xor a
 	ld [wEnemyUsedMove], a
@@ -5988,9 +6021,17 @@ PlayMoveAnimation: ; 3ef07 (f:6f07)
 	call Delay3
 	predef_jump MoveAnimation
 	
+PlayEnemySleepAnimation
+	ld a,1
+	ld [H_WHOSETURN], a ; set enemy's turn
+	xor a
+	ld [wAnimationType], a
+	ld a,SLP_ANIM
+	jr PlayNonMoveAnimation
+	
 PlaySleepAnimation:
 	xor a
-	ld [H_WHOSETURN], a ; set player's turn		(dont have to save because this gets called before turns begin)
+	ld [H_WHOSETURN], a ; set player's turn
 	ld [wAnimationType], a
 	ld a,SLP_ANIM-1
 	;fall through
@@ -7484,9 +7525,7 @@ ChargeEffect: ; 3f88c (f:788c)
 	cp a,UNDERGROUND_SCAPE	;underground?
 	jr nz,.notUnderground
 	;decrement PP
-	ld hl,DecrementPP
-	ld b,BANK(DecrementPP)
-	call Bankswitch	;de already contains the pointer to the move being used
+	call DecrementPlayerOrEnemyPP
 	call PrintMonName1Text	;print pk used fly
 	ld c,$38
 	call DelayFrames
@@ -7505,9 +7544,7 @@ ChargeEffect: ; 3f88c (f:788c)
 	cp a,SKY_SCAPE	;sky?
 	jr nz,.notSky
 	;decrement PP
-	ld hl,DecrementPP
-	ld b,BANK(DecrementPP)
-	call Bankswitch	;de already contains the pointer to the move being used
+	call DecrementPlayerOrEnemyPP
 	call PrintMonName1Text	;print "pk used dig"
 	ld c,$38
 	call DelayFrames
@@ -7528,9 +7565,7 @@ ChargeEffect: ; 3f88c (f:788c)
 	cp a,UNDERWATER_SCAPE	;underwater?
 	jr z,.diveInWater	;then we can attack
 	;decrement PP
-	ld hl,DecrementPP
-	ld b,BANK(DecrementPP)
-	call Bankswitch	;de already contains the pointer to the move being used
+	call DecrementPlayerOrEnemyPP
 	call PrintMonName1Text	;print "pk used dive"
 	ld c,$38
 	call DelayFrames
@@ -8545,3 +8580,27 @@ DetermineNewTraits2:
 	pop hl
 	ret
 	
+	
+DecrementPlayerOrEnemyPP:
+	ld b,BANK(DecrementPP)
+	ld hl,DecrementPP
+	ld a, [H_WHOSETURN]
+	and a
+	jr z,.playersTurn
+	ld hl,DecrementEnemyPP
+.playersTurn
+	jp Bankswitch
+	
+RegainWakeupEnergy:
+	ld a,[hli]
+	and a
+	ret nz	;dont inc if high byte is non zero
+	ld a,[hl]
+	cp 35		;compare to 35
+	ret nc	;if 51 or greater, then dont adjust
+	call BattleRandom
+	and a,$0F
+	add 35
+	ld [hl],a	;update the pp to random between 35-51
+	ld hl,RegainedEnergy
+	jp PrintText
