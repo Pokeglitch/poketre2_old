@@ -30,6 +30,7 @@ CalcLevelFromExperience: ; 58f43 (16:4f43)
 ; calculates the amount of experience needed for level d
 CalcExperience: ; 58f6a (16:4f6a)
 	ld a, [wMonHGrowthRate]
+	and a,$0F		;only keep the experience growth rate
 	add a
 	add a
 	ld c, a

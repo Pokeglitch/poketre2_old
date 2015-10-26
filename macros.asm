@@ -3,6 +3,7 @@ text   EQUS "db " ; Start writing text.
 next   EQUS "db $4e," ; Move a line down.
 line   EQUS "db $4f," ; Start writing at the bottom line.
 para   EQUS "db $51," ; Start a new paragraph.
+para_then   EQUS "db $51" ; Start a new paragraph.
 cont   EQUS "db $4B," ; Scroll to the next line.
 done   EQUS "db $00"  ; End a text box.
 prompt EQUS "db $58"  ; Prompt the player to end a text box (initiating some other event).

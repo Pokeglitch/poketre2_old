@@ -4003,49 +4003,18 @@ HealParty:
 	ld [hl], a
 
 	push de
-	ld b, NUM_MOVES ; A Pokémon has 4 moves
-.pp
-	ld hl, wPartyMon1Moves - wPartyMon1HP
-	add hl, de
-
-	ld a, [hl]
-	and a
-	jr z, .nextmove
-
-	dec a
 	ld hl, wPartyMon1PP - wPartyMon1HP
 	add hl, de
-
 	push hl
-	push de
-	push bc
-
-	ld hl, Moves
-	ld bc, MoveEnd - Moves
-	call AddNTimes
-	ld de, wcd6d
-	ld a, BANK(Moves)
-	call FarCopyData
-	ld a, [wcd6d + 5] ; PP is byte 5 of move data
-
-	pop bc
 	pop de
-	pop hl
-
+	inc hl
+	inc hl
+	ld a,[hli]
+	ld [de],a
+	ld a,[hl]
 	inc de
-	push bc
-	ld b, a
-	ld a, [hl]
-	and $c0
-	add b
-	ld [hl], a
-	pop bc
-
-.nextmove
-	dec b
-	jr nz, .pp
+	ld [de],a		;copy max pp to current pp
 	pop de
-	
 	
 	ld a,[wWhichPokemon]
 	ld hl, wPartyMon1Traits
@@ -5279,6 +5248,7 @@ SECTION "bankE",ROMX,BANK[$E]
 
 INCLUDE "data/moves.asm"
 INCLUDE "data/cries.asm"
+INCLUDE "engine/battle/enough_energy_left.asm"
 INCLUDE "engine/battle/unused_stats_functions.asm"
 INCLUDE "engine/battle/scroll_draw_trainer_pic.asm"
 INCLUDE "engine/battle/trainer_ai.asm"

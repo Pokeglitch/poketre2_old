@@ -1,5 +1,9 @@
 DecrementPP: ; 68000 (1a:4000)
 
+	ld hl,wActiveCheats2
+	bit RedBullCheat,[hl]
+	ret nz		;return if the red bull cheat is on (no decreasing pp)
+
 	;get the PP required for this move
 	ld a, [wPlayerMonNumber]
 	ld [wWhichPokemon], a
@@ -7,7 +11,21 @@ DecrementPP: ; 68000 (1a:4000)
 	ld [wMonDataLocation], a
 	callab GetMaxPP
 
-
+	;to adjust if skill active
+	ld a,[wBattleMonLearnedTraits]
+	bit EnergySkill,a		;does the pokemon have the energy skill?
+	jr z,.afterSkillAdjust		;skip down if no adjustment
+	;else, decrease by 12.5%
+	ld a,[wd11e]
+	push af
+	srl a		;divide by 2 (50%)
+	srl a		;divide by 2 again (25%)
+	srl a		;divide by 2 again (12.5%)
+	ld d,a		;store into d
+	pop af
+	sub d		;subtract 12.5%
+	ld [wd11e],a
+.afterSkillAdjust
 ; after using a move, decrement pp in battle and (if not transformed?) in party
 	ld hl, wPlayerBattleStatus1
 	ld a, [hli]          ; load the wPlayerBattleStatus1 pokemon status flags and increment hl to load the
@@ -27,7 +45,6 @@ DecrementPP: ; 68000 (1a:4000)
 	ld bc, wPartyMon2 - wPartyMon1
 	call AddNTimes       ; calculate address of the mon to modify
 .DecrementPP	
-	
 	ld a,[wd11e]
 	cpl
 	inc a

@@ -938,17 +938,25 @@ _AlreadyOutText:: ; 8984b (22:584b)
 	prompt
 
 _MoveNoPPText:: ; 89860 (22:5860)
-	text "No PP left for this move!"
+	text "Not enough energy for this move!"
 	prompt
 
 _MoveDisabledText:: ; 8987b (22:587b)
 	text "The move is disabled!"
 	prompt
 
-_NoMovesLeftText:: ; 89892 (22:5892)
+_NotEnoughEnergyLeft:: ; 89892 (22:5892)
 	ram_text wBattleMonNick
-	text " has no moves left!"
-	done
+	text " doesn't have enough energy to move!"
+	para_then
+	ram_text wBattleMonNick
+	text " fell asleep!"
+	prompt
+
+_OnlyDisabledMoveLeft:: ; 89892 (22:5892)
+	ram_text wBattleMonNick
+	text " only has disabled moves!"
+	prompt
 
 _MultiHitText:: ; 898aa (22:58aa)
 	text "Hit the enemy "
@@ -972,6 +980,10 @@ _FastAsleepText:: ; 89901 (22:5901)
 
 _WokeUpText:: ; 89914 (22:5914)
 	text $5A," woke up!"
+	prompt
+
+_RegainedEnergy:: ; 89914 (22:5914)
+	text $5A," regained some energy!"
 	prompt
 
 _IsFrozenText:: ; 89920 (22:5920)

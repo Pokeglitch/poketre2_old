@@ -1012,43 +1012,66 @@ FinishCopyEnergy:
 	jr nz,.loop
 	ret
 	
+EnergyGrowthTable:
+;level, point per level
+	db 30, 9, 78, 6, 100, 2		;ENERGY_1
+	db 20, 12, 75, 6, 100, 1	;ENERGY_2
+	db 16, 5, 60, 10, 100, 2	;ENERGY_3
+	db 30, 5, 57, 15, 100, 1	;ENERGY_4
+	db 37, 4, 70, 10, 100, 4	;ENERGY_5
+	db 100, 6	;ENERGY_6
+	
+;c = energy growth id
+;d = level
+;returns the increment in a
+GetLevelIncrement:
+	ld a,d ;get the level from d
+	cp 101
+	ld a,0
+	ret nc	;return if over 100
+	ld hl,EnergyGrowthTable
+	ld a,6
+	ld b,0
+.addLoop
+	add hl,bc
+	dec a
+	jr nz,.addLoop	;go to the corresponding row
+.readTableLoop
+	ld a,[hli]
+	cp d
+	jr nc,.finish	;if its lower than or equal to the level, then finish
+	inc hl
+	jr.readTableLoop
+.finish
+	ld a,[hl]
+	ret
+	
 GenerateNewEnergy:
-	ld a,[wCurEnemyLVL]
 	push hl	;store pointer
-	
-	ld d,0
-	ld e,a	;de = level
-	
-	cp 30	;compare to level 30
-	jr nc,.over30
-	
-	;multiply by 10
-	ld hl,00
-	ld b,10
-	jr .multiplyLoop
-	
-.over30
-	sub 30
-	cp 40
-	jr nc,.over70
-	
-	ld hl,300
-	ld b,5
-	jr .multiplyLoop
-	
-.over70
-	ld hl,500
-	sub 40
-	ld b,1
-	;fall through
-	
-.multiplyLoop
-	add hl,de
-	dec b
-	jr nz,.multiplyLoop
+	ld a,[wMonHGrowthRate]
+	swap a
+	and a,$0F	;only keep the enregy growth rate
+	ld c,a		;store into c
+	ld a,[wCurEnemyLVL]
+	ld d,1		;start with level 1
+	ld hl,0		;initialize the energy to 0
+.calcEnergyLoop
+	push af
+	push bc
+	push hl
+	call GetLevelIncrement
+	ld c,a		;store value into c
+	pop hl
+	add hl,bc	;increment the energy
+	pop bc
+	pop af
+	inc d
+	cp d		;compare the level counter to the pokemon level
+	jr nc,.calcEnergyLoop	;loop if the level counter doesn't exceeds
 	
 	call RandomOrBattleRandom
-	and $3F	;only keep lower 6 bits
+	and %00111111	;only keep lower 6 bits
+	ld d,0
 	ld e,a
 	add hl,de	;add to the value
 	

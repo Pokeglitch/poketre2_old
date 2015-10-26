@@ -30,6 +30,7 @@ Fear2			EQU 4
 ;bits for skill/learned traits
 AccuracySkill	EQU 0
 EvasionSkill	EQU 1
+EnergySkill		EQU 2
 BoostUnder60Skill EQU 4
 LongerMultiSkill EQU 5
 NoFlinchSkill	EQU 6

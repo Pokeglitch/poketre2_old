@@ -1,3 +1,12 @@
+;Pokemon Energy Growth
+ENERGY_0 EQU 0 << 4
+ENERGY_1 EQU 1 << 4
+ENERGY_2 EQU 2 << 4
+ENERGY_3 EQU 3 << 4
+ENERGY_4 EQU 4 << 4
+ENERGY_5 EQU 5 << 4
+
+
 ;Landscape Constants
 INDOOR_SCAPE			EQU	0
 GRASS_SCAPE				EQU 1

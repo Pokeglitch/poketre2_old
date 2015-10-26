@@ -2165,51 +2165,13 @@ CursorDown: ; 3d3dd (f:53dd)
 	jp SelectMenuItem
 
 AnyMoveToSelect: ; 3d3f5 (f:53f5)
-; return z and Struggle as the selected move if all moves have 0 PP and/or are disabled
-	ld a, STRUGGLE
+	ld a,0
 	ld [wPlayerSelectedMove], a
-	ld a, [wPlayerDisabledMove]
+	callab DoesBattleMonHasEnoughPP
+	ld a,d
 	and a
-	ld hl, wBattleMonPP
-	jr nz, .asm_3d40e
-	ld a, [hli]
-	or [hl]
-	inc hl
-	or [hl]
-	inc hl
-	or [hl]
-	and $3f
-	ret nz
-	jr .asm_3d423
-.asm_3d40e
-	swap a
-	and $f
-	ld b, a
-	ld d, $5
-	xor a
-.asm_3d416
-	dec d
-	jr z, .asm_3d421
-	ld c, [hl]
-	inc hl
-	dec b
-	jr z, .asm_3d416
-	or c
-	jr .asm_3d416
-.asm_3d421
-	and a
-	ret nz
-.asm_3d423
-	ld hl, NoMovesLeftText
-	call PrintText
-	ld c, 60
-	call DelayFrames
-	xor a
 	ret
 
-NoMovesLeftText: ; 3d430 (f:5430)
-	far_text _NoMovesLeftText
-	done
 
 SwapMovesInMenu: ; 3d435 (f:5435)
 	ld a, [wMenuItemToSwap]
@@ -2376,7 +2338,7 @@ SelectEnemyMove: ; 3d564 (f:5564)
 	call LoadScreenTilesFromBuffer1
 	ld a, [wSerialExchangeNybbleReceiveData]
 	cp $e
-	jp z, .asm_3d601
+	jp z, .unableToSelectMove
 	cp $d
 	jr z, .unableToSelectMove
 	cp $4
@@ -2415,8 +2377,7 @@ SelectEnemyMove: ; 3d564 (f:5564)
 	jr nz, .atLeastTwoMovesAvailable
 	ld a, [wEnemyDisabledMove]
 	and a
-	ld a, STRUGGLE ; struggle if the only move is disabled
-	jr nz, .done
+	jr nz, .unableToSelectMove	;unable to move is only move is disabled
 .atLeastTwoMovesAvailable
 	ld a, [wIsInBattle]
 	dec a
@@ -2454,9 +2415,6 @@ SelectEnemyMove: ; 3d564 (f:5564)
 .done
 	ld [wEnemySelectedMove], a
 	ret
-.asm_3d601
-	ld a, STRUGGLE
-	jr .done
 
 ; this appears to exchange data with the other gameboy during link battles
 LinkBattleExchangeData: ; 3d605 (f:5605)
@@ -2470,9 +2428,7 @@ LinkBattleExchangeData: ; 3d605 (f:5605)
 	jr nz, .switching
 ; the player used a move
 	ld a, [wPlayerSelectedMove]
-	cp STRUGGLE
 	ld b, $e
-	jr z, .next
 	dec b
 	inc a
 	jr z, .next
@@ -2527,6 +2483,9 @@ ExecutePlayerMove: ; 3d65e (f:565e)
 	jr nz, .playerHasNoSpecialCondition
 	jp [hl]
 .playerHasNoSpecialCondition
+	ld a,[wPlayerSelectedMove]
+	and a
+	jp z,ExecutePlayerMoveDone		;if move is zero, then don't attack
 	call GetCurrentMove
 	ld hl, wPlayerBattleStatus1
 	bit ChargingUp, [hl] ; charging up for attack
@@ -2759,6 +2718,19 @@ CheckPlayerStatusConditions: ; 3d854 (f:5854)
 	jr nz,.printWokeUp	;print the early bird ability if so
 	ld hl, WokeUpText	;otherwise, print normal woke up text
 .printWokeUp
+	call PrintText
+	ld hl,wBattleMonPP
+	ld a,[hli]
+	and a
+	jr nz,.sleepDone	;dont inc if high byte is non zero
+	ld a,[hl]
+	cp 51		;compare to 51
+	jr nc,.sleepDone	;if 51 or greater, then dont adjust
+	call BattleRandom
+	and a,$0F
+	add 35
+	ld [hl],a	;update the pp to random between 35-51
+	ld hl,RegainedEnergy
 	call PrintText
 .sleepDone
 	xor a
@@ -3054,6 +3026,10 @@ FastAsleepText: ; 3da3d (f:5a3d)
 	far_text _FastAsleepText
 	done
 
+RegainedEnergy:
+	far_text _RegainedEnergy
+	done
+	
 WokeUpText: ; 3da42 (f:5a42)
 	far_text _WokeUpText
 	done
@@ -3412,10 +3388,10 @@ CheckForDisobedience: ; 3dc88 (f:5c88)
 	jp .cannotUseMove
 .monNaps
 	call BattleRandom
-	add a
-	swap a
 	and SLP ; sleep mask
-	jr z, .monNaps ; keep trying until we get at least 1 turn of sleep
+	jr nz,.notSleepZero
+	ld a,4		;if zero, set to 4
+.notSleepZero
 	ld [wBattleMonStatus], a
 	ld hl, BeganToNapText
 	jr .printText
@@ -3442,9 +3418,6 @@ CheckForDisobedience: ; 3dc88 (f:5c88)
 	ld a, [wPlayerDisabledMoveNumber]
 	and a
 	jr nz, .monDoesNothing
-	ld a, [wPlayerSelectedMove]
-	cp STRUGGLE
-	jr z, .monDoesNothing ; mon will not use move if struggling
 ; check if only one move has remaining PP
 	ld hl, wBattleMonPP
 	push hl
@@ -4707,6 +4680,8 @@ CheckMoveAccuracyInWeather:
 	push af
 	push bc
 	push hl
+	ld bc,-4
+	add hl,bc		;hl points to attack id
 	ld a,[hl]
 	ld c,a		;c = attack id
 	ld hl,MovesWeatherAccuracyTable
@@ -4729,15 +4704,11 @@ CheckMoveAccuracyInWeather:
 	inc hl
 	ld a,[hl]		;new accuracy
 	pop hl
-	ld bc,4
-	add hl,bc
 	ld [hl],a		;store new accuracy
 	jr .finishSkipHL
 
 .finish
 	pop hl
-	ld bc,4
-	add hl,bc		;hl nows points to accuracy
 .finishSkipHL
 	pop bc
 	pop af
@@ -4896,8 +4867,8 @@ CalcHitChance: ; 3e624 (f:6624)
 	ld a,[wPlayerMonEvasionMod]
 	ld c,a
 .next
-	call AlterAccuracyAndEvasionModifiers
 	call CheckMoveAccuracyInWeather		;check the move num and see if the weather increases the accuracy
+	call AlterAccuracyAndEvasionModifiers
 	ld a,$0e
 	sub c
 	ld c,a ; c = 14 - EVASIONMOD (this "reflects" the value over 7, so that an increase in the target's evasion
@@ -6013,6 +5984,13 @@ PlayMoveAnimation: ; 3ef07 (f:6f07)
 	ld [wAnimationID],a
 	call Delay3
 	predef_jump MoveAnimation
+	
+PlaySleepAnimation:
+	xor a
+	ld [H_WHOSETURN], a ; set player's turn		(dont have to save because this gets called before turns begin)
+	ld [wAnimationType], a
+	ld a,SLP_ANIM-1
+	;fall through
 	
 PlayNonMoveAnimation:
 	ld [wAnimationID],a

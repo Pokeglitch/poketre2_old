@@ -2489,8 +2489,8 @@ AddBonusPP: ; e642 (3:6642)
 .done
 	ld [hl],b
 	pop bc
-	ret
-
+	ret	
+	
 ; gets max PP of a pokemon's move (including PP from PP Ups)
 ; INPUT:
 ; [wWhichPokemon] = index of pokemon within party/box
