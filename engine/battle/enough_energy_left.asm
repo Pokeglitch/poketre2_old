@@ -195,7 +195,9 @@ DoesBattleMonHasEnoughPP:
 	jr nz,.notSleepZero
 	ld a,4		;if zero, set to 4
 .notSleepZero
-	ld [wBattleMonStatus], a
+	ld hl,wBattleMonStatus
+	or [hl]	;sleep ontop of other aliments
+	ld [hl],a
 	ld hl, NotEnoughEnergyLeft
 	call PrintText
 	callab PlaySleepAnimation

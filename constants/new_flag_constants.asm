@@ -1,4 +1,7 @@
-;bits for smart string
+;bits for in-battle status conditions
+FearStatus	EQU 4
+
+;bits for word wrap
 CheckWordWrap EQU 7
 CountingLetters EQU 6
 FirstLineBreak EQU 5

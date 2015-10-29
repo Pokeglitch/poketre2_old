@@ -388,6 +388,10 @@ _TooScaredToMoveText:
 	text $5a, "'s too scared to move!"
 	prompt
 	
+_BecameFrightenedText:
+	text $5a, " became frightened!"
+	prompt
+	
 _InvisibleNoMoreText:
 	text $59," is invisible no more!"
 	prompt

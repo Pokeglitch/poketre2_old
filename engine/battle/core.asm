@@ -2446,11 +2446,14 @@ EnemyOutOfEnergy:
 	jr nz,.notSleepZero
 	ld a,4		;if zero, set to 4
 .notSleepZero
-	ld [wEnemyMonStatus], a
+	ld hl,wEnemyMonStatus
+	or [hl]
+	ld [hl],a
 	ld hl, EnemyNotEnoughEnergyLeft
 	call PrintText
 	call PlayEnemySleepAnimation
 	xor a
+	ld [wEnemyUsedMove],a
 	jr EnemyChooseMoveDone
 EnemyOnlyDisabledLeft:
 	ld a,1
@@ -2524,9 +2527,6 @@ ExecutePlayerMove: ; 3d65e (f:565e)
 	and a ; has the player already used the turn (e.g. by using an item, trying to run or switching pokemon)
 	jp nz, ExecutePlayerMoveDone
 	call CheckPlayerStatusConditions
-	jr nz, .playerHasNoSpecialCondition
-	jp [hl]
-.playerHasNoSpecialCondition
 	ld a,[wPlayerSelectedMove]
 	and a
 	jp z,ExecutePlayerMoveDone		;if move is zero, then don't attack
@@ -2713,6 +2713,34 @@ ExecutePlayerMoveDone: ; 3d80a (f:580a)
 	ld b,1
 	ret
 
+;if the player is still trying to use the move, then print the text
+;otherwise, dont because the previous one supersedes it
+PrintPlayerCantUseMoveText:
+	call PrintText	
+PlayerCantUseMove:
+	xor a
+	ld [wPlayerUsedMove],a
+	ld hl,wPlayerBattleStatus1
+	ld a,1 << Confused
+	and [hl]		;reset all bits except confused
+	ld [hli],a
+	ld a,~(1 << GettingPumped || 1<< NeedsToRecharge || 1<< UsingRage)
+	and [hl]		;reset focus energy, recharge, and rage bits
+	ld [hl],a
+	ld a,[wPlayerMoveEffect]
+	cp a,FLY_EFFECT
+	jr z,.FlyOrChargeEffect
+	cp a,CHARGE_EFFECT
+	jr nz,.finish
+.FlyOrChargeEffect
+	xor a
+	ld [wAnimationType],a
+	ld a,STATUS_AFFECTED_ANIM
+	call PlayNonMoveAnimation
+.finish
+	pop hl	;remove the return
+	jp ExecutePlayerMoveDone
+	
 ; checks for various status conditions affecting the player mon
 ; stores whether the mon cannot use a move this turn in Z flag
 CheckPlayerStatusConditions: ; 3d854 (f:5854)
@@ -2739,9 +2767,8 @@ CheckPlayerStatusConditions: ; 3d854 (f:5854)
 	and a,SLP ; sleep mask
 	jr z,.FrozenCheck
 ; sleeping
-	dec a
-	ld [wBattleMonStatus],a ; decrement number of turns left
-	and a
+	dec [hl]
+	dec a	; decrement number of turns left
 	jr z,.WakeUp ; if the number of turns hit 0, wake up
 ; fast asleep
 	xor a
@@ -2753,7 +2780,7 @@ CheckPlayerStatusConditions: ; 3d854 (f:5854)
 	jr .sleepDone
 .WakeUp
 	ld hl, EarlyBirdText2	;load 
-	ld a,AB_EARLY_BIRD
+	ld a, AB_EARLY_BIRD
 	call DoesAttackerHaveAbility	;check to see if the pokemon has the early bird ability
 	and a
 	jr nz,.printWokeUp	;print the early bird ability if so
@@ -2763,40 +2790,84 @@ CheckPlayerStatusConditions: ; 3d854 (f:5854)
 	ld hl,wBattleMonPP
 	call RegainWakeupEnergy
 .sleepDone
-	xor a
-	ld [wPlayerUsedMove],a
-	ld hl,ExecutePlayerMoveDone ; player can't move this turn
-	jp .returnToHL
+	jp PlayerCantUseMove
 
 .FrozenCheck
 	bit FRZ,[hl] ; frozen?
 	jr z,.HeldInPlaceCheck
 	ld hl,IsFrozenText
-	call PrintText
-	xor a
-	ld [wPlayerUsedMove],a
-	ld hl,ExecutePlayerMoveDone ; player can't move this turn
-	jp .returnToHL
+	jp PrintPlayerCantUseMoveText
 
 .HeldInPlaceCheck
 	ld a,[wEnemyBattleStatus1]
 	bit UsingTrappingMove,a ; is enemy using a mult-turn move like wrap?
-	jp z,.FlinchedCheck
+	jr z,.FlinchedCheck
 	ld hl,CantMoveText
-	call PrintText
-	ld hl,ExecutePlayerMoveDone ; player can't move this turn
-	jp .returnToHL
+	jp PrintPlayerCantUseMoveText
 
 .FlinchedCheck
 	ld hl,wPlayerBattleStatus1
 	bit Flinched,[hl]
-	jp z,.FearCheck
-	res Flinched,[hl] ; reset player's flinch status
+	jr z,.HyperBeamCheck
+	call BattleRandom
+	cp $20
 	ld hl,FlinchedText
+	jr nc,.printFlinchText	;87.5% chance of no fear
+	push af
 	call PrintText
-	ld hl,ExecutePlayerMoveDone ; player can't move this turn
-	jp .returnToHL
+	pop af
+	and %00000111		;only keep the lower 3 bits
+	ld hl,wBattleMonCursedFearCounter
+	or [hl]		;append to the fear counter
+	ld [hl],a
+	ld hl,wPlayerBattleStatus3
+	set FearStatus,[hl]
+	ld hl,BecameFrightenedText
+.printFlinchText
+	jp PrintPlayerCantUseMoveText
 
+.HyperBeamCheck
+	ld hl,wPlayerBattleStatus2
+	bit NeedsToRecharge,[hl]
+	jr z,.ParalysisCheck
+	ld hl,MustRechargeText
+	jp PrintPlayerCantUseMoveText
+
+.ParalysisCheck
+	ld hl,wBattleMonStatus
+	bit PAR,[hl]
+	jr z,.AnyMoveDisabledCheck
+	call BattleRandom
+	cp a,$3F ; 25% to be fully paralyzed
+	jr nc,.AnyMoveDisabledCheck
+	ld hl,FullyParalyzedText
+	jp PrintMoveIsDisabledText
+
+.AnyMoveDisabledCheck
+	ld hl,wPlayerDisabledMove
+	ld a,[hl]
+	and a
+	jr z,.TriedToUseDisabledMoveCheck
+	dec a
+	ld [hl],a
+	and $f ; did Disable counter hit 0?
+	jr nz,.TriedToUseDisabledMoveCheck
+	ld [hl],a
+	ld [wPlayerDisabledMoveNumber],a
+	ld hl,DisabledNoMoreText
+	call PrintText
+
+.TriedToUseDisabledMoveCheck
+; prevents a disabled move that was selected before being disabled from being used
+	ld a,[wPlayerDisabledMoveNumber]
+	and a
+	jr z,.FearCheck
+	ld hl,wPlayerSelectedMove
+	cp [hl]
+	jr nz,.FearCheck
+	jp PrintMoveIsDisabledText
+	;fall through
+	
 .FearCheck
 	ld hl,wPlayerBattleStatus3
 	bit 4,[hl]	;fear?
@@ -2823,14 +2894,12 @@ CheckPlayerStatusConditions: ; 3d854 (f:5854)
 	
 .tooScaredToMove
 	ld hl,TooScaredToMoveText
-	call PrintText
-	ld hl,ExecutePlayerMoveDone ; player can't move this turn
-	jp .returnToHL
-	
+	jp PrintPlayerCantUseMoveText
+
 .cursedCheck
 	ld hl,wPlayerBattleStatus3
 	bit 6,[hl]	;cursed?
-	jr z,.HyperBeamCheck
+	jr z,.ConfusedCheck
 	ld a,[wBattleMonCursedFearCounter]
 	sub a,$10
 	ld [wBattleMonCursedFearCounter],a
@@ -2842,39 +2911,14 @@ CheckPlayerStatusConditions: ; 3d854 (f:5854)
 .printIsCursedText
 	ld hl,IsCursedText
 	;fall through
-	
 .printCursedText
 	call PrintText
 	;fall through
 
-.HyperBeamCheck
-	ld hl,wPlayerBattleStatus2
-	bit NeedsToRecharge,[hl]
-	jr z,.AnyMoveDisabledCheck
-	res NeedsToRecharge,[hl] ; reset player's recharge status
-	ld hl,MustRechargeText
-	call PrintText
-	ld hl,ExecutePlayerMoveDone ; player can't move this turn
-	jp .returnToHL
-
-.AnyMoveDisabledCheck
-	ld hl,wPlayerDisabledMove
-	ld a,[hl]
-	and a
-	jr z,.ConfusedCheck
-	dec a
-	ld [hl],a
-	and $f ; did Disable counter hit 0?
-	jr nz,.ConfusedCheck
-	ld [hl],a
-	ld [wPlayerDisabledMoveNumber],a
-	ld hl,DisabledNoMoreText
-	call PrintText
-
 .ConfusedCheck
 	ld a,[wPlayerBattleStatus1]
 	add a ; is player confused?
-	jr nc,.TriedToUseDisabledMoveCheck
+	jr nc,.BideCheck
 	ld hl,wPlayerConfusedCounter
 	dec [hl]
 	jr nz,.IsConfused
@@ -2882,7 +2926,7 @@ CheckPlayerStatusConditions: ; 3d854 (f:5854)
 	res Confused,[hl] ; if confused counter hit 0, reset confusion status
 	ld hl,ConfusedNoMoreText
 	call PrintText
-	jr .TriedToUseDisabledMoveCheck
+	jr .BideCheck
 .IsConfused
 	ld hl,IsConfusedText
 	call PrintText
@@ -2892,58 +2936,10 @@ CheckPlayerStatusConditions: ; 3d854 (f:5854)
 	call PlayNonMoveAnimation
 	call BattleRandom
 	cp a,$80 ; 50% chance to hurt itself
-	jr c,.TriedToUseDisabledMoveCheck
-	ld hl,wPlayerBattleStatus1
-	ld a,[hl]
-	and a, 1 << Confused ; if mon hurts itself, clear every other status from wPlayerBattleStatus1
-	ld [hl],a
+	jr c,.BideCheck
 	call HandleSelfConfusionDamage
-	jr .MonHurtItselfOrFullyParalysed
-
-.TriedToUseDisabledMoveCheck
-; prevents a disabled move that was selected before being disabled from being used
-	ld a,[wPlayerDisabledMoveNumber]
-	and a
-	jr z,.ParalysisCheck
-	ld hl,wPlayerSelectedMove
-	cp [hl]
-	jr nz,.ParalysisCheck
-	call PrintMoveIsDisabledText
-	ld hl,ExecutePlayerMoveDone ; if a disabled move was somehow selected, player can't move this turn
-	jp .returnToHL
-
-.ParalysisCheck
-	ld hl,wBattleMonStatus
-	bit PAR,[hl]
-	jr z,.BideCheck
-	call BattleRandom
-	cp a,$3F ; 25% to be fully paralyzed
-	jr nc,.BideCheck
-	ld hl,FullyParalyzedText
-	call PrintText
-
-.MonHurtItselfOrFullyParalysed
-	ld hl,wPlayerBattleStatus1
-	ld a,[hl]
-	; clear bide, thrashing, charging up, and trapping moves such as warp (already cleared for confusion damage)
-	and $ff ^ ((1 << StoringEnergy) | (1 << ThrashingAbout) | (1 << ChargingUp) | (1 << UsingTrappingMove))
-	ld [hl],a
-	ld a,[wPlayerMoveEffect]
-	cp a,FLY_EFFECT
-	jr z,.FlyOrChargeEffect
-	cp a,CHARGE_EFFECT
-	jr z,.FlyOrChargeEffect
-	jr .NotFlyOrChargeEffect
-
-.FlyOrChargeEffect
-	xor a
-	ld [wAnimationType],a
-	ld a,STATUS_AFFECTED_ANIM
-	call PlayNonMoveAnimation
-.NotFlyOrChargeEffect
-	ld hl,ExecutePlayerMoveDone
-	jp .returnToHL ; if using a two-turn move, we need to recharge the first turn
-
+	jp PlayerCantUseMove
+	
 .BideCheck
 	ld hl,wPlayerBattleStatus1
 	bit StoringEnergy,[hl] ; is mon using bide?
@@ -2963,9 +2959,7 @@ CheckPlayerStatusConditions: ; 3d854 (f:5854)
 	ld [hl],a
 	ld hl,wPlayerNumAttacksLeft
 	dec [hl] ; did Bide counter hit 0?
-	jr z,.UnleashEnergy
-	ld hl,ExecutePlayerMoveDone
-	jp .returnToHL ; unless mon unleashes energy, can't move this turn
+	jp nz,PlayerCantUseMove
 .UnleashEnergy
 	ld hl,wPlayerBattleStatus1
 	res StoringEnergy,[hl] ; not using bide any more
@@ -2991,8 +2985,8 @@ CheckPlayerStatusConditions: ; 3d854 (f:5854)
 	ld [hl],a
 	ld a,BIDE
 	ld [wPlayerMoveNum],a
-	ld hl,handleIfPlayerMoveMissed ; skip damage calculation, DecrementPP and MoveHitTest
-	jp .returnToHL
+	pop hl		;remove the return
+	jp handleIfPlayerMoveMissed ; skip damage calculation, DecrementPP and MoveHitTest
 
 .ThrashingAboutCheck
 	bit ThrashingAbout,[hl] ; is mon using thrash or petal dance?
@@ -3003,8 +2997,10 @@ CheckPlayerStatusConditions: ; 3d854 (f:5854)
 	call PrintText
 	ld hl,wPlayerNumAttacksLeft
 	dec [hl] ; did Thrashing About counter hit 0?
-	ld hl,PlayerCalcMoveDamage ; skip DecrementPP
-	jp nz,.returnToHL
+	jr z,.ThrashHitZero
+	pop hl		;remove the return
+	jp PlayerCalcMoveDamage ; skip DecrementPP
+.ThrashHitZero
 	push hl
 	ld hl,wPlayerBattleStatus1
 	res ThrashingAbout,[hl] ; no longer thrashing about
@@ -3014,43 +3010,31 @@ CheckPlayerStatusConditions: ; 3d854 (f:5854)
 	inc a
 	inc a ; confused for 2-5 turns
 	ld [wPlayerConfusedCounter],a
-	pop hl ; skip DecrementPP
-	jp .returnToHL
+	pop hl ; remove the return (skip DecrementPP)
+	ret
 
 .MultiturnMoveCheck
 	bit UsingTrappingMove,[hl] ; is mon using multi-turn move?
-	jp z,.RageCheck
+	jr z,.RageCheck
 	ld hl,AttackContinuesText
 	call PrintText
-	ld a,[wPlayerNumAttacksLeft]
-	dec a ; did multi-turn move end?
-	ld [wPlayerNumAttacksLeft],a
-	ld hl,getPlayerAnimationType ; if it didn't, skip damage calculation (deal damage equal to last hit),
-	                ; DecrementPP and MoveHitTest
-	jp nz,.returnToHL
-	jp .returnToHL
+	ld hl,wPlayerNumAttacksLeft
+	dec [hl] ; did multi-turn move end?
+	pop hl	;remove the return
+	jp getPlayerAnimationType
 
 .RageCheck
 	ld a, [wPlayerBattleStatus2]
 	bit UsingRage, a ; is mon using rage?
-	jp z, .checkPlayerStatusConditionsDone ; if we made it this far, mon can move normally this turn
+	ret z ; if we made it this far, mon can move normally this turn
 	ld a, RAGE
 	ld [wd11e], a
 	call GetMoveName
 	call CopyStringToCF4B
 	xor a
 	ld [wPlayerMoveEffect], a
-	ld hl, PlayerCanExecuteMove
-	jp .returnToHL
-
-.returnToHL
-	xor a
-	ret
-
-.checkPlayerStatusConditionsDone
-	ld a, $1
-	and a
-	ret
+	pop hl	;remove the return
+	jp PlayerCanExecuteMove
 
 FastAsleepText: ; 3da3d (f:5a3d)
 	far_text _FastAsleepText
@@ -3078,6 +3062,10 @@ FlinchedText: ; 3da51 (f:5a51)
 	
 TooScaredToMoveText:
 	far_text _TooScaredToMoveText
+	done
+	
+BecameFrightenedText:
+	far_text _BecameFrightenedText
 	done
 	
 RegainedCourageText:
@@ -3146,21 +3134,16 @@ CantMoveText: ; 3da83 (f:5a83)
 
 PrintMoveIsDisabledText: ; 3da88 (f:5a88)
 	ld hl, wPlayerSelectedMove
-	ld de, wPlayerBattleStatus1
 	ld a, [H_WHOSETURN]
 	and a
-	jr z, .removeChargingUp
+	jr z, .playersTurn
 	inc hl
-	ld de, wEnemyBattleStatus1
-.removeChargingUp
-	ld a, [de]
-	res ChargingUp, a ; end the pokemon's
-	ld [de], a
+.playersTurn
 	ld a, [hl]
 	ld [wd11e], a
 	call GetMoveName
 	ld hl, MoveIsDisabledText
-	jp PrintText
+	jp PrintPlayerCantUseMoveText
 
 MoveIsDisabledText: ; 3daa8 (f:5aa8)
 	far_text _MoveIsDisabledText
@@ -3422,7 +3405,9 @@ CheckForDisobedience: ; 3dc88 (f:5c88)
 	jr nz,.notSleepZero
 	ld a,4		;if zero, set to 4
 .notSleepZero
-	ld [wBattleMonStatus], a
+	ld hl,wBattleMonStatus
+	or [hl]
+	ld [hl],a
 	ld hl, BeganToNapText
 	jr .printText
 .monDoesNothing
