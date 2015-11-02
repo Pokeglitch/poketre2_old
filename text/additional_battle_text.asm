@@ -388,8 +388,14 @@ _TooScaredToMoveText:
 	text $5a, "'s too scared to move!"
 	prompt
 	
+_DoesntHaveEnergyToUseMoveText:
+	text $5a, " doesn't have the energy to use "
+	ram_text wcd6d
+	text "!"
+	prompt
+	
 _BecameFrightenedText:
-	text $5a, " became frightened!"
+	text $5a, " was frightened!"
 	prompt
 	
 _InvisibleNoMoreText:

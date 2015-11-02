@@ -13,7 +13,7 @@ DecreaseABy1_8:
 	pop af
 	sub d		;subtract 12.5%
 	ret
-
+	
 GetPlayerReqEnergy:
 	ld a,[wBattleMonLearnedTraits]
 	jr GetReqEnergyCommon
@@ -37,18 +37,36 @@ GetReqEnergyCommon:
 ;return value in d
 ;1 = has enough
 ;0 = not enough
-EnemyMoveHaveEnoughPP:
+PlayerMoveHaveEnoughPP::
+	ld a,[wBattleMonLearnedTraits]
+	push af
+	ld hl,wBattleMonPP
+	ld de,wCurrentMenuItem
+	ld bc,wBattleMonMoves
+	jr MoveHaveEnoughPPCommon
+
+EnemyMoveHaveEnoughPP::
+	ld a,[wEnemyMonLearnedTraits]
+	push af
 	ld hl,wEnemyMonPP
+	ld de,wEnemyMoveListIndex
+	ld bc,wEnemyMonMoves
+
+MoveHaveEnoughPPCommon:
 	ld a,[hli]
 	and a
-	jr nz,.enough		;has enough if the high byte is not zero
-	ld a,[hl]
-	ld e,a		;load the low byte into e
-	ld a,[wEnemyMoveListIndex]
+	jr nz,.enoughPopAF		;has enough if the high byte is not zero
+
+	push bc
+	ld a,[de]
 	ld c,a		;which move we check
 	ld b,0
 	
-	ld hl,wEnemyMonMoves
+	ld a,[hl]
+	ld e,a		;load the pp low byte into e
+	
+	pop hl
+	
 	add hl,bc
 	ld a,[hli]		;get the move id
 	dec a
@@ -61,13 +79,16 @@ EnemyMoveHaveEnoughPP:
 	dec a
 	jr nz,.getMaxLoop
 	
-	call GetEnemyReqEnergy
+	pop af	;learned traits
+	call GetReqEnergyCommon
 	cp e		;compare to the pokemons energy
 	jr c,.enough		;has enough if carry (e is higher)
 	
 .notEnough
 	ld d,0
 	ret
+.enoughPopAF
+	pop af
 .enough
 	ld d,1
 	ret
@@ -189,18 +210,9 @@ DoesBattleMonHasEnoughPP:
 	call PrintText
 	jr .returnNotEnough
 .sleep
-	callab BattleRandom
-	ld a,[wBattleRandom]
-	and SLP ; sleep mask
-	jr nz,.notSleepZero
-	ld a,4		;if zero, set to 4
-.notSleepZero
-	ld hl,wBattleMonStatus
-	or [hl]	;sleep ontop of other aliments
-	ld [hl],a
-	ld hl, NotEnoughEnergyLeft
-	call PrintText
-	callab PlaySleepAnimation
+	xor a
+	ld [H_WHOSETURN], a ; set player's turn
+	callab PlayerFallAsleepNoEnergy
 .returnNotEnough
 	ld d,0
 	ret
@@ -216,8 +228,4 @@ DoesBattleMonHasEnoughPP:
 	
 OnlyDisabledMoveLeft:
 	far_text _OnlyDisabledMoveLeft
-	done
-	
-NotEnoughEnergyLeft: ; 3d430 (f:5430)
-	far_text _NotEnoughEnergyLeft
 	done
