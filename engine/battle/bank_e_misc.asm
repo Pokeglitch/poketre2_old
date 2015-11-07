@@ -7,7 +7,7 @@ FormatMovesString: ; 39b87 (e:5b87)
 	and a ; end of move list?
 	jr z, .printDashLoop ; print dashes when no moves are left
 	push hl
-	call GetMoveName
+	call GetMoveNameD0B5
 	ld h,d
 	ld l,e
 	ld de, wMovesString

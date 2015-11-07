@@ -2027,7 +2027,6 @@ ItemUsePPRestore: ; e31e (3:631e)
 	call GetSelectedMoveOffset
 	push hl
 	ld a,[hl]
-	ld [wd11e],a
 	call GetMoveName
 	call CopyStringToCF4B ; copy name to wcf4b
 	pop hl

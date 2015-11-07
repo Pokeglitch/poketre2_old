@@ -38,8 +38,15 @@ GetMachineName:: ; 2ff3 (0:2ff3)
 TechnicalPrefix:: ; 303c (0:303c)
 	db "TM"
 	
-_GetItemName::
+_GetItemNameD0B5::
 	ld a,[wd0b5]
+	jr _GetItemNameCommon
+	
+_GetItemName::
+	ld a,[wd11e]
+	;fall through
+	
+_GetItemNameCommon::
 	cp TM_01
 	jr nc, GetMachineName
 	
@@ -48,17 +55,22 @@ _GetItemName::
 	
 _GetMaleTrainerName::
 	ld hl,MaleTrainerNames
-	jr GetNameCommon
+	jr GetNameFromD0B5
 	
 _GetFemaleTrainerName::
 	ld hl,FemaleTrainerNames
-	jr GetNameCommon
+	jr GetNameFromD0B5
 	
 _GetFloorName::
 	ld hl,ElevatorFloorNames
-	jr GetNameCommon
+	jr GetNameFromD0B5
+	
+_GetMoveNameD0B5::
+	ld hl,MoveNames
+	jr GetNameFromD0B5
 	
 _GetMoveName::
+	ld a,[wd11e]
 	ld hl,MoveNames
 	jr GetNameCommon
 	
@@ -80,10 +92,12 @@ _GetTrainerName: ; 13a58 (4:7a58)
 	ld bc, $d
 	jp CopyData
 
-	
-GetNameCommon::
+
+GetNameFromD0B5::
 	ld a,[wd0b5]
+GetNameCommon::
 	ld b,a
+	ld c,0
 .nextName
 	ld d,h
 	ld e,l
@@ -100,21 +114,24 @@ GetNameCommon::
 	ld de,wcd6d
 	ld bc,$0014
 	call CopyData
-	ld de,wcd6d
 	ret	
 	
-_GetMonName::
+_GetMonName:
 	ld a,[wd11e]
+	jr _GetMonNameCommon
+	
+_GetMonNameD0B5::
+	ld a,[wd0b5]
+	
+_GetMonNameCommon::
 	dec a
 	ld hl,MonsterNames
 	ld c,10
 	ld b,0
 	call AddNTimes
 	ld de,wcd6d
-	push de
 	ld bc,10
 	call CopyData
 	ld hl,wcd6d + 10
 	ld [hl], "@"
-	pop de
 	ret

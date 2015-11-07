@@ -1468,7 +1468,7 @@ DisplayListMenuIDLoop:: ; 2c53 (0:2c53)
 	ld [wMaxItemQuantity],a
 .skipGettingQuantity
 	ld a,[wcf91]
-	call GetItemName
+	call GetItemNameD0B5
 	jr .storeChosenEntry
 .pokemonList
 	ld hl,wPartyCount
@@ -1858,53 +1858,81 @@ PrintListMenuEntries:: ; 2e5a (0:2e5a)
 ListMenuCancelText:: ; 2f97 (0:2f97)
 	db "CANCEL@"
 
+GetTrainerName:: ; 359e (0:359e)
+	jpba _GetTrainerName
+	
 GetFemaleTrainerName:: ; 2f9e (0:2f9e)
-	ld [wd0b5],a
 	push hl
-	callab _GetFemaleTrainerName
-	pop hl
-	ret
+	ld hl,_GetFemaleTrainerName
+	jr FinishGetName
 
 GetMaleTrainerName:: ; 2f9e (0:2f9e)
-	ld [wd0b5],a
 	push hl
-	callab _GetMaleTrainerName
+	ld hl,_GetMaleTrainerName
+	;fall through
+	
+FinishGetName::
+	push de
+	push bc
+	ld b,BANK(_GetMonName)
+	call Bankswitch
+	pop bc
+	pop de
 	pop hl
 	ret
 
 GetMonName:: ; 2f9e (0:2f9e)
-	ld [wd0b5],a
+	ld [wd11e],a
 	push hl
-	callab _GetMonName
-	pop hl
-	ret
+	ld hl,_GetMonName
+	;fall through
 	
-GetMoveName:: ; 3058 (0:3058)
-	ld [wd0b5],a
-	push hl
-	callab _GetMoveName
-	pop hl
-	ret
-	
-GetFloorName::
-	ld [wd0b5],a
-	push hl
+FinishGetNameReturnPointer:
 	push bc
-	callab _GetFloorName
+	ld b,BANK(_GetMonName)
+	call Bankswitch
 	pop bc
 	pop hl
-	ret	
+	ld de,wcd6d
+	ret
 
+GetMonNameD0B5:: ; 2f9e (0:2f9e)
+	ld [wd0b5],a
+	push hl
+	ld hl,_GetMonNameD0B5
+	jr FinishGetNameReturnPointer
+
+GetItemNameD0B5:
+	ld [wd0b5],a
+	push hl
+	ld hl,_GetItemNameD0B5
+	jr FinishGetName
+	
+GetMoveNameD0B5:: ; 3058 (0:3058)
+	ld [wd0b5],a
+	push hl
+	ld hl, _GetMoveNameD0B5
+	jr FinishGetNameReturnPointer
+	
+GetMoveName:: ; 3058 (0:3058)
+	ld [wd11e],a
+	push hl
+	ld hl, _GetMoveName
+	jr FinishGetNameReturnPointer
+	
 GetItemName:: ; 2fcf (0:2fcf)
 ; given an item ID at [wd11e], store the name of the item into a string
 ;     starting at wcd6d
 	ld [wd11e],a
 	push hl
-	push bc
-	callab _GetItemName
-	pop bc
-	pop hl
-	ret	
+	ld hl,_GetItemName
+	jr FinishGetNameReturnPointer
+	
+GetFloorName::
+	ld [wd0b5],a
+	push hl
+	ld hl,_GetFloorName
+	jr FinishGetNameReturnPointer
 
 ; sets carry if item is HM, clears carry if item is not HM
 ; Input: a = item ID
@@ -2810,9 +2838,6 @@ GetTrainerInformation:: ; 3566 (0:3566)
 	inc hl
 	ld [hl], d
 	ret
-
-GetTrainerName:: ; 359e (0:359e)
-	jpba _GetTrainerName
 
 
 HasEnoughMoney::
@@ -4123,6 +4148,7 @@ GiveItem::
 ; Return carry on success.
 	ld a, b
 	ld [wd11e], a
+	push af
 	ld [wcf91], a
 	ld a, c
 	ld [wItemQuantity], a
@@ -4130,6 +4156,7 @@ GiveItem::
 	call AddItemToInventory
 	ret nc
 	call AutoSaveHardModeHome
+	pop af
 	call GetItemName
 	call CopyStringToCF4B
 	scf

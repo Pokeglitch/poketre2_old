@@ -139,7 +139,7 @@ Evolution_PartyMonLoop: ; loop over party mons
 	ld a, [hl]
 	ld [wLoadedMonSpecies], a
 	ld [wEvoNewSpecies], a
-	call GetMonName
+	call GetMonNameD0B5
 	push hl
 	ld hl, EvolvedText
 	call PrintText
@@ -254,14 +254,14 @@ Evolution_PartyMonLoop: ; loop over party mons
 RenameEvolvedMon: ; 3aef7 (e:6ef7)
 ; Renames the mon to its new, evolved form's standard name unless it had a
 ; nickname, in which case the nickname is kept.
-	ld a, [wd11e]
+	ld a, [wd0b5]
 	push af
 	ld a, [wEvoOldSpecies]
-	ld [wd11e],a
-	call GetMonName
+	call GetMonNameD0B5
 	pop af
-	ld [wd11e], a
-	ld hl, wcd6d
+	ld [wd0b5], a
+	ld h,d
+	ld l,e
 	ld de, wcf4b
 .compareNamesLoop
 	ld a, [de]
@@ -276,7 +276,8 @@ RenameEvolvedMon: ; 3aef7 (e:6ef7)
 	ld hl, wPartyMonNicks
 	call AddNTimes
 	push hl
-	call GetMonName
+	ld a, [wd0b5]
+	call GetMonNameD0B5
 	ld h,d
 	ld l,e
 	pop de
@@ -356,7 +357,6 @@ LearnMoveFromLevelUp: ; 3af5b (e:6f5b)
 	jr nz, .checkCurrentMovesLoop
 	ld a, d
 	ld [wMoveNum], a
-	ld [wd11e], a
 	call GetMoveName
 	call CopyStringToCF4B
 	predef LearnMove

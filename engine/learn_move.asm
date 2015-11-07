@@ -29,7 +29,6 @@ DontAbandonLearning: ; 6e5b (1:6e5b)
 	jp c, AbandonLearning
 	push hl
 	push de
-	ld [wd11e], a
 	call GetMoveName
 	ld hl, OneTwoAndText
 	call PrintText

@@ -113,7 +113,6 @@ PrintFossilsInBag: ; 610c2 (18:50c2)
 ; loads the names of the fossil item and the resulting mon
 LoadFossilItemAndMonName: ; 610eb (18:50eb)
 	ld a, [wFossilMon]
-	ld [wd11e], a
 	call GetMonName
 	call CopyStringToCF4B
 	ld a, [wFossilItem]

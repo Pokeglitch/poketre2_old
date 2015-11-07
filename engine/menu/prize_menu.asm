@@ -105,17 +105,14 @@ GetPrizeMenuId: ; 5278e (14:678e)
 	jr .putNoThanksText
 .putMonName
 	ld a,[wPrize1]
-	ld [wd11e],a
 	call GetMonName
 	coord hl, 2, 4
 	call PlaceString
 	ld a,[wPrize2]
-	ld [wd11e],a
 	call GetMonName
 	coord hl, 2, 6
 	call PlaceString
 	ld a,[wPrize3]
-	ld [wd11e],a
 	call GetMonName
 	coord hl, 2, 8
 	call PlaceString
@@ -190,9 +187,9 @@ HandlePrizeChoice: ; 528c6 (14:68c6)
 	ld e,a
 	ld hl,wPrize1
 	add hl,de
-	ld a,[hl]
 	ld a,[wWhichPrizeWindow]
 	cp a,$02 ; is prize a TM?
+	ld a,[hl]
 	jr nz,.GetMonName
 	call GetItemName
 	jr .GivePrize

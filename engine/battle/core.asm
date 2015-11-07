@@ -2876,7 +2876,6 @@ CheckUseDisabledMove:
 	ret z
 	cp [hl]
 	ret nz
-	ld [wd11e], a
 	call GetMoveName
 	ld hl, MoveIsDisabledText
 	jp PrintCantUseMoveText
@@ -3104,7 +3103,6 @@ CheckRageStatus:
 	ret z ; if we made it this far, mon can move normally this turn
 	push de
 	ld a, RAGE
-	ld [wd11e], a
 	call GetMoveName
 	call CopyStringToCF4B
 	xor a
@@ -3125,7 +3123,6 @@ CheckHasEnoughEnergy:
 	pop de
 	ret nz		;return if there is enough
 	ld a,[de]
-	ld [wd11e], a
 	call GetMoveName
 	ld hl,DoesntHaveEnergyToUseMoveText
 	jp PrintCantUseMoveText
@@ -4625,6 +4622,7 @@ MirrorMoveFailedText: ; 3e324 (f:6324)
 ; function used to reload move data for moves like Mirror Move and Metronome
 ReloadMoveData: ; 3e329 (f:6329)
 	ld [wd11e],a
+	push af
 	dec a
 	ld hl,Moves
 	ld bc,MoveEnd - Moves
@@ -4633,6 +4631,7 @@ ReloadMoveData: ; 3e329 (f:6329)
 	call FarCopyData ; copy the move's stats
 	call IncrementMovePP
 ; the follow two function calls are used to reload the move name
+	pop af
 	call GetMoveName
 	call CopyStringToCF4B
 	ld a,$01
@@ -5151,7 +5150,7 @@ EnemyCanExecuteChargingMove: ; 3e70b (f:670b)
 	res ChargingUp, [hl] ; no longer charging up for attack
 	res Invulnerable, [hl] ; no longer invulnerable to typical attacks
 	ld a, [wEnemyMoveNum]
-	call GetMoveName
+	call GetMoveNameD0B5
 	call CopyStringToCF4B
 EnemyCanExecuteMove: ; 3e72b (f:672b)
 	callab DecrementEnemyPP
@@ -5401,7 +5400,7 @@ GetCurrentMove: ; 3eabe (f:6abe)
 	call FarCopyData
 
 	pop af
-	call GetMoveName
+	call GetMoveNameD0B5
 	jp CopyStringToCF4B
 
 ; calls BattleTransition to show the battle transition animation and initializes some battle variables
@@ -7740,7 +7739,6 @@ MimicEffect: ; 3f9ed (f:79ed)
 	add hl, bc
 	ld a, d
 	ld [hl], a
-	ld [wd11e], a
 	call GetMoveName
 	call PlayCurrentMoveAnimation
 	ld hl, MimicLearnedMoveText
