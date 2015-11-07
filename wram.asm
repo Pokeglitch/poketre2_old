@@ -203,7 +203,13 @@ wFrequencyModifier:: ; c0f1
 wTempoModifier:: ; c0f2
 	ds 1
 
-	ds 13
+wc0f3::
+	ds 1
+	
+wc0f4::
+	ds 1
+	
+	ds 11
 
 
 SECTION "Sprite State Data", WRAM0[$c100]
@@ -3923,7 +3929,7 @@ sSpriteBuffer0:: ds SPRITEBUFFERSIZE ; b000
 sSpriteBuffer1:: ds SPRITEBUFFERSIZE ; b188
 sSpriteBuffer2:: ds SPRITEBUFFERSIZE ; b310
 
-REPLAY_PLAYER_DATA_LENGTH EQU $100			;make this function to add up all of the data
+REPLAY_PLAYER_DATA_LENGTH EQU $100			;TODO: make this function to add up all of the data
 REPLAY_RANDOM_DATA_LENGTH EQU 500
 
 wReplayBackupData::

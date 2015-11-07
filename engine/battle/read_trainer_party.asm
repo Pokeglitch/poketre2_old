@@ -77,24 +77,25 @@ ReadTrainer: ; 39c53 (e:5c53)
 .FinishUp
 	ld a,[wEnemyTrainerFirstNameID]
 	ld [wd0b5],a		;the name index
-	ld b,MALE_NAME
 	ld hl,FemaleTrainerList
 	ld a,[wCurOpponent]
 	ld c,a
 .findFemaleLoop
 	ld a,[hli]
 	cp $FF
-	jr z,.storeName	;store the name if we've reached the end
+	jr z,.storeMaleName	;store the name if we've reached the end
 	cp c		;if it doesnt match, then go to the next one
 	jr nz,.findFemaleLoop
 .female
-	ld b,FEMALE_NAME
+	call GetFemaleTrainerName
+	jr .storeName
+.storeMaleName
+	call GetMaleTrainerName
 .storeName
 	ld a,b
 	ld [wNameListType],a
 	ld a,BANK(MaleTrainerNames)
 	ld [wPredefBank],a
-	call GetName
 	ld a," "
 	ld [wEnemyTrainerFirstName],a		;set the first character of first name to be a space
 	ld hl,wcd6d

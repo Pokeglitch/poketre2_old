@@ -12,7 +12,6 @@ TEXT_10 EQU $29
 TEXT_11 EQU $2a
 
 POKEDEX_TEXT EQU $2b
-MOVE_NAMES   EQU $2c
 
 INCLUDE "macros.asm"
 INCLUDE "hram.asm"
@@ -2620,9 +2619,4 @@ INCLUDE "text/pokedex2.asm"
 SECTION "Pokedex Text", ROMX, BANK[POKEDEX_TEXT]
 
 INCLUDE "text/pokedex.asm"
-
-
-SECTION "Move Names", ROMX, BANK[MOVE_NAMES]
-
-INCLUDE "text/move_names.asm"
 

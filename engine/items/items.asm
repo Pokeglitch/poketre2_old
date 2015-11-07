@@ -2600,7 +2600,6 @@ TossItem_: ; e6f1 (3:66f1)
 	jr nz,.tooImportantToToss
 	push hl
 	ld a,[wcf91]
-	ld [wd11e],a
 	call GetItemName
 	call CopyStringToCF4B ; copy name to wcf4b
 	ld hl,IsItOKToTossItemText
@@ -2621,7 +2620,6 @@ TossItem_: ; e6f1 (3:66f1)
 	call RemoveItemFromInventory
 	callab AutoSaveHardMode
 	ld a,[wcf91]
-	ld [wd11e],a
 	call GetItemName
 	call CopyStringToCF4B ; copy name to wcf4b
 	ld hl,ThrewAwayItemText

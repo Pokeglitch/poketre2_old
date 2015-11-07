@@ -23,7 +23,6 @@ Route11GateUpstairsText2: ; 4946c (12:546c)
 	ld [hOaksAideRequirement], a
 	ld a, ITEMFINDER ; oak's aide reward
 	ld [hOaksAideRewardItem], a
-	ld [wd11e], a
 	call GetItemName
 	ld h, d
 	ld l, e

@@ -192,7 +192,6 @@ CeladonMartRoofScript_PrintDrinksInBag: ; 48532 (12:4532)
 	cp $ff
 	ret z
 	push hl
-	ld [wd11e], a
 	call GetItemName
 	coord hl, 2, 2
 	ld a, [hItemCounter]

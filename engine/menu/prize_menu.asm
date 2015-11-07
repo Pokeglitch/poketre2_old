@@ -91,17 +91,14 @@ GetPrizeMenuId: ; 5278e (14:678e)
 	cp a,$02        ;is TM_menu?
 	jr nz,.putMonName
 	ld a,[wPrize1]
-	ld [wd11e],a
 	call GetItemName
 	coord hl, 2, 4
 	call PlaceString
 	ld a,[wPrize2]
-	ld [wd11e],a
 	call GetItemName
 	coord hl, 2, 6
 	call PlaceString
 	ld a,[wPrize3]
-	ld [wd11e],a
 	call GetItemName
 	coord hl, 2, 8
 	call PlaceString
@@ -194,7 +191,6 @@ HandlePrizeChoice: ; 528c6 (14:68c6)
 	ld hl,wPrize1
 	add hl,de
 	ld a,[hl]
-	ld [wd11e],a
 	ld a,[wWhichPrizeWindow]
 	cp a,$02 ; is prize a TM?
 	jr nz,.GetMonName

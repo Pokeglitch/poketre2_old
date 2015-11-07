@@ -125,28 +125,6 @@ LoadMonData_:
 
 
 INCLUDE "data/item_prices.asm"
-INCLUDE "text/item_names.asm"
-
-UnusedNames:
-	db "かみなりバッヂ@"
-	db "かいがらバッヂ@"
-	db "おじぞうバッヂ@"
-	db "はやぶさバッヂ@"
-	db "ひんやりバッヂ@"
-	db "なかよしバッヂ@"
-	db "バラバッヂ@"
-	db "ひのたまバッヂ@"
-	db "ゴールドバッヂ@"
-	db "たまご@"
-	db "ひよこ@"
-	db "ブロンズ@"
-	db "シルバー@"
-	db "ゴールド@"
-	db "プチキャプテン@"
-	db "キャプテン@"
-	db "プチマスター@"
-	db "マスター@"
-	db "エクセレント"
 
 INCLUDE "engine/overworld/oam.asm"
 INCLUDE "engine/oam_dma.asm"
@@ -4658,7 +4636,6 @@ INCLUDE "engine/battle/wild_encounters.asm"
 INCLUDE "engine/battle/moveEffects/recoil_effect.asm"
 INCLUDE "engine/battle/moveEffects/conversion_effect.asm"
 INCLUDE "engine/battle/moveEffects/haze_effect.asm"
-INCLUDE "engine/battle/get_trainer_name.asm"
 INCLUDE "engine/random.asm"
 
 
@@ -4826,8 +4803,6 @@ CeruleanHouseTrashedBlocks: INCBIN "maps/ceruleanhousetrashed.blk"
 DiglettsCaveEntranceRoute11Blocks:
 DiglettsCaveRoute2Blocks: INCBIN "maps/diglettscaveroute2.blk"
 
-INCLUDE "text/monster_names.asm"
-
 INCLUDE "engine/clear_save.asm"
 
 INCLUDE "engine/predefs7.asm"
@@ -4976,7 +4951,6 @@ ENDC
 INCLUDE "engine/menu/oaks_pc.asm"
 
 INCLUDE "engine/hidden_object_functions7.asm"
-
 
 SECTION "Pics 1", ROMX, BANK[PICS_1]
 
@@ -6460,7 +6434,6 @@ INCLUDE "engine/items/tm_prices.asm"
 
 ;first bank for the alt mon sprites
 SECTION "bank20",ROMX,BANK[$20]
-
 MeowthSketch::      INCBIN "pic/altmons/meowth-sketch-final.pic"
 GrowlitheSketch::      INCBIN "pic/altmons/growlithe-sketch-final.pic"
 PersianSketch::      INCBIN "pic/altmons/persian-sketch-final.pic"
@@ -6668,6 +6641,141 @@ DragoniteSketch::      INCBIN "pic/altmons/dragonite_sketch.pic"
 MewtwoSketch::      INCBIN "pic/altmons/mewtwo_sketch.pic"
 MewSketch::      INCBIN "pic/altmons/mew_sketch.pic"
 
+SECTION "bank2D",ROMX,BANK[$2D]
+INCLUDE "audio/raw_audio.asm"
+
+SylveonCry: ; 84000 (21:4000)
+	dw (SylveonCryEnd - SylveonCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/sylveon.pcm"
+SylveonCryEnd:
+
+ElectivireCry: ; 84000 (21:4000)
+	dw (ElectivireCryEnd - ElectivireCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/electivire.pcm"
+ElectivireCryEnd:
+
+GlaceonCry: ; 84000 (21:4000)
+	dw (GlaceonCryEnd - GlaceonCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/glaceon.pcm"
+GlaceonCryEnd:
+
+HappinyCry: ; 84000 (21:4000)
+	dw (HappinyCryEnd - HappinyCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/happiny.pcm"
+HappinyCryEnd:
+
+SECTION "bank2E",ROMX,BANK[$2E]
+LeafeonCry: ; 84000 (21:4000)
+	dw (LeafeonCryEnd - LeafeonCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/leafeon.pcm"
+LeafeonCryEnd:
+
+LickilickyCry: ; 84000 (21:4000)
+	dw (LickilickyCryEnd - LickilickyCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/lickilicky.pcm"
+LickilickyCryEnd:
+
+MagmortarCry: ; 84000 (21:4000)
+	dw (MagmortarCryEnd - MagmortarCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/magmortar.pcm"
+MagmortarCryEnd:
+
+MagnezoneCry: ; 84000 (21:4000)
+	dw (MagnezoneCryEnd - MagnezoneCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/magnezone.pcm"
+MagnezoneCryEnd:
+
+SECTION "bank2F",ROMX,BANK[$2F]
+
+MimeJrCry: ; 84000 (21:4000)
+	dw (MimeJrCryEnd - MimeJrCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/mime_jr.pcm"
+MimeJrCryEnd:
+
+MunchlaxCry: ; 84000 (21:4000)
+	dw (MunchlaxCryEnd - MunchlaxCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/munchlax.pcm"
+MunchlaxCryEnd:
+
+PorygonZCry: ; 84000 (21:4000)
+	dw (PorygonZCryEnd - PorygonZCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/porygon_z.pcm"
+PorygonZCryEnd:
+
+RhyperiorCry: ; 84000 (21:4000)
+	dw (RhyperiorCryEnd - RhyperiorCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/rhyperior.pcm"
+RhyperiorCryEnd:
+
+SECTION "bank30",ROMX,BANK[$30]
+
+TangrowthCry: ; 84000 (21:4000)
+	dw (TangrowthCryEnd - TangrowthCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/rhyperior.pcm"
+TangrowthCryEnd:
+
+PikachuCry: ; 84000 (21:4000)
+	dw (PikachuCryEnd - PikachuCry ) - 2 ; length of pcm data
+	INCBIN "audio/cries/pikachu.pcm"
+PikachuCryEnd:
+
+ArcanineCry: ; 84000 (21:4000)
+	dw (ArcanineCryEnd - ArcanineCry ) - 2 ; length of pcm data
+	INCBIN "audio/cries/arcanine.pcm"
+ArcanineCryEnd:
+
+GrowlitheCry: ; 84000 (21:4000)
+	dw (GrowlitheCryEnd - GrowlitheCry ) - 2 ; length of pcm data
+	INCBIN "audio/cries/growlithe.pcm"
+GrowlitheCryEnd:
+
+SECTION "bank31",ROMX,BANK[$31]
+
+JamesCry: ; 84000 (21:4000)
+	dw (JamesCryEnd - JamesCry ) - 2 ; length of pcm data
+	INCBIN "audio/cries/james.pcm"
+JamesCryEnd:
+
+JessieCry: ; 84000 (21:4000)
+	dw (JessieCryEnd - JessieCry ) - 2 ; length of pcm data
+	INCBIN "audio/cries/jessie.pcm"
+JessieCryEnd:
+
+MeowthCry: ; 84000 (21:4000)
+	dw (MeowthCryEnd - MeowthCry ) - 2 ; length of pcm data
+	INCBIN "audio/cries/meowth.pcm"
+MeowthCryEnd:
+
+PersianCry: ; 84000 (21:4000)
+	dw (PersianCryEnd - PersianCry ) - 2 ; length of pcm data
+	INCBIN "audio/cries/persian.pcm"
+PersianCryEnd:
+
+SECTION "bank32",ROMX,BANK[$32]
+AshCry: ; 84000 (21:4000)
+	dw (AshCryEnd - AshCry ) - 2 ; length of pcm data
+	INCBIN "audio/cries/ash.pcm"
+AshCryEnd:
+
+GiovanniCry: ; 84000 (21:4000)
+	dw (GiovanniCryEnd - GiovanniCry ) - 2 ; length of pcm data
+	INCBIN "audio/cries/giovanni.pcm"
+GiovanniCryEnd:
+
+ProfOakCry: ; 84000 (21:4000)
+	dw (ProfOakCryEnd - ProfOakCry ) - 2 ; length of pcm data
+	INCBIN "audio/cries/prof_oak.pcm"
+ProfOakCryEnd:
+
+PokeglitchCry: ; 84000 (21:4000)
+	dw (PokeglitchCryEnd - PokeglitchCry ) - 2 ; length of pcm data
+	INCBIN "audio/cries/pokeglitch.pcm"
+PokeglitchCryEnd:
+
+SECTION "bank1F",ROMX,BANK[$35]
+INCLUDE "engine/get_name.asm"
+
+
 ;bank for the new hard mode functions
 SECTION "bank36",ROMX,BANK[$36]
 INCLUDE "engine/hard_mode.asm"
@@ -6696,7 +6804,6 @@ INCLUDE "engine/battle/decrement_pp.asm"
 
 SECTION "bank39",ROMX,BANK[$39]
 INCLUDE "engine/textbox_and_font.asm"
-INCLUDE "text/trainer_first_names.asm"
 INCLUDE "engine/calc_stats.asm"
 
 SECTION "bank3A",ROMX,BANK[$3A]

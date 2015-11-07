@@ -5151,13 +5151,7 @@ EnemyCanExecuteChargingMove: ; 3e70b (f:670b)
 	res ChargingUp, [hl] ; no longer charging up for attack
 	res Invulnerable, [hl] ; no longer invulnerable to typical attacks
 	ld a, [wEnemyMoveNum]
-	ld [wd0b5], a
-	ld a, BANK(MoveNames)
-	ld [wPredefBank], a
-	ld a, MOVE_NAME
-	ld [wNameListType], a
-	call GetName
-	ld de, wcd6d
+	call GetMoveName
 	call CopyStringToCF4B
 EnemyCanExecuteMove: ; 3e72b (f:672b)
 	callab DecrementEnemyPP
@@ -5398,7 +5392,7 @@ GetCurrentMove: ; 3eabe (f:6abe)
 	jr nz, .selected
 	ld a, [wPlayerSelectedMove]
 .selected
-	ld [wd0b5], a
+	push af
 	dec a
 	ld hl, Moves
 	ld bc, $6
@@ -5406,12 +5400,8 @@ GetCurrentMove: ; 3eabe (f:6abe)
 	ld a, BANK(Moves)
 	call FarCopyData
 
-	ld a, BANK(MoveNames)
-	ld [wPredefBank], a
-	ld a, MOVE_NAME
-	ld [wNameListType], a
-	call GetName
-	ld de, wcd6d
+	pop af
+	call GetMoveName
 	jp CopyStringToCF4B
 
 ; calls BattleTransition to show the battle transition animation and initializes some battle variables

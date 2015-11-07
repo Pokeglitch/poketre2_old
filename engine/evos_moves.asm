@@ -137,14 +137,9 @@ Evolution_PartyMonLoop: ; loop over party mons
 	jp c, CancelledEvolution
 	pop hl
 	ld a, [hl]
-	ld [wd0b5], a
 	ld [wLoadedMonSpecies], a
 	ld [wEvoNewSpecies], a
-	ld a, MONSTER_NAME
-	ld [wNameListType], a
-	ld a, BANK(TrainerNames) ; bank is not used for monster names
-	ld [wPredefBank], a
-	call GetName
+	call GetMonName
 	push hl
 	ld hl, EvolvedText
 	call PrintText
@@ -259,13 +254,13 @@ Evolution_PartyMonLoop: ; loop over party mons
 RenameEvolvedMon: ; 3aef7 (e:6ef7)
 ; Renames the mon to its new, evolved form's standard name unless it had a
 ; nickname, in which case the nickname is kept.
-	ld a, [wd0b5]
+	ld a, [wd11e]
 	push af
 	ld a, [wEvoOldSpecies]
-	ld [wd0b5], a
-	call GetName
+	ld [wd11e],a
+	call GetMonName
 	pop af
-	ld [wd0b5], a
+	ld [wd11e], a
 	ld hl, wcd6d
 	ld de, wcf4b
 .compareNamesLoop
@@ -281,8 +276,9 @@ RenameEvolvedMon: ; 3aef7 (e:6ef7)
 	ld hl, wPartyMonNicks
 	call AddNTimes
 	push hl
-	call GetName
-	ld hl, wcd6d
+	call GetMonName
+	ld h,d
+	ld l,e
 	pop de
 	jp CopyData
 

@@ -326,8 +326,6 @@ TrainerClassMoveChoiceModifications: ; 3989b (e:589b)
 
 INCLUDE "engine/battle/trainer_pic_money_pointers.asm"
 
-INCLUDE "text/trainer_names.asm"
-
 INCLUDE "engine/battle/bank_e_misc.asm"
 
 INCLUDE "engine/battle/read_trainer_party.asm"
@@ -829,7 +827,6 @@ AIPrintItemUse: ; 3a82c (e:682c)
 AIPrintItemUse_: ; 3a835 (e:6835)
 ; print "x used [wAIItem] on z!"
 	ld a,[wAIItem]
-	ld [wd11e],a
 	call GetItemName
 	ld hl, AIBattleUseItemText
 	jp PrintText

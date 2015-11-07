@@ -42,7 +42,10 @@ JUGGLER       EQU $15
 TAMER         EQU $16
 BIRD_KEEPER   EQU $17
 BLACKBELT     EQU $18
+
 SONY1         EQU $19
+RIVAL		  EQU $19
+
 PROF_OAK      EQU $1A
 
 CHIEF         EQU $1B

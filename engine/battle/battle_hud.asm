@@ -427,7 +427,6 @@ DisplayBagMenu:
 UseBagItem:
 	; either use an item from the bag or use a safari zone item
 	ld a, [wcf91]
-	ld [wd11e], a
 	call GetItemName
 	call CopyStringToCF4B ; copy name
 	xor a

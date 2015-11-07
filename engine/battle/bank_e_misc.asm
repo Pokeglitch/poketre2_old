@@ -1,20 +1,16 @@
 ; formats a string at wMovesString that lists the moves at wMoves
 FormatMovesString: ; 39b87 (e:5b87)
 	ld hl, wMoves
-	ld de, wMovesString
 	ld b, $0
 .printMoveNameLoop
 	ld a, [hli]
 	and a ; end of move list?
 	jr z, .printDashLoop ; print dashes when no moves are left
 	push hl
-	ld [wd0b5], a
-	ld a, BANK(MoveNames)
-	ld [wPredefBank], a
-	ld a, MOVE_NAME
-	ld [wNameListType], a
-	call GetName
-	ld hl, wcd6d
+	call GetMoveName
+	ld h,d
+	ld l,e
+	ld de, wMovesString
 .copyNameLoop
 	ld a, [hli]
 	cp "@"

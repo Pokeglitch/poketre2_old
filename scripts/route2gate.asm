@@ -13,9 +13,9 @@ Route2GateText1: ; 5d5db (17:55db)
 	ld [hOaksAideRequirement], a
 	ld a, HM_05 ; oak's aide reward
 	ld [hOaksAideRewardItem], a
-	ld [wd11e], a
 	call GetItemName
-	ld hl, wcd6d
+	ld h,d
+	ld l,e
 	ld de, wOaksAideRewardItemName
 	ld bc, ITEM_NAME_LENGTH
 	call CopyData

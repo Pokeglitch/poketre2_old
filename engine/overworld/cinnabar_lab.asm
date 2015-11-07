@@ -98,7 +98,6 @@ PrintFossilsInBag: ; 610c2 (18:50c2)
 	cp $ff
 	ret z
 	push hl
-	ld [wd11e], a
 	call GetItemName
 	coord hl, 2, 2
 	ld a, [hItemCounter]
@@ -118,6 +117,5 @@ LoadFossilItemAndMonName: ; 610eb (18:50eb)
 	call GetMonName
 	call CopyStringToCF4B
 	ld a, [wFossilItem]
-	ld [wd11e], a
 	call GetItemName
 	ret

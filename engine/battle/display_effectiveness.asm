@@ -241,7 +241,6 @@ DisplayHeldItemDamageEffectText:
 	ld a,d
 	dec a
 	ld [$ffdc], a
-	ld [wd11e], a
 	push hl
 	call GetItemName
 	call CopyStringToCF4B ; copy name to wcf4b

@@ -328,6 +328,9 @@ LoadFrontSpriteByMonIndex:: ; 1389 (0:1389)
 
 PlayCry:: ; 13d0 (0:13d0)
 ; Play monster a's cry.
+	callab RawCry
+	ret c		;return if we played a raw cry
+	
 	call GetCryData
 	call PlaySound
 	jp WaitForSoundToFinish
@@ -1465,10 +1468,7 @@ DisplayListMenuIDLoop:: ; 2c53 (0:2c53)
 	ld [wMaxItemQuantity],a
 .skipGettingQuantity
 	ld a,[wcf91]
-	ld [wd0b5],a
-	ld a,BANK(ItemNames)
-	ld [wPredefBank],a
-	call GetName
+	call GetItemName
 	jr .storeChosenEntry
 .pokemonList
 	ld hl,wPartyCount
@@ -1706,9 +1706,11 @@ PrintListMenuEntries:: ; 2e5a (0:2e5a)
 	cp a,4
 	jr z,.elevatorMenu
 .itemMenu
+	ld a,[wd11e]
 	call GetItemName
 	jr .placeNameString
 .elevatorMenu
+	ld a,[wd11e]
 	call GetFloorName
 	jr .placeNameString
 .pokemonPCMenu
@@ -1731,6 +1733,7 @@ PrintListMenuEntries:: ; 2e5a (0:2e5a)
 	pop hl
 	jr .placeNameString
 .movesMenu
+	ld a,[wd11e]
 	call GetMoveName
 .placeNameString
 	call PlaceString
@@ -1855,112 +1858,53 @@ PrintListMenuEntries:: ; 2e5a (0:2e5a)
 ListMenuCancelText:: ; 2f97 (0:2f97)
 	db "CANCEL@"
 
-GetMonName:: ; 2f9e (0:2f9e)
+GetFemaleTrainerName:: ; 2f9e (0:2f9e)
+	ld [wd0b5],a
 	push hl
-	ld a,[H_LOADEDROMBANK]
-	push af
-	ld a,BANK(MonsterNames)
-	ld [H_LOADEDROMBANK],a
-	ld [MBC1RomBank],a
-	ld a,[wd11e]
-	dec a
-	ld hl,MonsterNames
-	ld c,10
-	ld b,0
-	call AddNTimes
-	ld de,wcd6d
-	push de
-	ld bc,10
-	call CopyData
-	ld hl,wcd6d + 10
-	ld [hl], "@"
-	pop de
-	pop af
-	ld [H_LOADEDROMBANK],a
-	ld [MBC1RomBank],a
+	callab _GetFemaleTrainerName
+	pop hl
+	ret
+
+GetMaleTrainerName:: ; 2f9e (0:2f9e)
+	ld [wd0b5],a
+	push hl
+	callab _GetMaleTrainerName
+	pop hl
+	ret
+
+GetMonName:: ; 2f9e (0:2f9e)
+	ld [wd0b5],a
+	push hl
+	callab _GetMonName
+	pop hl
+	ret
+	
+GetMoveName:: ; 3058 (0:3058)
+	ld [wd0b5],a
+	push hl
+	callab _GetMoveName
 	pop hl
 	ret
 	
 GetFloorName::
+	ld [wd0b5],a
 	push hl
 	push bc
-	ld a,[wd11e]
-	ld [wd0b5],a
-	ld a,FLOOR_NAME
-	jr ContinueGetItemName
+	callab _GetFloorName
+	pop bc
+	pop hl
+	ret	
 
 GetItemName:: ; 2fcf (0:2fcf)
 ; given an item ID at [wd11e], store the name of the item into a string
 ;     starting at wcd6d
-	push hl
-	push bc
-	ld a,[wd11e]
-	cp TM_01 ; is this a TM/HM?
-	jr nc,GetItemMachineName
-
-	ld [wd0b5],a
-	ld a,ITEM_NAME
-ContinueGetItemName:
-	ld [wNameListType],a
-	ld a,BANK(ItemNames)
-	ld [wPredefBank],a
-	call GetName
-	jr FinishGetItemName
-
-GetItemMachineName
-	call GetMachineName
-FinishGetItemName
-	ld de,wcd6d ; pointer to where item name is stored in RAM
-	pop bc
-	pop hl
-	ret
-
-GetMachineName:: ; 2ff3 (0:2ff3)
-; copies the name of the TM/HM in [wd11e] to wcd6d
-	push hl
-	push de
-	push bc
-	ld a,[wd11e]
-	push af
-	ld hl,TechnicalPrefix ; points to "TM"
-	ld bc,2
-	ld de,wcd6d
-	call CopyData
-
-; now get the machine number and convert it to text
-	ld a,[wd11e]
-	sub TM_01 - 1
-	ld b, "0"
-.FirstDigit
-	sub 10
-	jr c,.SecondDigit
-	inc b
-	jr .FirstDigit
-.SecondDigit
-	add 10
-	push af
-	ld a,b
-	ld [de],a
-	inc de
-	pop af
-	ld b, "0"
-	add b
-	ld [de],a
-	inc de
-	ld a,"@"
-	ld [de],a
-
-	pop af
 	ld [wd11e],a
+	push hl
+	push bc
+	callab _GetItemName
 	pop bc
-	pop de
 	pop hl
-	ret
-
-TechnicalPrefix:: ; 303c (0:303c)
-	db "TM"
-HiddenPrefix:: ; 303e (0:303e)
-	db "HM"
+	ret	
 
 ; sets carry if item is HM, clears carry if item is not HM
 ; Input: a = item ID
@@ -1979,19 +1923,6 @@ IsMoveHM:: ; 3049 (0:3049)
 HMMoves:: ; 3052 (0:3052)
 	db CUT,FLY,SURF,STRENGTH,FLASH
 	db $ff ; terminator
-
-GetMoveName:: ; 3058 (0:3058)
-	push hl
-	ld a,MOVE_NAME
-	ld [wNameListType],a
-	ld a,[wd11e]
-	ld [wd0b5],a
-	ld a,BANK(MoveNames)
-	ld [wPredefBank],a
-	call GetName
-	ld de,wcd6d ; pointer to where move name is stored in RAM
-	pop hl
-	ret
 
 ; reloads text box tile patterns, current map view, and tileset tile patterns
 ReloadMapData:: ; 3071 (0:3071)
@@ -2881,7 +2812,7 @@ GetTrainerInformation:: ; 3566 (0:3566)
 	ret
 
 GetTrainerName:: ; 359e (0:359e)
-	jpba GetTrainerName_
+	jpba _GetTrainerName
 
 
 HasEnoughMoney::
@@ -2908,6 +2839,7 @@ BankswitchHome:: ; 35bc (0:35bc)
 	ld a,[H_LOADEDROMBANK]
 	ld [wBankswitchHomeSavedROMBank],a
 	ld a,[wBankswitchHomeTemp]
+BankswitchCommon::
 	ld [H_LOADEDROMBANK],a
 	ld [MBC1RomBank],a
 	ret
@@ -2915,9 +2847,7 @@ BankswitchHome:: ; 35bc (0:35bc)
 BankswitchBack:: ; 35cd (0:35cd)
 ; returns from BankswitchHome
 	ld a,[wBankswitchHomeSavedROMBank]
-	ld [H_LOADEDROMBANK],a
-	ld [MBC1RomBank],a
-	ret
+	jr BankswitchCommon
 
 Bankswitch:: ; 35d6 (0:35d6)
 ; self-contained bankswitch, use this when not in the home bank
@@ -2925,17 +2855,14 @@ Bankswitch:: ; 35d6 (0:35d6)
 	ld a,[H_LOADEDROMBANK]
 	push af
 	ld a,b
-	ld [H_LOADEDROMBANK],a
-	ld [MBC1RomBank],a
+	call BankswitchCommon
 	ld bc,.Return
 	push bc
 	jp [hl]
 .Return
 	pop bc
 	ld a,b
-	ld [H_LOADEDROMBANK],a
-	ld [MBC1RomBank],a
-	ret
+	jr BankswitchCommon
 
 ; displays yes/no choice
 ; yes -> set carry
@@ -3163,107 +3090,6 @@ WaitForSoundToFinish:: ; 3748 (0:3748)
 	or [hl]
 	jr nz, .waitLoop
 	pop hl
-	ret
-
-NamePointers:: ; 375d (0:375d)
-	dw MonsterNames
-	dw MoveNames
-	dw UnusedNames
-	dw ItemNames
-	dw wPartyMonOT ; player's OT names list
-	dw wEnemyMonOT ; enemy's OT names list
-	dw TrainerNames
-	dw ElevatorFloorNames
-	dw MaleTrainerNames
-	dw FemaleTrainerNames
-
-GetName:: ; 376b (0:376b)
-; arguments:
-; [wd0b5] = which name
-; [wNameListType] = which list
-; [wPredefBank] = bank of list
-;
-; returns pointer to name in de
-
-	; TM names are separate from item names.
-	ld a,[wNameListType]
-	cp a,ITEM_NAME
-	ld a,[wd0b5]
-	ld [wd11e],a
-	jr nz,.skipHMCheck
-	
-	cp TM_01
-	jp nc, GetMachineName
-	
-.skipHMCheck
-	ld a,[H_LOADEDROMBANK]
-	push af
-	push hl
-	push bc
-	push de
-	ld a,[wNameListType]    ;List3759_entrySelector
-	dec a
-	jr nz,.otherEntries
-	;1 = MON_NAMES
-	call GetMonName
-	ld hl,NAME_LENGTH
-	add hl,de
-	ld e,l
-	ld d,h
-	jr .gotPtr
-.otherEntries
-	;2-7 = OTHER ENTRIES
-	ld a,[wPredefBank]
-	ld [H_LOADEDROMBANK],a
-	ld [MBC1RomBank],a
-	ld a,[wNameListType]    ;VariousNames' entryID
-	dec a
-	add a
-	ld d,0
-	ld e,a
-	jr nc,.skip
-	inc d
-.skip
-	ld hl,NamePointers
-	add hl,de
-	ld a,[hli]
-	ld [$ff96],a
-	ld a,[hl]
-	ld [$ff95],a
-	ld a,[$ff95]
-	ld h,a
-	ld a,[$ff96]
-	ld l,a
-	ld a,[wd0b5]
-	ld b,a
-	ld c,0
-.nextName
-	ld d,h
-	ld e,l
-.nextChar
-	ld a,[hli]
-	cp a, "@"
-	jr nz,.nextChar
-	inc c           ;entry counter
-	ld a,b          ;wanted entry
-	cp c
-	jr nz,.nextName
-	ld h,d
-	ld l,e
-	ld de,wcd6d
-	ld bc,$0014
-	call CopyData
-.gotPtr
-	ld a,e
-	ld [wUnusedCF8D],a
-	ld a,d
-	ld [wUnusedCF8D + 1],a
-	pop de
-	pop bc
-	pop hl
-	pop af
-	ld [H_LOADEDROMBANK],a
-	ld [MBC1RomBank],a
 	ret
 
 GetItemPrice:: ; 37df (0:37df)
@@ -4472,8 +4298,8 @@ TextPredefs::
 	add_tx_pre ElevatorText                         ; 41
 	add_tx_pre PokemonStuffText                     ; 42
 
+INCLUDE "home/play_pcm.asm"
 
-	
 ;to run the rountine index in a from the table in hl
 RunTrainerRoutineFromTable:
 	push bc

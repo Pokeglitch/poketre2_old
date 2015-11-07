@@ -13,7 +13,6 @@ Route15GateUpstairsText1: ; 49651 (12:5651)
 	ld [hOaksAideRequirement], a
 	ld a, EXP__ALL ; oak's aide reward
 	ld [hOaksAideRewardItem], a
-	ld [wd11e], a
 	call GetItemName
 	ld hl, wcd6d
 	ld de, wOaksAideRewardItemName
