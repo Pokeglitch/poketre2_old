@@ -33,9 +33,9 @@ AnimateHallOfFame: ; 701a0 (1c:41a0)
 .skipInc
 	ld a, $90
 	ld [hWY], a
-	ld c, BANK(Music_HallOfFame)
-	ld a, MUSIC_HALL_OF_FAME
-	call PlayMusic
+;	ld c, BANK(Music_HallOfFame)
+;	ld a, MUSIC_HALL_OF_FAME
+;	call PlayMusic
 	ld hl, wPartySpecies
 	ld c, $ff
 .partyMonLoop

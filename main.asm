@@ -6644,97 +6644,86 @@ MewSketch::      INCBIN "pic/altmons/mew_sketch.pic"
 SECTION "bank2D",ROMX,BANK[$2D]
 INCLUDE "audio/raw_audio.asm"
 
-SylveonCry: ; 84000 (21:4000)
-	dw (SylveonCryEnd - SylveonCry) - 2 ; length of pcm data
-	INCBIN "audio/cries/sylveon.pcm"
-SylveonCryEnd:
-
-ElectivireCry: ; 84000 (21:4000)
+ElectivireCry:
 	dw (ElectivireCryEnd - ElectivireCry) - 2 ; length of pcm data
 	INCBIN "audio/cries/electivire.pcm"
 ElectivireCryEnd:
 
-GlaceonCry: ; 84000 (21:4000)
+GlaceonCry:
 	dw (GlaceonCryEnd - GlaceonCry) - 2 ; length of pcm data
 	INCBIN "audio/cries/glaceon.pcm"
 GlaceonCryEnd:
-
-HappinyCry: ; 84000 (21:4000)
-	dw (HappinyCryEnd - HappinyCry) - 2 ; length of pcm data
-	INCBIN "audio/cries/happiny.pcm"
-HappinyCryEnd:
-
-SECTION "bank2E",ROMX,BANK[$2E]
-LeafeonCry: ; 84000 (21:4000)
-	dw (LeafeonCryEnd - LeafeonCry) - 2 ; length of pcm data
-	INCBIN "audio/cries/leafeon.pcm"
-LeafeonCryEnd:
-
-LickilickyCry: ; 84000 (21:4000)
-	dw (LickilickyCryEnd - LickilickyCry) - 2 ; length of pcm data
-	INCBIN "audio/cries/lickilicky.pcm"
-LickilickyCryEnd:
-
-MagmortarCry: ; 84000 (21:4000)
-	dw (MagmortarCryEnd - MagmortarCry) - 2 ; length of pcm data
-	INCBIN "audio/cries/magmortar.pcm"
-MagmortarCryEnd:
 
 MagnezoneCry: ; 84000 (21:4000)
 	dw (MagnezoneCryEnd - MagnezoneCry) - 2 ; length of pcm data
 	INCBIN "audio/cries/magnezone.pcm"
 MagnezoneCryEnd:
 
-SECTION "bank2F",ROMX,BANK[$2F]
+GrowlitheCry: ; 84000 (21:4000)
+	dw (GrowlitheCryEnd - GrowlitheCry ) - 2 ; length of pcm data
+	INCBIN "audio/cries/growlithe.pcm"
+GrowlitheCryEnd:
 
-MimeJrCry: ; 84000 (21:4000)
-	dw (MimeJrCryEnd - MimeJrCry) - 2 ; length of pcm data
-	INCBIN "audio/cries/mime_jr.pcm"
-MimeJrCryEnd:
+SECTION "bank2E",ROMX,BANK[$2E]
 
-MunchlaxCry: ; 84000 (21:4000)
-	dw (MunchlaxCryEnd - MunchlaxCry) - 2 ; length of pcm data
-	INCBIN "audio/cries/munchlax.pcm"
-MunchlaxCryEnd:
+SylveonCry:
+	dw (SylveonCryEnd - SylveonCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/sylveon.pcm"
+SylveonCryEnd:
+
+LickilickyCry: ; 84000 (21:4000)
+	dw (LickilickyCryEnd - LickilickyCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/lickilicky.pcm"
+LickilickyCryEnd:
 
 PorygonZCry: ; 84000 (21:4000)
 	dw (PorygonZCryEnd - PorygonZCry) - 2 ; length of pcm data
 	INCBIN "audio/cries/porygon_z.pcm"
 PorygonZCryEnd:
 
-RhyperiorCry: ; 84000 (21:4000)
-	dw (RhyperiorCryEnd - RhyperiorCry) - 2 ; length of pcm data
-	INCBIN "audio/cries/rhyperior.pcm"
-RhyperiorCryEnd:
+PersianCry: ; 84000 (21:4000)
+	dw (PersianCryEnd - PersianCry ) - 2 ; length of pcm data
+	INCBIN "audio/cries/persian.pcm"
+PersianCryEnd:
 
-SECTION "bank30",ROMX,BANK[$30]
+SECTION "bank2F",ROMX,BANK[$2F]
 
-TangrowthCry: ; 84000 (21:4000)
-	dw (TangrowthCryEnd - TangrowthCry) - 2 ; length of pcm data
-	INCBIN "audio/cries/rhyperior.pcm"
-TangrowthCryEnd:
-
-PikachuCry: ; 84000 (21:4000)
-	dw (PikachuCryEnd - PikachuCry ) - 2 ; length of pcm data
-	INCBIN "audio/cries/pikachu.pcm"
-PikachuCryEnd:
+MagmortarCry: ; 84000 (21:4000)
+	dw (MagmortarCryEnd - MagmortarCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/magmortar.pcm"
+MagmortarCryEnd:
 
 ArcanineCry: ; 84000 (21:4000)
 	dw (ArcanineCryEnd - ArcanineCry ) - 2 ; length of pcm data
 	INCBIN "audio/cries/arcanine.pcm"
 ArcanineCryEnd:
 
-GrowlitheCry: ; 84000 (21:4000)
-	dw (GrowlitheCryEnd - GrowlitheCry ) - 2 ; length of pcm data
-	INCBIN "audio/cries/growlithe.pcm"
-GrowlitheCryEnd:
+PokeglitchCry: ; 84000 (21:4000)
+	dw (PokeglitchCryEnd - PokeglitchCry ) - 2 ; length of pcm data
+	INCBIN "audio/cries/pokeglitch.pcm"
+PokeglitchCryEnd:
 
-SECTION "bank31",ROMX,BANK[$31]
+TangrowthCry: ; 84000 (21:4000)
+	dw (TangrowthCryEnd - TangrowthCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/rhyperior.pcm"
+TangrowthCryEnd:
 
-JamesCry: ; 84000 (21:4000)
-	dw (JamesCryEnd - JamesCry ) - 2 ; length of pcm data
-	INCBIN "audio/cries/james.pcm"
-JamesCryEnd:
+MimeJrCry: ; 84000 (21:4000)
+	dw (MimeJrCryEnd - MimeJrCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/mime_jr.pcm"
+MimeJrCryEnd:
+
+SECTION "bank30",ROMX,BANK[$30]
+
+RhyperiorCry: ; 84000 (21:4000)
+	dw (RhyperiorCryEnd - RhyperiorCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/rhyperior.pcm"
+RhyperiorCryEnd:
+
+PikachuCry: ; 84000 (21:4000)
+	dw (PikachuCryEnd - PikachuCry ) - 2 ; length of pcm data
+	INCBIN "audio/cries/pikachu.pcm"
+PikachuCryEnd:
 
 JessieCry: ; 84000 (21:4000)
 	dw (JessieCryEnd - JessieCry ) - 2 ; length of pcm data
@@ -6746,12 +6735,33 @@ MeowthCry: ; 84000 (21:4000)
 	INCBIN "audio/cries/meowth.pcm"
 MeowthCryEnd:
 
-PersianCry: ; 84000 (21:4000)
-	dw (PersianCryEnd - PersianCry ) - 2 ; length of pcm data
-	INCBIN "audio/cries/persian.pcm"
-PersianCryEnd:
+ProfOakCry: ; 84000 (21:4000)
+	dw (ProfOakCryEnd - ProfOakCry ) - 2 ; length of pcm data
+	INCBIN "audio/cries/prof_oak.pcm"
+ProfOakCryEnd:
 
-SECTION "bank32",ROMX,BANK[$32]
+MunchlaxCry: ; 84000 (21:4000)
+	dw (MunchlaxCryEnd - MunchlaxCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/munchlax.pcm"
+MunchlaxCryEnd:
+
+SECTION "bank31",ROMX,BANK[$31]
+
+HappinyCry:
+	dw (HappinyCryEnd - HappinyCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/happiny.pcm"
+HappinyCryEnd:
+
+JamesCry: ; 84000 (21:4000)
+	dw (JamesCryEnd - JamesCry ) - 2 ; length of pcm data
+	INCBIN "audio/cries/james.pcm"
+JamesCryEnd:
+
+LeafeonCry:
+	dw (LeafeonCryEnd - LeafeonCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/leafeon.pcm"
+LeafeonCryEnd:
+
 AshCry: ; 84000 (21:4000)
 	dw (AshCryEnd - AshCry ) - 2 ; length of pcm data
 	INCBIN "audio/cries/ash.pcm"
@@ -6761,16 +6771,6 @@ GiovanniCry: ; 84000 (21:4000)
 	dw (GiovanniCryEnd - GiovanniCry ) - 2 ; length of pcm data
 	INCBIN "audio/cries/giovanni.pcm"
 GiovanniCryEnd:
-
-ProfOakCry: ; 84000 (21:4000)
-	dw (ProfOakCryEnd - ProfOakCry ) - 2 ; length of pcm data
-	INCBIN "audio/cries/prof_oak.pcm"
-ProfOakCryEnd:
-
-PokeglitchCry: ; 84000 (21:4000)
-	dw (PokeglitchCryEnd - PokeglitchCry ) - 2 ; length of pcm data
-	INCBIN "audio/cries/pokeglitch.pcm"
-PokeglitchCryEnd:
 
 SECTION "bank1F",ROMX,BANK[$35]
 INCLUDE "engine/get_name.asm"

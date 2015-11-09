@@ -125,7 +125,9 @@ INCLUDE "audio/sfx/cry1f_1.asm"
 INCLUDE "audio/sfx/cry20_1.asm"
 INCLUDE "audio/sfx/cry21_1.asm"
 INCLUDE "audio/sfx/cry22_1.asm"
-
+;INCLUDE "audio/sfx/cry26_1.asm"
+;INCLUDE "audio/sfx/cry27_1.asm"
+INCLUDE "audio/sfx/cry28_1.asm"
 
 SECTION "Sound Effects 2", ROMX, BANK[AUDIO_2]
 
@@ -250,7 +252,9 @@ INCLUDE "audio/sfx/cry1f_2.asm"
 INCLUDE "audio/sfx/cry20_2.asm"
 INCLUDE "audio/sfx/cry21_2.asm"
 INCLUDE "audio/sfx/cry22_2.asm"
-
+;INCLUDE "audio/sfx/cry26_2.asm"
+;INCLUDE "audio/sfx/cry27_2.asm"
+INCLUDE "audio/sfx/cry28_2.asm"
 
 SECTION "Sound Effects 3", ROMX, BANK[AUDIO_3]
 
@@ -357,8 +361,9 @@ INCLUDE "audio/sfx/cry1f_3.asm"
 INCLUDE "audio/sfx/cry20_3.asm"
 INCLUDE "audio/sfx/cry21_3.asm"
 INCLUDE "audio/sfx/cry22_3.asm"
-
-
+;INCLUDE "audio/sfx/cry26_3.asm"
+;INCLUDE "audio/sfx/cry27_3.asm"
+INCLUDE "audio/sfx/cry28_3.asm"
 
 SECTION "Audio Engine 1", ROMX, BANK[AUDIO_1]
 
@@ -397,9 +402,7 @@ PlayBattleMusic:: ; 0x90c6
 .playSong
 	jp PlayMusic
 
-
 INCLUDE "audio/engine_1.asm"
-
 
 ; an alternate start for MeetRival which has a different first measure
 Music_RivalAlternateStart:: ; 0x9b47
@@ -609,8 +612,7 @@ INCLUDE "audio/music/routes2.asm"
 INCLUDE "audio/music/routes3.asm"
 INCLUDE "audio/music/routes4.asm"
 INCLUDE "audio/music/indigoplateau.asm"
-INCLUDE "audio/music/pallettown.asm"
-INCLUDE "audio/music/unusedsong.asm"
+;INCLUDE "audio/music/unusedsong.asm"
 INCLUDE "audio/music/cities1.asm"
 INCLUDE "audio/sfx/get_item1_1.asm"
 INCLUDE "audio/music/museumguy.asm"
@@ -628,12 +630,13 @@ INCLUDE "audio/music/lavender.asm"
 INCLUDE "audio/music/safarizone.asm"
 INCLUDE "audio/music/gym.asm"
 INCLUDE "audio/music/pokecenter.asm"
+INCLUDE "audio/music/pallettown.asm"
 
 
 SECTION "Music 2", ROMX, BANK[AUDIO_2]
 
 INCLUDE "audio/sfx/pokeflute_ch1_ch2.asm"
-INCLUDE "audio/sfx/unused2_2.asm"
+;INCLUDE "audio/sfx/unused2_2.asm"
 INCLUDE "audio/music/gymleaderbattle.asm"
 INCLUDE "audio/music/trainerbattle.asm"
 INCLUDE "audio/music/wildbattle.asm"
@@ -644,7 +647,6 @@ INCLUDE "audio/sfx/caught_mon.asm"
 INCLUDE "audio/music/defeatedtrainer.asm"
 INCLUDE "audio/music/defeatedwildmon.asm"
 INCLUDE "audio/music/defeatedgymleader.asm"
-
 
 SECTION "Music 3", ROMX, BANK[AUDIO_3]
 
@@ -668,6 +670,5 @@ INCLUDE "audio/music/meetmaletrainer.asm"
 INCLUDE "audio/music/introbattle.asm"
 INCLUDE "audio/music/surfing.asm"
 INCLUDE "audio/music/jigglypuffsong.asm"
-INCLUDE "audio/music/halloffame.asm"
+;INCLUDE "audio/music/halloffame.asm"
 INCLUDE "audio/music/credits.asm"
-

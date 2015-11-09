@@ -16,13 +16,13 @@ Music_Credits:: ; 7c255 (1f:4255)
 	db CH2
 	dw Music_Credits_Ch3
 
-Music_HallOfFame:: ; 7c25e (1f:425e)
-	db ( $80 | CH0 )
-	dw Music_HallOfFame_Ch1
-	db CH1
-	dw Music_HallOfFame_Ch2
-	db CH2
-	dw Music_HallOfFame_Ch3
+;Music_HallOfFame:: ; 7c25e (1f:425e)
+;	db ( $80 | CH0 )
+;	dw Music_HallOfFame_Ch1
+;	db CH1
+;	dw Music_HallOfFame_Ch2
+;	db CH2
+;	dw Music_HallOfFame_Ch3
 
 Music_OaksLab:: ; 7c267 (1f:4267)
 	db ( $80 | CH0 )

@@ -1,4 +1,4 @@
-CryData: ; 39446 (e:5446)
+CryData:: ; 39446 (e:5446)
 	;$BaseCry, $Pitch, $Length
 	db $19, $77, $10; Meowth
 	db $19, $99, $FF; Persian
@@ -28,7 +28,7 @@ CryData: ; 39446 (e:5446)
 	db $18, $40, $A0; Fearow
 	db $17, $12, $40; Ekans
 	db $17, $E0, $10; Arbok
-	db $00, $00, $00; Pichu
+	db $26, $00, $C0; Pichu
 	db $0F, $EE, $01; Pikachu
 	db $09, $EE, $08; Raichu
 	db $00, $20, $40; Sandshrew
@@ -39,12 +39,12 @@ CryData: ; 39446 (e:5446)
 	db $00, $00, $80; Nidoran♂
 	db $00, $2C, $C0; Nidorino
 	db $09, $00, $80; Nidoking
-	db $00, $00, $00; Cleffa
+	db $27, $61, $11; Cleffa
 	db $19, $CC, $01; Clefairy
 	db $19, $AA, $20; Clefable
 	db $24, $4F, $10; Vulpix
 	db $24, $88, $60; Ninetales
-	db $00, $00, $00; Igglybuff
+	db $25, $e8, $68; Igglybuff
 	db $0E, $FF, $35; Jigglypuff
 	db $0E, $68, $60; Wigglytuff
 	db $1D, $E0, $80; Zubat

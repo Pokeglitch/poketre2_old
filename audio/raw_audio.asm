@@ -78,6 +78,7 @@ JessieCryHeader:
 	dw JessieCry
 	
 RawCry:
+	ld a,[wd0b5]
 	cp HUMAN
 	jr nz,.notHuman
 	ld a,[wActiveCheats]
@@ -114,8 +115,8 @@ RawCry:
 	ld a,[hli]
 	ld b,a		;bank
 	ld a,[hli]
-	ld l,a		;pointer low
 	ld h,[hl]	;pointer high
+	ld l,a		;pointer low
 	
 	di
 	push bc
@@ -181,4 +182,5 @@ RawCry:
 	ld [wChannelSoundIDs+CH7], a
 	ld a, [H_LOADEDROMBANK]
 	ei
+	scf
 	ret

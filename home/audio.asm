@@ -175,10 +175,10 @@ PlaySound:: ; 23b1 (0:23b1)
 	ld a, [wAudioROMBank]
 	ld [H_LOADEDROMBANK], a
 	ld [MBC1RomBank], a
+	
 	cp BANK(Audio1_PlaySound)
 	jr nz, .checkForAudio2
 
-; audio 1
 	ld a, b
 	call Audio1_PlaySound
 	jr .next2

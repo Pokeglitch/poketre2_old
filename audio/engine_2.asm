@@ -237,7 +237,7 @@ Audio2_endchannel: ; 21967 (8:5967)
 	jr .asm_219ef
 .asm_219d2
 	ld a, [wChannelSoundIDs + CH4]
-	cp $86
+	cp CRY_SFX_END
 	jr z, .asm_219ef
 	jr c, .asm_219dd
 	jr .asm_219ef
@@ -1013,7 +1013,7 @@ Audio2_21e8b: ; 21e8b (8:5e8b)
 	jr nc, .asm_21e94
 	jr .asm_21e9a
 .asm_21e94
-	cp $86
+	cp CRY_SFX_END
 	jr z, .asm_21e9a
 	jr c, .asm_21e9d
 .asm_21e9a
@@ -1677,7 +1677,7 @@ Audio2_2224e: ; 2224e (8:624e)
 	jr .asm_222d4
 .asm_222aa
 	ld a, [wSoundID]
-	cp $86
+	cp CRY_SFX_END
 	jr z, .asm_222d4
 	jr c, .asm_222b5
 	jr .asm_222d4

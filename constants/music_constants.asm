@@ -77,7 +77,7 @@ ENDM
 	; AUDIO_3
 	music_const MUSIC_TITLE_SCREEN,        Music_TitleScreen
 	music_const MUSIC_CREDITS,             Music_Credits
-	music_const MUSIC_HALL_OF_FAME,        Music_HallOfFame
+;	music_const MUSIC_HALL_OF_FAME,        Music_HallOfFame
 	music_const MUSIC_OAKS_LAB,            Music_OaksLab
 	music_const MUSIC_JIGGLYPUFF_SONG,     Music_JigglypuffSong
 	music_const MUSIC_BIKE_RIDING,         Music_BikeRiding
@@ -152,6 +152,9 @@ ENDM
 	music_const SFX_CRY_23,             SFX_Cry23_1
 	music_const SFX_CRY_24,             SFX_Cry24_1
 	music_const SFX_CRY_25,             SFX_Cry25_1
+	music_const SFX_CRY_26,     		SFX_Cry26_1
+	music_const SFX_CRY_27,     		SFX_Cry27_1
+	music_const SFX_CRY_28,     		SFX_Cry28_1
 
 	music_const SFX_GET_ITEM_2,         SFX_Get_Item2_1
 	music_const SFX_TINK,               SFX_Tink_1

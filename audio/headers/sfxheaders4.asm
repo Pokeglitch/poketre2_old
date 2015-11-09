@@ -373,37 +373,21 @@ SFX_Cry24_3:: ; 8180 (2:4180)
 	db CH7
 	dw SFX_Cry24_3_Ch3
 
-;SFX_Cry25_3:: ; 8189 (2:4189)
-;	db ( $80 | CH4 )
-;	dw SFX_Cry25_3_Ch1
-;	db CH5
-;	dw SFX_Cry25_3_Ch2
-;	db CH7
-;	dw SFX_Cry25_3_Ch3
-
-;SFX_Cry26_3:: ; 8189 (2:4189)
-;	db ( $80 | CH4 )
-;	dw SFX_Cry26_3_Ch1
-;	db CH5
-;	dw SFX_Cry26_3_Ch2
-;	db CH7
-;	dw SFX_Cry26_3_Ch3
-
-;SFX_Cry27_3:: ; 8180 (2:4180)
-;	db ( $80 | CH4 )
-;	dw SFX_Cry27_3_Ch1
-;	db CH5
-;	dw SFX_Cry27_3_Ch2
-;	db CH7
-;	dw SFX_Cry27_3_Ch3
-
-SFX_Cry28_3:: ; 8180 (2:4180)
+SFX_Cry25_3:: ; 8189 (2:4189)
 	db ( $80 | CH4 )
-	dw SFX_Cry28_3_Ch1
+	dw SFX_Cry25_3_Ch1
 	db CH5
-	dw SFX_Cry28_3_Ch2
+	dw SFX_Cry25_3_Ch2
 	db CH7
-	dw SFX_Cry28_3_Ch3
+	dw SFX_Cry25_3_Ch3
+
+SFX_Cry26_3:: ; 8189 (2:4189)
+	db ( $80 | CH4 )
+	dw SFX_Cry26_3_Ch1
+	db CH5
+	dw SFX_Cry26_3_Ch2
+	db CH7
+	dw SFX_Cry26_3_Ch3
 
 SFX_Get_Item1_3:: ; 7c192 (1f:4192)
 	db ( $80 | CH4 )
