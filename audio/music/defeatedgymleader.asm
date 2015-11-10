@@ -1,3 +1,4 @@
+Music_DefeatedGymLeader_Data::
 Music_DefeatedGymLeader_Ch1:: ; 23cad (8:7cad)
 	tempo 112
 	volume 7, 7

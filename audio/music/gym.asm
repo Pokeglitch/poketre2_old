@@ -1,3 +1,4 @@
+Music_Gym_Data::
 Music_Gym_Ch1:: ; bcbb (2:7cbb)
 	tempo 138
 	volume 7, 7

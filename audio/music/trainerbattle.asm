@@ -1,3 +1,4 @@
+Music_TrainerBattle_Data::
 Music_TrainerBattle_Ch1:: ; 22919 (8:6919)
 	tempo 112
 	volume 7, 7

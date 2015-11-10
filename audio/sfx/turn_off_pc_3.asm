@@ -1,4 +1,5 @@
-SFX_Turn_Off_PC_3_Ch1: ; 7c505 (1f:4505)
+SFX_Turn_Off_PC_3_Data::
+SFX_Turn_Off_PC_3_Ch1: ; 7c505 (1f::4505)
 	duty 2
 	unknownsfx0x20 4, 240, 0, 6
 	unknownsfx0x20 4, 240, 0, 4

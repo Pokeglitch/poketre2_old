@@ -1,3 +1,4 @@
+Music_Dungeon1_Data::
 Music_Dungeon1_Ch1:: ; 7ded1 (1f:5ed1)
 	tempo 144
 	volume 7, 7

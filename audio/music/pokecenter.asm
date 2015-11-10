@@ -1,3 +1,4 @@
+Music_Pokecenter_Data::
 Music_Pokecenter_Ch1:: ; be56 (2:7e56)
 	tempo 144
 	volume 7, 7

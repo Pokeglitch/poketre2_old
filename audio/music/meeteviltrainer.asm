@@ -1,3 +1,4 @@
+Music_MeetEvilTrainer_Data::
 Music_MeetEvilTrainer_Ch1:: ; 7f69d (1f:769d)
 	tempo 124
 	volume 7, 7

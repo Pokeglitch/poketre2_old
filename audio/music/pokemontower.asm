@@ -1,3 +1,4 @@
+Music_PokemonTower_Data::
 Music_PokemonTower_Ch1:: ; 7f04a (1f:704a)
 	tempo 152
 	volume 7, 7

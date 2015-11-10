@@ -1,4 +1,5 @@
-SFX_Push_Boulder_3_Ch1: ; 7c631 (1f:4631)
+SFX_Push_Boulder_3_Data::
+SFX_Push_Boulder_3_Ch1: ; 7c631 (1f::4631)
 	unknownnoise0x20 4, 162, 35
 	unknownnoise0x20 8, 241, 52
 	unknownnoise0x20 15, 0, 0

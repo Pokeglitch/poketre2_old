@@ -1,3 +1,4 @@
+Music_WildBattle_Data::
 Music_WildBattle_Ch1:: ; 23099 (8:7099)
 	tempo 104
 	volume 7, 7

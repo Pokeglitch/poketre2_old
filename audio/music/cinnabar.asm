@@ -1,3 +1,4 @@
+Music_Cinnabar_Data::
 Music_Cinnabar_Ch1:: ; b86d (2:786d)
 	tempo 144
 	volume 7, 7

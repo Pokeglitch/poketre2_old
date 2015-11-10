@@ -1,3 +1,4 @@
+Music_GameCorner_Data::
 Music_GameCorner_Ch1:: ; 7e20b (1f:620b)
 	tempo 120
 	volume 7, 7

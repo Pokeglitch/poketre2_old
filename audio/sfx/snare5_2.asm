@@ -1,4 +1,5 @@
-SFX_Snare5_2_Ch1: ; 2030d (8:430d)
+SFX_Snare5_2_Data::
+SFX_Snare5_2_Ch1: ; 2030d (8::430d)
 	unknownnoise0x20 7, 132, 55
 	unknownnoise0x20 6, 132, 54
 	unknownnoise0x20 5, 131, 53

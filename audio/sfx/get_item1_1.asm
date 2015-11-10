@@ -1,4 +1,5 @@
-SFX_Get_Item1_1_Ch1: ; ad77 (2:6d77)
+SFX_Get_Item1_1_Data::
+SFX_Get_Item1_1_Ch1: ; ad77 (2::6d77)
 	executemusic
 	tempo 256
 	volume 7, 7
@@ -16,7 +17,8 @@ SFX_Get_Item1_1_Ch1: ; ad77 (2:6d77)
 	endchannel
 
 
-SFX_Get_Item1_1_Ch2: ; ad8e (2:6d8e)
+;SFX_Get_Item1_1_Data::
+SFX_Get_Item1_1_Ch2: ; ad8e (2::6d8e)
 	executemusic
 	vibrato 8, 2, 7
 	duty 2
@@ -30,7 +32,8 @@ SFX_Get_Item1_1_Ch2: ; ad8e (2:6d8e)
 	endchannel
 
 
-SFX_Get_Item1_1_Ch3: ; ad9e (2:6d9e)
+;SFX_Get_Item1_1_Data::
+SFX_Get_Item1_1_Ch3: ; ad9e (2::6d9e)
 	executemusic
 	notetype 4, 1, 0
 	octave 4

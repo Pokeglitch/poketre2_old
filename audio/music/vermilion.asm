@@ -1,3 +1,4 @@
+Music_Vermilion_Data::
 Music_Vermilion_Ch1:: ; b9eb (2:79eb)
 	tempo 156
 	volume 7, 7

@@ -1,4 +1,5 @@
-SFX_Battle_23_Ch1: ; 205dc (8:45dc)
+SFX_Battle_23_Data::
+SFX_Battle_23_Ch1: ; 205dc (8::45dc)
 	unknownnoise0x20 2, 242, 67
 	unknownnoise0x20 4, 181, 50
 	unknownnoise0x20 9, 134, 49

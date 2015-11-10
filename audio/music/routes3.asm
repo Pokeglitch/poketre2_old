@@ -1,3 +1,4 @@
+Music_Routes3_Data::
 Music_Routes3_Ch1:: ; 9fad (2:5fad)
 	tempo 148
 	volume 7, 7

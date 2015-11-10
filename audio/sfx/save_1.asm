@@ -1,4 +1,5 @@
-SFX_Save_1_Ch1: ; 8475 (2:4475)
+SFX_Save_1_Data::
+SFX_Save_1_Ch1: ; 8475 (2::4475)
 	duty 2
 	unknownsfx0x20 4, 244, 0, 7
 	unknownsfx0x20 2, 228, 0, 6
@@ -10,7 +11,8 @@ SFX_Save_1_Ch1: ; 8475 (2:4475)
 	endchannel
 
 
-SFX_Save_1_Ch2: ; 8494 (2:4494)
+;SFX_Save_1_Data::
+SFX_Save_1_Ch2: ; 8494 (2::4494)
 	duty 2
 	unknownsfx0x20 4, 8, 0, 0
 	unknownsfx0x20 2, 212, 1, 7

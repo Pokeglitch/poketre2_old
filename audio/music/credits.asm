@@ -1,3 +1,4 @@
+Music_Credits_Data::
 Music_Credits_Ch1:: ; 7fc1f (1f:7c1f)
 	tempo 140
 	volume 7, 7

@@ -1,4 +1,5 @@
-SFX_Get_Item2_2_Ch1: ; 239c7 (8:79c7)
+SFX_Get_Item2_2_Data::
+SFX_Get_Item2_2_Ch1: ; 239c7 (8::79c7)
 	executemusic
 	tempo 256
 	volume 7, 7
@@ -25,7 +26,8 @@ SFX_Get_Item2_2_Ch1: ; 239c7 (8:79c7)
 	endchannel
 
 
-SFX_Get_Item2_2_Ch2: ; 239e6 (8:79e6)
+;SFX_Get_Item2_2_Data::
+SFX_Get_Item2_2_Ch2: ; 239e6 (8::79e6)
 	executemusic
 	vibrato 8, 2, 7
 	duty 2
@@ -46,7 +48,8 @@ SFX_Get_Item2_2_Ch2: ; 239e6 (8:79e6)
 	endchannel
 
 
-SFX_Get_Item2_2_Ch3: ; 239fe (8:79fe)
+;SFX_Get_Item2_2_Data::
+SFX_Get_Item2_2_Ch3: ; 239fe (8::79fe)
 	executemusic
 	notetype 5, 1, 0
 	octave 5

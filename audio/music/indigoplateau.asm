@@ -1,3 +1,4 @@
+Music_IndigoPlateau_Data::
 Music_IndigoPlateau_Ch1:: ; a5f0 (2:65f0)
 	tempo 132
 	volume 7, 7

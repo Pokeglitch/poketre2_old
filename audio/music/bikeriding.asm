@@ -1,3 +1,4 @@
+Music_BikeRiding_Data::
 Music_BikeRiding_Ch1:: ; 7dbbb (1f:5bbb)
 	tempo 144
 	volume 7, 7

@@ -1,3 +1,4 @@
+Music_Celadon_Data::
 Music_Celadon_Ch1:: ; b6c7 (2:76c7)
 	tempo 144
 	volume 7, 7

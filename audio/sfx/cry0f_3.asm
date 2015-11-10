@@ -1,4 +1,5 @@
-SFX_Cry0F_3_Ch1: ; 7c966 (1f:4966)
+SFX_Cry0F_3_Data::
+SFX_Cry0F_3_Ch1: ; 7c966 (1f::4966)
 	dutycycle 241
 	unknownsfx0x20 4, 247, 192, 7
 	unknownsfx0x20 12, 230, 194, 7
@@ -9,7 +10,8 @@ SFX_Cry0F_3_Ch1: ; 7c966 (1f:4966)
 	endchannel
 
 
-SFX_Cry0F_3_Ch2: ; 7c981 (1f:4981)
+;SFX_Cry0F_3_Data::
+SFX_Cry0F_3_Ch2: ; 7c981 (1f::4981)
 	dutycycle 204
 	unknownsfx0x20 3, 199, 129, 7
 	unknownsfx0x20 12, 182, 128, 7
@@ -20,7 +22,8 @@ SFX_Cry0F_3_Ch2: ; 7c981 (1f:4981)
 	endchannel
 
 
-SFX_Cry0F_3_Ch3: ; 7c99c (1f:499c)
+;SFX_Cry0F_3_Data::
+SFX_Cry0F_3_Ch3: ; 7c99c (1f::499c)
 	unknownnoise0x20 3, 228, 60
 	unknownnoise0x20 12, 214, 44
 	unknownnoise0x20 4, 228, 60

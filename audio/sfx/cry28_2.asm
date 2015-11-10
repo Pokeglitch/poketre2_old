@@ -1,7 +1,9 @@
-SFX_Cry28_2_Ch1: ; 8987 (2:4987)
+SFX_Cry28_2_Data::
+SFX_Cry28_2_Ch1: ; 8987 (2::4987)
 	endchannel
 
-SFX_Cry28_2_Ch2: ; 8996 (2:4996)
+;SFX_Cry28_2_Data::
+SFX_Cry28_2_Ch2: ; 8996 (2::4996)
 	dutycycle $21
 	unknownsfx0x20 $2, $c8, $41, $6
 	unknownsfx0x20 $2, $48, $41, $6
@@ -10,7 +12,8 @@ SFX_Cry28_2_Ch2: ; 8996 (2:4996)
 	unknownsfx0x20 $4, $f1, $8b, $7
 	endchannel
 
-SFX_Cry28_2_Ch3: ; 89a5 (2:49a5)
+;SFX_Cry28_2_Data::
+SFX_Cry28_2_Ch3: ; 89a5 (2::49a5)
 	unknownnoise0x20 $4, $91, $10
 	unknownnoise0x20 $8, $94, $3
 	endchannel

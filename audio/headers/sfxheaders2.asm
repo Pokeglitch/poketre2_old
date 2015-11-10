@@ -76,14 +76,6 @@ SFX_Muted_Snare3_2:: ; 20036 (8:4036)
 SFX_Muted_Snare4_2:: ; 20039 (8:4039)
 	db CH7
 	dw SFX_Muted_Snare4_2_Ch1
-
-SFX_Level_Up:: ; 20192 (8:4192)
-	db ( $80 | CH4 )
-	dw SFX_Level_Up_Ch1
-	db CH5
-	dw SFX_Level_Up_Ch2
-	db CH6
-	dw SFX_Level_Up_Ch3
 	
 SFX_Cry00_2:: ; 803c (2:403c)
 	db ( $80 | CH4 )
@@ -381,13 +373,13 @@ SFX_Cry24_2:: ; 8180 (2:4180)
 	db CH7
 	dw SFX_Cry24_2_Ch3
 
-;SFX_Cry25_2:: ; 8189 (2:4189)
-;	db ( $80 | CH4 )
-;	dw SFX_Cry25_2_Ch1
-;	db CH5
-;	dw SFX_Cry25_2_Ch2
-;	db CH7
-;	dw SFX_Cry25_2_Ch3
+SFX_Cry25_2:: ; 8189 (2:4189)
+	db ( $80 | CH4 )
+	dw SFX_Cry25_2_Ch1
+	db CH5
+	dw SFX_Cry25_2_Ch2
+	db CH7
+	dw SFX_Cry25_2_Ch3
 
 ;SFX_Cry26_2:: ; 8189 (2:4189)
 ;	db ( $80 | CH4 )
@@ -405,13 +397,21 @@ SFX_Cry24_2:: ; 8180 (2:4180)
 ;	db CH7
 ;	dw SFX_Cry27_2_Ch3
 
-SFX_Cry28_2:: ; 8180 (2:4180)
+;SFX_Cry28_2:: ; 8180 (2:4180)
+;	db ( $80 | CH4 )
+;	dw SFX_Cry28_2_Ch1
+;	db CH5
+;	dw SFX_Cry28_2_Ch2
+;	db CH7
+;	dw SFX_Cry28_2_Ch3
+
+SFX_Level_Up:: ; 20192 (8:4192)
 	db ( $80 | CH4 )
-	dw SFX_Cry28_2_Ch1
+	dw SFX_Level_Up_Ch1
 	db CH5
-	dw SFX_Cry28_2_Ch2
-	db CH7
-	dw SFX_Cry28_2_Ch3
+	dw SFX_Level_Up_Ch2
+	db CH6
+	dw SFX_Level_Up_Ch3
 
 SFX_Get_Item2_2:: ; 2019b (8:419b)
 	db ( $80 | CH4 )

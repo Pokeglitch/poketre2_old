@@ -1,3 +1,4 @@
+Music_JigglypuffSong_Data::
 Music_JigglypuffSong_Ch1:: ; 7fb7d (1f:7b7d)
 	tempo 144
 	volume 7, 7

@@ -1,3 +1,4 @@
+Music_DefeatedWildMon_Data::
 Music_DefeatedWildMon_Ch1:: ; 23b74 (8:7b74)
 	tempo 112
 	volume 7, 7

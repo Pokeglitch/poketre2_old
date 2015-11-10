@@ -1,3 +1,4 @@
+Music_UnusedSong_Data::
 Music_UnusedSong_Ch1:: ; a913 (2:6913)
 	tempo 144
 	volume 7, 7

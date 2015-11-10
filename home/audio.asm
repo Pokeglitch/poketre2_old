@@ -1,3 +1,43 @@
+AudioCryEndchannel:: ; 0x9b16
+	endchannel
+	
+GetNextMusicByte:: ; 0x9825
+	push bc
+	ld d, 0
+	ld e, c
+	ld a,[H_LOADEDROMBANK]
+	push af
+	
+	ld hl,wChannelBanks
+	add hl,de
+	ld a,[hl]
+	call BankswitchCommon
+	
+	ld hl, wChannelCommandPointers
+	ld a, e
+	add a
+	ld e, a
+	add hl, de
+	
+	ld a, [hli]
+	ld e, a
+	ld a, [hld]
+	ld d, a
+	
+	ld a, [de] ; get next music command
+	ld b,a
+	inc de
+	ld [hl], e ; store address of next command
+	inc hl
+	ld [hl], d
+	
+	pop af
+	call BankswitchCommon
+	
+	ld a,b
+	pop bc
+	ret
+
 PlayDefaultMusic:: ; 2307 (0:2307)
 	call WaitForSoundToFinish
 	xor a

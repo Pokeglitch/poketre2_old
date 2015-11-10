@@ -209,7 +209,15 @@ wc0f3::
 wc0f4::
 	ds 1
 	
-	ds 11
+wChannelBanks::
+	ds 8
+	
+wAudioSoundIDBank::
+	ds 1
+	
+	ds 1
+	
+	ds 1
 
 
 SECTION "Sprite State Data", WRAM0[$c100]

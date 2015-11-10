@@ -1,3 +1,4 @@
+Music_CinnabarMansion_Data::
 Music_CinnabarMansion_Ch1:: ; 7ed0f (1f:6d0f)
 	tempo 144
 	volume 7, 7

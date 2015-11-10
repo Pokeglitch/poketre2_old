@@ -1,4 +1,5 @@
-SFX_Cry25_1_Ch1: ; 886b (2:486b)
+SFX_Cry25_1_Data::
+SFX_Cry25_1_Ch1: ; 886b (2::486b)
 	dutycycle 165
 	unknownsfx0x20 6, 244, 64, 7
 	unknownsfx0x20 15, 227, 48, 7
@@ -8,7 +9,8 @@ SFX_Cry25_1_Ch1: ; 886b (2:486b)
 	endchannel
 
 
-SFX_Cry25_1_Ch2: ; 8882 (2:4882)
+;SFX_Cry25_1_Data::
+SFX_Cry25_1_Ch2: ; 8882 (2::4882)
 	dutycycle 119
 	unknownsfx0x20 6, 195, 18, 7
 	unknownsfx0x20 15, 179, 4, 7
@@ -18,7 +20,8 @@ SFX_Cry25_1_Ch2: ; 8882 (2:4882)
 	endchannel
 
 
-SFX_Cry25_1_Ch3: ; 8899 (2:4899)
+;SFX_Cry25_1_Data::
+SFX_Cry25_1_Ch3: ; 8899 (2::4899)
 	unknownnoise0x20 8, 214, 44
 	unknownnoise0x20 12, 198, 60
 	unknownnoise0x20 10, 182, 44

@@ -328,7 +328,7 @@ LoadFrontSpriteByMonIndex:: ; 1389 (0:1389)
 
 PlayCry:: ; 13d0 (0:13d0)
 ; Play monster a's cry.
-	ld a,IGGLYBUFF
+	ld a,CHARMANDER
 	ld [wd0b5],a
 	callab RawCry
 	ret c		;return if we played a raw cry
@@ -358,14 +358,9 @@ GetCryData:: ; 13d9 (0:13d9)
 	ld [wTempoModifier], a
 	call BankswitchBack
 
-	; Cry headers have 3 channels,
-	; and start from index $14,
-	; so add 3 times the cry id.
-	ld a, b
-	ld c, $14
-	rlca ; * 2
+	; Cry start from index $14
+	ld a, $14
 	add b
-	add c
 	ret
 
 

@@ -1,3 +1,4 @@
+Music_MeetMaleTrainer_Data::
 Music_MeetMaleTrainer_Ch1:: ; 7f77b (1f:777b)
 	tempo 112
 	volume 7, 7

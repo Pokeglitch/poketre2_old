@@ -1,4 +1,5 @@
-SFX_Push_Boulder_1_Ch1: ; 8654 (2:4654)
+SFX_Push_Boulder_1_Data::
+SFX_Push_Boulder_1_Ch1: ; 8654 (2::4654)
 	unknownnoise0x20 4, 162, 35
 	unknownnoise0x20 8, 241, 52
 	unknownnoise0x20 15, 0, 0

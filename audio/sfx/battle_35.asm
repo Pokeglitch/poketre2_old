@@ -1,4 +1,5 @@
-SFX_Battle_35_Ch1: ; 208e0 (8:48e0)
+SFX_Battle_35_Data::
+SFX_Battle_35_Ch1: ; 208e0 (8::48e0)
 	executemusic
 	vibrato 10, 2, 4
 	duty 2
@@ -13,7 +14,8 @@ SFX_Battle_35_Ch1: ; 208e0 (8:48e0)
 	endchannel
 
 
-SFX_Battle_35_Ch2: ; 208f0 (8:48f0)
+;;;SFX_Battle_35_Data::
+SFX_Battle_35_Ch2: ; 208f0 (8::48f0)
 	executemusic
 	vibrato 10, 2, 3
 	duty 2

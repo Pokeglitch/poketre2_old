@@ -22,8 +22,9 @@ REG_FREQUENCY_LO    EQU 3
 
 MAX_SFX_ID EQU $B9
 
-CRY_SFX_START EQU $14
-CRY_SFX_END   EQU $86
+CRY_SFX_START EQU $14		;index of the first cry
+NUM_OF_CRIES EQU $26		;includes cry 00
+CRY_SFX_END   EQU CRY_SFX_START + NUM_OF_CRIES	;index of the first sfx after the cries
 
 ; wChannelFlags1 constants
 BIT_PERFECT_PITCH         EQU 0 ; controlled by toggleperfectpitch command
@@ -40,7 +41,8 @@ BIT_EXECUTE_MUSIC EQU 0 ; if in execute music
 ; Song ids are calculated by address to save space.
 
 music_const: MACRO
-\1 EQUS "((\2 - SFX_Headers_1) / 3)"
+;\1 EQUS "((\2 - SFX_Headers_1) / 3)"
+\1 EQUS "((\2 - \2 + \2_Pointer - SFX_Pointers_1) / 3)"
 ENDM
 
 	; AUDIO_1

@@ -1,4 +1,5 @@
-SFX_Heal_Ailment_3_Ch1: ; 7c4b2 (1f:44b2)
+SFX_Heal_Ailment_3_Data::
+SFX_Heal_Ailment_3_Ch1: ; 7c4b2 (1f::44b2)
 	duty 2
 	unknownsfx0x10 20
 	unknownsfx0x20 4, 242, 0, 6

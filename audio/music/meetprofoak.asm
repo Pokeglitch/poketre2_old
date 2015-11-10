@@ -1,3 +1,4 @@
+Music_MeetProfOak_Data::
 Music_MeetProfOak_Ch1:: ; af59 (2:6f59)
 	tempo 112
 	volume 7, 7

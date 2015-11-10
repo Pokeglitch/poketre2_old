@@ -1,4 +1,5 @@
-SFX_08_unused2_Ch1: ; 2232f (8:632f)
+SFX_08_unused2_Data::
+SFX_08_unused2_Ch1: ; 2232f (8::632f)
 	executemusic
 	tempo 256
 	volume 7, 7
@@ -17,7 +18,8 @@ SFX_08_unused2_Ch1: ; 2232f (8:632f)
 	endchannel
 
 
-SFX_08_unused2_Ch2: ; 22347 (8:6347)
+;SFX_08_unused2_Data::
+SFX_08_unused2_Ch2: ; 22347 (8::6347)
 	executemusic
 	vibrato 8, 2, 7
 	duty 2
@@ -33,7 +35,8 @@ SFX_08_unused2_Ch2: ; 22347 (8:6347)
 	endchannel
 
 
-SFX_08_unused2_Ch3: ; 22359 (8:6359)
+;SFX_08_unused2_Data::
+SFX_08_unused2_Ch3: ; 22359 (8::6359)
 	executemusic
 	notetype 6, 1, 0
 	octave 4

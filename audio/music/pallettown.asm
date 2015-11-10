@@ -1,3 +1,4 @@
+Music_PalletTown_Data::
 Music_PalletTown_Ch1:: ; a7c5 (2:67c5)
 	tempo 160
 	volume 7, 7

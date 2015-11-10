@@ -1,3 +1,4 @@
+Music_HallOfFame_Data::
 Music_HallOfFame_Ch1:: ; 7fbaf (1f:7baf)
 	tempo 112
 	volume 7, 7

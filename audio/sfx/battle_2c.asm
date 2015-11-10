@@ -1,4 +1,5 @@
-SFX_Battle_2C_Ch1: ; 20722 (8:4722)
+SFX_Battle_2C_Data::
+SFX_Battle_2C_Ch1: ; 20722 (8::4722)
 	dutycycle 57
 	unknownsfx0x20 15, 244, 0, 5
 	unknownsfx0x20 15, 196, 0, 4
@@ -7,7 +8,8 @@ SFX_Battle_2C_Ch1: ; 20722 (8:4722)
 	endchannel
 
 
-SFX_Battle_2C_Ch2: ; 20735 (8:4735)
+;;;SFX_Battle_2C_Data::
+SFX_Battle_2C_Ch2: ; 20735 (8::4735)
 	dutycycle 141
 	unknownsfx0x20 7, 228, 48, 4
 	unknownsfx0x20 15, 180, 48, 3
@@ -16,7 +18,8 @@ SFX_Battle_2C_Ch2: ; 20735 (8:4735)
 	endchannel
 
 
-SFX_Battle_2C_Ch3: ; 20748 (8:4748)
+;;;SFX_Battle_2C_Data::
+SFX_Battle_2C_Ch3: ; 20748 (8::4748)
 	unknownnoise0x20 9, 244, 68
 	unknownnoise0x20 9, 242, 67
 	unknownnoise0x20 15, 244, 66

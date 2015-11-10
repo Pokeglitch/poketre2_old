@@ -1,3 +1,4 @@
+Music_MeetRival_Data::
 Music_MeetRival_branch_b119::
 	tempo 100
 	loopchannel 0, Music_MeetRival_branch_b123

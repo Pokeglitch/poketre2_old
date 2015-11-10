@@ -161,7 +161,7 @@ Audio1_PlayNextNote: ; 0x91d0
 	ret
 
 Audio1_endchannel: ; 0x91e6
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	ld d, a
 	cp $ff ; is this command an endchannel?
 	jp nz, Audio1_callchannel ; no
@@ -225,15 +225,13 @@ Audio1_endchannel: ; 0x91e6
 .asm_9248
 	ld a, [wChannelSoundIDs + CH4]
 	cp CRY_SFX_START
-	jr nc, .asm_9251
-	jr .skipCry
-.asm_9251
+	jr c,.skipCry		;if the ID is below the first cry id, then its not a cry
+
 	ld a, [wChannelSoundIDs + CH4]
 	cp CRY_SFX_END
-	jr z, .skipCry
-	jr c, .cry
-	jr .skipCry
-.cry
+	jr nc,.skipCry		;if the ID is above the last cry id, then its not a cry
+
+	;otherwise, it is a cry
 	ld a, c
 	cp CH4
 	jr z, .asm_9265
@@ -247,15 +245,15 @@ Audio1_endchannel: ; 0x91e6
 .skipCry
 	ld hl, wChannelSoundIDs
 	add hl, bc
-	ld [hl], b
+	ld [hl], b		;zero the sound id
 	ret
 
 Audio1_callchannel: ; 0x9274
 	cp $fd ; is this command a callchannel?
 	jp nz, Audio1_loopchannel ; no
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	push af
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	ld d, a
 	pop af
 	ld e, a
@@ -290,7 +288,7 @@ Audio1_callchannel: ; 0x9274
 Audio1_loopchannel: ; 0x92a9
 	cp $fe ; is this command a loopchannel?
 	jp nz, Audio1_notetype ; no
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	ld e, a
 	and a
 	jr z, .infiniteLoop
@@ -302,17 +300,17 @@ Audio1_loopchannel: ; 0x92a9
 	jr nz, .loopAgain
 	ld a, $1 ; if no more loops to make,
 	ld [hl], a
-	call Audio1_GetNextMusicByte ; skip pointer
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte ; skip pointer
+	call GetNextMusicByte
 	jp Audio1_endchannel
 .loopAgain ; inc loop count
 	inc a
 	ld [hl], a
 	; fall through
 .infiniteLoop ; overwrite current address with pointer
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	push af
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	ld b, a
 	ld d, $0
 	ld a, c
@@ -338,7 +336,7 @@ Audio1_notetype: ; 0x92e4
 	ld a, c
 	cp CH3
 	jr z, .noiseChannel ; noise channel has 0 params
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	ld d, a
 	ld a, c
 	cp CH2
@@ -384,7 +382,7 @@ Audio1_toggleperfectpitch: ; 0x9323
 Audio1_vibrato: ; 0x9335
 	cp $ea ; is this command a vibrato?
 	jr nz, Audio1_pitchbend ; no
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	ld b, 0
 	ld hl, wChannelVibratoDelayCounters
 	add hl, bc
@@ -392,7 +390,7 @@ Audio1_vibrato: ; 0x9335
 	ld hl, wChannelVibratoDelayCounterReloadValues
 	add hl, bc
 	ld [hl], a ; store delay
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	ld d, a
 
 ; The high nybble of the command byte is the extent of the vibrato.
@@ -432,12 +430,12 @@ Audio1_vibrato: ; 0x9335
 Audio1_pitchbend: ; 0x936d
 	cp $eb ; is this command a pitchbend?
 	jr nz, Audio1_duty ; no
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	ld b, 0
 	ld hl, wChannelPitchBendLengthModifiers
 	add hl, bc
 	ld [hl], a
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	ld d, a
 	and $f0
 	swap a
@@ -456,14 +454,14 @@ Audio1_pitchbend: ; 0x936d
 	ld hl, wChannelFlags1
 	add hl, bc
 	set BIT_PITCH_BEND_ON, [hl]
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	ld d, a
 	jp Audio1_notelength
 
 Audio1_duty: ; 0x93a5
 	cp $ec ; is this command a duty?
 	jr nz, Audio1_tempo ; no
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	rrca
 	rrca
 	and $c0
@@ -479,9 +477,9 @@ Audio1_tempo: ; 0x93ba
 	ld a, c
 	cp CH4
 	jr nc, .sfxChannel
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	ld [wMusicTempo], a ; store first param
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	ld [wMusicTempo + 1], a ; store second param
 	xor a
 	ld [wChannelNoteDelayCountersFractionalPart], a ; clear RAM
@@ -490,9 +488,9 @@ Audio1_tempo: ; 0x93ba
 	ld [wChannelNoteDelayCountersFractionalPart + 3], a
 	jr .musicChannelDone
 .sfxChannel
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	ld [wSfxTempo], a ; store first param
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	ld [wSfxTempo + 1], a ; store second param
 	xor a
 	ld [wChannelNoteDelayCountersFractionalPart + 4], a ; clear RAM
@@ -505,7 +503,7 @@ Audio1_tempo: ; 0x93ba
 Audio1_stereopanning: ; 0x93fa
 	cp $ee ; is this command a stereopanning?
 	jr nz, Audio1_unknownmusic0xef ; no
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	ld [wStereoPanning], a ; store panning
 	jp Audio1_endchannel
 
@@ -513,7 +511,7 @@ Audio1_stereopanning: ; 0x93fa
 Audio1_unknownmusic0xef: ; 0x9407
 	cp $ef ; is this command an unknownmusic0xef?
 	jr nz, Audio1_dutycycle ; no
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	push bc
 	call Audio1_PlaySound
 	pop bc
@@ -530,7 +528,7 @@ Audio1_unknownmusic0xef: ; 0x9407
 Audio1_dutycycle: ; 0x9426
 	cp $fc ; is this command a dutycycle?
 	jr nz, Audio1_volume ; no
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	ld b, 0
 	ld hl, wChannelDutyCycles
 	add hl, bc
@@ -547,7 +545,7 @@ Audio1_dutycycle: ; 0x9426
 Audio1_volume: ; 0x9444
 	cp $f0 ; is this command a volume?
 	jr nz, Audio1_executemusic ; no
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	ld [rNR50], a ; store volume
 	jp Audio1_endchannel
 
@@ -598,12 +596,12 @@ Audio1_unknownsfx0x20: ; 0x9472
 	call Audio1_GetRegisterPointer
 	ld [hl], d
 
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	ld d, a
 	ld b, REG_VOLUME_ENVELOPE
 	call Audio1_GetRegisterPointer
 	ld [hl], d
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	ld e, a
 	ld a, c
 	cp CH7
@@ -613,7 +611,7 @@ Audio1_unknownsfx0x20: ; 0x9472
 ; channel a single register (the polynomial counter) that controls frequency,
 ; so this command has one less byte on the noise channel.
 	push de
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	pop de
 .skip
 	ld d, a
@@ -636,7 +634,7 @@ Audio1_unknownsfx0x10:
 	add hl, bc
 	bit BIT_EXECUTE_MUSIC, [hl]
 	jr nz, Audio1_note ; no
-	call Audio1_GetNextMusicByte
+	call GetNextMusicByte
 	ld [rNR10], a
 	jp Audio1_endchannel
 
@@ -664,7 +662,7 @@ Audio1_dnote:
 	and $f
 	push af
 	push bc
-	call Audio1_GetNextMusicByte ; get dnote instrument
+	call GetNextMusicByte ; get dnote instrument
 asm_94fd
 	ld d, a
 	ld a, [wDisableChannelOutputWhenSfxEnds]
@@ -1007,11 +1005,9 @@ Audio1_IsCry: ; 0x96e5
 ; Returns whether the currently playing audio is a cry in carry.
 	ld a, [wChannelSoundIDs + CH4]
 	cp CRY_SFX_START
-	jr nc, .next
-	jr .no
-.next
+	jr c,.no
+	
 	cp CRY_SFX_END
-	jr z, .no
 	jr c, .yes
 .no
 	scf
@@ -1242,24 +1238,6 @@ Audio1_ApplyDutyCycle: ; 0x980d
 	ld [hl], a
 	ret
 
-Audio1_GetNextMusicByte: ; 0x9825
-	ld d, 0
-	ld a, c
-	add a
-	ld e, a
-	ld hl, wChannelCommandPointers
-	add hl, de
-	ld a, [hli]
-	ld e, a
-	ld a, [hld]
-	ld d, a
-	ld a, [de] ; get next music command
-	inc de
-	ld [hl], e ; store address of next command
-	inc hl
-	ld [hl], d
-	ret
-
 Audio1_GetRegisterPointer: ; 0x9838
 ; hl = address of hardware sound register b for software channel c
 	ld a, c
@@ -1343,6 +1321,9 @@ Audio1_PlaySound:: ; 0x9876
 	ld d, $4
 	ld hl, wChannelSoundIDs
 	call .FillMem
+	ld d, $4
+	ld hl, wChannelBanks
+	call .FillMem
 	ld hl, wChannelFlags1
 	call .FillMem
 	ld hl, wChannelDuties
@@ -1408,8 +1389,14 @@ Audio1_PlaySound:: ; 0x9876
 	ld d, h
 	add hl, hl
 	add hl, de
-	ld de, SFX_Headers_1
+	ld de, SFX_Pointers_1
 	add hl, de
+	
+	inc hl
+	ld a,[hli]
+	ld h,[hl]
+	ld l,a		;hl = pointer
+	
 	ld a, h
 	ld [wSfxHeaderPointer], a
 	ld a, l
@@ -1445,17 +1432,17 @@ Audio1_PlaySound:: ; 0x9876
 	cp $7
 	jr nz, .asm_999a
 	ld a, [wSoundID]
-	cp $14
-	jr nc, .asm_9993
-	ret
-.asm_9993
+	cp CRY_SFX_START
+	ret c		;return if not a cry
+	
 	ld a, [hl]
-	cp $14
+	cp CRY_SFX_START
+	
 	jr z, .asm_99a3
 	jr c, .asm_99a3
 .asm_999a
 	ld a, [wSoundID]
-	cp [hl]
+	cp [hl]				;the the sound id the same as the channel sound id, then return
 	jr z, .asm_99a3
 	jr c, .asm_99a3
 	ret
@@ -1477,6 +1464,9 @@ Audio1_PlaySound:: ; 0x9876
 	ld [hl], a
 	pop de
 	ld hl, wChannelSoundIDs
+	add hl, de
+	ld [hl], a
+	ld hl, wChannelBanks
 	add hl, de
 	ld [hl], a
 	ld hl, wChannelFlags1
@@ -1608,10 +1598,15 @@ Audio1_PlaySound:: ; 0x9876
 	ld d, h
 	add hl, hl
 	add hl, de
-	ld de, SFX_Headers_1
+	ld de, SFX_Pointers_1
 	add hl, de
-	ld e, l
-	ld d, h
+	
+	ld a,[hli]	;c = bank
+	ld [wAudioSoundIDBank],a
+	ld e,[hl]
+	inc hl
+	ld d,[hl]	;de = pointer
+	
 	ld hl, wChannelCommandPointers
 	ld a, [de] ; get channel number
 	ld b, a
@@ -1641,6 +1636,10 @@ Audio1_PlaySound:: ; 0x9876
 	ld hl, wChannelSoundIDs
 	add hl, bc
 	ld a, [wSoundID]
+	ld [hl], a
+	ld hl, wChannelBanks
+	add hl, bc
+	ld a, [wAudioSoundIDBank]
 	ld [hl], a
 	pop af
 	cp CH3
@@ -1681,7 +1680,7 @@ Audio1_PlaySound:: ; 0x9876
 	ld [hli], a
 	ld [hl], a
 	ld hl, wChannelCommandPointers + CH6 * 2 ; sfx wave channel pointer
-	ld de, Audio1_CryEndchannel
+	ld de, AudioCryEndchannel
 	ld [hl], e
 	inc hl
 	ld [hl], d ; overwrite pointer to point to endchannel
@@ -1694,9 +1693,6 @@ Audio1_PlaySound:: ; 0x9876
 	ld [rNR50], a ; full volume
 .done
 	ret
-
-Audio1_CryEndchannel: ; 0x9b16
-	endchannel
 
 Audio1_HWChannelBaseAddresses: ; 0x9b17
 ; the low bytes of each HW channel's base address

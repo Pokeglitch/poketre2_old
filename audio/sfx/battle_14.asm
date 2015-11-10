@@ -1,4 +1,5 @@
-SFX_Battle_14_Ch1: ; 20526 (8:4526)
+SFX_Battle_14_Data::
+SFX_Battle_14_Ch1: ; 20526 (8::4526)
 	unknownnoise0x20 8, 255, 50
 	unknownnoise0x20 8, 244, 67
 	unknownnoise0x20 8, 242, 84

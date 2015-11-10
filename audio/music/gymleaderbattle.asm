@@ -1,3 +1,4 @@
+Music_GymLeaderBattle_Data::
 Music_GymLeaderBattle_Ch1:: ; 22370 (8:6370)
 	tempo 104
 	volume 7, 7

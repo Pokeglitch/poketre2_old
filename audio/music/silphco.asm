@@ -1,3 +1,4 @@
+Music_SilphCo_Data::
 Music_SilphCo_Ch1:: ; 7f243 (1f:7243)
 	tempo 160
 	volume 7, 7

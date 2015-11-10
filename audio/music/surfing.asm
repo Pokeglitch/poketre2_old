@@ -1,3 +1,4 @@
+Music_Surfing_Data::
 Music_Surfing_Ch1:: ; 7fa19 (1f:7a19)
 	tempo 160
 	volume 7, 7

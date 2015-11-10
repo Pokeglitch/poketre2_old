@@ -1,3 +1,4 @@
+Music_SafariZone_Data::
 Music_SafariZone_Ch1:: ; bc2e (2:7c2e)
 	tempo 132
 	volume 7, 7

@@ -1,3 +1,4 @@
+Music_FinalBattle_Data::
 Music_FinalBattle_Ch1:: ; 233a6 (8:73a6)
 	tempo 112
 	volume 7, 7

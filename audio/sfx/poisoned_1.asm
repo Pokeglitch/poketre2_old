@@ -1,4 +1,5 @@
-SFX_Poisoned_1_Ch1: ; 84c6 (2:44c6)
+SFX_Poisoned_1_Data::
+SFX_Poisoned_1_Ch1: ; 84c6 (2::44c6)
 	duty 0
 	unknownsfx0x10 20
 	unknownsfx0x20 4, 242, 0, 6

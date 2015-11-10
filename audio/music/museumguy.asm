@@ -1,3 +1,4 @@
+Music_MuseumGuy_Data::
 Music_MuseumGuy_Ch1:: ; adae (2:6dae)
 	tempo 128
 	volume 7, 7

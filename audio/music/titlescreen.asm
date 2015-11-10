@@ -1,3 +1,4 @@
+Music_TitleScreen_Data::
 Music_TitleScreen_Ch1:: ; 7e4c0 (1f:64c0)
 	tempo 144
 	volume 7, 7

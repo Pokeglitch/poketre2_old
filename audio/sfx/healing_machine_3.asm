@@ -1,4 +1,5 @@
-SFX_Healing_Machine_3_Ch1: ; 7c55d (1f:455d)
+SFX_Healing_Machine_3_Data::
+SFX_Healing_Machine_3_Ch1: ; 7c55d (1f::455d)
 	duty 2
 	unknownsfx0x10 44
 	unknownsfx0x20 4, 242, 0, 5

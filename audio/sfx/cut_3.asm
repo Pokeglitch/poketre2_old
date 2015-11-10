@@ -1,4 +1,5 @@
-SFX_Cut_3_Ch1: ; 7c3ca (1f:43ca)
+SFX_Cut_3_Data::
+SFX_Cut_3_Ch1: ; 7c3ca (1f::43ca)
 	unknownnoise0x20 2, 247, 36
 	unknownnoise0x20 2, 247, 52
 	unknownnoise0x20 4, 247, 68

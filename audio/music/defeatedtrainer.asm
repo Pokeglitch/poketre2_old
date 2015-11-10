@@ -1,3 +1,4 @@
+Music_DefeatedTrainer_Data::
 Music_DefeatedTrainer_Ch1:: ; 23a53 (8:7a53)
 	tempo 224
 	volume 7, 7

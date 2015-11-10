@@ -1,3 +1,4 @@
+Music_Routes2_Data::
 Music_Routes2_Ch1:: ; 9db9 (2:5db9)
 	tempo 152
 	volume 7, 7

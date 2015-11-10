@@ -1,3 +1,4 @@
+Music_MeetFemaleTrainer_Data::
 Music_MeetFemaleTrainer_Ch1:: ; 7f6f9 (1f:76f9)
 	tempo 124
 	volume 7, 7

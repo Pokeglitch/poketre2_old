@@ -8,6 +8,12 @@ cont   EQUS "db $4B," ; Scroll to the next line.
 done   EQUS "db $00"  ; End a text box.
 prompt EQUS "db $58"  ; Prompt the player to end a text box (initiating some other event).
 
+sfx_pointer: MACRO
+\1_Pointer::
+	db BANK(\1_Data)
+	dw \1
+ENDM
+
 asm_text: MACRO
 	db $43
 	ENDM

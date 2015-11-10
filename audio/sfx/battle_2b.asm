@@ -1,4 +1,5 @@
-SFX_Battle_2B_Ch1: ; 206ec (8:46ec)
+SFX_Battle_2B_Data::
+SFX_Battle_2B_Ch1: ; 206ec (8::46ec)
 	dutycycle 210
 	unknownsfx0x20 3, 129, 0, 3
 	unknownsfx0x20 3, 193, 0, 4
@@ -10,7 +11,8 @@ SFX_Battle_2B_Ch1: ; 206ec (8:46ec)
 	endchannel
 
 
-SFX_Battle_2B_Ch2: ; 2070b (8:470b)
+;;;SFX_Battle_2B_Data::
+SFX_Battle_2B_Ch2: ; 2070b (8::470b)
 	unknownnoise0x20 3, 98, 34
 	unknownnoise0x20 3, 162, 50
 	unknownnoise0x20 3, 210, 51

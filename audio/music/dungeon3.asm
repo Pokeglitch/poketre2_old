@@ -1,3 +1,4 @@
+Music_Dungeon3_Data::
 Music_Dungeon3_Ch1:: ; 7e9f1 (1f:69f1)
 	tempo 160
 	volume 7, 7

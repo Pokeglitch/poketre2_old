@@ -1,3 +1,4 @@
-SFX_Triangle1_2_Ch1: ; 20320 (8:4320)
+SFX_Triangle1_2_Data::
+SFX_Triangle1_2_Ch1: ; 20320 (8::4320)
 	unknownnoise0x20 0, 81, 42
 	endchannel

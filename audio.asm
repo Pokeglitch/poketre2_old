@@ -5,17 +5,17 @@ AUDIO_3 EQU $1f
 
 INCLUDE "constants.asm"
 
-
 SECTION "Sound Effect Headers 1", ROMX, BANK[AUDIO_1]
+INCLUDE "audio/sfx_pointers1.asm"
 INCLUDE "audio/headers/sfxheaders1.asm"
 
 SECTION "Sound Effect Headers 2", ROMX, BANK[AUDIO_2]
+INCLUDE "audio/sfx_pointers2.asm"
 INCLUDE "audio/headers/sfxheaders2.asm"
 
 SECTION "Sound Effect Headers 3", ROMX, BANK[AUDIO_3]
+INCLUDE "audio/sfx_pointers3.asm"
 INCLUDE "audio/headers/sfxheaders3.asm"
-
-
 
 SECTION "Music Headers 1", ROMX, BANK[AUDIO_1]
 INCLUDE "audio/headers/musicheaders1.asm"
@@ -25,8 +25,6 @@ INCLUDE "audio/headers/musicheaders2.asm"
 
 SECTION "Music Headers 3", ROMX, BANK[AUDIO_3]
 INCLUDE "audio/headers/musicheaders3.asm"
-
-
 
 SECTION "Sound Effects 1", ROMX, BANK[AUDIO_1]
 
@@ -321,7 +319,6 @@ INCLUDE "audio/sfx/intro_whoosh.asm"
 INCLUDE "audio/sfx/slots_stop_wheel.asm"
 INCLUDE "audio/sfx/slots_reward.asm"
 INCLUDE "audio/sfx/slots_new_spin.asm"
-INCLUDE "audio/sfx/shooting_star.asm"
 INCLUDE "audio/sfx/unused_3.asm"
 INCLUDE "audio/sfx/cry09_3.asm"
 INCLUDE "audio/sfx/cry23_3.asm"
@@ -623,6 +620,9 @@ INCLUDE "audio/sfx/get_item2_1.asm"
 INCLUDE "audio/sfx/get_key_item_1.asm"
 INCLUDE "audio/music/ssanne.asm"
 INCLUDE "audio/music/cities2.asm"
+INCLUDE "audio/music/pallettown.asm"
+
+SECTION "MUSIC 4", ROMX, BANK[$35]
 INCLUDE "audio/music/celadon.asm"
 INCLUDE "audio/music/cinnabar.asm"
 INCLUDE "audio/music/vermilion.asm"
@@ -630,7 +630,6 @@ INCLUDE "audio/music/lavender.asm"
 INCLUDE "audio/music/safarizone.asm"
 INCLUDE "audio/music/gym.asm"
 INCLUDE "audio/music/pokecenter.asm"
-INCLUDE "audio/music/pallettown.asm"
 
 
 SECTION "Music 2", ROMX, BANK[AUDIO_2]
@@ -643,6 +642,8 @@ INCLUDE "audio/music/wildbattle.asm"
 INCLUDE "audio/music/finalbattle.asm"
 INCLUDE "audio/sfx/level_up.asm"
 INCLUDE "audio/sfx/get_item2_2.asm"
+
+SECTION "MUSIC 4", ROMX, BANK[$35]
 INCLUDE "audio/sfx/caught_mon.asm"
 INCLUDE "audio/music/defeatedtrainer.asm"
 INCLUDE "audio/music/defeatedwildmon.asm"
@@ -661,14 +662,18 @@ INCLUDE "audio/music/cinnabarmansion.asm"
 INCLUDE "audio/sfx/pokedex_rating_3.asm"
 INCLUDE "audio/sfx/get_item2_3.asm"
 INCLUDE "audio/sfx/get_key_item_3.asm"
+INCLUDE "audio/music/introbattle.asm"
 INCLUDE "audio/music/oakslab.asm"
 INCLUDE "audio/music/pokemontower.asm"
+
+SECTION "MUSIC 4", ROMX, BANK[$35]
 INCLUDE "audio/music/silphco.asm"
 INCLUDE "audio/music/meeteviltrainer.asm"
 INCLUDE "audio/music/meetfemaletrainer.asm"
 INCLUDE "audio/music/meetmaletrainer.asm"
-INCLUDE "audio/music/introbattle.asm"
 INCLUDE "audio/music/surfing.asm"
 INCLUDE "audio/music/jigglypuffsong.asm"
 ;INCLUDE "audio/music/halloffame.asm"
 INCLUDE "audio/music/credits.asm"
+
+INCLUDE "audio/sfx/shooting_star.asm"

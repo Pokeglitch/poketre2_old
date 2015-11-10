@@ -1,4 +1,5 @@
-SFX_Intro_Lunge_Ch1: ; 7c6a5 (1f:46a5)
+SFX_Intro_Lunge_Data::
+SFX_Intro_Lunge_Ch1: ; 7c6a5 (1f::46a5)
 	unknownnoise0x20 6, 32, 16
 	unknownnoise0x20 6, 47, 64
 	unknownnoise0x20 6, 79, 65

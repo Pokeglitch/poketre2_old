@@ -1,3 +1,4 @@
+Music_Cities2_Data::
 Music_Cities2_Ch1:: ; b504 (2:7504)
 	tempo 148
 	volume 7, 7

@@ -170,7 +170,7 @@ Audio2_PlayNextNote: ; 21946 (8:5946)
 	ret
 
 Audio2_endchannel: ; 21967 (8:5967)
-	call Audio2_GetNextMusicByte
+	call GetNextMusicByte
 	ld d, a
 	cp $ff ; is this command an endchannel?
 	jp nz, Audio2_callchannel ; no
@@ -232,15 +232,12 @@ Audio2_endchannel: ; 21967 (8:5967)
 	ld [rNR51], a
 .asm_219c9
 	ld a, [wChannelSoundIDs + CH4]
-	cp $14
-	jr nc, .asm_219d2
-	jr .asm_219ef
-.asm_219d2
+	cp CRY_SFX_START
+	jr c,.asm_219ef
+	
 	ld a, [wChannelSoundIDs + CH4]
 	cp CRY_SFX_END
-	jr z, .asm_219ef
-	jr c, .asm_219dd
-	jr .asm_219ef
+	jr nc,.asm_219ef
 .asm_219dd
 	ld a, c
 	cp CH4
@@ -261,9 +258,9 @@ Audio2_endchannel: ; 21967 (8:5967)
 Audio2_callchannel: ; 219f5 (8:59f5)
 	cp $fd ; is this command a callchannel?
 	jp nz, Audio2_loopchannel ; no
-	call Audio2_GetNextMusicByte ; yes
+	call GetNextMusicByte ; yes
 	push af
-	call Audio2_GetNextMusicByte
+	call GetNextMusicByte
 	ld d, a
 	pop af
 	ld e, a
@@ -298,7 +295,7 @@ Audio2_callchannel: ; 219f5 (8:59f5)
 Audio2_loopchannel: ; 21a2a (8:5a2a)
 	cp $fe ; is this command a loopchannel?
 	jp nz, Audio2_notetype ; no
-	call Audio2_GetNextMusicByte ; yes
+	call GetNextMusicByte ; yes
 	ld e, a
 	and a
 	jr z, .infiniteLoop
@@ -310,17 +307,17 @@ Audio2_loopchannel: ; 21a2a (8:5a2a)
 	jr nz, .loopAgain
 	ld a, $1 ; if no more loops to make,
 	ld [hl], a
-	call Audio2_GetNextMusicByte ; skip pointer
-	call Audio2_GetNextMusicByte
+	call GetNextMusicByte ; skip pointer
+	call GetNextMusicByte
 	jp Audio2_endchannel
 .loopAgain ; inc loop count
 	inc a
 	ld [hl], a
 	; fall through
 .infiniteLoop ; overwrite current address with pointer
-	call Audio2_GetNextMusicByte
+	call GetNextMusicByte
 	push af
-	call Audio2_GetNextMusicByte
+	call GetNextMusicByte
 	ld b, a
 	ld d, $0
 	ld a, c
@@ -346,7 +343,7 @@ Audio2_notetype: ; 21a65 (8:5a65)
 	ld a, c
 	cp CH3
 	jr z, .noiseChannel ; noise channel has 0 params
-	call Audio2_GetNextMusicByte
+	call GetNextMusicByte
 	ld d, a
 	ld a, c
 	cp CH2
@@ -392,7 +389,7 @@ Audio2_toggleperfectpitch: ; 21aa4 (8:5aa4)
 Audio2_vibrato: ; 21ab6 (8:5ab6)
 	cp $ea ; is this command a vibrato?
 	jr nz, Audio2_pitchbend ; no
-	call Audio2_GetNextMusicByte ; yes
+	call GetNextMusicByte ; yes
 	ld b, $0
 	ld hl, wChannelVibratoDelayCounters
 	add hl, bc
@@ -400,7 +397,7 @@ Audio2_vibrato: ; 21ab6 (8:5ab6)
 	ld hl, wChannelVibratoDelayCounterReloadValues
 	add hl, bc
 	ld [hl], a ; store delay
-	call Audio2_GetNextMusicByte
+	call GetNextMusicByte
 	ld d, a
 	and $f0
 	swap a
@@ -426,12 +423,12 @@ Audio2_vibrato: ; 21ab6 (8:5ab6)
 Audio2_pitchbend: ; 21aee (8:5aee)
 	cp $eb ; is this command a pitchbend?
 	jr nz, Audio2_duty ; no
-	call Audio2_GetNextMusicByte ; yes
+	call GetNextMusicByte ; yes
 	ld b, $0
 	ld hl, wChannelPitchBendLengthModifiers
 	add hl, bc
 	ld [hl], a ; store first param
-	call Audio2_GetNextMusicByte
+	call GetNextMusicByte
 	ld d, a
 	and $f0
 	swap a
@@ -450,14 +447,14 @@ Audio2_pitchbend: ; 21aee (8:5aee)
 	ld hl, wChannelFlags1
 	add hl, bc
 	set 4, [hl] ; set pitchbend flag
-	call Audio2_GetNextMusicByte
+	call GetNextMusicByte
 	ld d, a
 	jp Audio2_notelength
 
 Audio2_duty: ; 21b26 (8:5b26)
 	cp $ec ; is this command a duty?
 	jr nz, Audio2_tempo ; no
-	call Audio2_GetNextMusicByte ; yes
+	call GetNextMusicByte ; yes
 	rrca
 	rrca
 	and $c0
@@ -473,9 +470,9 @@ Audio2_tempo: ; 21b3b (8:5b3b)
 	ld a, c ; yes
 	cp CH4
 	jr nc, .sfxChannel
-	call Audio2_GetNextMusicByte
+	call GetNextMusicByte
 	ld [wMusicTempo], a ; store first param
-	call Audio2_GetNextMusicByte
+	call GetNextMusicByte
 	ld [wMusicTempo + 1], a ; store second param
 	xor a
 	ld [wChannelNoteDelayCountersFractionalPart], a ; clear RAM
@@ -484,9 +481,9 @@ Audio2_tempo: ; 21b3b (8:5b3b)
 	ld [wChannelNoteDelayCountersFractionalPart + 3], a
 	jr .musicChannelDone
 .sfxChannel
-	call Audio2_GetNextMusicByte
+	call GetNextMusicByte
 	ld [wSfxTempo], a ; store first param
-	call Audio2_GetNextMusicByte
+	call GetNextMusicByte
 	ld [wSfxTempo + 1], a ; store second param
 	xor a
 	ld [wChannelNoteDelayCountersFractionalPart + 4], a ; clear RAM
@@ -499,7 +496,7 @@ Audio2_tempo: ; 21b3b (8:5b3b)
 Audio2_stereopanning: ; 21b7b (8:5b7b)
 	cp $ee ; is this command a stereopanning?
 	jr nz, Audio2_unknownmusic0xef ; no
-	call Audio2_GetNextMusicByte ; yes
+	call GetNextMusicByte ; yes
 	ld [wStereoPanning], a ; store panning
 	jp Audio2_endchannel
 
@@ -507,7 +504,7 @@ Audio2_stereopanning: ; 21b7b (8:5b7b)
 Audio2_unknownmusic0xef: ; 21b88 (8:5b88)
 	cp $ef ; is this command an unknownmusic0xef?
 	jr nz, Audio2_dutycycle ; no
-	call Audio2_GetNextMusicByte ; yes
+	call GetNextMusicByte ; yes
 	push bc
 	call Audio2_PlaySound
 	pop bc
@@ -524,7 +521,7 @@ Audio2_unknownmusic0xef: ; 21b88 (8:5b88)
 Audio2_dutycycle: ; 21ba7 (8:5ba7)
 	cp $fc ; is this command a dutycycle?
 	jr nz, Audio2_volume ; no
-	call Audio2_GetNextMusicByte ; yes
+	call GetNextMusicByte ; yes
 	ld b, $0
 	ld hl, wChannelDutyCycles
 	add hl, bc
@@ -541,7 +538,7 @@ Audio2_dutycycle: ; 21ba7 (8:5ba7)
 Audio2_volume: ; 21bc5 (8:5bc5)
 	cp $f0 ; is this command a volume?
 	jr nz, Audio2_executemusic ; no
-	call Audio2_GetNextMusicByte ; yes
+	call GetNextMusicByte ; yes
 	ld [rNR50], a ; store volume
 	jp Audio2_endchannel
 
@@ -588,19 +585,19 @@ Audio2_unknownsfx0x20: ; 21bf3
 	ld b, $1
 	call Audio2_21ff7
 	ld [hl], d
-	call Audio2_GetNextMusicByte
+	call GetNextMusicByte
 	ld d, a
 	ld b, $2
 	call Audio2_21ff7
 	ld [hl], d
-	call Audio2_GetNextMusicByte
+	call GetNextMusicByte
 	ld e, a
 	ld a, c
 	cp CH7
 	ld a, $0
 	jr z, .sfxNoiseChannel ; only two params for noise channel
 	push de
-	call Audio2_GetNextMusicByte
+	call GetNextMusicByte
 	pop de
 .sfxNoiseChannel
 	ld d, a
@@ -623,7 +620,7 @@ Audio2_unknownsfx0x10: ; 21c40 (8:5c40)
 	add hl, bc
 	bit 0, [hl]
 	jr nz, Audio2_note ; no
-	call Audio2_GetNextMusicByte ; yes
+	call GetNextMusicByte ; yes
 	ld [rNR10], a
 	jp Audio2_endchannel
 
@@ -651,7 +648,7 @@ Audio2_dnote: ; 21c76 (8:5c76)
 	and $f
 	push af
 	push bc
-	call Audio2_GetNextMusicByte ; get dnote instrument
+	call GetNextMusicByte ; get dnote instrument
 asm_21c7e
 	ld d, a
 	ld a, [wDisableChannelOutputWhenSfxEnds]
@@ -1009,18 +1006,16 @@ Audio2_21e6d: ; 21e6d (8:5e6d)
 
 Audio2_21e8b: ; 21e8b (8:5e8b)
 	ld a, [wChannelSoundIDs + CH4]
-	cp $14
-	jr nc, .asm_21e94
-	jr .asm_21e9a
-.asm_21e94
+	cp CRY_SFX_START
+	jr c,.no
+	
 	cp CRY_SFX_END
-	jr z, .asm_21e9a
-	jr c, .asm_21e9d
-.asm_21e9a
+	jr c, .yes
+.no
 	scf
 	ccf
 	ret
-.asm_21e9d
+.yes
 	scf
 	ret
 
@@ -1253,24 +1248,6 @@ Audio2_ApplyDutyCycle: ; 21fcc (8:5fcc)
 	ld [hl], a
 	ret
 
-Audio2_GetNextMusicByte: ; 21fe4 (8:5fe4)
-	ld d, $0
-	ld a, c
-	add a
-	ld e, a
-	ld hl, wChannelCommandPointers
-	add hl, de
-	ld a, [hli]
-	ld e, a
-	ld a, [hld]
-	ld d, a
-	ld a, [de] ; get next music command
-	inc de
-	ld [hl], e ; store address of next command
-	inc hl
-	ld [hl], d
-	ret
-
 Audio2_21ff7: ; 21ff7 (8:5ff7)
 	ld a, c
 	ld hl, Unknown_222d6
@@ -1350,6 +1327,9 @@ Audio2_PlaySound:: ; 22035 (8:6035)
 	ld d, $4
 	ld hl, wChannelSoundIDs
 	call FillAudioRAM2
+	ld d, $4
+	ld hl, wChannelBanks
+	call FillAudioRAM2
 	ld hl, wChannelFlags1
 	call FillAudioRAM2
 	ld hl, wChannelDuties
@@ -1415,8 +1395,14 @@ Audio2_2210d: ; 2210d (8:610d)
 	ld d, h
 	add hl, hl
 	add hl, de
-	ld de, SFX_Headers_2
+	ld de, SFX_Pointers_2
 	add hl, de
+	
+	inc hl
+	ld a,[hli]
+	ld h,[hl]
+	ld l,a		;hl = pointer
+	
 	ld a, h
 	ld [wSfxHeaderPointer], a
 	ld a, l
@@ -1484,6 +1470,9 @@ Audio2_2210d: ; 2210d (8:610d)
 	ld [hl], a
 	pop de
 	ld hl, wChannelSoundIDs
+	add hl, de
+	ld [hl], a
+	ld hl, wChannelBanks
 	add hl, de
 	ld [hl], a
 	ld hl, wChannelFlags1
@@ -1615,10 +1604,15 @@ Audio2_2224e: ; 2224e (8:624e)
 	ld d, h
 	add hl, hl
 	add hl, de
-	ld de, SFX_Headers_2
+	ld de, SFX_Pointers_2
 	add hl, de
-	ld e, l
-	ld d, h
+	
+	ld a,[hli]	;c = bank
+	ld [wAudioSoundIDBank],a
+	ld e,[hl]
+	inc hl
+	ld d,[hl]	;de = pointer
+	
 	ld hl, wChannelCommandPointers
 	ld a, [de] ; get channel number
 	ld b, a
@@ -1648,6 +1642,10 @@ Audio2_2224e: ; 2224e (8:624e)
 	ld hl, wChannelSoundIDs
 	add hl, bc
 	ld a, [wSoundID]
+	ld [hl], a
+	ld hl, wChannelBanks
+	add hl, bc
+	ld a, [wAudioSoundIDBank]
 	ld [hl], a
 	pop af
 	cp $3
@@ -1688,7 +1686,7 @@ Audio2_2224e: ; 2224e (8:624e)
 	ld [hli], a
 	ld [hl], a
 	ld hl, wChannelCommandPointers + CH6 * 2 ; sfx noise channel pointer
-	ld de, Noise2_endchannel
+	ld de, AudioCryEndchannel
 	ld [hl], e
 	inc hl
 	ld [hl], d ; overwrite pointer to point to endchannel
@@ -1701,9 +1699,6 @@ Audio2_2224e: ; 2224e (8:624e)
 	ld [rNR50], a
 .asm_222d4
 	ret
-
-Noise2_endchannel: ; 222d5 (8:62d5)
-	endchannel
 
 Unknown_222d6: ; 222d6 (8:62d6)
 	db $10, $15, $1A, $1F ; channels 0-3

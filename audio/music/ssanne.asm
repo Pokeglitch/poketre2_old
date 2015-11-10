@@ -1,3 +1,4 @@
+Music_SSAnne_Data::
 Music_SSAnne_Ch1:: ; b3a7 (2:73a7)
 	tempo 128
 	volume 7, 7

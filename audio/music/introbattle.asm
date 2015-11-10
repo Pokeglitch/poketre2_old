@@ -1,3 +1,4 @@
+Music_IntroBattle_Data::
 Music_IntroBattle_Ch1:: ; 7f844 (1f:7844)
 	tempo 98
 	volume 7, 7

@@ -1,3 +1,4 @@
+Music_PkmnHealed_Data::
 Music_PkmnHealed_Ch1:: ; 9ba3 (2:5ba3)
 	tempo 144
 	volume 7, 7

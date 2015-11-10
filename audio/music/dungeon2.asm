@@ -1,3 +1,4 @@
+Music_Dungeon2_Data::
 Music_Dungeon2_Ch1:: ; 7e887 (1f:6887)
 	tempo 144
 	volume 7, 7
