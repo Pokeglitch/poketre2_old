@@ -789,7 +789,7 @@ Audio_notepitch: ; 0x9568
 	add hl, de
 	ld a, [hl]
 	and a
-	jr nz,.sfxChannel
+	jr z,.sfxChannel
 
 	pop de
 	ret

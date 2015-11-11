@@ -28,7 +28,7 @@ CryData:: ; 39446 (e:5446)
 	db $18, $40, $A0; Fearow
 	db $17, $12, $40; Ekans
 	db $17, $E0, $10; Arbok
-	db $26, $00, $C0; Pichu
+	db $26, $00, $80; Pichu
 	db $0F, $EE, $01; Pikachu
 	db $09, $EE, $08; Raichu
 	db $00, $20, $40; Sandshrew
@@ -39,12 +39,12 @@ CryData:: ; 39446 (e:5446)
 	db $00, $00, $80; Nidoran♂
 	db $00, $2C, $C0; Nidorino
 	db $09, $00, $80; Nidoking
-	db $27, $61, $11; Cleffa
+	db $27, $61, $01; Cleffa
 	db $19, $CC, $01; Clefairy
 	db $19, $AA, $20; Clefable
 	db $24, $4F, $10; Vulpix
 	db $24, $88, $60; Ninetales
-	db $28, $e8, $68; Igglybuff
+	db $28, $00, $28; Igglybuff
 	db $0E, $FF, $35; Jigglypuff
 	db $0E, $68, $60; Wigglytuff
 	db $1D, $E0, $80; Zubat
@@ -53,7 +53,7 @@ CryData:: ; 39446 (e:5446)
 	db $08, $DD, $01; Oddish
 	db $08, $AA, $40; Gloom
 	db $23, $22, $FF; Vileplume
-	db $27, $84, $D0; Bellossom
+	db $27, $84, $FF; Bellossom
 	db $1E, $20, $E0; Paras
 	db $1E, $42, $FF; Parasect
 	db $1A, $44, $40; Venonat
@@ -67,7 +67,7 @@ CryData:: ; 39446 (e:5446)
 	db $0E, $FF, $FF; Poliwag
 	db $0E, $77, $60; Poliwhirl
 	db $0E, $00, $FF; Poliwrath
-	db $27, $FF, $FF; Politoed
+	db $27, $a0, $FF; Politoed
 	db $1C, $C0, $01; Abra
 	db $1C, $A8, $C0; Kadabra
 	db $1C, $98, $FF; Alakazam

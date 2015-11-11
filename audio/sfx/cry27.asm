@@ -8,7 +8,8 @@ SFX_Cry27_Ch1:
 	sound 2, $f1, $79, 7
 	sound 2, $f1, $40, 7
 	sound 2, $f1, $3c, 7
-	sound 2, $f1, $37, 7
+	sound 2, $d1, $37, 7
+	sound 2, $a1, $18, 7
 	endchannel
 
 
