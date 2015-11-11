@@ -1,6 +1,7 @@
 SFX_Damage_Data::
-SFX_Damage_Ch1: ; 204f4 (8::44f4)
-	unknownnoise0x20 2, 244, 68
-	unknownnoise0x20 2, 244, 20
-	unknownnoise0x20 15, 241, 50
+
+SFX_Damage_Ch1: 
+	noise 2, 244, 68
+	noise 2, 244, 20
+	noise 15, 241, 50
 	endchannel

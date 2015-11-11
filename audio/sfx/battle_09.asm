@@ -1,7 +1,8 @@
 SFX_Battle_09_Data::
-SFX_Battle_09_Ch1: ; 204b9 (8::44b9)
+
+SFX_Battle_09_Ch1: 
 	duty 1
-	unknownsfx0x10 151
-	unknownsfx0x20 15, 242, 0, 5
-	unknownsfx0x10 8
+	sweep 151
+	sound 15, 242, 0, 5
+	sweep 8
 	endchannel

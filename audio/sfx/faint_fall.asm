@@ -1,7 +1,8 @@
 SFX_Faint_Fall_Data::
-SFX_Faint_Fall_Ch1: ; 204ae (8::44ae)
+
+SFX_Faint_Fall_Ch1: 
 	duty 1
-	unknownsfx0x10 175
-	unknownsfx0x20 15, 242, 128, 7
-	unknownsfx0x10 8
+	sweep 175
+	sound 15, 242, 128, 7
+	sweep 8
 	endchannel

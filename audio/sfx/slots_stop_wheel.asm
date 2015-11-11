@@ -1,7 +1,8 @@
 SFX_Slots_Stop_Wheel_Data::
-SFX_Slots_Stop_Wheel_Ch1: ; 7c6f5 (1f::46f5)
+
+SFX_Slots_Stop_Wheel_Ch1: 
 	duty 2
-	unknownsfx0x20 1, 242, 160, 6
-	unknownsfx0x20 1, 242, 224, 6
-	unknownsfx0x20 8, 241, 0, 7
+	sound 1, 242, 160, 6
+	sound 1, 242, 224, 6
+	sound 8, 241, 0, 7
 	endchannel

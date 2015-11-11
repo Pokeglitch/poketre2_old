@@ -126,9 +126,6 @@ ClearVram:
 
 
 StopAllSounds::
-	ld a, BANK(Audio1_UpdateMusic)
-	ld [wAudioROMBank], a
-	ld [wAudioSavedROMBank], a
 	xor a
 	ld [wAudioFadeOutControl], a
 	ld [wNewSoundID], a

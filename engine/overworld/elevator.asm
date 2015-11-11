@@ -17,7 +17,6 @@ ShakeElevator: ; 7bf15 (1e:7f15)
 	add d
 	ld [hSCY], a
 	push bc
-	ld c, BANK(SFX_Collision_1)
 	ld a, SFX_COLLISION
 	call PlayMusic
 	pop bc

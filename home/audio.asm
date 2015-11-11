@@ -110,7 +110,7 @@ UpdateMusic6Times:: ; 235f (0:235f)
 ; This is called when entering a map, before fading out the current music and
 ; playing the default music (i.e. the map's music or biking/surfing music).
 	lb bc, AUDIO_1, 6
-	ld hl, Audio1_UpdateMusic
+	ld hl, Audio_UpdateMusic
 .loop
 	push bc
 	push hl
@@ -196,7 +196,7 @@ PlaySound:: ; 23b1 (0:23b1)
 	ld [H_LOADEDROMBANK], a
 	ld [MBC1RomBank], a
 	ld a,b
-	call Audio1_PlaySound
+	call Audio_PlaySound
 	ld a, [hSavedROMBank]
 	ld [H_LOADEDROMBANK], a
 	ld [MBC1RomBank], a

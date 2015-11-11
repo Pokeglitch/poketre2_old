@@ -1,7 +1,8 @@
 SFX_Intro_Hop_Data::
-SFX_Intro_Hop_Ch1: ; 7c6c9 (1f::46c9)
+
+SFX_Intro_Hop_Ch1: 
 	duty 2
-	unknownsfx0x10 38
-	unknownsfx0x20 12, 194, 128, 6
-	unknownsfx0x10 8
+	sweep 38
+	sound 12, 194, 128, 6
+	sweep 8
 	endchannel

@@ -56,7 +56,7 @@ VBlank::
 	ld [H_LOADEDROMBANK], a
 	ld [MBC1RomBank], a
 	call Music_DoLowHealthAlarm
-	call Audio1_UpdateMusic
+	call Audio_UpdateMusic
 
 	callba TrackPlayTime ; keep track of time played
 

@@ -1,7 +1,0 @@
-SFX_Collision_1_Data::
-SFX_Collision_1_Ch1: ; 8447 (2::4447)
-	duty 2
-	unknownsfx0x10 90
-	unknownsfx0x20 15, 241, 0, 3
-	unknownsfx0x10 8
-	endchannel

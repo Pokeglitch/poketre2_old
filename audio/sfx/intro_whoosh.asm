@@ -1,8 +1,9 @@
 SFX_Intro_Whoosh_Data::
-SFX_Intro_Whoosh_Ch1: ; 7c6e5 (1f::46e5)
-	unknownnoise0x20 4, 44, 32
-	unknownnoise0x20 3, 160, 32
-	unknownnoise0x20 3, 176, 33
-	unknownnoise0x20 3, 192, 34
-	unknownnoise0x20 15, 210, 36
+
+SFX_Intro_Whoosh_Ch1: 
+	noise 4, 44, 32
+	noise 3, 160, 32
+	noise 3, 176, 33
+	noise 3, 192, 34
+	noise 15, 210, 36
 	endchannel

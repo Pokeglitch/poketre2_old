@@ -1,11 +1,12 @@
 SFX_Vine_Whip_Data::
-SFX_Vine_Whip_Ch1: ; 20533 (8::4533)
-	unknownnoise0x20 1, 194, 51
-	unknownnoise0x20 2, 242, 33
-	unknownnoise0x20 1, 226, 51
-	unknownnoise0x20 1, 194, 50
-	unknownnoise0x20 1, 146, 18
-	unknownnoise0x20 1, 178, 49
-	unknownnoise0x20 12, 145, 16
-	unknownnoise0x20 8, 242, 65
+
+SFX_Vine_Whip_Ch1: 
+	noise 1, 194, 51
+	noise 2, 242, 33
+	noise 1, 226, 51
+	noise 1, 194, 50
+	noise 1, 146, 18
+	noise 1, 178, 49
+	noise 12, 145, 16
+	noise 8, 242, 65
 	endchannel

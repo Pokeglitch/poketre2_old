@@ -1,13 +1,14 @@
 SFX_Faint_Thud_Data::
-SFX_Faint_Thud_Ch1: ; 2044c (8::444c)
-	unknownsfx0x20 15, 209, 0, 2
-	unknownsfx0x10 8
+
+SFX_Faint_Thud_Ch1: 
+	sound 15, 209, 0, 2
+	sweep 8
 	endchannel
 
 
-;SFX_Faint_Thud_Data::
-SFX_Faint_Thud_Ch2: ; 20453 (8::4453)
-	unknownnoise0x20 4, 245, 51
-	unknownnoise0x20 8, 244, 34
-	unknownnoise0x20 15, 242, 33
+
+SFX_Faint_Thud_Ch2: 
+	noise 4, 245, 51
+	noise 8, 244, 34
+	noise 15, 242, 33
 	endchannel

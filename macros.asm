@@ -524,19 +524,19 @@ CH5		EQU 5
 CH6		EQU 6
 CH7		EQU 7
 
-unknownsfx0x10: MACRO
+sweep: MACRO
 	db $10
 	db \1
 ENDM
 
-unknownsfx0x20: MACRO
+sound: MACRO
 	db $20 | \1
 	db \2
 	db \3
 	db \4
 ENDM
 
-unknownnoise0x20: MACRO
+noise: MACRO
 	db $20 | \1
 	db \2
 	db \3
@@ -594,97 +594,97 @@ ENDM
 ;format: instrument length (in 16ths)
 snare1: MACRO
 	db $B0 | (\1 - 1)
-	db $01
+	db SFX_SNARE_1
 ENDM
 
 snare2: MACRO
 	db $B0 | (\1 - 1)
-	db $02
+	db SFX_SNARE_2
 ENDM
 
 snare3: MACRO
 	db $B0 | (\1 - 1)
-	db $03
+	db SFX_SNARE_3
 ENDM
 
 snare4: MACRO
 	db $B0 | (\1 - 1)
-	db $04
+	db SFX_SNARE_4
 ENDM
 
 snare5: MACRO
 	db $B0 | (\1 - 1)
-	db $05
+	db SFX_SNARE_5
 ENDM
 
 triangle1: MACRO
 	db $B0 | (\1 - 1)
-	db $06
+	db SFX_TRIANGLE_1
 ENDM
 
 triangle2: MACRO
 	db $B0 | (\1 - 1)
-	db $07
+	db SFX_TRIANGLE_2
 ENDM
 
 snare6: MACRO
 	db $B0 | (\1 - 1)
-	db $08
+	db SFX_SNARE_6
 ENDM
 
 snare7: MACRO
 	db $B0 | (\1 - 1)
-	db $09
+	db SFX_SNARE_7
 ENDM
 
 snare8: MACRO
 	db $B0 | (\1 - 1)
-	db $0A
+	db SFX_SNARE_8
 ENDM
 
 snare9: MACRO
 	db $B0 | (\1 - 1)
-	db $0B
+	db SFX_SNARE_9
 ENDM
 
 cymbal1: MACRO
 	db $B0 | (\1 - 1)
-	db $0C
+	db SFX_CYMBAL_1
 ENDM
 
 cymbal2: MACRO
 	db $B0 | (\1 - 1)
-	db $0D
+	db SFX_CYMBAL_2
 ENDM
 
 cymbal3: MACRO
 	db $B0 | (\1 - 1)
-	db $0E
+	db SFX_CYMBAL_3
 ENDM
 
 mutedsnare1: MACRO
 	db $B0 | (\1 - 1)
-	db $0F
+	db SFX_MUTED_SNARE_1
 ENDM
 
 triangle3: MACRO
 	db $B0 | (\1 - 1)
-	db $10
+	db SFX_TRIANGLE_3
 ENDM
 
 mutedsnare2: MACRO
 	db $B0 | (\1 - 1)
-	db $11
+	db SFX_MUTED_SNARE_2
 ENDM
 
 mutedsnare3: MACRO
 	db $B0 | (\1 - 1)
-	db $12
+	db SFX_MUTED_SNARE_3
 ENDM
 
 mutedsnare4: MACRO
 	db $B0 | (\1 - 1)
-	db $13
+	db SFX_MUTED_SNARE_4
 ENDM
 
 ;format: rest length (in 16ths)
@@ -708,6 +708,11 @@ ENDM
 
 toggleperfectpitch: MACRO
 	db $E8
+ENDM
+
+nested_sound: MACRO
+	db $EF
+	db \1
 ENDM
 
 ;format: vibrato delay, rate, depth

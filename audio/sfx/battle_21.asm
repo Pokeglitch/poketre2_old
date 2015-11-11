@@ -1,8 +1,9 @@
 SFX_Battle_21_Data::
-SFX_Battle_21_Ch1: ; 205c5 (8::45c5)
-	unknownnoise0x20 2, 241, 51
-	unknownnoise0x20 2, 193, 50
-	unknownnoise0x20 2, 161, 49
-	unknownnoise0x20 15, 130, 50
-	unknownnoise0x20 8, 241, 52
+
+SFX_Battle_21_Ch1: 
+	noise 2, 241, 51
+	noise 2, 193, 50
+	noise 2, 161, 49
+	noise 15, 130, 50
+	noise 8, 241, 52
 	endchannel

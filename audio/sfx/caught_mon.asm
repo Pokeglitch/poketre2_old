@@ -1,5 +1,6 @@
 SFX_Caught_Mon_Data::
-SFX_Caught_Mon_Ch1: ; 23a13 (8::7a13)
+
+SFX_Caught_Mon_Ch1: 
 	executemusic
 	tempo 256
 	volume 7, 7
@@ -22,9 +23,7 @@ SFX_Caught_Mon_Ch1: ; 23a13 (8::7a13)
 	E_ 8
 	endchannel
 
-
-;SFX_Caught_Mon_Data::
-SFX_Caught_Mon_Ch2: ; 23a2e (8::7a2e)
+SFX_Caught_Mon_Ch2: 
 	executemusic
 	duty 2
 	notetype 6, 12, 2
@@ -45,9 +44,7 @@ SFX_Caught_Mon_Ch2: ; 23a2e (8::7a2e)
 	G# 8
 	endchannel
 
-
-;SFX_Caught_Mon_Data::
-SFX_Caught_Mon_Ch3: ; 23a44 (8::7a44)
+SFX_Caught_Mon_Ch3: 
 	executemusic
 	notetype 6, 1, 0
 	octave 4

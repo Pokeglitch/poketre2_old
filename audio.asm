@@ -1,9 +1,9 @@
 INCLUDE "constants.asm"
 
 SECTION "Audio Engine", ROMX, BANK[AUDIO_1]
-INCLUDE "audio/sfx_pointers1.asm"
-INCLUDE "audio/headers/sfxheaders1.asm"
-INCLUDE "audio/headers/musicheaders1.asm"
+INCLUDE "audio/sfx_pointers.asm"
+INCLUDE "audio/headers/sfx_headers.asm"
+INCLUDE "audio/headers/musicheaders.asm"
 
 PlayBattleMusic:: ; 0x90c6
 	xor a
@@ -40,7 +40,7 @@ PlayBattleMusic:: ; 0x90c6
 .playSong
 	jp PlayMusic
 
-INCLUDE "audio/engine_1.asm"
+INCLUDE "audio/engine.asm"
 
 ; an alternate start for MeetRival which has a different first measure
 Music_RivalAlternateStart:: ; 0x9b47
@@ -49,12 +49,12 @@ Music_RivalAlternateStart:: ; 0x9b47
 	call PlayMusic
 	ld hl, wChannelCommandPointers
 	ld de, Music_MeetRival_branch_b1a2
-	call Audio1_OverwriteChannelPointer
+	call Audio_OverwriteChannelPointer
 	ld de, Music_MeetRival_branch_b21d
-	call Audio1_OverwriteChannelPointer
+	call Audio_OverwriteChannelPointer
 	ld de, Music_MeetRival_branch_b2b5
 
-Audio1_OverwriteChannelPointer: ; 0x9b60
+Audio_OverwriteChannelPointer: ; 0x9b60
 	ld a, e
 	ld [hli], a
 	ld a, d
@@ -68,14 +68,14 @@ Music_RivalAlternateTempo:: ; 0x9b65
 	call PlayMusic
 	ld hl, wChannelCommandPointers
 	ld de, Music_MeetRival_branch_b119
-	jp Audio1_OverwriteChannelPointer
+	jp Audio_OverwriteChannelPointer
 
 ; applies both the alternate start and alternate tempo
 Music_RivalAlternateStartAndTempo:: ; 0x9b75
 	call Music_RivalAlternateStart
 	ld hl, wChannelCommandPointers
 	ld de, Music_MeetRival_branch_b19b
-	jp Audio1_OverwriteChannelPointer
+	jp Audio_OverwriteChannelPointer
 
 ; an alternate tempo for Cities1 which is used for the Hall of Fame room
 Music_Cities1AlternateTempo:: ; 0x9b81
@@ -91,7 +91,7 @@ Music_Cities1AlternateTempo:: ; 0x9b81
 	call PlayMusic
 	ld hl, wChannelCommandPointers
 	ld de, Music_Cities1_branch_aa6f
-	jp Audio1_OverwriteChannelPointer
+	jp Audio_OverwriteChannelPointer
 	
 
 Music_DoLowHealthAlarm:: ; 2136e (8:536e)
@@ -179,11 +179,11 @@ Music_PokeFluteInBattle:: ; 22306 (8:6306)
 	call PlaySoundWaitForCurrent
 	; then immediately overwrtie the channel pointers
 	ld hl, wChannelCommandPointers + CH4 * 2
-	ld de, SFX_08_PokeFlute_Ch1
+	ld de, SFX_PokeFlute2_Ch1
 	call Audio2_OverwriteChannelPointer
-	ld de, SFX_08_PokeFlute_Ch2
+	ld de, SFX_PokeFlute2_Ch2
 	call Audio2_OverwriteChannelPointer
-	ld de, SFX_08_PokeFlute_Ch3
+	ld de, SFX_PokeFlute2_Ch3
 	
 Audio2_OverwriteChannelPointer: ; 2231d (8:631d)
 	ld a, e
@@ -228,107 +228,117 @@ PokedexRatingSfxPointers: ; 7d162 (1f:5162)
 OwnedMonValues: ; 7d170 (1f:5170)
 	db 20, 44, 80, 112, 148, 185, 255
 
-INCLUDE "audio/sfx/snare1_1.asm"
-INCLUDE "audio/sfx/snare2_1.asm"
-INCLUDE "audio/sfx/snare3_1.asm"
-INCLUDE "audio/sfx/snare4_1.asm"
-INCLUDE "audio/sfx/snare5_1.asm"
-INCLUDE "audio/sfx/triangle1_1.asm"
-INCLUDE "audio/sfx/triangle2_1.asm"
-INCLUDE "audio/sfx/snare6_1.asm"
-INCLUDE "audio/sfx/snare7_1.asm"
-INCLUDE "audio/sfx/snare8_1.asm"
-INCLUDE "audio/sfx/snare9_1.asm"
-INCLUDE "audio/sfx/cymbal1_1.asm"
-INCLUDE "audio/sfx/cymbal2_1.asm"
-INCLUDE "audio/sfx/cymbal3_1.asm"
-INCLUDE "audio/sfx/muted_snare1_1.asm"
-INCLUDE "audio/sfx/triangle3_1.asm"
-INCLUDE "audio/sfx/muted_snare2_1.asm"
-INCLUDE "audio/sfx/muted_snare3_1.asm"
-INCLUDE "audio/sfx/muted_snare4_1.asm"
+INCLUDE "audio/sfx/snare1.asm"
+INCLUDE "audio/sfx/snare2.asm"
+INCLUDE "audio/sfx/snare3.asm"
+INCLUDE "audio/sfx/snare4.asm"
+INCLUDE "audio/sfx/snare5.asm"
+INCLUDE "audio/sfx/triangle1.asm"
+INCLUDE "audio/sfx/triangle2.asm"
+INCLUDE "audio/sfx/snare6.asm"
+INCLUDE "audio/sfx/snare7.asm"
+INCLUDE "audio/sfx/snare8.asm"
+INCLUDE "audio/sfx/snare9.asm"
+INCLUDE "audio/sfx/cymbal1.asm"
+INCLUDE "audio/sfx/cymbal2.asm"
+INCLUDE "audio/sfx/cymbal3.asm"
+INCLUDE "audio/sfx/muted_snare1.asm"
+INCLUDE "audio/sfx/triangle3.asm"
+INCLUDE "audio/sfx/muted_snare2.asm"
+INCLUDE "audio/sfx/muted_snare3.asm"
+INCLUDE "audio/sfx/muted_snare4.asm"
 
-Audio1_WavePointers: INCLUDE "audio/wave_instruments.asm"
+Audio_WavePointers: INCLUDE "audio/wave_instruments.asm"
 
 
 SECTION "Sound Effects", ROMX, BANK[AUDIO_2]
 
-INCLUDE "audio/sfx/start_menu_1.asm"
+INCLUDE "audio/sfx/start_menu.asm"
 INCLUDE "audio/sfx/pokeflute.asm"
-INCLUDE "audio/sfx/cut_1.asm"
-INCLUDE "audio/sfx/go_inside_1.asm"
-INCLUDE "audio/sfx/swap_1.asm"
-INCLUDE "audio/sfx/tink_1.asm"
-INCLUDE "audio/sfx/59_1.asm"
-INCLUDE "audio/sfx/purchase_1.asm"
-INCLUDE "audio/sfx/collision_1.asm"
-INCLUDE "audio/sfx/go_outside_1.asm"
-INCLUDE "audio/sfx/press_ab_1.asm"
-INCLUDE "audio/sfx/save_1.asm"
-INCLUDE "audio/sfx/heal_hp_1.asm"
-INCLUDE "audio/sfx/poisoned_1.asm"
-INCLUDE "audio/sfx/heal_ailment_1.asm"
-INCLUDE "audio/sfx/trade_machine_1.asm"
-INCLUDE "audio/sfx/turn_on_pc_1.asm"
-INCLUDE "audio/sfx/turn_off_pc_1.asm"
-INCLUDE "audio/sfx/enter_pc_1.asm"
-INCLUDE "audio/sfx/shrink_1.asm"
-INCLUDE "audio/sfx/switch_1.asm"
-INCLUDE "audio/sfx/healing_machine_1.asm"
-INCLUDE "audio/sfx/teleport_exit1_1.asm"
-INCLUDE "audio/sfx/teleport_enter1_1.asm"
-INCLUDE "audio/sfx/teleport_exit2_1.asm"
-INCLUDE "audio/sfx/ledge_1.asm"
-INCLUDE "audio/sfx/teleport_enter2_1.asm"
-INCLUDE "audio/sfx/fly_1.asm"
-INCLUDE "audio/sfx/denied_1.asm"
-INCLUDE "audio/sfx/arrow_tiles_1.asm"
-INCLUDE "audio/sfx/push_boulder_1.asm"
-INCLUDE "audio/sfx/ss_anne_horn_1.asm"
-INCLUDE "audio/sfx/withdraw_deposit_1.asm"
+INCLUDE "audio/sfx/pokeflute2.asm"
+INCLUDE "audio/sfx/cut.asm"
+INCLUDE "audio/sfx/go_inside.asm"
+INCLUDE "audio/sfx/swap.asm"
+INCLUDE "audio/sfx/tink.asm"
+INCLUDE "audio/sfx/unused3.asm"
+INCLUDE "audio/sfx/purchase.asm"
+INCLUDE "audio/sfx/collision.asm"
+INCLUDE "audio/sfx/go_outside.asm"
+INCLUDE "audio/sfx/press_ab.asm"
+INCLUDE "audio/sfx/save.asm"
+INCLUDE "audio/sfx/heal_hp.asm"
+INCLUDE "audio/sfx/poisoned.asm"
+INCLUDE "audio/sfx/heal_ailment.asm"
+INCLUDE "audio/sfx/trade_machine.asm"
+INCLUDE "audio/sfx/turn_on_pc.asm"
+INCLUDE "audio/sfx/turn_off_pc.asm"
+INCLUDE "audio/sfx/enter_pc.asm"
+INCLUDE "audio/sfx/shrink.asm"
+INCLUDE "audio/sfx/switch.asm"
+INCLUDE "audio/sfx/healing_machine.asm"
+INCLUDE "audio/sfx/teleport_exit1.asm"
+INCLUDE "audio/sfx/teleport_enter1.asm"
+INCLUDE "audio/sfx/teleport_exit2.asm"
+INCLUDE "audio/sfx/ledge.asm"
+INCLUDE "audio/sfx/teleport_enter2.asm"
+INCLUDE "audio/sfx/fly.asm"
+INCLUDE "audio/sfx/denied.asm"
+INCLUDE "audio/sfx/arrow_tiles.asm"
+INCLUDE "audio/sfx/push_boulder.asm"
+INCLUDE "audio/sfx/ss_anne_horn.asm"
+INCLUDE "audio/sfx/withdraw_deposit.asm"
 INCLUDE "audio/sfx/safari_zone_pa.asm"
-INCLUDE "audio/sfx/unused_1.asm"
-INCLUDE "audio/sfx/cry09_1.asm"
-INCLUDE "audio/sfx/cry23_1.asm"
-INCLUDE "audio/sfx/cry24_1.asm"
-INCLUDE "audio/sfx/cry11_1.asm"
-INCLUDE "audio/sfx/cry25_1.asm"
-INCLUDE "audio/sfx/cry03_1.asm"
-INCLUDE "audio/sfx/cry0f_1.asm"
-INCLUDE "audio/sfx/cry10_1.asm"
-INCLUDE "audio/sfx/cry00_1.asm"
-INCLUDE "audio/sfx/cry0e_1.asm"
-INCLUDE "audio/sfx/cry06_1.asm"
-INCLUDE "audio/sfx/cry07_1.asm"
-INCLUDE "audio/sfx/cry05_1.asm"
-INCLUDE "audio/sfx/cry0b_1.asm"
-INCLUDE "audio/sfx/cry0c_1.asm"
-INCLUDE "audio/sfx/cry02_1.asm"
-INCLUDE "audio/sfx/cry0d_1.asm"
-INCLUDE "audio/sfx/cry01_1.asm"
-INCLUDE "audio/sfx/cry0a_1.asm"
-INCLUDE "audio/sfx/cry08_1.asm"
-INCLUDE "audio/sfx/cry04_1.asm"
-INCLUDE "audio/sfx/cry19_1.asm"
-INCLUDE "audio/sfx/cry16_1.asm"
-INCLUDE "audio/sfx/cry1b_1.asm"
-INCLUDE "audio/sfx/cry12_1.asm"
-INCLUDE "audio/sfx/cry13_1.asm"
-INCLUDE "audio/sfx/cry14_1.asm"
-INCLUDE "audio/sfx/cry1e_1.asm"
-INCLUDE "audio/sfx/cry15_1.asm"
-INCLUDE "audio/sfx/cry17_1.asm"
-INCLUDE "audio/sfx/cry1c_1.asm"
-INCLUDE "audio/sfx/cry1a_1.asm"
-INCLUDE "audio/sfx/cry1d_1.asm"
-INCLUDE "audio/sfx/cry18_1.asm"
-INCLUDE "audio/sfx/cry1f_1.asm"
-INCLUDE "audio/sfx/cry20_1.asm"
-INCLUDE "audio/sfx/cry21_1.asm"
-INCLUDE "audio/sfx/cry22_1.asm"
-INCLUDE "audio/sfx/cry26_1.asm"
-INCLUDE "audio/sfx/cry27_1.asm"
-INCLUDE "audio/sfx/cry28_1.asm"
+INCLUDE "audio/sfx/unused.asm"
+INCLUDE "audio/sfx/unused2.asm"
+INCLUDE "audio/sfx/cry09.asm"
+INCLUDE "audio/sfx/cry23.asm"
+INCLUDE "audio/sfx/cry24.asm"
+INCLUDE "audio/sfx/cry11.asm"
+INCLUDE "audio/sfx/cry25.asm"
+INCLUDE "audio/sfx/cry03.asm"
+INCLUDE "audio/sfx/cry0f.asm"
+INCLUDE "audio/sfx/cry10.asm"
+INCLUDE "audio/sfx/cry00.asm"
+INCLUDE "audio/sfx/cry0e.asm"
+INCLUDE "audio/sfx/cry06.asm"
+INCLUDE "audio/sfx/cry07.asm"
+INCLUDE "audio/sfx/cry05.asm"
+INCLUDE "audio/sfx/cry0b.asm"
+INCLUDE "audio/sfx/cry0c.asm"
+INCLUDE "audio/sfx/cry02.asm"
+INCLUDE "audio/sfx/cry0d.asm"
+INCLUDE "audio/sfx/cry01.asm"
+INCLUDE "audio/sfx/cry0a.asm"
+INCLUDE "audio/sfx/cry08.asm"
+INCLUDE "audio/sfx/cry04.asm"
+INCLUDE "audio/sfx/cry19.asm"
+INCLUDE "audio/sfx/cry16.asm"
+INCLUDE "audio/sfx/cry1b.asm"
+INCLUDE "audio/sfx/cry12.asm"
+INCLUDE "audio/sfx/cry13.asm"
+INCLUDE "audio/sfx/cry14.asm"
+INCLUDE "audio/sfx/cry1e.asm"
+INCLUDE "audio/sfx/cry15.asm"
+INCLUDE "audio/sfx/cry17.asm"
+INCLUDE "audio/sfx/cry1c.asm"
+INCLUDE "audio/sfx/cry1a.asm"
+INCLUDE "audio/sfx/cry1d.asm"
+INCLUDE "audio/sfx/cry18.asm"
+INCLUDE "audio/sfx/cry1f.asm"
+INCLUDE "audio/sfx/cry20.asm"
+INCLUDE "audio/sfx/cry21.asm"
+INCLUDE "audio/sfx/cry22.asm"
+INCLUDE "audio/sfx/cry26.asm"
+INCLUDE "audio/sfx/cry27.asm"
+INCLUDE "audio/sfx/cry28.asm"
+INCLUDE "audio/sfx/cry29.asm"
+INCLUDE "audio/sfx/cry2a.asm"
+INCLUDE "audio/sfx/cry2b.asm"
+INCLUDE "audio/sfx/cry2c.asm"
+INCLUDE "audio/sfx/cry2d.asm"
+INCLUDE "audio/sfx/cry2e.asm"
+INCLUDE "audio/sfx/cry2f.asm"
+INCLUDE "audio/sfx/cry30.asm"
 INCLUDE "audio/sfx/silph_scope.asm"
 INCLUDE "audio/sfx/ball_toss.asm"
 INCLUDE "audio/sfx/ball_poof.asm"
@@ -392,13 +402,13 @@ INCLUDE "audio/sfx/intro_whoosh.asm"
 INCLUDE "audio/sfx/slots_stop_wheel.asm"
 INCLUDE "audio/sfx/slots_reward.asm"
 INCLUDE "audio/sfx/slots_new_spin.asm"
-INCLUDE "audio/sfx/pokeflute_ch1_ch2.asm"
 INCLUDE "audio/sfx/level_up.asm"
 INCLUDE "audio/sfx/caught_mon.asm"
 INCLUDE "audio/sfx/shooting_star.asm"
-INCLUDE "audio/sfx/pokedex_rating_1.asm"
-INCLUDE "audio/sfx/get_item2_1.asm"
-INCLUDE "audio/sfx/get_key_item_1.asm"
+INCLUDE "audio/sfx/pokedex_rating.asm"
+INCLUDE "audio/sfx/get_item1.asm"
+INCLUDE "audio/sfx/get_item2.asm"
+INCLUDE "audio/sfx/get_key_item.asm"
 
 SECTION "Music 1", ROMX, BANK[AUDIO_3]
 INCLUDE "audio/music/ssanne.asm"
@@ -435,12 +445,9 @@ INCLUDE "audio/music/routes4.asm"
 INCLUDE "audio/music/indigoplateau.asm"
 INCLUDE "audio/music/unusedsong.asm"
 INCLUDE "audio/music/cities1.asm"
-INCLUDE "audio/sfx/get_item1_1.asm"
 INCLUDE "audio/music/museumguy.asm"
 INCLUDE "audio/music/meetprofoak.asm"
 INCLUDE "audio/music/meetrival.asm"
-INCLUDE "audio/sfx/get_item2_3.asm"
-INCLUDE "audio/sfx/get_key_item_3.asm"
 INCLUDE "audio/music/oakslab.asm"
 INCLUDE "audio/music/pokemontower.asm"
 INCLUDE "audio/music/silphco.asm"

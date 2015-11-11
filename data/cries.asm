@@ -28,7 +28,7 @@ CryData:: ; 39446 (e:5446)
 	db $18, $40, $A0; Fearow
 	db $17, $12, $40; Ekans
 	db $17, $E0, $10; Arbok
-	db $26, $00, $90; Pichu
+	db $26, $00, $C0; Pichu
 	db $0F, $EE, $01; Pikachu
 	db $09, $EE, $08; Raichu
 	db $00, $20, $40; Sandshrew
@@ -44,16 +44,16 @@ CryData:: ; 39446 (e:5446)
 	db $19, $AA, $20; Clefable
 	db $24, $4F, $10; Vulpix
 	db $24, $88, $60; Ninetales
-	db $25, $e8, $68; Igglybuff
+	db $28, $e8, $68; Igglybuff
 	db $0E, $FF, $35; Jigglypuff
 	db $0E, $68, $60; Wigglytuff
 	db $1D, $E0, $80; Zubat
 	db $1D, $FA, $80; Golbat
-	db $00, $00, $00; Crobat
+	db $1D, $FF, $C0; Crobat
 	db $08, $DD, $01; Oddish
 	db $08, $AA, $40; Gloom
 	db $23, $22, $FF; Vileplume
-	db $00, $00, $00; Bellossom
+	db $27, $84, $D0; Bellossom
 	db $1E, $20, $E0; Paras
 	db $1E, $42, $FF; Parasect
 	db $1A, $44, $40; Venonat
@@ -67,7 +67,7 @@ CryData:: ; 39446 (e:5446)
 	db $0E, $FF, $FF; Poliwag
 	db $0E, $77, $60; Poliwhirl
 	db $0E, $00, $FF; Poliwrath
-	db $00, $00, $00; Politoed
+	db $27, $FF, $FF; Politoed
 	db $1C, $C0, $01; Abra
 	db $1C, $A8, $C0; Kadabra
 	db $1C, $98, $FF; Alakazam
@@ -86,7 +86,7 @@ CryData:: ; 39446 (e:5446)
 	db $25, $20, $C0; Rapidash
 	db $02, $00, $80; Slowpoke
 	db $1F, $00, $80; Slowbro
-	db $00, $00, $00; Slowking
+	db $29, $FF, $FF; Slowking
 	db $1C, $80, $60; Magnemite
 	db $1C, $20, $C0; Magneton
 	db $00, $00, $00; Magnezone
@@ -114,40 +114,40 @@ CryData:: ; 39446 (e:5446)
 	db $0D, $00, $80; Exeggutor
 	db $19, $00, $80; Cubone
 	db $08, $4F, $60; Marowak
-	db $00, $00, $00; Tyrogue
+	db $2A, $2C, $88; Tyrogue
 	db $12, $80, $C0; Hitmonlee
 	db $0C, $EE, $C0; Hitmonchan
-	db $1D, $E0, $80; Hitmontop
+	db $2B, $00, $80; Hitmontop
 	db $0C, $00, $80; Lickitung
-	db $22, $FF, $40; Lickilicky
+	db $00, $00, $00; Lickilicky
 	db $12, $E6, $DD; Koffing
 	db $12, $FF, $FF; Weezing
 	db $04, $00, $80; Rhyhorn
 	db $11, $00, $80; Rhydon
 	db $00, $00, $00; Rhyperior
-	db $0E, $E0, $60; Happiny
+	db $00, $00, $00; Happiny
 	db $14, $0A, $C0; Chansey
-	db $00, $00, $00; Blissey
+	db $29, $FF, $C0; Blissey
 	db $12, $00, $80; Tangela
 	db $00, $00, $00; Tangrowth
 	db $03, $00, $80; Kangaskhan
 	db $19, $99, $10; Horsea
 	db $19, $3C, $01; Seadra
-	db $0F, $40, $C0; Kingdra
+	db $2B, $FF, $80; Kingdra
 	db $16, $80, $40; Goldeen
 	db $16, $10, $FF; Seaking
 	db $1E, $02, $20; Staryu
 	db $1E, $00, $80; Starmie
-	db $0F, $20, $C0; Mime Jr
+	db $00, $00, $00; Mime Jr
 	db $20, $08, $40; Mr.Mime
 	db $16, $00, $80; Scyther
-	db $00, $00, $00; Scizor
-	db $00, $00, $00; Smoochum
+	db $2C, $00, $E0; Scizor
+	db $2D, $68, $80; Smoochum
 	db $0D, $FF, $FF; Jynx
-	db $00, $00, $00; Elekid
-	db $11, $20, $10; Electivire
+	db $2E, $FF, $34; Elekid
 	db $06, $8F, $FF; Electabuzz
-	db $00, $00, $00; Magby
+	db $00, $00, $00; Electivire
+	db $2F, $00, $00; Magby
 	db $04, $FF, $30; Magmar
 	db $00, $00, $00; Magmortar
 	db $14, $00, $80; Pinsir
@@ -160,13 +160,13 @@ CryData:: ; 39446 (e:5446)
 	db $1A, $AA, $FF; Vaporeon
 	db $1A, $3D, $80; Jolteon
 	db $1A, $10, $20; Flareon
-	db $0F, $40, $80; Espeon
-	db $00, $00, $00; Umbreon
+	db $2A, $A2, $C0; Espeon
+	db $1A, $FF, $70; Umbreon
 	db $00, $00, $00; Leafeon
 	db $00, $00, $00; Glaceon
 	db $00, $00, $00; Sylveon
 	db $25, $AA, $FF; Porygon
-	db $00, $00, $00; Porygon2
+	db $30, $73, $FF; Porygon2
 	db $00, $00, $00; PorygonZ
 	db $1F, $F0, $01; Omanyte
 	db $1F, $FF, $40; Omastar
