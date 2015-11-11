@@ -34,16 +34,6 @@ AnimateHealingMachine: ; 70433 (1c:4433)
 	call DelayFrames
 	dec b
 	jr nz, .partyLoop
-	ld a, [wAudioROMBank]
-	cp BANK(Audio3_UpdateMusic)
-	ld [wAudioSavedROMBank], a
-	jr nz, .next
-	ld a, $ff
-	ld [wNewSoundID], a
-	call PlaySound
-	ld a, BANK(Music_PkmnHealed)
-	ld [wAudioROMBank], a
-.next
 	ld a, MUSIC_PKMN_HEALED
 	ld [wNewSoundID], a
 	call PlaySound

@@ -381,29 +381,29 @@ SFX_Cry25_1:: ; 8189 (2:4189)
 	db CH7
 	dw SFX_Cry25_1_Ch3
 
-;SFX_Cry26_1:: ; 8189 (2:4189)
-;	db ( $80 | CH4 )
-;	dw SFX_Cry26_1_Ch1
-;	db CH5
-;	dw SFX_Cry26_1_Ch2
-;	db CH7
-;	dw SFX_Cry26_1_Ch3
+SFX_Cry26_1:: ; 8189 (2:4189)
+	db ( $80 | CH4 )
+	dw SFX_Cry26_1_Ch1
+	db CH5
+	dw SFX_Cry26_1_Ch2
+	db CH7
+	dw SFX_Cry26_1_Ch3
 
-;SFX_Cry27_1:: ; 8180 (2:4180)
-;	db ( $80 | CH4 )
-;	dw SFX_Cry27_1_Ch1
-;	db CH5
-;	dw SFX_Cry27_1_Ch2
-;	db CH7
-;	dw SFX_Cry27_1_Ch3
+SFX_Cry27_1:: ; 8180 (2:4180)
+	db ( $80 | CH4 )
+	dw SFX_Cry27_1_Ch1
+	db CH5
+	dw SFX_Cry27_1_Ch2
+	db CH7
+	dw SFX_Cry27_1_Ch3
 
-;SFX_Cry28_1:: ; 8180 (2:4180)
-;	db ( $80 | CH4 )
-;	dw SFX_Cry28_1_Ch1
-;	db CH5
-;	dw SFX_Cry28_1_Ch2
-;	db CH7
-;	dw SFX_Cry28_1_Ch3
+SFX_Cry28_1:: ; 8180 (2:4180)
+	db ( $80 | CH4 )
+	dw SFX_Cry28_1_Ch1
+	db CH5
+	dw SFX_Cry28_1_Ch2
+	db CH7
+	dw SFX_Cry28_1_Ch3
 
 SFX_Get_Item1_1:: ; 8192 (2:4192)
 	db ( $80 | CH4 )
@@ -412,6 +412,14 @@ SFX_Get_Item1_1:: ; 8192 (2:4192)
 	dw SFX_Get_Item1_1_Ch2
 	db CH6
 	dw SFX_Get_Item1_1_Ch3
+
+SFX_Level_Up:: ; 20192 (8:4192)
+	db ( $80 | CH4 )
+	dw SFX_Level_Up_Ch1
+	db CH5
+	dw SFX_Level_Up_Ch2
+	db CH6
+	dw SFX_Level_Up_Ch3
 
 SFX_Get_Item2_1:: ; 819b (2:419b)
 	db ( $80 | CH4 )
@@ -584,3 +592,334 @@ SFX_Pokeflute:: ; 8228 (2:4228)
 SFX_Safari_Zone_PA:: ; 822b (2:422b)
 	db CH4
 	dw SFX_Safari_Zone_PA_Ch1
+	
+SFX_Ball_Toss:: ; 201b3 (8:41b3)
+	db ( $40 | CH4 )
+	dw SFX_Ball_Toss_Ch1
+	db CH5
+	dw SFX_Ball_Toss_Ch2
+
+SFX_Ball_Poof:: ; 201b9 (8:41b9)
+	db ( $40 | CH4 )
+	dw SFX_Ball_Poof_Ch1
+	db CH7
+	dw SFX_Ball_Poof_Ch2
+
+SFX_Faint_Thud:: ; 201bf (8:41bf)
+	db ( $40 | CH4 )
+	dw SFX_Faint_Thud_Ch1
+	db CH7
+	dw SFX_Faint_Thud_Ch2
+
+SFX_Run:: ; 201c5 (8:41c5)
+	db CH7
+	dw SFX_Run_Ch1
+
+SFX_Dex_Page_Added:: ; 201c8 (8:41c8)
+	db ( $40 | CH4 )
+	dw SFX_Dex_Page_Added_Ch1
+	db CH5
+	dw SFX_Dex_Page_Added_Ch2
+
+SFX_Caught_Mon:: ; 201ce (8:41ce)
+	db ( $80 | CH4 )
+	dw SFX_Caught_Mon_Ch1
+	db CH5
+	dw SFX_Caught_Mon_Ch2
+	db CH6
+	dw SFX_Caught_Mon_Ch3
+
+SFX_Peck:: ; 201d7 (8:41d7)
+	db CH7
+	dw SFX_Peck_Ch1
+
+SFX_Faint_Fall:: ; 201da (8:41da)
+	db CH4
+	dw SFX_Faint_Fall_Ch1
+
+SFX_Battle_09:: ; 201dd (8:41dd)
+	db CH4
+	dw SFX_Battle_09_Ch1
+
+SFX_Pound:: ; 201e0 (8:41e0)
+	db CH7
+	dw SFX_Pound_Ch1
+
+SFX_Battle_0B:: ; 201e3 (8:41e3)
+	db CH7
+	dw SFX_Battle_0B_Ch1
+
+SFX_Battle_0C:: ; 201e6 (8:41e6)
+	db CH7
+	dw SFX_Battle_0C_Ch1
+
+SFX_Battle_0D:: ; 201e9 (8:41e9)
+	db CH7
+	dw SFX_Battle_0D_Ch1
+
+SFX_Battle_0E:: ; 201ec (8:41ec)
+	db CH7
+	dw SFX_Battle_0E_Ch1
+
+SFX_Battle_0F:: ; 201ef (8:41ef)
+	db CH7
+	dw SFX_Battle_0F_Ch1
+
+SFX_Damage:: ; 201f2 (8:41f2)
+	db CH7
+	dw SFX_Damage_Ch1
+
+SFX_Not_Very_Effective:: ; 201f5 (8:41f5)
+	db CH7
+	dw SFX_Not_Very_Effective_Ch1
+
+SFX_Battle_12:: ; 201f8 (8:41f8)
+	db CH7
+	dw SFX_Battle_12_Ch1
+
+SFX_Battle_13:: ; 201fb (8:41fb)
+	db CH7
+	dw SFX_Battle_13_Ch1
+
+SFX_Battle_14:: ; 201fe (8:41fe)
+	db CH7
+	dw SFX_Battle_14_Ch1
+
+SFX_Vine_Whip:: ; 20201 (8:4201)
+	db CH7
+	dw SFX_Vine_Whip_Ch1
+
+SFX_Battle_16:: ; 20204 (8:4204)
+	db CH7
+	dw SFX_Battle_16_Ch1
+
+SFX_Battle_17:: ; 20207 (8:4207)
+	db CH7
+	dw SFX_Battle_17_Ch1
+
+SFX_Battle_18:: ; 2020a (8:420a)
+	db CH7
+	dw SFX_Battle_18_Ch1
+
+SFX_Battle_19:: ; 2020d (8:420d)
+	db CH7
+	dw SFX_Battle_19_Ch1
+
+SFX_Super_Effective:: ; 20210 (8:4210)
+	db CH7
+	dw SFX_Super_Effective_Ch1
+
+SFX_Battle_1B:: ; 20213 (8:4213)
+	db CH7
+	dw SFX_Battle_1B_Ch1
+
+SFX_Battle_1C:: ; 20216 (8:4216)
+	db CH7
+	dw SFX_Battle_1C_Ch1
+
+SFX_Doubleslap:: ; 20219 (8:4219)
+	db CH7
+	dw SFX_Doubleslap_Ch1
+
+SFX_Battle_1E:: ; 2021c (8:421c)
+	db ( $40 | CH4 )
+	dw SFX_Battle_1E_Ch1
+	db CH7
+	dw SFX_Battle_1E_Ch2
+
+SFX_Horn_Drill:: ; 20222 (8:4222)
+	db CH7
+	dw SFX_Horn_Drill_Ch1
+
+SFX_Battle_20:: ; 20225 (8:4225)
+	db CH7
+	dw SFX_Battle_20_Ch1
+
+SFX_Battle_21:: ; 20228 (8:4228)
+	db CH7
+	dw SFX_Battle_21_Ch1
+
+SFX_Battle_22:: ; 2022b (8:422b)
+	db CH7
+	dw SFX_Battle_22_Ch1
+
+SFX_Battle_23:: ; 2022e (8:422e)
+	db CH7
+	dw SFX_Battle_23_Ch1
+
+SFX_Battle_24:: ; 20231 (8:4231)
+	db ( $40 | CH4 )
+	dw SFX_Battle_24_Ch1
+	db CH7
+	dw SFX_Battle_24_Ch2
+
+SFX_Battle_25:: ; 20237 (8:4237)
+	db CH7
+	dw SFX_Battle_25_Ch1
+
+SFX_Battle_26:: ; 2023a (8:423a)
+	db CH7
+	dw SFX_Battle_26_Ch1
+
+SFX_Battle_27:: ; 2023d (8:423d)
+	db ( $80 | CH4 )
+	dw SFX_Battle_27_Ch1
+	db CH5
+	dw SFX_Battle_27_Ch2
+	db CH7
+	dw SFX_Battle_27_Ch3
+
+SFX_Battle_28:: ; 20246 (8:4246)
+	db ( $80 | CH4 )
+	dw SFX_Battle_28_Ch1
+	db CH5
+	dw SFX_Battle_28_Ch2
+	db CH7
+	dw SFX_Battle_28_Ch3
+
+SFX_Battle_29:: ; 2024f (8:424f)
+	db ( $40 | CH4 )
+	dw SFX_Battle_29_Ch1
+	db CH7
+	dw SFX_Battle_29_Ch2
+
+SFX_Battle_2A:: ; 20255 (8:4255)
+	db ( $80 | CH4 )
+	dw SFX_Battle_2A_Ch1
+	db CH5
+	dw SFX_Battle_2A_Ch2
+	db CH7
+	dw SFX_Battle_2A_Ch3
+
+SFX_Battle_2B:: ; 2025e (8:425e)
+	db ( $40 | CH4 )
+	dw SFX_Battle_2B_Ch1
+	db CH7
+	dw SFX_Battle_2B_Ch2
+
+SFX_Battle_2C:: ; 20264 (8:4264)
+	db ( $80 | CH4 )
+	dw SFX_Battle_2C_Ch1
+	db CH5
+	dw SFX_Battle_2C_Ch2
+	db CH7
+	dw SFX_Battle_2C_Ch3
+
+SFX_Psybeam:: ; 2026d (8:426d)
+	db ( $80 | CH4 )
+	dw SFX_Psybeam_Ch1
+	db CH5
+	dw SFX_Psybeam_Ch2
+	db CH7
+	dw SFX_Psybeam_Ch3
+
+SFX_Battle_2E:: ; 20276 (8:4276)
+	db ( $80 | CH4 )
+	dw SFX_Battle_2E_Ch1
+	db CH5
+	dw SFX_Battle_2E_Ch2
+	db CH7
+	dw SFX_Battle_2E_Ch3
+
+SFX_Battle_2F:: ; 2027f (8:427f)
+	db ( $80 | CH4 )
+	dw SFX_Battle_2F_Ch1
+	db CH5
+	dw SFX_Battle_2F_Ch2
+	db CH7
+	dw SFX_Battle_2F_Ch3
+
+SFX_Psychic_M:: ; 20288 (8:4288)
+	db ( $80 | CH4 )
+	dw SFX_Psychic_M_Ch1
+	db CH5
+	dw SFX_Psychic_M_Ch2
+	db CH7
+	dw SFX_Psychic_M_Ch3
+
+SFX_Battle_31:: ; 20291 (8:4291)
+	db ( $40 | CH4 )
+	dw SFX_Battle_31_Ch1
+	db CH5
+	dw SFX_Battle_31_Ch2
+
+SFX_Battle_32:: ; 20297 (8:4297)
+	db ( $40 | CH4 )
+	dw SFX_Battle_32_Ch1
+	db CH5
+	dw SFX_Battle_32_Ch2
+
+SFX_Battle_33:: ; 2029d (8:429d)
+	db ( $40 | CH4 )
+	dw SFX_Battle_33_Ch1
+	db CH5
+	dw SFX_Battle_33_Ch2
+
+SFX_Battle_34:: ; 202a3 (8:42a3)
+	db ( $80 | CH4 )
+	dw SFX_Battle_34_Ch1
+	db CH5
+	dw SFX_Battle_34_Ch2
+	db CH7
+	dw SFX_Battle_34_Ch3
+
+SFX_Battle_35:: ; 202ac (8:42ac)
+	db ( $40 | CH4 )
+	dw SFX_Battle_35_Ch1
+	db CH5
+	dw SFX_Battle_35_Ch2
+
+SFX_Battle_36:: ; 202b2 (8:42b2)
+	db ( $80 | CH4 )
+	dw SFX_Battle_36_Ch1
+	db CH5
+	dw SFX_Battle_36_Ch2
+	db CH7
+	dw SFX_Battle_36_Ch3
+
+SFX_Silph_Scope:: ; 202bb (8:42bb)
+	db CH4
+	dw SFX_Silph_Scope_Ch1
+
+
+SFX_Intro_Lunge:: ; 7c228 (1f:4228)
+	db CH7
+	dw SFX_Intro_Lunge_Ch1
+
+SFX_Intro_Hip:: ; 7c22b (1f:422b)
+	db CH4
+	dw SFX_Intro_Hip_Ch1
+
+SFX_Intro_Hop:: ; 7c22e (1f:422e)
+	db CH4
+	dw SFX_Intro_Hop_Ch1
+
+SFX_Intro_Raise:: ; 7c231 (1f:4231)
+	db CH7
+	dw SFX_Intro_Raise_Ch1
+
+SFX_Intro_Crash:: ; 7c234 (1f:4234)
+	db CH7
+	dw SFX_Intro_Crash_Ch1
+
+SFX_Intro_Whoosh:: ; 7c237 (1f:4237)
+	db CH7
+	dw SFX_Intro_Whoosh_Ch1
+
+SFX_Slots_Stop_Wheel:: ; 7c23a (1f:423a)
+	db CH4
+	dw SFX_Slots_Stop_Wheel_Ch1
+
+SFX_Slots_Reward:: ; 7c23d (1f:423d)
+	db CH4
+	dw SFX_Slots_Reward_Ch1
+
+SFX_Slots_New_Spin:: ; 7c240 (1f:4240)
+	db ( $40 | CH4 )
+	dw SFX_Slots_New_Spin_Ch1
+	db CH5
+	dw SFX_Slots_New_Spin_Ch2
+
+SFX_Shooting_Star:: ; 7c246 (1f:4246)
+	db CH4
+	dw SFX_Shooting_Star_Ch1

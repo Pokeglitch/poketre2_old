@@ -44,16 +44,6 @@ SSAnne7Text1: ; 618ad (18:58ad)
 SSAnne7RubText: ; 618ec (18:58ec)
 	TX_FAR _SSAnne7RubText
 	TX_ASM
-	ld a, [wAudioROMBank]
-	cp BANK(Audio3_UpdateMusic)
-	ld [wAudioSavedROMBank], a
-	jr nz, .asm_61908
-	ld a, $ff
-	ld [wNewSoundID], a
-	call PlaySound
-	ld a, Bank(Music_PkmnHealed)
-	ld [wAudioROMBank], a
-.asm_61908
 	ld a, MUSIC_PKMN_HEALED
 	ld [wNewSoundID], a
 	call PlaySound

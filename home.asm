@@ -328,11 +328,11 @@ LoadFrontSpriteByMonIndex:: ; 1389 (0:1389)
 
 PlayCry:: ; 13d0 (0:13d0)
 ; Play monster a's cry.
-	ld a,CHARMANDER
-	ld [wd0b5],a
-	callab RawCry
-	ret c		;return if we played a raw cry
-	ld a,[wd0b5]
+	ld a,PICHU
+;	ld [wd0b5],a
+;	callab RawCry
+;	ret c		;return if we played a raw cry
+;	ld a,[wd0b5]
 	call GetCryData
 	call PlaySound
 	call WaitForSoundToFinish
@@ -359,7 +359,7 @@ GetCryData:: ; 13d9 (0:13d9)
 	call BankswitchBack
 
 	; Cry start from index $14
-	ld a, $14
+	ld a, CRY_SFX_START
 	add b
 	ret
 

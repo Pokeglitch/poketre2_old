@@ -1,3 +1,9 @@
+; Banks
+AUDIO_1 EQU $2
+AUDIO_2 EQU $8
+AUDIO_3 EQU $1f
+AUDIO_4 EQU $34
+
 ; HW sound channel register base addresses
 HW_CH1_BASE EQU (rNR10 % $100)
 HW_CH2_BASE EQU ((rNR21 % $100) - 1)
@@ -20,11 +26,11 @@ REG_DUTY_SOUND_LEN  EQU 1
 REG_VOLUME_ENVELOPE EQU 2
 REG_FREQUENCY_LO    EQU 3
 
-MAX_SFX_ID EQU $B9
+NUM_OF_CRIES = 41
 
-CRY_SFX_START EQU $14		;index of the first cry
-NUM_OF_CRIES EQU $26		;includes cry 00
+CRY_SFX_START EQU 20		;index of the first cry
 CRY_SFX_END   EQU CRY_SFX_START + NUM_OF_CRIES	;index of the first sfx after the cries
+MAX_SFX_ID 	  EQU 123 + NUM_OF_CRIES
 
 ; wChannelFlags1 constants
 BIT_PERFECT_PITCH         EQU 0 ; controlled by toggleperfectpitch command
@@ -79,7 +85,7 @@ ENDM
 	; AUDIO_3
 	music_const MUSIC_TITLE_SCREEN,        Music_TitleScreen
 	music_const MUSIC_CREDITS,             Music_Credits
-;	music_const MUSIC_HALL_OF_FAME,        Music_HallOfFame
+	music_const MUSIC_HALL_OF_FAME,        Music_HallOfFame
 	music_const MUSIC_OAKS_LAB,            Music_OaksLab
 	music_const MUSIC_JIGGLYPUFF_SONG,     Music_JigglypuffSong
 	music_const MUSIC_BIKE_RIDING,         Music_BikeRiding

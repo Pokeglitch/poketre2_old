@@ -109,28 +109,8 @@ PlayDefaultMusicCommon:: ; 2324 (0:2324)
 UpdateMusic6Times:: ; 235f (0:235f)
 ; This is called when entering a map, before fading out the current music and
 ; playing the default music (i.e. the map's music or biking/surfing music).
-	ld a, [wAudioROMBank]
-	ld b, a
-	cp BANK(Audio1_UpdateMusic)
-	jr nz, .checkForAudio2
-
-; audio 1
+	lb bc, AUDIO_1, 6
 	ld hl, Audio1_UpdateMusic
-	jr .next
-
-.checkForAudio2
-	cp BANK(Audio2_UpdateMusic)
-	jr nz, .audio3
-
-; audio 2
-	ld hl, Audio2_UpdateMusic
-	jr .next
-
-.audio3
-	ld hl, Audio3_UpdateMusic
-
-.next
-	ld c, 6
 .loop
 	push bc
 	push hl
@@ -212,31 +192,11 @@ PlaySound:: ; 23b1 (0:23b1)
 	ld [wNewSoundID], a
 	ld a, [H_LOADEDROMBANK]
 	ld [hSavedROMBank], a
-	ld a, [wAudioROMBank]
+	ld a, AUDIO_1
 	ld [H_LOADEDROMBANK], a
 	ld [MBC1RomBank], a
-	
-	cp BANK(Audio1_PlaySound)
-	jr nz, .checkForAudio2
-
-	ld a, b
+	ld a,b
 	call Audio1_PlaySound
-	jr .next2
-
-.checkForAudio2
-	cp BANK(Audio2_PlaySound)
-	jr nz, .audio3
-
-; audio 2
-	ld a, b
-	call Audio2_PlaySound
-	jr .next2
-
-.audio3
-	ld a, b
-	call Audio3_PlaySound
-
-.next2
 	ld a, [hSavedROMBank]
 	ld [H_LOADEDROMBANK], a
 	ld [MBC1RomBank], a

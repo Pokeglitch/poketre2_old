@@ -1,5 +1,3 @@
-; The first of three duplicated sound engines.
-
 Audio1_UpdateMusic:: ; 0x9103
 	ld c, CH0
 .loop
@@ -570,7 +568,7 @@ Audio1_octave: ; 0x945f
 	ld [hl], a ; store low nibble as octave
 	jp Audio1_endchannel
 
-Audio1_unknownsfx0x20: ; 0x9472
+Audio1_unknownsfx0x20:: ; 0x9472
 	cp $20 ; is this command an unknownsfx0x20?
 	jr nz, Audio1_unknownsfx0x10
 	ld a, c

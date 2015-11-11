@@ -57,6 +57,9 @@ SFX_Pointers_1::
 	sfx_pointer SFX_Cry23_1
 	sfx_pointer SFX_Cry24_1
 	sfx_pointer SFX_Cry25_1
+	sfx_pointer SFX_Cry26_1
+	sfx_pointer SFX_Cry27_1
+	sfx_pointer SFX_Cry28_1
 	sfx_pointer SFX_Get_Item1_1
 	sfx_pointer SFX_Get_Item2_1
 	sfx_pointer SFX_Tink_1
@@ -95,7 +98,91 @@ SFX_Pointers_1::
 	sfx_pointer SFX_Save_1
 	sfx_pointer SFX_Pokeflute
 	sfx_pointer SFX_Safari_Zone_PA
+	sfx_pointer SFX_Level_Up
+	sfx_pointer SFX_Ball_Toss
+	sfx_pointer SFX_Ball_Poof
+	sfx_pointer SFX_Faint_Thud
+	sfx_pointer SFX_Run
+	sfx_pointer SFX_Dex_Page_Added
+	sfx_pointer SFX_Caught_Mon
+	sfx_pointer SFX_Peck
+	sfx_pointer SFX_Faint_Fall
+	sfx_pointer SFX_Battle_09
+	sfx_pointer SFX_Pound
+	sfx_pointer SFX_Battle_0B
+	sfx_pointer SFX_Battle_0C
+	sfx_pointer SFX_Battle_0D
+	sfx_pointer SFX_Battle_0E
+	sfx_pointer SFX_Battle_0F
+	sfx_pointer SFX_Damage
+	sfx_pointer SFX_Not_Very_Effective
+	sfx_pointer SFX_Battle_12
+	sfx_pointer SFX_Battle_13
+	sfx_pointer SFX_Battle_14
+	sfx_pointer SFX_Vine_Whip
+	sfx_pointer SFX_Battle_16
+	sfx_pointer SFX_Battle_17
+	sfx_pointer SFX_Battle_18
+	sfx_pointer SFX_Battle_19
+	sfx_pointer SFX_Super_Effective
+	sfx_pointer SFX_Battle_1B
+	sfx_pointer SFX_Battle_1C
+	sfx_pointer SFX_Doubleslap
+	sfx_pointer SFX_Battle_1E
+	sfx_pointer SFX_Horn_Drill
+	sfx_pointer SFX_Battle_20
+	sfx_pointer SFX_Battle_21
+	sfx_pointer SFX_Battle_22
+	sfx_pointer SFX_Battle_23
+	sfx_pointer SFX_Battle_24
+	sfx_pointer SFX_Battle_25
+	sfx_pointer SFX_Battle_26
+	sfx_pointer SFX_Battle_27
+	sfx_pointer SFX_Battle_28
+	sfx_pointer SFX_Battle_29
+	sfx_pointer SFX_Battle_2A
+	sfx_pointer SFX_Battle_2B
+	sfx_pointer SFX_Battle_2C
+	sfx_pointer SFX_Psybeam
+	sfx_pointer SFX_Battle_2E
+	sfx_pointer SFX_Battle_2F
+	sfx_pointer SFX_Psychic_M
+	sfx_pointer SFX_Battle_31
+	sfx_pointer SFX_Battle_32
+	sfx_pointer SFX_Battle_33
+	sfx_pointer SFX_Battle_34
+	sfx_pointer SFX_Battle_35
+	sfx_pointer SFX_Battle_36
+	sfx_pointer SFX_Silph_Scope
+	sfx_pointer SFX_Intro_Lunge
+	sfx_pointer SFX_Intro_Hip
+	sfx_pointer SFX_Intro_Hop
+	sfx_pointer SFX_Intro_Raise
+	sfx_pointer SFX_Intro_Crash
+	sfx_pointer SFX_Intro_Whoosh
+	sfx_pointer SFX_Slots_Stop_Wheel
+	sfx_pointer SFX_Slots_Reward
+	sfx_pointer SFX_Slots_New_Spin
+	sfx_pointer SFX_Shooting_Star
 	
+	sfx_pointer Music_TitleScreen
+	sfx_pointer Music_Credits
+	sfx_pointer Music_HallOfFame
+	sfx_pointer Music_OaksLab
+	sfx_pointer Music_JigglypuffSong
+	sfx_pointer Music_BikeRiding
+	sfx_pointer Music_Surfing
+	sfx_pointer Music_GameCorner
+	sfx_pointer Music_IntroBattle
+	sfx_pointer Music_Dungeon1
+	sfx_pointer Music_Dungeon2
+	sfx_pointer Music_Dungeon3
+	sfx_pointer Music_CinnabarMansion
+	sfx_pointer Music_PokemonTower
+	sfx_pointer Music_SilphCo
+	sfx_pointer Music_MeetEvilTrainer
+	sfx_pointer Music_MeetFemaleTrainer
+	sfx_pointer Music_MeetMaleTrainer
 	sfx_pointer Music_PalletTown
 	sfx_pointer Music_Pokecenter
 	sfx_pointer Music_Gym
@@ -116,4 +203,11 @@ SFX_Pointers_1::
 	sfx_pointer Music_Routes3
 	sfx_pointer Music_Routes4
 	sfx_pointer Music_IndigoPlateau
+	sfx_pointer Music_GymLeaderBattle
+	sfx_pointer Music_TrainerBattle
+	sfx_pointer Music_WildBattle
+	sfx_pointer Music_FinalBattle
+	sfx_pointer Music_DefeatedTrainer
+	sfx_pointer Music_DefeatedWildMon
+	sfx_pointer Music_DefeatedGymLeader
 	
