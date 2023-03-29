@@ -328,11 +328,11 @@ LoadFrontSpriteByMonIndex:: ; 1389 (0:1389)
 
 PlayCry:: ; 13d0 (0:13d0)
 ; Play monster a's cry.
-	ld a,CLEFFA
-;	ld [wd0b5],a
-;	callab RawCry
-;	ret c		;return if we played a raw cry
-;	ld a,[wd0b5]
+	ld a,MUNCHLAX
+	ld [wd0b5],a
+	callab RawCry
+	ret c		;return if we played a raw cry
+	ld a,[wd0b5]
 	call GetCryData
 	call PlaySound
 	call WaitForSoundToFinish

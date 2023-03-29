@@ -10,6 +10,9 @@ SFX_Cry2B_Ch1:
 	endchannel
 
 SFX_Cry2B_Ch2: 
+	endchannel
+	
+SFX_Cry2B_Ch3: 
 	noise 12, $b1, $50
 	noise 8, $a1, $60
 	noise 6, $a1, $5b

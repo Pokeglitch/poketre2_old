@@ -7,9 +7,9 @@ SFX_Cry2C_branch_1: ; f3355
 	sound $1, $a1, $20, 4
 	loopchannel 4, SFX_Cry2C_branch_1
 	dutycycle 0
-	sound $4, $71, $60, 7
-	sound $4, $71, $30, 7
-	sound $18, $c1, $20, 4
+;	sound $4, $71, $60, 7
+;	sound $4, $71, $30, 7
+;	sound $18, $c1, $20, 4
 	endchannel
 
 SFX_Cry2C_Ch2:

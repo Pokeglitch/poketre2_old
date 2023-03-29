@@ -7,7 +7,7 @@ SFX_Cry30_Ch1:
 	
 SFX_Cry30_Ch2:
 	dutycycle $41
-Cry_30_branch_1: ; f31af
+Cry_30_branch_1:
 	sound 4, $61, $58, 7
 	sound 2, $e1, $60, 7
 	sound 2, $e1, $67, 7

@@ -2742,7 +2742,7 @@ CantUseMove:
 	ld a,1 << Confused
 	and [hl]		;reset all bits except confused
 	ld [hli],a
-	ld a,~(1 << GettingPumped || 1<< NeedsToRecharge || 1<< UsingRage)
+	ld a, (~(1 << GettingPumped || 1<< NeedsToRecharge || 1<< UsingRage) & $FF)
 	and [hl]		;reset focus energy, recharge, and rage bits
 	ld [hl],a
 	ld a,[bc]	;move effect

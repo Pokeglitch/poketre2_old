@@ -28,7 +28,7 @@ LoadNextSoundClipSample:: ; 0199 (0:0199)
 	ld a,d
 	and e
 	srl a
-	srl a
+;	srl a			;Comment this out to get 50% volume
 	ld [rNR32],a
 	pop af
 	ret

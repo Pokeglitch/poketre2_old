@@ -5,9 +5,9 @@ SFX_Cry2E_Ch1:
 	sound 4, $f1, $b1, 7
 	sound 4, $f1, $b0, 7
 	sound 4, $41, $af, 7
-	sound 4, $f1, $b2, 7
-	sound 4, $f1, $b3, 7
-	sound 4, $41, $b4, 7
+	sound 4, $f1, $12, 7
+	sound 4, $f1, $13, 7
+	sound 4, $41, $04, 7
 	endchannel
 	
 SFX_Cry2E_Ch2:
@@ -15,9 +15,9 @@ SFX_Cry2E_Ch2:
 	sound $4, $f1, $b2, 7
 	sound $4, $f1, $b1, 7
 	sound $4, $21, $b0, 7
-	sound $4, $f1, $b4, 7
-	sound $4, $f1, $b6, 7
-	sound $4, $41, $b8, 7
+	sound $4, $f1, $14, 7
+	sound $4, $f1, $16, 7
+	sound $4, $41, $08, 7
 	endchannel
 
 SFX_Cry2E_Ch3:

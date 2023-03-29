@@ -53,6 +53,18 @@ RawCryTable:
 	db GROWLITHE, BANK(GrowlitheCry)
 	dw GrowlitheCry
 	
+	db BLISSEY, BANK(BlisseyCry)
+	dw BlisseyCry
+	
+	db STEELIX, BANK(SteelixCry)
+	dw SteelixCry
+	
+	db KINGDRA, BANK(KingdraCry)
+	dw KingdraCry
+	
+	db POLITOED, BANK(PolitoedCry)
+	dw PolitoedCry
+	
 	db $FF
 
 RawTrainerTable:

@@ -1,6 +1,11 @@
 # Build Red/Blue. Yellow is WIP.
 roms := pokered.gbc pokeblue.gbc
 
+RGBDS ?= rgbds-0.2.5/
+RGBASM  ?= $(RGBDS)rgbasm
+RGBFIX  ?= $(RGBDS)rgbfix
+RGBGFX  ?= $(RGBDS)rgbgfx
+RGBLINK ?= $(RGBDS)rgblink
 
 .PHONY: all clean red blue yellow compare
 
@@ -79,17 +84,17 @@ $(all_obj): $$*.asm $$($$*_dep)
 	@$(gfx) 2bpp $(2bppq);    $(eval 2bppq :=)
 	@$(gfx) 1bpp $(1bppq);    $(eval 1bppq :=)
 	@$(pic) compress $(picq); $(eval picq  :=)
-	rgbasm -h -o $@ $*.asm
+	$(RGBASM) -h -o $@ $*.asm
 
 
 # Link objects together to build a rom.
 
 # Make a symfile for debugging.
-link = rgblink -n poke$*.sym
+link = $(RGBLINK) -n poke$*.sym
 
 poke%.gbc: $$(%_obj)
 	$(link) -o $@ $^
-	rgbfix $($*_opt) $@
+	$(RGBFIX) $($*_opt) $@
 
 
 clean:

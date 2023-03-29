@@ -44,7 +44,7 @@ CryData:: ; 39446 (e:5446)
 	db $19, $AA, $20; Clefable
 	db $24, $4F, $10; Vulpix
 	db $24, $88, $60; Ninetales
-	db $28, $00, $28; Igglybuff
+	db $28, $08, $28; Igglybuff
 	db $0E, $FF, $35; Jigglypuff
 	db $0E, $68, $60; Wigglytuff
 	db $1D, $E0, $80; Zubat
@@ -67,7 +67,7 @@ CryData:: ; 39446 (e:5446)
 	db $0E, $FF, $FF; Poliwag
 	db $0E, $77, $60; Poliwhirl
 	db $0E, $00, $FF; Poliwrath
-	db $27, $a0, $FF; Politoed
+	db $27, $E0, $FF; Politoed
 	db $1C, $C0, $01; Abra
 	db $1C, $A8, $C0; Kadabra
 	db $1C, $98, $FF; Alakazam
@@ -103,7 +103,7 @@ CryData:: ; 39446 (e:5446)
 	db $1C, $30, $40; Haunter
 	db $07, $00, $FF; Gengar
 	db $17, $FF, $C0; Onix
-	db $00, $80, $10; Steelix
+	db $31, $FF, $10; Steelix
 	db $0D, $88, $20; Drowzee
 	db $0D, $EE, $40; Hypno
 	db $20, $20, $E0; Krabby
@@ -127,7 +127,7 @@ CryData:: ; 39446 (e:5446)
 	db $00, $00, $00; Rhyperior
 	db $00, $00, $00; Happiny
 	db $14, $0A, $C0; Chansey
-	db $29, $FF, $C0; Blissey
+	db $29, $00, $80; Blissey
 	db $12, $00, $80; Tangela
 	db $00, $00, $00; Tangrowth
 	db $03, $00, $80; Kangaskhan
@@ -144,7 +144,7 @@ CryData:: ; 39446 (e:5446)
 	db $2C, $00, $E0; Scizor
 	db $2D, $68, $80; Smoochum
 	db $0D, $FF, $FF; Jynx
-	db $2E, $FF, $34; Elekid
+	db $2E, $FF, $64; Elekid
 	db $06, $8F, $FF; Electabuzz
 	db $00, $00, $00; Electivire
 	db $2F, $00, $00; Magby

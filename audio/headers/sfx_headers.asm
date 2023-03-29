@@ -422,10 +422,12 @@ SFX_Cry2A:: ; 8180 (2:4180)
 	dw SFX_Cry2A_Ch3
 
 SFX_Cry2B:: ; 8180 (2:4180)
-	db ( $40 | CH4 )
+	db ( $80 | CH4 )
 	dw SFX_Cry2B_Ch1
-	db CH7
+	db CH5
 	dw SFX_Cry2B_Ch2
+	db CH7
+	dw SFX_Cry2B_Ch3
 
 SFX_Cry2C:: ; 8180 (2:4180)
 	db ( $80 | CH4 )
@@ -466,6 +468,14 @@ SFX_Cry30:: ; 8180 (2:4180)
 	dw SFX_Cry30_Ch2
 	db CH7
 	dw SFX_Cry30_Ch3
+	
+SFX_Cry31:: ; 8180 (2:4180)
+	db ( $80 | CH4 )
+	dw SFX_Cry31_Ch1
+	db CH5
+	dw SFX_Cry31_Ch2
+	db CH7
+	dw SFX_Cry31_Ch3
 
 SFX_Get_Item1:: ; 8192 (2:4192)
 	db ( $80 | CH4 )

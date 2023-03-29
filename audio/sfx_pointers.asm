@@ -69,6 +69,7 @@ SFX_Pointers::
 	sfx_pointer SFX_Cry2E
 	sfx_pointer SFX_Cry2F
 	sfx_pointer SFX_Cry30
+	sfx_pointer SFX_Cry31
 	
 	sfx_pointer SFX_Get_Item1
 	sfx_pointer SFX_Get_Item2

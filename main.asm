@@ -6772,6 +6772,28 @@ GiovanniCry: ; 84000 (21:4000)
 	INCBIN "audio/cries/giovanni.pcm"
 GiovanniCryEnd:
 
+SECTION "bank32",ROMX,BANK[$32]
+
+BlisseyCry:
+	dw (BlisseyCryEnd - BlisseyCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/blissey.pcm"
+BlisseyCryEnd:
+
+KingdraCry:
+	dw (KingdraCryEnd - KingdraCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/kingdra.pcm"
+KingdraCryEnd:
+
+PolitoedCry:
+	dw (PolitoedCryEnd - PolitoedCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/politoed.pcm"
+PolitoedCryEnd:
+
+SteelixCry:
+	dw (SteelixCryEnd - SteelixCry) - 2 ; length of pcm data
+	INCBIN "audio/cries/steelix.pcm"
+SteelixCryEnd:
+
 SECTION "bank1F",ROMX,BANK[$35]
 INCLUDE "engine/get_name.asm"
 
